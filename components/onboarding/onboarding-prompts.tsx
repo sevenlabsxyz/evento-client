@@ -192,7 +192,10 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
               {isLoadingUserPrompts ? (
                 <div className='space-y-3'>
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className='rounded-xl border border-gray-200 bg-white p-3'>
+                    <div
+                      key={i}
+                      className='rounded-xl border border-gray-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900'
+                    >
                       <div className='mb-2 flex items-center gap-2'>
                         <Skeleton className='h-5 w-5 rounded-full' />
                         <Skeleton className='h-4 w-48' />
@@ -206,20 +209,20 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                   {/* Answered prompts */}
                   {answeredPrompts.length > 0 && (
                     <div className='space-y-2'>
-                      <h3 className='text-xs font-semibold uppercase tracking-wide text-gray-500'>
+                      <h3 className='text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
                         Your Prompts ({answeredPrompts.length}/4)
                       </h3>
                       {answeredPrompts.map((prompt, index) => (
                         <div
                           key={prompt.prompt_id}
-                          className='rounded-xl border border-gray-200 bg-white p-3'
+                          className='rounded-xl border border-gray-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900'
                         >
                           <div className='mb-1.5 flex items-start justify-between gap-2'>
                             <div className='flex min-w-0 flex-1 items-start gap-2'>
-                              <span className='flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-semibold text-red-600'>
+                              <span className='flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-semibold text-red-600 dark:bg-red-950/60 dark:text-red-400'>
                                 {index + 1}
                               </span>
-                              <p className='flex-1 text-sm font-medium text-gray-900'>
+                              <p className='flex-1 text-sm font-medium text-gray-900 dark:text-neutral-100'>
                                 {prompt.question}
                               </p>
                             </div>
@@ -229,32 +232,34 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                                   <button
                                     onClick={() => handleMoveUp(index)}
                                     disabled={index === 0}
-                                    className='rounded p-1 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
+                                    className='rounded p-1 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:bg-neutral-800'
                                   >
-                                    <ArrowUp className='h-3.5 w-3.5 text-gray-500' />
+                                    <ArrowUp className='h-3.5 w-3.5 text-gray-500 dark:text-neutral-400' />
                                   </button>
                                   <button
                                     onClick={() => handleMoveDown(index)}
                                     disabled={index === answeredPrompts.length - 1}
-                                    className='rounded p-1 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
+                                    className='rounded p-1 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:bg-neutral-800'
                                   >
-                                    <ArrowDown className='h-3.5 w-3.5 text-gray-500' />
+                                    <ArrowDown className='h-3.5 w-3.5 text-gray-500 dark:text-neutral-400' />
                                   </button>
                                 </>
                               )}
                               <button
                                 onClick={() => handleRemovePrompt(prompt.prompt_id)}
-                                className='rounded p-1 hover:bg-gray-100'
+                                className='rounded p-1 hover:bg-gray-100 dark:hover:bg-neutral-800'
                               >
-                                <X className='h-3.5 w-3.5 text-gray-400 hover:text-red-500' />
+                                <X className='h-3.5 w-3.5 text-gray-400 hover:text-red-500 dark:text-neutral-500 dark:hover:text-red-400' />
                               </button>
                             </div>
                           </div>
                           <div className='ml-7'>
-                            <p className='line-clamp-2 text-sm text-gray-600'>{prompt.answer}</p>
+                            <p className='line-clamp-2 text-sm text-gray-600 dark:text-neutral-400'>
+                              {prompt.answer}
+                            </p>
                             <button
                               onClick={() => handleEditPrompt(prompt)}
-                              className='mt-1 text-xs font-medium text-red-600 hover:text-red-700'
+                              className='mt-1 text-xs font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
                             >
                               Edit
                             </button>
@@ -267,14 +272,17 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                   {/* Available prompts */}
                   {canAddMore && (
                     <div className='space-y-2'>
-                      <h3 className='text-xs font-semibold uppercase tracking-wide text-gray-500'>
+                      <h3 className='text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
                         {answeredPrompts.length > 0 ? 'Add More' : 'Choose a Prompt'}
                       </h3>
 
                       {isLoadingAvailablePrompts ? (
                         <div className='space-y-2'>
                           {[1, 2, 3].map((i) => (
-                            <div key={i} className='rounded-xl border border-gray-200 bg-white p-3'>
+                            <div
+                              key={i}
+                              className='rounded-xl border border-gray-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900'
+                            >
                               <div className='flex items-center gap-2'>
                                 <Skeleton className='h-4 w-4 rounded' />
                                 <Skeleton className='h-4 flex-1' />
@@ -288,16 +296,20 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                             <button
                               key={prompt.id}
                               onClick={() => handleAddPrompt(prompt)}
-                              className='flex w-full items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-2.5 text-left transition-all hover:border-red-200 hover:bg-red-50/50'
+                              className='flex w-full items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-2.5 text-left transition-all hover:border-red-200 hover:bg-red-50/50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-red-900 dark:hover:bg-red-950/40'
                             >
-                              <Plus className='h-4 w-4 flex-shrink-0 text-gray-400' />
-                              <p className='flex-1 text-sm text-gray-700'>{prompt.question}</p>
+                              <Plus className='h-4 w-4 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
+                              <p className='flex-1 text-sm text-gray-700 dark:text-neutral-300'>
+                                {prompt.question}
+                              </p>
                             </button>
                           ))}
                         </div>
                       ) : (
-                        <div className='rounded-xl border border-dashed border-gray-200 bg-gray-50/50 p-4 text-center'>
-                          <p className='text-sm text-gray-400'>No more prompts available</p>
+                        <div className='rounded-xl border border-dashed border-gray-200 bg-gray-50/50 p-4 text-center dark:border-neutral-800 dark:bg-neutral-950/50'>
+                          <p className='text-sm text-gray-400 dark:text-neutral-400'>
+                            No more prompts available
+                          </p>
                         </div>
                       )}
                     </div>
@@ -305,8 +317,8 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
 
                   {/* Max prompts message */}
                   {!canAddMore && (
-                    <div className='rounded-lg bg-amber-50 p-2.5'>
-                      <p className='text-center text-xs text-amber-700'>
+                    <div className='rounded-lg bg-amber-50 p-2.5 dark:bg-amber-950/40'>
+                      <p className='text-center text-xs text-amber-700 dark:text-amber-400'>
                         Maximum 4 prompts reached. Remove one to add another.
                       </p>
                     </div>
@@ -329,25 +341,31 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
             {/* Back button */}
             <button
               onClick={handleCancel}
-              className='mb-4 flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700'
+              className='mb-4 flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
             >
               <ArrowLeft className='h-4 w-4' />
               Back to prompts
             </button>
 
-            <h2 className='mb-1 text-xl font-bold text-gray-900'>
+            <h2 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>
               {editingPrompt.isNew ? 'Answer Prompt' : 'Edit Answer'}
             </h2>
-            <p className='mb-6 text-sm text-gray-500'>Share something about yourself</p>
+            <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
+              Share something about yourself
+            </p>
 
             {/* Question */}
-            <div className='mb-4 rounded-xl border border-gray-200 bg-gray-50 p-4'>
-              <p className='font-medium text-gray-900'>{editingPrompt.question}</p>
+            <div className='mb-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
+              <p className='font-medium text-gray-900 dark:text-neutral-100'>
+                {editingPrompt.question}
+              </p>
             </div>
 
             {/* Answer */}
             <div className='mb-4'>
-              <label className='mb-2 block text-sm font-medium text-gray-700'>Your Answer</label>
+              <label className='mb-2 block text-sm font-medium text-gray-700 dark:text-neutral-300'>
+                Your Answer
+              </label>
               <Textarea
                 value={editingPrompt.answer}
                 onChange={(e) =>
@@ -361,17 +379,21 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                 maxLength={500}
                 autoFocus
               />
-              <div className='mt-1.5 flex items-center justify-between text-xs text-gray-400'>
+              <div className='mt-1.5 flex items-center justify-between text-xs text-gray-400 dark:text-neutral-400'>
                 <span>Minimum 5 characters</span>
                 <span>{editingPrompt.answer.length}/500</span>
               </div>
             </div>
 
             {/* Visibility toggle */}
-            <div className='mb-6 flex items-center justify-between rounded-xl border border-gray-200 bg-white p-3'>
+            <div className='mb-6 flex items-center justify-between rounded-xl border border-gray-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900'>
               <div>
-                <p className='text-sm font-medium text-gray-900'>Show on profile</p>
-                <p className='text-xs text-gray-500'>Make this visible to others</p>
+                <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
+                  Show on profile
+                </p>
+                <p className='text-xs text-gray-500 dark:text-neutral-400'>
+                  Make this visible to others
+                </p>
               </div>
               <button
                 onClick={() =>
@@ -381,7 +403,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                   })
                 }
                 className={`relative h-6 w-11 rounded-full transition-colors ${
-                  editingPrompt.is_visible ? 'bg-red-600' : 'bg-gray-200'
+                  editingPrompt.is_visible ? 'bg-red-600' : 'bg-gray-200 dark:bg-neutral-700'
                 }`}
               >
                 <span

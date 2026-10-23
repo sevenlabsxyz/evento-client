@@ -497,8 +497,8 @@ export default function EventDetailPageClient() {
 
   if (isLoading) {
     return (
-      <div className='min-h-screen bg-gray-50'>
-        <div className='mx-auto max-w-full bg-white md:max-w-sm'>
+      <div className='min-h-screen bg-gray-50 dark:bg-neutral-950'>
+        <div className='mx-auto max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
           <Skeleton variant='event-details' />
         </div>
       </div>
@@ -507,16 +507,18 @@ export default function EventDetailPageClient() {
 
   if (eventError || !event) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+            Event Not Found
+          </h1>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             The event you&apos;re looking for doesn&apos;t exist.
           </p>
           <button
             type='button'
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -537,7 +539,7 @@ export default function EventDetailPageClient() {
       (visibilitySettings.hide_location_for_unapproved ||
         visibilitySettings.hide_description_for_unapproved ||
         visibilitySettings.hide_guest_list_for_unapproved) ? (
-        <div className='rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900'>
+        <div className='rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400'>
           Some event details are hidden until your registration is approved.
         </div>
       ) : null}
@@ -569,7 +571,7 @@ export default function EventDetailPageClient() {
       {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
       {(eventData?.spotify_url || eventData?.wavlake_url) && (
         <div className='space-y-4'>
-          <h3 className='text-lg font-semibold text-gray-900'>Music</h3>
+          <h3 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Music</h3>
           {eventData.spotify_url && <EventSpotifyEmbed link={eventData.spotify_url} />}
           {eventData.wavlake_url && <WavlakeEmbed link={eventData.wavlake_url} />}
         </div>
@@ -578,16 +580,16 @@ export default function EventDetailPageClient() {
   );
 
   const renderCommentsTab = () => (
-    <div className='border-t border-gray-100 py-6'>
-      <h2 className='mb-4 text-lg font-semibold text-gray-900'>Comments</h2>
+    <div className='border-t border-gray-100 py-6 dark:border-neutral-800'>
+      <h2 className='mb-4 text-lg font-semibold text-gray-900 dark:text-neutral-100'>Comments</h2>
       <EventComments eventId={event.id} isEventHost={isOwnerOrCohost} />
     </div>
   );
 
   const renderGalleryTab = () => {
     return (
-      <div className='border-t border-gray-100 py-6'>
-        <h2 className='mb-4 text-lg font-semibold text-gray-900'>Gallery</h2>
+      <div className='border-t border-gray-100 py-6 dark:border-neutral-800'>
+        <h2 className='mb-4 text-lg font-semibold text-gray-900 dark:text-neutral-100'>Gallery</h2>
         <EventGallery
           event={event}
           galleryItems={galleryData}
@@ -603,9 +605,9 @@ export default function EventDetailPageClient() {
   };
 
   return (
-    <div className='min-h-screen bg-white'>
+    <div className='min-h-screen bg-white dark:bg-neutral-900'>
       {/* Main content */}
-      <div className='mx-auto max-w-full bg-white md:pt-4 lg:max-w-4xl'>
+      <div className='mx-auto max-w-full bg-white dark:bg-neutral-900 md:pt-4 lg:max-w-4xl'>
         <div className='pt-4 md:pt-0 lg:flex lg:gap-8'>
           {/* Left Column - Image & Quick Actions */}
           <div className='lg:w-1/2 lg:self-start'>
@@ -628,7 +630,7 @@ export default function EventDetailPageClient() {
 
           {/* Right Column - Section navigation */}
           <div className='pb-20 lg:w-1/2'>
-            <div className='mb-4 w-full bg-white'>
+            <div className='mb-4 w-full bg-white dark:bg-neutral-900'>
               <AnimatedTabs
                 expanded
                 className='mx-auto'

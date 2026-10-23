@@ -116,17 +116,20 @@ export default function LightningAddressSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
+            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4 dark:border-neutral-800 dark:bg-neutral-900'>
               <div className='flex items-center justify-center'>
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Bitcoin</h2>
-                <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
+                <button
+                  onClick={handleCancel}
+                  className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
+                >
                   <X className='h-5 w-5' />
                 </button>
               </div>
-              <p className='mt-1 text-sm text-gray-500'>
+              <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
                 {isWalletManaged
                   ? 'Your Lightning address is managed by your Evento wallet.'
                   : 'Add your Lightning Network address to receive payments.'}
@@ -140,7 +143,7 @@ export default function LightningAddressSheet({
                   {/* Input with icon */}
                   <div className='relative mb-4'>
                     <div className='absolute left-3 top-1/2 -translate-y-1/2'>
-                      <Zap className='h-5 w-5 text-orange-500' />
+                      <Zap className='h-5 w-5 text-orange-500 dark:text-orange-400' />
                     </div>
                     <Input
                       type='text'
@@ -159,24 +162,24 @@ export default function LightningAddressSheet({
 
                   {/* Info text */}
                   <div className='mb-6 space-y-3'>
-                    <p className='text-sm text-gray-500'>
+                    <p className='text-sm text-gray-500 dark:text-neutral-400'>
                       {isWalletManaged
                         ? 'Evento syncs this address from your built-in wallet so crowdfunding and wallet payments always use the same destination.'
                         : 'Lightning addresses allow you to receive instant Bitcoin payments from anyone attending your events or visiting your profile.'}
                     </p>
 
                     {isWalletManaged ? (
-                      <div className='rounded-xl bg-blue-50 p-4'>
-                        <p className='text-sm font-medium text-blue-800'>
+                      <div className='rounded-xl bg-blue-50 p-4 dark:bg-blue-950/40'>
+                        <p className='text-sm font-medium text-blue-800 dark:text-blue-400'>
                           Open Wallet to unlock, create, or resync your Lightning address.
                         </p>
                       </div>
                     ) : (
-                      <div className='rounded-xl bg-orange-50 p-4'>
-                        <p className='mb-2 text-sm font-medium text-orange-800'>
+                      <div className='rounded-xl bg-orange-50 p-4 dark:bg-orange-950/40'>
+                        <p className='mb-2 text-sm font-medium text-orange-800 dark:text-orange-400'>
                           Popular Lightning wallets:
                         </p>
-                        <ul className='space-y-1 text-sm text-orange-700'>
+                        <ul className='space-y-1 text-sm text-orange-700 dark:text-orange-400'>
                           <li>• Strike</li>
                           <li>• Cash App</li>
                           <li>• Wallet of Satoshi</li>
@@ -192,7 +195,7 @@ export default function LightningAddressSheet({
                     <Button
                       onClick={handleSave}
                       disabled={isWalletManaged ? false : !hasChanges || isSaving}
-                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                     >
                       {isWalletManaged ? (
                         'Open Wallet'

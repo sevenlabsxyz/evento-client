@@ -27,7 +27,7 @@ interface PaymentMethodConfig {
 const PAYMENT_METHOD_CONFIG: Record<string, PaymentMethodConfig> = {
   cashapp: {
     icon: <CashAppSVGIcon className='h-8 w-8' />,
-    bgColor: 'bg-green-100',
+    bgColor: 'bg-green-100 dark:bg-green-950/60',
     label: 'Cash App',
     getPaymentUrl: (username, amount, isMobile) => {
       const strippedUsername = encodeURIComponent(username.replace(/^[@$]/, ''));
@@ -38,7 +38,7 @@ const PAYMENT_METHOD_CONFIG: Record<string, PaymentMethodConfig> = {
   },
   venmo: {
     icon: <VenmoSVGIcon className='h-8 w-8' />,
-    bgColor: 'bg-blue-100',
+    bgColor: 'bg-blue-100 dark:bg-blue-950/60',
     label: 'Venmo',
     getPaymentUrl: (username, amount, isMobile) => {
       const strippedUsername = encodeURIComponent(username.replace(/^[@$]/, ''));
@@ -49,7 +49,7 @@ const PAYMENT_METHOD_CONFIG: Record<string, PaymentMethodConfig> = {
   },
   paypal: {
     icon: <PayPalSVGIcon className='h-8 w-8' />,
-    bgColor: 'bg-blue-100',
+    bgColor: 'bg-blue-100 dark:bg-blue-950/60',
     label: 'PayPal',
     getPaymentUrl: (username, amount) => {
       const strippedUsername = encodeURIComponent(username.replace(/^[@$]/, ''));
@@ -113,12 +113,16 @@ export default function ContributionPaymentSheet({
               </VisuallyHidden.Root>
 
               <div className='mb-6 text-center'>
-                <p className='mb-2 text-sm text-gray-500'>Support the host with a contribution</p>
+                <p className='mb-2 text-sm text-gray-500 dark:text-neutral-400'>
+                  Support the host with a contribution
+                </p>
                 {suggestedCost > 0 ? (
                   <>
                     {isEditingAmount ? (
                       <div className='flex items-center justify-center gap-2'>
-                        <span className='text-4xl font-bold text-gray-400'>$</span>
+                        <span className='text-4xl font-bold text-gray-400 dark:text-neutral-500'>
+                          $
+                        </span>
                         <input
                           type='number'
                           value={customAmount || ''}
@@ -137,25 +141,29 @@ export default function ContributionPaymentSheet({
                           min='0'
                           step='1'
                           autoFocus
-                          className='w-32 border-b-2 border-gray-300 bg-transparent text-center text-5xl font-bold text-gray-900 focus:border-red-500 focus:outline-none'
+                          className='w-32 border-b-2 border-gray-300 bg-transparent text-center text-5xl font-bold text-gray-900 focus:border-red-500 focus:outline-none dark:border-neutral-700 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                         />
                       </div>
                     ) : (
-                      <p className='text-5xl font-bold text-gray-900'>{formatUSD(customAmount)}</p>
+                      <p className='text-5xl font-bold text-gray-900 dark:text-neutral-100'>
+                        {formatUSD(customAmount)}
+                      </p>
                     )}
                     <button
                       onClick={() => setIsEditingAmount(true)}
-                      className='mt-2 text-sm text-red-500 underline'
+                      className='mt-2 text-sm text-red-500 underline dark:text-red-400'
                     >
                       Change amount
                     </button>
                   </>
                 ) : (
-                  <p className='text-lg font-medium text-gray-700'>Any amount is appreciated</p>
+                  <p className='text-lg font-medium text-gray-700 dark:text-neutral-300'>
+                    Any amount is appreciated
+                  </p>
                 )}
               </div>
 
-              <p className='mb-4 text-center text-sm text-gray-500'>
+              <p className='mb-4 text-center text-sm text-gray-500 dark:text-neutral-400'>
                 Choose how you&apos;d like to contribute:
               </p>
 
@@ -172,7 +180,7 @@ export default function ContributionPaymentSheet({
                       href={paymentUrl}
                       target='_blank'
                       rel='noopener noreferrer'
-                      className='flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100'
+                      className='flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
                     >
                       <div className='flex items-center gap-4'>
                         <div
@@ -181,11 +189,15 @@ export default function ContributionPaymentSheet({
                           {config.icon}
                         </div>
                         <div className='text-left'>
-                          <p className='font-medium text-gray-900'>{config.label}</p>
-                          <p className='text-sm text-gray-500'>{method.value}</p>
+                          <p className='font-medium text-gray-900 dark:text-neutral-100'>
+                            {config.label}
+                          </p>
+                          <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                            {method.value}
+                          </p>
                         </div>
                       </div>
-                      <ExternalLink className='h-5 w-5 text-gray-400' />
+                      <ExternalLink className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
                     </a>
                   );
                 })}
@@ -193,7 +205,7 @@ export default function ContributionPaymentSheet({
 
               <button
                 onClick={onClose}
-                className='mt-6 w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50'
+                className='mt-6 w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-950'
               >
                 Close
               </button>

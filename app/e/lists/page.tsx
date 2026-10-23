@@ -101,7 +101,7 @@ export default function SavedListsPage() {
 
   if (isCheckingAuth) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
         <div className='flex flex-1 items-center justify-center pb-20'>
           <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
         </div>
@@ -110,7 +110,7 @@ export default function SavedListsPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-2xl'>
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-2xl'>
       {/* Content */}
       <div className='flex-1 overflow-y-auto pb-20 pt-4'>
         {/* Loading State */}
@@ -131,7 +131,10 @@ export default function SavedListsPage() {
               <EmptyDescription>Create your first list to start saving events.</EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button onClick={openCreateModal} className='bg-red-500 text-white hover:bg-red-600'>
+              <Button
+                onClick={openCreateModal}
+                className='bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
+              >
                 Create List
               </Button>
             </EmptyContent>
@@ -143,24 +146,24 @@ export default function SavedListsPage() {
               <div
                 key={list.id}
                 onClick={() => handleListClick(list.id)}
-                className='cursor-pointer rounded-2xl border border-gray-200 bg-gray-50 p-4'
+                className='cursor-pointer rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'
               >
                 <div className='flex items-center justify-between'>
                   <div className='flex-1'>
                     <div className='mb-1 flex items-center gap-2'>
                       <h3 className='text-lg font-bold'>{list.name}</h3>
                       {list.is_default && (
-                        <span className='rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800'>
+                        <span className='rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:bg-red-950/60 dark:text-red-400'>
                           Default
                         </span>
                       )}
                     </div>
-                    <p className='text-sm text-gray-600'>
+                    <p className='text-sm text-gray-600 dark:text-neutral-400'>
                       {list.event_count} {list.event_count === 1 ? 'event' : 'events'} • Updated{' '}
                       {formatLastUpdated(list.updated_at)}
                     </p>
                   </div>
-                  <ChevronRight className='h-5 w-5 text-gray-400' />
+                  <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
                 </div>
               </div>
             ))}
@@ -170,8 +173,8 @@ export default function SavedListsPage() {
 
       {/* Create List Modal */}
       {showCreateModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 md:max-w-sm'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 dark:bg-black/70'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
             <h3 className='mb-4 text-xl font-bold'>Create New List</h3>
             <Input
               type='text'
@@ -183,7 +186,9 @@ export default function SavedListsPage() {
               maxLength={50}
               onKeyDown={(e) => e.key === 'Enter' && handleCreateList()}
             />
-            <p className='mb-4 text-right text-xs text-gray-500'>{newListName.length}/50</p>
+            <p className='mb-4 text-right text-xs text-gray-500 dark:text-neutral-400'>
+              {newListName.length}/50
+            </p>
             <div className='flex gap-3'>
               <Button
                 variant='outline'
@@ -198,7 +203,7 @@ export default function SavedListsPage() {
               </Button>
               <Button
                 onClick={handleCreateList}
-                className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 disabled={!newListName.trim() || createListMutation.isPending}
               >
                 {createListMutation.isPending ? (

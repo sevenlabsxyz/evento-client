@@ -390,7 +390,7 @@ export function ZapSheet({
     return (
       <motion.button
         onClick={handleOpenSheet}
-        className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-black text-base font-semibold text-white transition-colors hover:bg-red-600 active:bg-red-700'
+        className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-black text-base font-semibold text-white transition-colors hover:bg-red-600 active:bg-red-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:text-white'
         whileTap={{ scale: 0.95 }}
         transition={{ type: 'spring', stiffness: 400, damping: 17 }}
       >
@@ -505,7 +505,7 @@ export function ZapSheet({
                   <SheetWithDetentFull.ScrollContent>
                     {/* Handle */}
                     <div className='my-4 flex items-center'>
-                      <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+                      <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
                     </div>
                     <VisuallyHidden.Root asChild>
                       <SheetWithDetentFull.Title>Send Zap</SheetWithDetentFull.Title>

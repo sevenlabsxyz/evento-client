@@ -258,7 +258,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
           <div>
             <h2 className='text-xl font-semibold'>{sheetTitle}</h2>
             {view === 'list' && (
-              <p className='mt-1 text-sm text-gray-500'>
+              <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
                 {userPrompts?.length || 0}/4 prompts • Showcase your personality
               </p>
             )}
@@ -280,18 +280,20 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                 {/* User's answered prompts */}
                 {userPrompts && userPrompts.length > 0 && (
                   <div className='mb-6 space-y-3'>
-                    <h3 className='text-sm font-semibold text-gray-700'>Your Prompts</h3>
+                    <h3 className='text-sm font-semibold text-gray-700 dark:text-neutral-300'>
+                      Your Prompts
+                    </h3>
                     {userPrompts.map((userPrompt, index) => (
                       <div
                         key={userPrompt.id}
-                        className='rounded-xl border border-gray-200 bg-white p-4'
+                        className='rounded-xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'
                       >
                         <div className='mb-2 flex items-start justify-between'>
                           <div className='flex items-start gap-2'>
-                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-semibold text-red-600'>
+                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-semibold text-red-600 dark:bg-red-950/60 dark:text-red-400'>
                               {index + 1}
                             </span>
-                            <p className='flex-1 font-semibold text-gray-900'>
+                            <p className='flex-1 font-semibold text-gray-900 dark:text-neutral-100'>
                               {userPrompt.prompt.question}
                             </p>
                           </div>
@@ -301,47 +303,49 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                                 <button
                                   onClick={() => handleMoveUp(index)}
                                   disabled={index === 0}
-                                  className='rounded-lg p-1.5 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
+                                  className='rounded-lg p-1.5 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:bg-neutral-800'
                                   title='Move up'
                                 >
-                                  <ArrowUp className='h-4 w-4 text-gray-600' />
+                                  <ArrowUp className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
                                 </button>
                                 <button
                                   onClick={() => handleMoveDown(index)}
                                   disabled={index === userPrompts.length - 1}
-                                  className='rounded-lg p-1.5 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
+                                  className='rounded-lg p-1.5 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:bg-neutral-800'
                                   title='Move down'
                                 >
-                                  <ArrowDown className='h-4 w-4 text-gray-600' />
+                                  <ArrowDown className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
                                 </button>
                               </>
                             )}
                             <button
                               onClick={() => handleToggleVisibility(userPrompt)}
-                              className='rounded-lg p-2 hover:bg-gray-100'
+                              className='rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
                               title={
                                 userPrompt.is_visible ? 'Hide from profile' : 'Show on profile'
                               }
                             >
                               {userPrompt.is_visible ? (
-                                <Eye className='h-4 w-4 text-blue-600' />
+                                <Eye className='h-4 w-4 text-blue-600 dark:text-blue-400' />
                               ) : (
-                                <EyeOff className='h-4 w-4 text-gray-400' />
+                                <EyeOff className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
                               )}
                             </button>
                             <button
                               onClick={() => handleDeletePrompt(userPrompt.id)}
-                              className='rounded-lg p-2 hover:bg-gray-100'
+                              className='rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
                               title='Delete prompt'
                             >
-                              <Trash2 className='h-4 w-4 text-red-600' />
+                              <Trash2 className='h-4 w-4 text-red-600 dark:text-red-400' />
                             </button>
                           </div>
                         </div>
-                        <p className='mb-3 text-gray-700'>{userPrompt.answer}</p>
+                        <p className='mb-3 text-gray-700 dark:text-neutral-300'>
+                          {userPrompt.answer}
+                        </p>
                         <button
                           onClick={() => handleEditPrompt(userPrompt)}
-                          className='text-sm font-medium text-blue-600 hover:underline'
+                          className='text-sm font-medium text-blue-600 hover:underline dark:text-blue-400'
                         >
                           Edit answer
                         </button>
@@ -354,7 +358,9 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                 {canAddMore && (
                   <>
                     <div className='mb-3 flex items-center justify-between'>
-                      <h3 className='text-sm font-semibold text-gray-700'>Available Prompts</h3>
+                      <h3 className='text-sm font-semibold text-gray-700 dark:text-neutral-300'>
+                        Available Prompts
+                      </h3>
                       {/* Category filter */}
                       <Select
                         value={selectedCategory}
@@ -385,38 +391,42 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                           <button
                             key={prompt.id}
                             onClick={() => handleAddPrompt(prompt)}
-                            className='flex w-full items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 text-left transition-colors hover:border-blue-300 hover:bg-blue-50'
+                            className='flex w-full items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 text-left transition-colors hover:border-blue-300 hover:bg-blue-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-blue-800 dark:hover:bg-blue-950/40'
                           >
-                            <MessageSquare className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600' />
+                            <MessageSquare className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400' />
                             <div className='flex-1'>
-                              <p className='font-medium text-gray-900'>{prompt.question}</p>
+                              <p className='font-medium text-gray-900 dark:text-neutral-100'>
+                                {prompt.question}
+                              </p>
                               {prompt.placeholder_text && (
-                                <p className='mt-1 text-sm text-gray-500'>
+                                <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
                                   {prompt.placeholder_text}
                                 </p>
                               )}
                             </div>
-                            <Plus className='mt-0.5 h-5 w-5 flex-shrink-0 text-gray-400' />
+                            <Plus className='mt-0.5 h-5 w-5 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
                           </button>
                         ))}
                       </div>
                     ) : (
-                      <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center'>
-                        <p className='text-gray-500'>No available prompts in this category</p>
+                      <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-neutral-800 dark:bg-neutral-950'>
+                        <p className='text-gray-500 dark:text-neutral-400'>
+                          No available prompts in this category
+                        </p>
                       </div>
                     )}
                   </>
                 )}
 
                 {!canAddMore && (!userPrompts || userPrompts.length === 0) && (
-                  <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center'>
-                    <p className='text-gray-500'>No prompts yet</p>
+                  <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-neutral-800 dark:bg-neutral-950'>
+                    <p className='text-gray-500 dark:text-neutral-400'>No prompts yet</p>
                   </div>
                 )}
 
                 {!canAddMore && userPrompts && userPrompts.length > 0 && (
-                  <div className='rounded-xl border border-yellow-200 bg-yellow-50 p-4'>
-                    <p className='text-sm text-yellow-800'>
+                  <div className='rounded-xl border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900 dark:bg-yellow-950/40'>
+                    <p className='text-sm text-yellow-800 dark:text-yellow-400'>
                       You&apos;ve reached the maximum of 4 prompts. Delete a prompt to add a new
                       one.
                     </p>
@@ -431,13 +441,17 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
         {(view === 'add' || view === 'edit') && editingPrompt && (
           <div className='space-y-4'>
             {/* Question */}
-            <div className='rounded-xl border border-gray-200 bg-gray-50 p-4'>
-              <p className='font-semibold text-gray-900'>{editingPrompt.question}</p>
+            <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
+              <p className='font-semibold text-gray-900 dark:text-neutral-100'>
+                {editingPrompt.question}
+              </p>
             </div>
 
             {/* Answer */}
             <div>
-              <label className='mb-2 block text-sm font-medium text-gray-700'>Your Answer</label>
+              <label className='mb-2 block text-sm font-medium text-gray-700 dark:text-neutral-300'>
+                Your Answer
+              </label>
               <Textarea
                 value={editingPrompt.answer}
                 onChange={(e) =>
@@ -451,17 +465,19 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                 maxLength={500}
                 autoFocus
               />
-              <div className='mt-1 flex items-center justify-between text-sm text-gray-500'>
+              <div className='mt-1 flex items-center justify-between text-sm text-gray-500 dark:text-neutral-400'>
                 <span>Minimum 5 characters</span>
                 <span>{editingPrompt.answer.length}/500</span>
               </div>
             </div>
 
             {/* Visibility toggle */}
-            <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4'>
+            <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
               <div>
-                <p className='font-medium text-gray-900'>Show on profile</p>
-                <p className='text-sm text-gray-500'>Make this prompt visible to others</p>
+                <p className='font-medium text-gray-900 dark:text-neutral-100'>Show on profile</p>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                  Make this prompt visible to others
+                </p>
               </div>
               <button
                 onClick={() =>
@@ -471,7 +487,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                   })
                 }
                 className={`relative h-6 w-11 rounded-full transition-colors ${
-                  editingPrompt.isVisible ? 'bg-blue-600' : 'bg-gray-200'
+                  editingPrompt.isVisible ? 'bg-blue-600' : 'bg-gray-200 dark:bg-neutral-700'
                 }`}
               >
                 <span
@@ -487,7 +503,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
               <Button
                 onClick={handleSavePrompt}
                 disabled={editingPrompt.answer.length < 5 || isSaving}
-                className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 {isSaving ? (
                   <>
@@ -523,14 +539,14 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
 
                 {/* Header */}
                 <div className='mb-6 flex items-center gap-3'>
-                  <div className='flex h-10 w-10 items-center justify-center rounded-full bg-red-50'>
-                    <AlertTriangle className='h-5 w-5 text-red-500' />
+                  <div className='flex h-10 w-10 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40'>
+                    <AlertTriangle className='h-5 w-5 text-red-500 dark:text-red-400' />
                   </div>
                   <h2 className='text-xl font-semibold'>Delete Prompt</h2>
                 </div>
 
                 {/* Body */}
-                <div className='mb-8 text-gray-600'>
+                <div className='mb-8 text-gray-600 dark:text-neutral-400'>
                   <p>Are you sure you want to delete this prompt? This action cannot be undone.</p>
                 </div>
 

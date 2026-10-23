@@ -588,7 +588,7 @@ export function SendLightningSheet({
               onOpenChange(false);
             }}
             disabled={isSending}
-            className='rounded-full p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50'
+            className='rounded-full p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800'
           >
             <X className='h-5 w-5' />
           </button>
@@ -599,11 +599,11 @@ export function SendLightningSheet({
       <div className='flex-1 overflow-y-auto p-6'>
         <div className='mx-auto max-w-md space-y-6'>
           {/* Amount Display */}
-          <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center'>
+          <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-neutral-800 dark:bg-neutral-950'>
             <div className='text-4xl font-bold'>
               {inputMode === 'usd' ? `$${amountUSD}` : `${Number(amount).toLocaleString()} sats`}
             </div>
-            <div className='mt-2 text-lg text-gray-600'>
+            <div className='mt-2 text-lg text-gray-600 dark:text-neutral-400'>
               {inputMode === 'usd' && amount
                 ? `${Number(amount).toLocaleString()} sats`
                 : amountUSD
@@ -616,7 +616,7 @@ export function SendLightningSheet({
           <div className='space-y-3'>
             {/* Show Bitcoin address for Bitcoin payments */}
             {paymentType === 'bitcoin' && (
-              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
                 <p className='mb-1 text-xs text-muted-foreground'>Sending to Bitcoin Address</p>
                 <p className='break-all font-mono text-sm font-medium'>{invoice}</p>
               </div>
@@ -624,7 +624,7 @@ export function SendLightningSheet({
 
             {/* Show destination for Lightning address payments */}
             {parsedInput?.type === 'lightningAddress' && (
-              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
                 <p className='mb-1 text-xs text-muted-foreground'>Sending to</p>
                 <p className='text-sm font-medium'>{invoice}</p>
               </div>
@@ -632,7 +632,7 @@ export function SendLightningSheet({
 
             {/* Show invoice description for Lightning invoices, or comment for Lightning addresses */}
             {(isLightningInvoice ? invoiceDescription : comment) && (
-              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
                 <p className='mb-1 text-xs text-muted-foreground'>
                   {isLightningInvoice ? 'Description' : 'Comment'}
                 </p>
@@ -643,12 +643,14 @@ export function SendLightningSheet({
             {/* Show fees for Bitcoin payments */}
             {paymentType === 'bitcoin' &&
               bitcoinPrepareResponse?.paymentMethod?.type === 'bitcoinAddress' && (
-                <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+                <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
                   <div className='space-y-2'>
                     {sendAll && (
                       <div className='flex justify-between'>
                         <span className='text-sm text-muted-foreground'>Mode</span>
-                        <span className='text-sm font-medium text-blue-600'>Send All</span>
+                        <span className='text-sm font-medium text-blue-600 dark:text-blue-400'>
+                          Send All
+                        </span>
                       </div>
                     )}
                     <div className='flex justify-between'>
@@ -672,7 +674,7 @@ export function SendLightningSheet({
                             <span className='text-sm text-muted-foreground'>Network Fee</span>
                             <span className='text-sm font-medium'>{totalFee} sats</span>
                           </div>
-                          <div className='flex justify-between border-t border-gray-300 pt-2'>
+                          <div className='flex justify-between border-t border-gray-300 pt-2 dark:border-neutral-700'>
                             <span className='text-sm font-semibold'>
                               {sendAll ? 'Recipient receives' : 'Total'}
                             </span>
@@ -691,7 +693,7 @@ export function SendLightningSheet({
 
             {/* Show fees for BOLT11 or LNURL */}
             {(feeEstimate || lnurlPrepareResponse) && paymentType !== 'bitcoin' && (
-              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
                 <div className='flex justify-between'>
                   <span className='text-sm text-muted-foreground'>Network Fee</span>
                   <span className='text-sm font-medium'>
@@ -703,10 +705,10 @@ export function SendLightningSheet({
               </div>
             )}
 
-            <div className='rounded-lg bg-blue-50 p-4'>
+            <div className='rounded-lg bg-blue-50 p-4 dark:bg-blue-950/40'>
               <div className='flex items-start gap-2'>
-                <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600' />
-                <p className='text-sm text-blue-900'>
+                <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400' />
+                <p className='text-sm text-blue-900 dark:text-blue-400'>
                   This payment cannot be reversed. Please verify the details before confirming.
                 </p>
               </div>
@@ -737,9 +739,11 @@ export function SendLightningSheet({
       {/* Full-screen loading overlay */}
       {isSending && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50'>
-          <div className='flex flex-col items-center gap-4 rounded-2xl bg-white p-8'>
-            <Loader2 className='h-12 w-12 animate-spin text-gray-900' />
-            <p className='text-lg font-medium text-gray-900'>Processing payment...</p>
+          <div className='flex flex-col items-center gap-4 rounded-2xl bg-white p-8 dark:bg-neutral-900'>
+            <Loader2 className='h-12 w-12 animate-spin text-gray-900 dark:text-neutral-100' />
+            <p className='text-lg font-medium text-gray-900 dark:text-neutral-100'>
+              Processing payment...
+            </p>
           </div>
         </div>
       )}
@@ -756,7 +760,7 @@ export function SendLightningSheet({
           <WalletBalanceDisplay />
           <button
             onClick={() => onOpenChange(false)}
-            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+            className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <X className='h-5 w-5' />
           </button>
@@ -775,7 +779,7 @@ export function SendLightningSheet({
                 handleInvoiceChange(lightningAddress);
               }}
               placeholder='Lightning invoice, Lightning address, or onchain address'
-              className='bg-gray-50 font-mono text-sm'
+              className='bg-gray-50 font-mono text-sm dark:bg-neutral-950'
               disabled={isValidating}
               multiline={true}
               rows={4}
@@ -783,24 +787,28 @@ export function SendLightningSheet({
 
             {/* Validation Feedback */}
             {isValidating && (
-              <div className='flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3'>
-                <Loader2 className='h-4 w-4 animate-spin text-gray-600' />
-                <span className='text-sm text-gray-600'>Validating...</span>
+              <div className='flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-neutral-800 dark:bg-neutral-950'>
+                <Loader2 className='h-4 w-4 animate-spin text-gray-600 dark:text-neutral-400' />
+                <span className='text-sm text-gray-600 dark:text-neutral-400'>Validating...</span>
               </div>
             )}
 
             {/* Show detected invoice info */}
             {!isValidating && isLightningInvoice && invoiceAmount && (
-              <div className='rounded-lg border border-green-200 bg-green-50 p-3'>
+              <div className='rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-900 dark:bg-green-950/40'>
                 <div className='space-y-1'>
                   <div className='flex items-center justify-between'>
-                    <span className='text-xs text-green-700'>Invoice detected</span>
-                    <span className='text-sm font-medium text-green-900'>
+                    <span className='text-xs text-green-700 dark:text-green-400'>
+                      Invoice detected
+                    </span>
+                    <span className='text-sm font-medium text-green-900 dark:text-green-400'>
                       {invoiceAmount.toLocaleString()} sats
                     </span>
                   </div>
                   {invoiceDescription && (
-                    <p className='text-xs text-green-700'>{invoiceDescription}</p>
+                    <p className='text-xs text-green-700 dark:text-green-400'>
+                      {invoiceDescription}
+                    </p>
                   )}
                 </div>
               </div>
@@ -821,7 +829,7 @@ export function SendLightningSheet({
             <Button
               onClick={handleScanQR}
               variant='outline'
-              className='h-12 flex-1 rounded-full bg-gray-50'
+              className='h-12 flex-1 rounded-full bg-gray-50 dark:bg-neutral-950'
             >
               <Scan className='mr-2 h-5 w-5' />
               Scan QR Code
@@ -829,7 +837,7 @@ export function SendLightningSheet({
             <Button
               onClick={() => setShowContactsSheet(true)}
               variant='outline'
-              className='h-12 flex-1 rounded-full bg-gray-50'
+              className='h-12 flex-1 rounded-full bg-gray-50 dark:bg-neutral-950'
               disabled={isContactsLoading}
             >
               {isContactsLoading ? (
@@ -858,14 +866,14 @@ export function SendLightningSheet({
         <div className='flex items-center justify-between border-b p-4'>
           <button
             onClick={() => setStep('amount')}
-            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+            className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <ArrowLeft className='h-5 w-5' />
           </button>
           <h2 className='text-xl font-semibold'>Select Fee</h2>
           <button
             onClick={() => onOpenChange(false)}
-            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+            className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <X className='h-5 w-5' />
           </button>
@@ -874,7 +882,7 @@ export function SendLightningSheet({
         {/* Content */}
         <div className='flex-1 overflow-y-auto p-6'>
           <div className='mx-auto max-w-md space-y-6'>
-            <p className='text-sm text-gray-600'>
+            <p className='text-sm text-gray-600 dark:text-neutral-400'>
               Choose the speed of your Bitcoin transaction. Faster speeds have higher fees.
             </p>
 
@@ -894,14 +902,14 @@ export function SendLightningSheet({
                     onClick={() => setBitcoinFeeSpeed(speed)}
                     className={`w-full rounded-2xl border-2 p-4 text-left transition-all ${
                       isSelected
-                        ? 'border-red-600 bg-red-50'
-                        : 'border-gray-200 bg-white hover:border-gray-300'
+                        ? 'border-red-600 bg-red-50 dark:bg-red-950/40'
+                        : 'border-gray-200 bg-white hover:border-gray-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
                     }`}
                   >
                     <div className='flex items-center justify-between'>
                       <div>
                         <p className='font-semibold capitalize'>{speed}</p>
-                        <p className='text-xs text-gray-600'>
+                        <p className='text-xs text-gray-600 dark:text-neutral-400'>
                           {speed === 'slow'
                             ? '~1 hour'
                             : speed === 'medium'
@@ -911,7 +919,7 @@ export function SendLightningSheet({
                       </div>
                       <div className='text-right'>
                         <p className='font-semibold'>{totalFee} sats</p>
-                        <p className='text-xs text-gray-600'>fee</p>
+                        <p className='text-xs text-gray-600 dark:text-neutral-400'>fee</p>
                       </div>
                     </div>
                   </button>
@@ -920,7 +928,7 @@ export function SendLightningSheet({
             </div>
 
             {/* Fee Breakdown */}
-            <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 text-sm'>
+            <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 text-sm dark:border-neutral-800 dark:bg-neutral-950'>
               <p className='mb-2 font-medium'>Fee Breakdown ({bitcoinFeeSpeed})</p>
               {(() => {
                 const feeQuote = bitcoinPrepareResponse.paymentMethod.feeQuote;
@@ -933,7 +941,7 @@ export function SendLightningSheet({
                 const feeData = feeQuote[speedKey];
 
                 return (
-                  <div className='space-y-1 text-gray-600'>
+                  <div className='space-y-1 text-gray-600 dark:text-neutral-400'>
                     <div className='flex justify-between'>
                       <span>Network fee:</span>
                       <span>{feeData.l1BroadcastFeeSat} sats</span>
@@ -942,7 +950,7 @@ export function SendLightningSheet({
                       <span>Swap service fee:</span>
                       <span>{feeData.userFeeSat} sats</span>
                     </div>
-                    <div className='mt-2 flex justify-between border-t border-gray-300 pt-2 font-medium text-gray-900'>
+                    <div className='mt-2 flex justify-between border-t border-gray-300 pt-2 font-medium text-gray-900 dark:border-neutral-700 dark:text-neutral-100'>
                       <span>Total fee:</span>
                       <span>{feeData.l1BroadcastFeeSat + feeData.userFeeSat} sats</span>
                     </div>
@@ -966,7 +974,7 @@ export function SendLightningSheet({
       <div className='flex items-center justify-between border-b p-4'>
         <button
           onClick={() => setStep('amount')}
-          className='rounded-full p-2 transition-colors hover:bg-gray-100 disabled:opacity-50'
+          className='rounded-full p-2 transition-colors hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-neutral-800'
           disabled={isPreparingPayment}
         >
           <ArrowLeft className='h-5 w-5' />
@@ -974,7 +982,7 @@ export function SendLightningSheet({
         <h2 className='text-xl font-semibold'>Add Comment</h2>
         <button
           onClick={() => onOpenChange(false)}
-          className='rounded-full p-2 transition-colors hover:bg-gray-100 disabled:opacity-50'
+          className='rounded-full p-2 transition-colors hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-neutral-800'
           disabled={isPreparingPayment}
         >
           <X className='h-5 w-5' />
@@ -990,10 +998,10 @@ export function SendLightningSheet({
               onChange={(e) => setComment(e.target.value)}
               placeholder={`Add a comment (max ${commentAllowed} characters)`}
               maxLength={commentAllowed}
-              className='resize-none bg-gray-50'
+              className='resize-none bg-gray-50 dark:bg-neutral-950'
               rows={4}
             />
-            <div className='flex justify-between text-xs text-gray-600'>
+            <div className='flex justify-between text-xs text-gray-600 dark:text-neutral-400'>
               <span>Optional message</span>
               <span>
                 {comment.length}/{commentAllowed}
@@ -1032,7 +1040,7 @@ export function SendLightningSheet({
         <div className='flex items-center justify-between p-4 pt-0'>
           <button
             onClick={() => setStep('input')}
-            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+            className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <ArrowLeft className='h-5 w-5' />
           </button>
@@ -1042,7 +1050,7 @@ export function SendLightningSheet({
               resetForm();
               onOpenChange(false);
             }}
-            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+            className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <X className='h-5 w-5' />
           </button>
@@ -1050,12 +1058,14 @@ export function SendLightningSheet({
 
         <div className='flex-1 overflow-y-auto p-6'>
           <div className='mx-auto max-w-md space-y-6'>
-            <div className='rounded-2xl border border-amber-200 bg-amber-50 p-5'>
+            <div className='rounded-2xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-900 dark:bg-amber-950/40'>
               <div className='mb-3 flex items-start gap-3'>
-                <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-700' />
+                <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-700 dark:text-amber-400' />
                 <div>
-                  <h3 className='font-semibold text-amber-950'>Stablecoin sends are not ready</h3>
-                  <p className='mt-1 text-sm text-amber-900'>
+                  <h3 className='font-semibold text-amber-950 dark:text-amber-100'>
+                    Stablecoin sends are not ready
+                  </h3>
+                  <p className='mt-1 text-sm text-amber-900 dark:text-amber-400'>
                     Evento recognized this as a cross-chain stablecoin address, but sending USDT or
                     USDC from the wallet is not available yet.
                   </p>
@@ -1063,24 +1073,24 @@ export function SendLightningSheet({
               </div>
             </div>
 
-            <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+            <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
               <p className='mb-1 text-xs text-muted-foreground'>Detected address</p>
               <p className='break-all font-mono text-sm font-medium'>
                 {crossChainInput?.address || invoice}
               </p>
               <div className='mt-3 flex flex-wrap gap-2'>
-                <span className='rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700'>
+                <span className='rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700 dark:bg-neutral-900 dark:text-neutral-300'>
                   {addressFamily}
                 </span>
                 {chainLabel && (
-                  <span className='rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700'>
+                  <span className='rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700 dark:bg-neutral-900 dark:text-neutral-300'>
                     {chainLabel}
                   </span>
                 )}
               </div>
             </div>
 
-            <p className='text-sm text-gray-600'>
+            <p className='text-sm text-gray-600 dark:text-neutral-400'>
               We need route selection, quote expiry, fee display, and slippage confirmation before
               this can be sent safely.
             </p>
@@ -1095,7 +1105,7 @@ export function SendLightningSheet({
                   onOpenChange(false);
                 }}
                 variant='outline'
-                className='h-12 w-full rounded-full bg-gray-50'
+                className='h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
               >
                 Done
               </Button>
@@ -1129,7 +1139,7 @@ export function SendLightningSheet({
             <SheetWithDetentFull.Backdrop />
             <SheetWithDetentFull.Content>
               <div className='my-4 flex items-center'>
-                <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+                <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
               </div>
               <VisuallyHidden.Root asChild>
                 <SheetWithDetentFull.Title>Send Payment</SheetWithDetentFull.Title>

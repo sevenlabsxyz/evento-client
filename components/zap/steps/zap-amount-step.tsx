@@ -45,7 +45,7 @@ export function ZapAmountStep({
           <WalletBalanceDisplay />
           <button
             onClick={onClose}
-            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+            className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <X className='h-5 w-5' />
           </button>
@@ -56,7 +56,7 @@ export function ZapAmountStep({
       <div className='flex-1 overflow-y-auto px-4 pb-4 pt-0'>
         <div className='mx-auto max-w-md space-y-6'>
           {/* Recipient Card */}
-          <div className='flex items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          <div className='flex items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
             <UserAvatar
               user={{
                 name: recipient.name,
@@ -68,11 +68,15 @@ export function ZapAmountStep({
               className='flex-shrink-0'
             />
             <div className='min-w-0 flex-1'>
-              <p className='truncate font-semibold text-gray-900'>{recipient.name}</p>
+              <p className='truncate font-semibold text-gray-900 dark:text-neutral-100'>
+                {recipient.name}
+              </p>
               {recipient.username && (
-                <p className='truncate text-sm text-gray-500'>@{recipient.username}</p>
+                <p className='truncate text-sm text-gray-500 dark:text-neutral-400'>
+                  @{recipient.username}
+                </p>
               )}
-              <p className='truncate font-mono text-xs text-gray-400'>
+              <p className='truncate font-mono text-xs text-gray-400 dark:text-neutral-500'>
                 {recipient.lightningAddress}
               </p>
             </div>
@@ -80,7 +84,7 @@ export function ZapAmountStep({
 
           {/* Quick Amount Buttons */}
           <div className='space-y-3'>
-            <p className='text-sm font-medium text-gray-600'>Select amount</p>
+            <p className='text-sm font-medium text-gray-600 dark:text-neutral-400'>Select amount</p>
             <div className='grid grid-cols-3 gap-3'>
               {quickAmounts.map((amount) => (
                 <motion.button
@@ -88,10 +92,10 @@ export function ZapAmountStep({
                   onClick={() => onSelectAmount(amount)}
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                  className={`flex h-14 items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 font-semibold transition-all ${
+                  className={`flex h-14 items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 font-semibold transition-all dark:border-neutral-800 dark:bg-neutral-950 ${
                     selectedAmount === amount
-                      ? 'border-red-500 bg-red-50 text-red-600'
-                      : 'hover:border-gray-100'
+                      ? 'border-red-500 bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400'
+                      : 'hover:border-gray-100 dark:hover:border-neutral-700'
                   }`}
                 >
                   {amount.toLocaleString()}
@@ -101,7 +105,7 @@ export function ZapAmountStep({
                 onClick={onCustomClick}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                className='flex h-14 items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 font-semibold transition-all hover:border-gray-100'
+                className='flex h-14 items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 font-semibold transition-all hover:border-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700'
               >
                 Custom
               </motion.button>
@@ -110,18 +114,24 @@ export function ZapAmountStep({
 
           {/* Selected Amount Display */}
           {selectedAmount && (
-            <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 text-center'>
-              <p className='text-3xl font-bold text-gray-900'>
+            <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 text-center dark:border-neutral-800 dark:bg-neutral-950'>
+              <p className='text-3xl font-bold text-gray-900 dark:text-neutral-100'>
                 {selectedAmount.toLocaleString()} sats
               </p>
-              {amountUSD && <p className='mt-1 text-sm text-gray-500'>≈ ${amountUSD} USD</p>}
+              {amountUSD && (
+                <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
+                  ≈ ${amountUSD} USD
+                </p>
+              )}
             </div>
           )}
 
           {/* Comment Field (shown when recipient allows comments) */}
           {payRequest && payRequest.commentAllowed > 0 && (
             <div className='space-y-2'>
-              <label className='text-sm font-medium text-gray-600'>Add a message (optional)</label>
+              <label className='text-sm font-medium text-gray-600 dark:text-neutral-400'>
+                Add a message (optional)
+              </label>
               <textarea
                 value={comment}
                 onChange={(e) =>
@@ -130,9 +140,9 @@ export function ZapAmountStep({
                 placeholder='Say something nice...'
                 maxLength={payRequest.commentAllowed}
                 rows={2}
-                className='w-full resize-none rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm transition-colors focus:border-red-300 focus:outline-none focus:ring-1 focus:ring-red-300'
+                className='w-full resize-none rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm transition-colors focus:border-red-300 focus:outline-none focus:ring-1 focus:ring-red-300 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-red-800 dark:focus:ring-red-800'
               />
-              <p className='text-right text-xs text-gray-400'>
+              <p className='text-right text-xs text-gray-400 dark:text-neutral-500'>
                 {comment.length}/{payRequest.commentAllowed}
               </p>
             </div>

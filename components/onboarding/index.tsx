@@ -268,11 +268,19 @@ export const UserOnboardingFlow = ({
         <div className='mb-4 flex items-center justify-between md:justify-center'>
           <Link
             href='/'
-            className='flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md'
+            className='flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900'
           >
-            <Image src='/assets/img/evento-sublogo.svg' alt='Evento' height='28' width='28' />
+            <Image
+              src='/assets/img/evento-sublogo.svg'
+              alt='Evento'
+              height='28'
+              width='28'
+              className='dark:invert'
+            />
           </Link>
-          <span className='text-sm text-gray-400 md:hidden'>Step {step} of 5</span>
+          <span className='text-sm text-gray-400 dark:text-neutral-400 md:hidden'>
+            Step {step} of 5
+          </span>
         </div>
         <StepIndicator currentStep={step} totalSteps={5} />
       </div>
@@ -312,12 +320,12 @@ export const UserOnboardingFlow = ({
       </div>
 
       {/* Footer with buttons */}
-      <div className='flex-shrink-0 border-t border-gray-100 bg-white px-4 pb-6 pt-4 md:border-t-0 md:px-0'>
+      <div className='flex-shrink-0 border-t border-gray-100 bg-white px-4 pb-6 pt-4 dark:border-neutral-800 dark:bg-neutral-900 md:border-t-0 md:px-0'>
         <div className='flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:gap-3'>
           <Button
             type='button'
             variant='ghost'
-            className='h-12 w-full flex-shrink-0 text-gray-500 hover:bg-gray-100 hover:text-gray-900 sm:mr-auto sm:w-auto'
+            className='h-12 w-full flex-shrink-0 text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100 sm:mr-auto sm:w-auto'
             disabled={isUpdating || isLoggingOut}
             onClick={handleExit}
           >
@@ -340,7 +348,7 @@ export const UserOnboardingFlow = ({
           )}
           <Button
             disabled={isSaveButtonDisabled || isUpdating || isLoggingOut}
-            className='h-12 w-full flex-grow bg-red-600 hover:bg-red-700 sm:w-auto'
+            className='h-12 w-full flex-grow bg-red-600 hover:bg-red-700 dark:text-white sm:w-auto'
             onClick={() => updateUserFn({ name, username, image: uploadedImg })}
           >
             {updating ? (

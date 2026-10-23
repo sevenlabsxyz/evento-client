@@ -46,16 +46,16 @@ export default function EventTypeSheet({
                   onClick={() => handleTypeSelect('rsvp')}
                   className={`w-full rounded-xl border-2 p-4 transition-all ${
                     currentType === 'rsvp'
-                      ? 'border-red-500 bg-red-50'
-                      : 'border-gray-200 bg-white hover:border-gray-300'
+                      ? 'border-red-500 bg-red-50 dark:bg-red-950/40'
+                      : 'border-gray-200 bg-white hover:border-gray-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
                   }`}
                 >
                   <div className='flex items-start gap-4'>
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                         currentType === 'rsvp'
-                          ? 'bg-red-500 text-white'
-                          : 'bg-gray-100 text-gray-600'
+                          ? 'bg-red-500 text-white dark:bg-red-600'
+                          : 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'
                       }`}
                     >
                       <UserCheck className='h-5 w-5' />
@@ -63,20 +63,26 @@ export default function EventTypeSheet({
                     <div className='flex-1 text-left'>
                       <h3
                         className={`mb-1 font-semibold ${
-                          currentType === 'rsvp' ? 'text-red-900' : 'text-gray-900'
+                          currentType === 'rsvp'
+                            ? 'text-red-900 dark:text-red-400'
+                            : 'text-gray-900 dark:text-neutral-100'
                         }`}
                       >
                         RSVP
                       </h3>
                       <p
                         className={`text-sm ${
-                          currentType === 'rsvp' ? 'text-red-700' : 'text-gray-600'
+                          currentType === 'rsvp'
+                            ? 'text-red-700 dark:text-red-400'
+                            : 'text-gray-600 dark:text-neutral-400'
                         }`}
                       >
                         Guests RSVP directly.
                       </p>
                     </div>
-                    {currentType === 'rsvp' && <Check className='h-5 w-5 text-red-600' />}
+                    {currentType === 'rsvp' && (
+                      <Check className='h-5 w-5 text-red-600 dark:text-red-400' />
+                    )}
                   </div>
                 </button>
 
@@ -84,16 +90,16 @@ export default function EventTypeSheet({
                   onClick={() => handleTypeSelect('registration')}
                   className={`w-full rounded-xl border-2 p-4 transition-all ${
                     currentType === 'registration'
-                      ? 'border-red-500 bg-red-50'
-                      : 'border-gray-200 bg-white hover:border-gray-300'
+                      ? 'border-red-500 bg-red-50 dark:bg-red-950/40'
+                      : 'border-gray-200 bg-white hover:border-gray-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
                   }`}
                 >
                   <div className='flex items-start gap-4'>
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                         currentType === 'registration'
-                          ? 'bg-red-500 text-white'
-                          : 'bg-gray-100 text-gray-600'
+                          ? 'bg-red-500 text-white dark:bg-red-600'
+                          : 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'
                       }`}
                     >
                       <Ticket className='h-5 w-5' />
@@ -101,20 +107,26 @@ export default function EventTypeSheet({
                     <div className='flex-1 text-left'>
                       <h3
                         className={`mb-1 font-semibold ${
-                          currentType === 'registration' ? 'text-red-900' : 'text-gray-900'
+                          currentType === 'registration'
+                            ? 'text-red-900 dark:text-red-400'
+                            : 'text-gray-900 dark:text-neutral-100'
                         }`}
                       >
                         Registration
                       </h3>
                       <p
                         className={`text-sm ${
-                          currentType === 'registration' ? 'text-red-700' : 'text-gray-600'
+                          currentType === 'registration'
+                            ? 'text-red-700 dark:text-red-400'
+                            : 'text-gray-600 dark:text-neutral-400'
                         }`}
                       >
                         Guests submit registration before attending.
                       </p>
                     </div>
-                    {currentType === 'registration' && <Check className='h-5 w-5 text-red-600' />}
+                    {currentType === 'registration' && (
+                      <Check className='h-5 w-5 text-red-600 dark:text-red-400' />
+                    )}
                   </div>
                 </button>
               </div>

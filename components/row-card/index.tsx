@@ -27,29 +27,35 @@ export default function RowCard({
 
   return (
     <Card
-      className={`w-full max-w-md rounded-3xl border border-gray-200 bg-gray-50 shadow-sm transition-all duration-200 ${isClickable ? 'cursor-pointer hover:shadow-md active:scale-[0.98]' : ''} `}
+      className={`w-full max-w-md rounded-3xl border border-gray-200 bg-gray-50 shadow-sm transition-all duration-200 dark:border-neutral-800 dark:bg-neutral-950 ${isClickable ? 'cursor-pointer hover:shadow-md active:scale-[0.98] dark:hover:bg-neutral-900' : ''} `}
       onClick={handleClick}
     >
       <div className='flex items-center gap-4 px-6 py-6'>
         {/* Icon */}
         {icon && (
           <div className='flex-shrink-0'>
-            <div className='flex h-8 w-8 items-center justify-center text-gray-700'>{icon}</div>
+            <div className='flex h-8 w-8 items-center justify-center text-gray-700 dark:text-neutral-300'>
+              {icon}
+            </div>
           </div>
         )}
 
         {/* Content */}
         <div className='min-w-0 flex-1'>
-          <h3 className='mb-1 text-lg font-bold leading-4 text-gray-900'>{title}</h3>
+          <h3 className='mb-1 text-lg font-bold leading-4 text-gray-900 dark:text-neutral-100'>
+            {title}
+          </h3>
           {subtitle && (
-            <p className='pt-1.5 text-base leading-4 leading-relaxed text-gray-500'>{subtitle}</p>
+            <p className='pt-1.5 text-base leading-4 leading-relaxed text-gray-500 dark:text-neutral-400'>
+              {subtitle}
+            </p>
           )}
         </div>
 
         {/* Chevron right - only show if clickable */}
         {isClickable && (
           <div className='flex-shrink-0'>
-            <ChevronRight className='h-5 w-5 text-gray-400' />
+            <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
           </div>
         )}
       </div>

@@ -23,7 +23,7 @@ export function ShortcutKey({ keys, className, withBg = false }: ShortcutKeyProp
           key={index}
           className={cn(
             'min-w-[1.25rem] px-1 py-0.5 text-center font-mono text-[0.625rem]',
-            withBg && 'rounded border bg-muted'
+            withBg && 'rounded border bg-muted dark:border-neutral-700 dark:bg-neutral-800'
           )}
         >
           {keyMap[key.toLowerCase()] || key}

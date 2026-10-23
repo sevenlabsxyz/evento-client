@@ -107,7 +107,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
             animate='visible'
             exit='exit'
             transition={barTransition}
-            className='mx-3 mb-1 flex w-fit items-center gap-2 rounded-full border border-border/40 bg-foreground p-1.5 shadow-lg'
+            className='mx-3 mb-1 flex w-fit items-center gap-2 rounded-full border border-border/40 bg-foreground p-1.5 shadow-lg dark:border-neutral-700/70 dark:bg-neutral-900 dark:shadow-black/40'
           >
             {NAV_ITEMS.map((tab, index) => {
               const isSelected = selected === index;
@@ -120,7 +120,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                     onClick={() => router.push(tab.path)}
                     whileTap={{ scale: 0.92 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                    className='relative flex items-center justify-center rounded-xl bg-primary-foreground px-5 py-2.5 text-foreground shadow-sm'
+                    className='relative flex items-center justify-center rounded-xl bg-primary-foreground px-5 py-2.5 text-foreground shadow-sm dark:bg-neutral-100 dark:text-neutral-900 dark:shadow-black/30'
                   >
                     <Plus size={24} strokeWidth={2.5} />
                   </motion.button>
@@ -141,19 +141,19 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                     className={cn(
                       'relative flex items-center rounded-full px-3 py-2 text-base font-medium transition-colors duration-300',
                       isSelected
-                        ? 'bg-muted-foreground/20 text-primary-foreground'
-                        : 'text-muted-foreground hover:text-primary-foreground/80'
+                        ? 'bg-muted-foreground/20 text-primary-foreground dark:bg-neutral-800 dark:text-neutral-100'
+                        : 'text-muted-foreground hover:text-primary-foreground/80 dark:text-neutral-400 dark:hover:text-neutral-100'
                     )}
                   >
                     <Avatar className='h-7 w-7'>
                       <AvatarImage src={user?.image} alt={user?.name || 'Me'} />
-                      <AvatarFallback className='bg-muted'>
+                      <AvatarFallback className='bg-muted dark:bg-neutral-700'>
                         <Image
                           src='/assets/img/evento-sublogo.svg'
                           alt='Evento'
                           width={24}
                           height={24}
-                          className='h-full w-full p-0.5'
+                          className='h-full w-full p-0.5 dark:invert'
                         />
                       </AvatarFallback>
                     </Avatar>
@@ -189,8 +189,8 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                   className={cn(
                     'relative flex items-center rounded-full py-2.5 text-base font-medium transition-colors duration-300',
                     isSelected
-                      ? 'bg-muted-foreground/20 text-primary-foreground'
-                      : 'text-muted-foreground hover:text-primary-foreground/80'
+                      ? 'bg-muted-foreground/20 text-primary-foreground dark:bg-neutral-800 dark:text-neutral-100'
+                      : 'text-muted-foreground hover:text-primary-foreground/80 dark:text-neutral-400 dark:hover:text-neutral-100'
                   )}
                 >
                   <Icon size={24} />

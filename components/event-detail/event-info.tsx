@@ -79,16 +79,18 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     if (currentStatus === 'maybe')
       return {
         label: 'Maybe',
-        className: 'bg-black hover:bg-gray-900 text-white',
+        className:
+          'bg-black dark:bg-neutral-100 hover:bg-gray-900 dark:hover:bg-neutral-200 text-white dark:text-neutral-900',
       };
     if (currentStatus === 'no')
       return {
         label: 'Not going',
-        className: 'bg-gray-400 hover:bg-gray-400 text-white',
+        className:
+          'bg-gray-400 dark:bg-neutral-500 hover:bg-gray-400 dark:hover:bg-neutral-500 text-white',
       };
     return {
       label: 'RSVP',
-      className: 'bg-red-500 hover:bg-red-600 text-white',
+      className: 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white',
     };
   }, [currentStatus, shouldDisableRsvpButton]);
 
@@ -308,7 +310,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   const dateTimeText = [startDate?.fullDate, dateTimeSubtitle].filter(Boolean).join('\n');
 
   const detailModuleBaseClassName =
-    'flex h-[2.7rem] w-[2.7rem] shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-50';
+    'flex h-[2.7rem] w-[2.7rem] shrink-0 items-center justify-center rounded-full border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-950';
 
   return (
     <>
@@ -323,7 +325,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               />
             </div>
           )}
-          <span className='text-2xl font-bold text-black'>{event.title}</span>
+          <span className='text-2xl font-bold text-black dark:text-neutral-100'>{event.title}</span>
 
           {/* Date + Time */}
           <button
@@ -332,22 +334,24 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
             className='group flex w-full items-center gap-4 text-left'
           >
             <div className={`${detailModuleBaseClassName} flex-col`}>
-              <span className='text-[9px] font-semibold uppercase leading-none text-gray-500'>
+              <span className='text-[9px] font-semibold uppercase leading-none text-gray-500 dark:text-neutral-400'>
                 {startDate?.monthShort}
               </span>
-              <span className='text-[15px] font-bold leading-none text-gray-900'>
+              <span className='text-[15px] font-bold leading-none text-gray-900 dark:text-neutral-100'>
                 {startDate?.day}
               </span>
             </div>
             <div className='min-w-0 flex-1'>
               <div className='flex flex-col'>
-                <span className='font-semibold text-gray-900 group-hover:underline'>
+                <span className='font-semibold text-gray-900 group-hover:underline dark:text-neutral-100'>
                   {startDate?.fullDate}
                 </span>
-                <span className='text-sm text-gray-500'>{dateTimeSubtitle}</span>
+                <span className='text-sm text-gray-500 dark:text-neutral-400'>
+                  {dateTimeSubtitle}
+                </span>
               </div>
             </div>
-            <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600' />
+            <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600 dark:text-neutral-500 dark:group-hover:text-neutral-400' />
           </button>
 
           {/* Location */}
@@ -358,22 +362,24 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               className='group flex w-full items-center gap-4 text-left'
             >
               <div className={detailModuleBaseClassName}>
-                <MapPin className='h-[18px] w-[18px] text-gray-600' />
+                <MapPin className='h-[18px] w-[18px] text-gray-600 dark:text-neutral-400' />
               </div>
               <div className='min-w-0 flex-1'>
                 <div className='flex flex-col'>
                   <span
-                    className={`font-semibold ${isTBDLocation ? 'text-gray-500' : 'text-gray-900 group-hover:underline'}`}
+                    className={`font-semibold ${isTBDLocation ? 'text-gray-500 dark:text-neutral-400' : 'text-gray-900 group-hover:underline dark:text-neutral-100'}`}
                   >
                     {locationDisplay.primary}
                   </span>
                   {locationDisplay.secondary && (
-                    <span className='text-sm text-gray-500'>{locationDisplay.secondary}</span>
+                    <span className='text-sm text-gray-500 dark:text-neutral-400'>
+                      {locationDisplay.secondary}
+                    </span>
                   )}
                 </div>
               </div>
               {!isTBDLocation && (
-                <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600' />
+                <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600 dark:text-neutral-500 dark:group-hover:text-neutral-400' />
               )}
             </button>
           )}
@@ -388,7 +394,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                 <button
                   type='button'
                   onClick={handlePendingClick}
-                  className='flex h-16 flex-col items-center justify-center rounded-full bg-yellow-100 text-yellow-700 transition-colors hover:bg-yellow-200'
+                  className='flex h-16 flex-col items-center justify-center rounded-full bg-yellow-100 text-yellow-700 transition-colors hover:bg-yellow-200 dark:bg-yellow-950/60 dark:text-yellow-400 dark:hover:bg-yellow-900/60'
                 >
                   <Clock className='mb-1 h-5 w-5' />
                   <span className='text-xs font-medium'>Pending</span>
@@ -397,7 +403,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                 <button
                   type='button'
                   onClick={handleDeniedClick}
-                  className='flex h-16 flex-col items-center justify-center rounded-full bg-red-100 text-red-700 transition-colors hover:bg-red-200'
+                  className='flex h-16 flex-col items-center justify-center rounded-full bg-red-100 text-red-700 transition-colors hover:bg-red-200 dark:bg-red-950/60 dark:text-red-400 dark:hover:bg-red-900/60'
                 >
                   <XCircle className='mb-1 h-5 w-5' />
                   <span className='text-xs font-medium'>Denied</span>
@@ -416,7 +422,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
             </div>
 
             {shouldShowCapacityInfo && spotsRemaining !== null && (
-              <p className='text-center text-sm text-gray-500'>
+              <p className='text-center text-sm text-gray-500 dark:text-neutral-400'>
                 {isEventFull && isYesRsvp
                   ? 'No more spots left'
                   : `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`}

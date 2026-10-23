@@ -125,9 +125,9 @@ export default function GuestsSheet({
 
             <div className='flex items-center gap-2'>
               <div className='relative flex-1'>
-                <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
+                <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400 dark:text-neutral-500' />
                 <input
-                  className='w-full rounded-full border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500'
+                  className='w-full rounded-full border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-400'
                   placeholder='Search guests'
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
@@ -136,7 +136,7 @@ export default function GuestsSheet({
               <Button
                 variant='outline'
                 size='sm'
-                className='h-12 rounded-full border-gray-200 bg-gray-50 px-4'
+                className='h-12 rounded-full border-gray-200 bg-gray-50 px-4 dark:border-neutral-800 dark:bg-neutral-950'
                 disabled={batchRecipientSummary.eligibleRecipients.length === 0}
                 onClick={handleOpenBatchZap}
               >
@@ -150,10 +150,10 @@ export default function GuestsSheet({
       >
         {listForTab.length === 0 ? (
           <div className='flex flex-col items-center justify-center py-16 text-center'>
-            <div className='mb-4 rounded-2xl bg-gray-100 p-4 text-gray-400'>
+            <div className='mb-4 rounded-2xl bg-gray-100 p-4 text-gray-400 dark:bg-neutral-800 dark:text-neutral-500'>
               <Search className='h-6 w-6' />
             </div>
-            <h3 className='mb-1 text-base font-semibold text-gray-900'>
+            <h3 className='mb-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
               {searchText.trim()
                 ? 'No matching guests'
                 : activeTab === 'yes'
@@ -162,7 +162,7 @@ export default function GuestsSheet({
                     ? 'No guests marked as Maybe'
                     : 'No guests marked as Not Going'}
             </h3>
-            <p className='mb-4 max-w-xs text-sm text-gray-500'>
+            <p className='mb-4 max-w-xs text-sm text-gray-500 dark:text-neutral-400'>
               {searchText.trim()
                 ? 'Try a different name or username, or clear your search.'
                 : 'Once guests respond, they will appear here.'}
@@ -178,7 +178,7 @@ export default function GuestsSheet({
             {listForTab.map((rsvp, index) => (
               <div
                 key={rsvp.id ?? `${rsvp.user_id ?? 'guest'}-${rsvp.status}-${index}`}
-                className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-3 transition-colors hover:bg-gray-100'
+                className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-3 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
               >
                 <button
                   type='button'
@@ -198,10 +198,10 @@ export default function GuestsSheet({
                     size='base'
                   />
                   <div className='min-w-0 flex-1'>
-                    <div className='truncate font-medium text-gray-900'>
+                    <div className='truncate font-medium text-gray-900 dark:text-neutral-100'>
                       @{rsvp.user_details?.username || 'guest'}
                     </div>
-                    <div className='truncate text-sm text-gray-500'>
+                    <div className='truncate text-sm text-gray-500 dark:text-neutral-400'>
                       {rsvp.user_details?.name || 'Guest'}
                     </div>
                   </div>

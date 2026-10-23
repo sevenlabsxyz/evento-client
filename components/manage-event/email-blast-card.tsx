@@ -26,18 +26,18 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
       case 'delivered':
       case 'sent':
       case 'completed':
-        return 'text-green-600 bg-green-100';
+        return 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-950/60';
       case 'pending':
       case 'sending':
-        return 'text-yellow-600 bg-yellow-100';
+        return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-950/60';
       case 'scheduled':
-        return 'text-blue-600 bg-blue-100';
+        return 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-950/60';
       case 'failed':
-        return 'text-red-600 bg-red-100';
+        return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-950/60';
       case 'cancelled':
-        return 'text-gray-700 bg-gray-200';
+        return 'text-gray-700 dark:text-neutral-300 bg-gray-200 dark:bg-neutral-700';
       default:
-        return 'text-gray-600 bg-gray-100';
+        return 'text-gray-600 dark:text-neutral-400 bg-gray-100 dark:bg-neutral-800';
     }
   };
 
@@ -62,13 +62,17 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
 
   return (
     <div
-      className='cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition-colors hover:border-gray-300'
+      className='cursor-pointer rounded-xl border border-gray-200 bg-white p-4 transition-colors hover:border-gray-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
       onClick={() => onClick(blast)}
     >
       <div className='mb-3 flex items-start justify-between'>
         <div className='flex-1'>
-          <h3 className='mb-1 font-semibold text-gray-900'>{blast.subject || 'No subject'}</h3>
-          <p className='text-sm text-gray-500'>To: {blast.recipientCount ?? 0} recipients</p>
+          <h3 className='mb-1 font-semibold text-gray-900 dark:text-neutral-100'>
+            {blast.subject || 'No subject'}
+          </h3>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>
+            To: {blast.recipientCount ?? 0} recipients
+          </p>
         </div>
         <span
           className={`rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(blast.status)}`}
@@ -77,7 +81,7 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
         </span>
       </div>
 
-      <div className='text-sm text-gray-500'>
+      <div className='text-sm text-gray-500 dark:text-neutral-400'>
         <div>
           {blast.status === 'scheduled' && blast.scheduled_for ? (
             <>
@@ -107,21 +111,27 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
       </div>
 
       {/* Delivery Stats */}
-      <div className='mt-3 flex items-center gap-4 border-t border-gray-100 pt-3'>
+      <div className='mt-3 flex items-center gap-4 border-t border-gray-100 pt-3 dark:border-neutral-800'>
         <div className='flex items-center gap-1'>
           <div className='h-2 w-2 rounded-full bg-green-500'></div>
-          <span className='text-xs text-gray-600'>{blast.delivered ?? 0} delivered</span>
+          <span className='text-xs text-gray-600 dark:text-neutral-400'>
+            {blast.delivered ?? 0} delivered
+          </span>
         </div>
         {(blast.failed ?? 0) > 0 && (
           <div className='flex items-center gap-1'>
-            <div className='h-2 w-2 rounded-full bg-red-500'></div>
-            <span className='text-xs text-gray-600'>{blast.failed ?? 0} failed</span>
+            <div className='h-2 w-2 rounded-full bg-red-500 dark:bg-red-600'></div>
+            <span className='text-xs text-gray-600 dark:text-neutral-400'>
+              {blast.failed ?? 0} failed
+            </span>
           </div>
         )}
         {(blast.pending ?? 0) > 0 && (
           <div className='flex items-center gap-1'>
             <div className='h-2 w-2 rounded-full bg-yellow-500'></div>
-            <span className='text-xs text-gray-600'>{blast.pending ?? 0} pending</span>
+            <span className='text-xs text-gray-600 dark:text-neutral-400'>
+              {blast.pending ?? 0} pending
+            </span>
           </div>
         )}
       </div>

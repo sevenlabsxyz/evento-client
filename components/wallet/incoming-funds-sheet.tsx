@@ -180,7 +180,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
             <SheetWithDetent.Backdrop />
             <SheetWithDetent.Content className='min-h-max'>
               <div className='my-4 flex items-center'>
-                <SheetWithDetent.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+                <SheetWithDetent.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
               </div>
               <VisuallyHidden.Root asChild>
                 <SheetWithDetent.Title>Incoming Funds</SheetWithDetent.Title>
@@ -192,7 +192,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                   <h2 className='text-xl font-semibold'>Incoming Funds</h2>
                   <button
                     onClick={() => onOpenChange(false)}
-                    className='rounded-full p-2 transition-colors hover:bg-gray-100'
+                    className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
                   >
                     <X className='h-5 w-5' />
                   </button>
@@ -204,18 +204,22 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                     // Loading State
                     <div className='flex items-center justify-center py-12'>
                       <div className='text-center'>
-                        <Loader2 className='mx-auto h-8 w-8 animate-spin text-gray-400' />
-                        <p className='mt-4 text-sm text-gray-600'>Loading...</p>
+                        <Loader2 className='mx-auto h-8 w-8 animate-spin text-gray-400 dark:text-neutral-500' />
+                        <p className='mt-4 text-sm text-gray-600 dark:text-neutral-400'>
+                          Loading...
+                        </p>
                       </div>
                     </div>
                   ) : deposits.length === 0 ? (
                     // Empty State
                     <div className='flex flex-col items-center justify-center py-12'>
-                      <div className='rounded-full bg-green-100 p-4'>
-                        <CheckCircle2 className='h-12 w-12 text-green-600' />
+                      <div className='rounded-full bg-green-100 p-4 dark:bg-green-950/60'>
+                        <CheckCircle2 className='h-12 w-12 text-green-600 dark:text-green-400' />
                       </div>
-                      <h3 className='mt-4 text-lg font-semibold text-gray-900'>All Set!</h3>
-                      <p className='mt-2 max-w-sm text-center text-sm text-gray-600'>
+                      <h3 className='mt-4 text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+                        All Set!
+                      </h3>
+                      <p className='mt-2 max-w-sm text-center text-sm text-gray-600 dark:text-neutral-400'>
                         No pending funds. We automatically swap Bitcoin to Lightning when fees are
                         low.
                       </p>
@@ -224,7 +228,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                     // Deposits List
                     <div className='space-y-4'>
                       {/* Info Banner */}
-                      <div className='rounded-xl border border-gray-200 bg-gray-50 p-4'>
+                      <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
                         <div className='flex items-start gap-3'>
                           <ChevronsRight className='mt-0.5 h-7 w-7 flex-shrink-0 text-muted-foreground/80' />
                           <p className='text-sm text-muted-foreground'>
@@ -239,34 +243,34 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                       {deposits.map((deposit) => (
                         <div
                           key={`${deposit.txid}:${deposit.vout}`}
-                          className='rounded-xl border border-gray-200 bg-gray-50 p-4'
+                          className='rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'
                         >
                           {/* Deposit Header */}
                           <div className='flex items-center justify-between'>
                             <div className='flex-1'>
                               <div className='flex items-center gap-2'>
-                                <h3 className='font-semibold text-gray-900'>
+                                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
                                   {formatAmount(deposit.amountSats)} sats
                                 </h3>
                                 {deposit.claimError ? (
-                                  <span className='inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange-700'>
+                                  <span className='inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange-700 dark:border-orange-900 dark:bg-orange-950/40 dark:text-orange-400'>
                                     <XCircle className='h-3 w-3' />
                                     Needs action
                                   </span>
                                 ) : (
-                                  <span className='inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2 py-0.5 text-xs font-medium text-gray-700'>
+                                  <span className='inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2 py-0.5 text-xs font-medium text-gray-700 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300'>
                                     <Loader2 className='h-3 w-3 animate-spin' />
                                     Pending
                                   </span>
                                 )}
                               </div>
-                              <div className='mt-1 flex items-center gap-1 font-mono text-xs text-gray-600'>
+                              <div className='mt-1 flex items-center gap-1 font-mono text-xs text-gray-600 dark:text-neutral-400'>
                                 <span>{truncateTxid(deposit.txid)}</span>
                                 <a
                                   href={`https://mempool.space/tx/${deposit.txid}`}
                                   target='_blank'
                                   rel='noopener noreferrer'
-                                  className='text-blue-600 hover:text-blue-700'
+                                  className='text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-400'
                                 >
                                   <ExternalLink className='h-3 w-3' />
                                 </a>
@@ -299,14 +303,14 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
 
                           {/* Error Info */}
                           {deposit.claimError && (
-                            <div className='mt-3 rounded-lg border border-orange-200 bg-orange-50 p-3'>
+                            <div className='mt-3 rounded-lg border border-orange-200 bg-orange-50 p-3 dark:border-orange-900 dark:bg-orange-950/40'>
                               <div className='flex items-start gap-2'>
-                                <XCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-orange-600' />
+                                <XCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-orange-600 dark:text-orange-400' />
                                 <div className='flex-1'>
-                                  <p className='text-xs font-medium text-orange-900'>
+                                  <p className='text-xs font-medium text-orange-900 dark:text-orange-400'>
                                     Auto-swap delayed
                                   </p>
-                                  <p className='mt-0.5 text-xs text-orange-700'>
+                                  <p className='mt-0.5 text-xs text-orange-700 dark:text-orange-400'>
                                     {deposit.claimError.type === 'maxDepositClaimFeeExceeded'
                                       ? `Network fee of ${deposit.claimError.requiredFeeSats} sats exceeds auto-claim limit — claim manually or wait for lower fees`
                                       : deposit.claimError.type === 'missingUtxo'

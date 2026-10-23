@@ -83,7 +83,7 @@ export default function DescriptionSheet({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-red-600 underline',
+          class: 'text-red-600 dark:text-red-400 underline',
         },
       }).extend({
         inclusive: false,
@@ -184,11 +184,11 @@ export default function DescriptionSheet({
         <SheetWithDetentFull.Portal>
           <SheetWithDetentFull.View>
             <SheetWithDetentFull.Backdrop />
-            <SheetWithDetentFull.Content className='DescriptionSheet-content'>
+            <SheetWithDetentFull.Content className='DescriptionSheet-content dark:bg-neutral-900'>
               {/* Fixed Header */}
-              <div className='DescriptionSheet-header'>
+              <div className='DescriptionSheet-header dark:border-neutral-800'>
                 <div className='mb-4 flex justify-center'>
-                  <SheetWithDetentFull.Handle className='DescriptionSheet-handle' />
+                  <SheetWithDetentFull.Handle className='DescriptionSheet-handle dark:bg-neutral-600' />
                 </div>
                 <div className='DescriptionSheet-headerBar'>
                   <button
@@ -197,7 +197,7 @@ export default function DescriptionSheet({
                   >
                     Cancel
                   </button>
-                  <h1 className='DescriptionSheet-headerTitle'>{title}</h1>
+                  <h1 className='DescriptionSheet-headerTitle dark:text-neutral-100'>{title}</h1>
                   <button
                     onClick={handleSave}
                     className='DescriptionSheet-headerButton DescriptionSheet-headerButton--save'
@@ -207,7 +207,7 @@ export default function DescriptionSheet({
                 </div>
 
                 {/* Toolbar at top */}
-                <div className='DescriptionSheet-toolbar'>
+                <div className='DescriptionSheet-toolbar dark:bg-neutral-950'>
                   <div className='DescriptionSheet-toolbarInner'>
                     {editor && (
                       <>

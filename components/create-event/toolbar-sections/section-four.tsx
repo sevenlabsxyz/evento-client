@@ -125,7 +125,7 @@ export default function SectionFour({
         {showInsertDropdown && (
           <>
             <div className='fixed inset-0 z-40' onClick={() => setShowInsertDropdown(false)} />
-            <div className='absolute left-0 top-full z-50 mt-1 w-64 rounded-md border bg-white shadow-lg'>
+            <div className='absolute left-0 top-full z-50 mt-1 w-64 rounded-md border bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:shadow-black/40'>
               <button onClick={insertDivider} className={cn(DropdownMenuItemClass)}>
                 <span className='flex grow items-center'>
                   <Minus className='mr-2 h-4 w-4' />

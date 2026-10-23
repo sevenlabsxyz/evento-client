@@ -94,17 +94,22 @@ export default function NostrSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
+            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4 dark:border-neutral-800 dark:bg-neutral-900'>
               <div className='flex items-center justify-center'>
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Nostr</h2>
-                <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
+                <button
+                  onClick={handleCancel}
+                  className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
+                >
                   <X className='h-5 w-5' />
                 </button>
               </div>
-              <p className='mt-1 text-sm text-gray-500'>Add your Nostr identifier (NIP-05)</p>
+              <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
+                Add your Nostr identifier (NIP-05)
+              </p>
             </div>
 
             {/* Content */}
@@ -114,7 +119,7 @@ export default function NostrSheet({
                   {/* Input with icon */}
                   <div className='relative mb-4'>
                     <div className='absolute left-3 top-1/2 -translate-y-1/2'>
-                      <Hash className='h-5 w-5 text-pink-600' />
+                      <Hash className='h-5 w-5 text-pink-600 dark:text-pink-400' />
                     </div>
                     <Input
                       type='text'
@@ -130,16 +135,18 @@ export default function NostrSheet({
 
                   {/* Info text */}
                   <div className='mb-6 space-y-3'>
-                    <p className='text-sm text-gray-500'>
+                    <p className='text-sm text-gray-500 dark:text-neutral-400'>
                       A Nostr identifier (NIP-05) helps people find and verify your Nostr profile.
                       It looks like an email address but is used for the Nostr protocol. A Nostr
                       identifier (NIP-05) helps people find and verify your Nostr profile. It looks
                       like an email address but is used for the Nostr protocol.
                     </p>
 
-                    <div className='rounded-xl bg-pink-50 p-4'>
-                      <p className='mb-2 text-sm font-medium text-pink-800'>What is Nostr?</p>
-                      <p className='text-sm text-pink-700'>
+                    <div className='rounded-xl bg-pink-50 p-4 dark:bg-pink-950/40'>
+                      <p className='mb-2 text-sm font-medium text-pink-800 dark:text-pink-400'>
+                        What is Nostr?
+                      </p>
+                      <p className='text-sm text-pink-700 dark:text-pink-400'>
                         Nostr is a decentralized social network protocol that gives you control over
                         your identity and content. Your NIP-05 identifier makes it easy for others
                         to find you across different Nostr apps. Nostr is a decentralized social
@@ -155,7 +162,7 @@ export default function NostrSheet({
                     <Button
                       onClick={handleSave}
                       disabled={!hasChanges || isSaving}
-                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                     >
                       {isSaving ? (
                         <>

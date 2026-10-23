@@ -30,26 +30,26 @@ export function BitrefillPaymentStatusSheet({
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             >
-              <Loader2 className='h-10 w-10 text-blue-500' />
+              <Loader2 className='h-10 w-10 text-blue-500 dark:text-blue-400' />
             </motion.div>
           ),
-          iconBg: 'bg-blue-100 border border-blue-200',
+          iconBg: 'bg-blue-100 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900',
           title: 'Processing Payment',
           message: 'Your payment is being processed. This usually takes just a few seconds.',
           showButton: false,
         };
       case 'success':
         return {
-          icon: <CheckCircle2 className='h-10 w-10 text-green-500' />,
-          iconBg: 'bg-green-100 border border-green-200',
+          icon: <CheckCircle2 className='h-10 w-10 text-green-500 dark:text-green-400' />,
+          iconBg: 'bg-green-100 dark:bg-green-950/60 border border-green-200 dark:border-green-900',
           title: 'Purchase Complete!',
           message: getSuccessMessage(deliveryStatus),
           showButton: true,
         };
       case 'error':
         return {
-          icon: <XCircle className='h-10 w-10 text-red-500' />,
-          iconBg: 'bg-red-100 border border-red-200',
+          icon: <XCircle className='h-10 w-10 text-red-500 dark:text-red-400' />,
+          iconBg: 'bg-red-100 dark:bg-red-950/60 border border-red-200 dark:border-red-900',
           title: 'Payment Failed',
           message: getErrorMessage(deliveryStatus),
           showButton: true,
@@ -112,7 +112,7 @@ export function BitrefillPaymentStatusSheet({
 
               {/* Title */}
               <motion.h2
-                className='mb-2 text-center text-xl font-semibold text-gray-900'
+                className='mb-2 text-center text-xl font-semibold text-gray-900 dark:text-neutral-100'
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
@@ -122,7 +122,7 @@ export function BitrefillPaymentStatusSheet({
 
               {/* Message */}
               <motion.p
-                className='mb-8 text-center text-sm text-gray-600'
+                className='mb-8 text-center text-sm text-gray-600 dark:text-neutral-400'
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}

@@ -79,7 +79,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   return (
     <article className='mx-auto grid w-full min-w-0 max-w-[860px] overflow-x-hidden'>
       {post.feature_image ? (
-        <div className='relative mx-4 mt-4 aspect-video w-[calc(100%-2rem)] overflow-hidden bg-gray-100 rounded-[2rem]'>
+        <div className='relative mx-4 mt-4 aspect-video w-[calc(100%-2rem)] overflow-hidden bg-gray-100 rounded-[2rem] dark:bg-neutral-800'>
           <Image
             src={post.feature_image}
             alt={post.title}
@@ -91,13 +91,15 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
           />
         </div>
       ) : (
-        <div className='relative mx-4 mt-4 aspect-video w-[calc(100%-2rem)] overflow-hidden bg-gray-100 rounded-[2rem]' />
+        <div className='relative mx-4 mt-4 aspect-video w-[calc(100%-2rem)] overflow-hidden bg-gray-100 rounded-[2rem] dark:bg-neutral-800' />
       )}
       <div className='grid w-[min(calc(100%-3rem),800px)] min-w-0 place-content-start justify-self-center py-7 pb-8 lg:py-14'>
-        <h1 className='mb-3 mt-0 text-balance text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-5xl'>
+        <h1 className='mb-3 mt-0 text-balance text-3xl font-extrabold leading-tight text-gray-900 dark:text-neutral-100 lg:mb-6 lg:text-5xl'>
           {post.title}
         </h1>
-        <div className='mt-1 text-sm text-gray-500 lg:mt-2'>{publishedDate}</div>
+        <div className='mt-1 text-sm text-gray-500 dark:text-neutral-400 lg:mt-2'>
+          {publishedDate}
+        </div>
         <EnhancedBlogContent
           html={post.html || ''}
           className='typeset typeset-evento-article mt-9 max-w-none lg:mt-14'
@@ -105,11 +107,11 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
       </div>
 
       {/* Share Button */}
-      <div className='w-full min-w-0 border-t border-gray-200 px-6 py-6'>
+      <div className='w-full min-w-0 border-t border-gray-200 px-6 py-6 dark:border-neutral-800'>
         <Button
           onClick={handleShare}
           variant='secondary'
-          className='w-full border border-gray-200 py-6 text-base'
+          className='w-full border border-gray-200 py-6 text-base dark:border-neutral-800'
         >
           <Share className='mr-2 h-4 w-4' />
           Share Post
@@ -118,8 +120,8 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
 
       {/* Read More Section */}
       {relatedPosts.length > 0 && (
-        <div className='w-full min-w-0 border-t border-gray-200 px-6 py-8'>
-          <h3 className='mb-6 text-xl font-bold text-gray-900'>Read more</h3>
+        <div className='w-full min-w-0 border-t border-gray-200 px-6 py-8 dark:border-neutral-800'>
+          <h3 className='mb-6 text-xl font-bold text-gray-900 dark:text-neutral-100'>Read more</h3>
           {isLoadingRelated ? (
             <div className='hide-scrollbar flex min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible'>
               {['related-skeleton-1', 'related-skeleton-2', 'related-skeleton-3'].map(

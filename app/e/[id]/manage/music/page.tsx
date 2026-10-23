@@ -228,12 +228,12 @@ export default function MusicManagementPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
         <div className='space-y-6 p-4'>
           <Skeleton className='h-4 w-3/4' />
 
           {/* Spotify Section Skeleton */}
-          <div className='rounded-2xl bg-gray-50 p-6'>
+          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
             <div className='mb-4 flex items-center gap-3'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='space-y-2'>
@@ -248,7 +248,7 @@ export default function MusicManagementPage() {
           </div>
 
           {/* Wavlake Section Skeleton */}
-          <div className='rounded-2xl bg-gray-50 p-6'>
+          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
             <div className='mb-4 flex items-center gap-3'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='space-y-2'>
@@ -263,7 +263,7 @@ export default function MusicManagementPage() {
           </div>
 
           {/* Information Section Skeleton */}
-          <div className='rounded-2xl bg-blue-50 p-4'>
+          <div className='rounded-2xl bg-blue-50 p-4 dark:bg-blue-950/40'>
             <Skeleton className='mb-2 h-5 w-40' />
             <Skeleton className='h-4 w-full' />
             <Skeleton className='mt-1 h-4 w-2/3' />
@@ -275,15 +275,17 @@ export default function MusicManagementPage() {
 
   if (error || !existingEvent) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+            Event Not Found
+          </h1>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             The event you&apos;re trying to manage doesn&apos;t exist.
           </p>
           <button
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -293,22 +295,24 @@ export default function MusicManagementPage() {
   }
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
       {/* Content */}
       <div className='space-y-6 p-4'>
-        <div className='text-sm text-gray-500'>
+        <div className='text-sm text-gray-500 dark:text-neutral-400'>
           Add music tracks to your event that guests can discover and listen to.
         </div>
 
         {/* Spotify Section */}
-        <div className='rounded-2xl bg-gray-50 p-6'>
+        <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
           <div className='mb-4 flex items-center gap-3'>
             <div className='flex h-12 w-12 items-center justify-center rounded-xl'>
               <SpotifySVGImage className='h-8 w-8' />
             </div>
             <div>
-              <h3 className='font-semibold text-gray-900'>Spotify</h3>
-              <p className='text-sm text-gray-600'>Add a Spotify track or playlist</p>
+              <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Spotify</h3>
+              <p className='text-sm text-gray-600 dark:text-neutral-400'>
+                Add a Spotify track or playlist
+              </p>
             </div>
           </div>
 
@@ -319,11 +323,11 @@ export default function MusicManagementPage() {
                   type='url'
                   value={musicData.spotify.url}
                   disabled
-                  className='w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-gray-700'
+                  className='w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-gray-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300'
                 />
                 <button
                   onClick={handleRemoveSpotify}
-                  className='rounded-xl border border-gray-300 p-3 text-red-600 hover:bg-red-50'
+                  className='rounded-xl border border-gray-300 p-3 text-red-600 hover:bg-red-50 dark:border-neutral-700 dark:text-red-400 dark:hover:bg-red-950/40'
                 >
                   <Trash2 className='h-4 w-4' />
                 </button>
@@ -336,12 +340,12 @@ export default function MusicManagementPage() {
                 value={spotifyUrl}
                 onChange={(e) => setSpotifyUrl(e.target.value)}
                 placeholder='https://open.spotify.com/track/...'
-                className='w-full rounded-xl border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500'
+                className='w-full rounded-xl border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:focus:ring-neutral-400'
               />
               <button
                 onClick={handleAddSpotify}
                 disabled={!spotifyUrl}
-                className='w-full rounded-xl bg-gray-900 py-3 text-white hover:bg-gray-800'
+                className='w-full rounded-xl bg-gray-900 py-3 text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-neutral-800 dark:disabled:text-neutral-500'
               >
                 Add Spotify Track
               </button>
@@ -350,14 +354,14 @@ export default function MusicManagementPage() {
         </div>
 
         {/* Wavlake Section */}
-        <div className='rounded-2xl bg-gray-50 p-6'>
+        <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
           <div className='mb-4 flex items-center gap-3'>
             <div className='flex h-12 w-12 items-center justify-center rounded-xl'>
-              <WavlakeSVGImage className='h-7 w-10' />
+              <WavlakeSVGImage className='h-7 w-10 dark:fill-white' />
             </div>
             <div>
-              <h3 className='font-semibold text-gray-900'>Wavlake</h3>
-              <p className='text-sm text-gray-600'>Add a Wavlake track</p>
+              <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Wavlake</h3>
+              <p className='text-sm text-gray-600 dark:text-neutral-400'>Add a Wavlake track</p>
             </div>
           </div>
 
@@ -368,11 +372,11 @@ export default function MusicManagementPage() {
                   type='url'
                   value={musicData.wavlake.url}
                   disabled
-                  className='w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-gray-700'
+                  className='w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-gray-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300'
                 />
                 <button
                   onClick={handleRemoveWavlake}
-                  className='rounded-xl border border-gray-300 p-3 text-red-600 hover:bg-red-50'
+                  className='rounded-xl border border-gray-300 p-3 text-red-600 hover:bg-red-50 dark:border-neutral-700 dark:text-red-400 dark:hover:bg-red-950/40'
                 >
                   <Trash2 className='h-4 w-4' />
                 </button>
@@ -385,12 +389,12 @@ export default function MusicManagementPage() {
                 value={wavlakeUrl}
                 onChange={(e) => setWavlakeUrl(e.target.value)}
                 placeholder='https://wavlake.com/track/...'
-                className='w-full rounded-xl border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500'
+                className='w-full rounded-xl border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:focus:ring-neutral-400'
               />
               <button
                 onClick={handleAddWavlake}
                 disabled={!wavlakeUrl}
-                className='w-full rounded-xl bg-gray-900 py-3 text-white hover:bg-gray-800'
+                className='w-full rounded-xl bg-gray-900 py-3 text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-neutral-800 dark:disabled:text-neutral-500'
               >
                 Add Wavlake Track
               </button>
@@ -399,9 +403,11 @@ export default function MusicManagementPage() {
         </div>
 
         {/* Information Section */}
-        <div className='rounded-2xl bg-blue-50 p-4'>
-          <h4 className='mb-2 font-medium text-blue-900'>About Music Integration</h4>
-          <p className='text-sm text-blue-700'>
+        <div className='rounded-2xl bg-blue-50 p-4 dark:bg-blue-950/40'>
+          <h4 className='mb-2 font-medium text-blue-900 dark:text-blue-400'>
+            About Music Integration
+          </h4>
+          <p className='text-sm text-blue-700 dark:text-blue-300'>
             Music tracks you add here will be displayed on your event page, allowing guests to
             discover and listen to music related to your event.
           </p>

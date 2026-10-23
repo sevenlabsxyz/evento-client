@@ -9,9 +9,12 @@ const statusBadgeVariants = cva(
   {
     variants: {
       status: {
-        success: 'border-green-200 bg-green-50 text-green-700',
-        error: 'border-red-200 bg-red-50 text-red-700',
-        default: 'border-gray-300 bg-gray-100 text-gray-700',
+        success:
+          'border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400',
+        error:
+          'border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400',
+        default:
+          'border-gray-300 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-neutral-300',
       },
     },
     defaultVariants: {
@@ -21,8 +24,7 @@ const statusBadgeVariants = cva(
 );
 
 interface StatusBadgeProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof statusBadgeVariants> {
+  extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof statusBadgeVariants> {
   leftIcon?: LucideIcon;
   rightIcon?: LucideIcon;
   leftLabel: string;
@@ -45,8 +47,8 @@ export function StatusBadge({
           <LeftIcon
             className={cn(
               'size-3 shrink-0',
-              status === 'success' && 'text-green-600',
-              status === 'error' && 'text-red-600'
+              status === 'success' && 'text-green-600 dark:text-green-400',
+              status === 'error' && 'text-red-600 dark:text-red-400'
             )}
             aria-hidden={true}
           />
@@ -55,7 +57,7 @@ export function StatusBadge({
       </span>
       {rightLabel && (
         <>
-          <span className='mx-2 h-3.5 w-px bg-border' />
+          <span className='mx-2 h-3.5 w-px bg-border dark:bg-neutral-700' />
           <span className='inline-flex items-center gap-1.5 text-muted-foreground'>
             {RightIcon && <RightIcon className='size-3 shrink-0' aria-hidden={true} />}
             {rightLabel}

@@ -67,9 +67,9 @@ export function RegistrationDetailSheet({
 
   const getStatusBadge = (status: RegistrationStatus) => {
     const styles: Record<RegistrationStatus, string> = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      approved: 'bg-green-100 text-green-800',
-      denied: 'bg-red-100 text-red-800',
+      pending: 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-400',
+      approved: 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-400',
+      denied: 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-400',
     };
 
     const labels: Record<RegistrationStatus, string> = {
@@ -96,13 +96,13 @@ export function RegistrationDetailSheet({
             placeholder='Reason for denial (optional)'
             value={denyReason}
             onChange={(e) => setDenyReason(e.target.value)}
-            className='w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-gray-400'
+            className='w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-gray-400 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-400 dark:focus:border-neutral-600'
           />
           <div className='flex gap-2'>
             <Button
               onClick={handleConfirmDeny}
               disabled={isDenying}
-              className='flex-1 bg-red-500 text-white hover:bg-red-600'
+              className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
             >
               Confirm Deny
             </Button>
@@ -128,7 +128,7 @@ export function RegistrationDetailSheet({
           </Button>
           <Button
             onClick={handleStartDeny}
-            className='flex-1 bg-red-500 text-white hover:bg-red-600'
+            className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             <X className='mr-2 h-4 w-4' />
             Deny
@@ -185,22 +185,26 @@ export function RegistrationDetailSheet({
               <div className='flex-1'>
                 <div className='flex items-start justify-between'>
                   <div>
-                    <h3 className='text-lg font-semibold text-gray-900'>
+                    <h3 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
                       {submission.user_details?.name || submission.name}
                     </h3>
                     {submission.user_details?.username && (
-                      <p className='text-sm text-gray-500'>@{submission.user_details.username}</p>
+                      <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                        @{submission.user_details.username}
+                      </p>
                     )}
-                    <p className='text-sm text-gray-500'>{submission.email}</p>
+                    <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                      {submission.email}
+                    </p>
                   </div>
                   {getStatusBadge(submission.approval_status)}
                 </div>
                 <div className='mt-2 space-y-1'>
-                  <p className='text-xs text-gray-400'>
+                  <p className='text-xs text-gray-400 dark:text-neutral-500'>
                     Submitted {format(new Date(submission.created_at), 'MMM d, yyyy h:mm a')}
                   </p>
                   {submission.reviewed_at && (
-                    <p className='text-xs text-gray-400'>
+                    <p className='text-xs text-gray-400 dark:text-neutral-500'>
                       Reviewed {format(new Date(submission.reviewed_at), 'MMM d, yyyy h:mm a')}
                     </p>
                   )}
@@ -210,24 +214,35 @@ export function RegistrationDetailSheet({
 
             {/* Denial Reason (if denied) */}
             {submission.approval_status === 'denied' && submission.denial_reason && (
-              <div className='rounded-xl bg-red-50 p-4'>
-                <p className='text-sm font-medium text-red-800'>Denial Reason</p>
-                <p className='mt-1 text-sm text-red-700'>{submission.denial_reason}</p>
+              <div className='rounded-xl bg-red-50 p-4 dark:bg-red-950/40'>
+                <p className='text-sm font-medium text-red-800 dark:text-red-400'>Denial Reason</p>
+                <p className='mt-1 text-sm text-red-700 dark:text-red-400'>
+                  {submission.denial_reason}
+                </p>
               </div>
             )}
 
             {/* Answers Section */}
             {submission.answers && submission.answers.length > 0 && (
-              <div className='border-t border-gray-100 pt-4'>
-                <h4 className='mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500'>
+              <div className='border-t border-gray-100 pt-4 dark:border-neutral-800'>
+                <h4 className='mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
                   Registration Answers
                 </h4>
                 <div className='space-y-4'>
                   {submission.answers.map((answer) => (
-                    <div key={answer.question_id} className='rounded-xl bg-gray-50 p-4'>
-                      <p className='text-sm font-medium text-gray-600'>{answer.question_label}</p>
-                      <p className='mt-1 text-gray-900'>
-                        {answer.answer || <span className='italic text-gray-400'>No answer</span>}
+                    <div
+                      key={answer.question_id}
+                      className='rounded-xl bg-gray-50 p-4 dark:bg-neutral-950'
+                    >
+                      <p className='text-sm font-medium text-gray-600 dark:text-neutral-400'>
+                        {answer.question_label}
+                      </p>
+                      <p className='mt-1 text-gray-900 dark:text-neutral-100'>
+                        {answer.answer || (
+                          <span className='italic text-gray-400 dark:text-neutral-500'>
+                            No answer
+                          </span>
+                        )}
                       </p>
                     </div>
                   ))}
@@ -237,8 +252,8 @@ export function RegistrationDetailSheet({
 
             {/* No answers message */}
             {(!submission.answers || submission.answers.length === 0) && (
-              <div className='border-t border-gray-100 pt-4'>
-                <p className='text-center text-sm text-gray-400'>
+              <div className='border-t border-gray-100 pt-4 dark:border-neutral-800'>
+                <p className='text-center text-sm text-gray-400 dark:text-neutral-500'>
                   No registration questions were configured for this event.
                 </p>
               </div>
@@ -246,7 +261,7 @@ export function RegistrationDetailSheet({
           </div>
         ) : (
           <div className='py-8 text-center'>
-            <p className='text-gray-500'>Registration not found</p>
+            <p className='text-gray-500 dark:text-neutral-400'>Registration not found</p>
           </div>
         )}
       </div>

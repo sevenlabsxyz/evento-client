@@ -197,16 +197,16 @@ export function AmountInputSheet({
       <div className='p-6'>
         <div className='mx-auto max-w-md space-y-6'>
           {/* Amount Display */}
-          <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center'>
-            <div className='text-4xl font-bold text-gray-900'>
+          <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-neutral-800 dark:bg-neutral-950'>
+            <div className='text-4xl font-bold text-gray-900 dark:text-neutral-100'>
               {inputMode === 'usd' ? `$${amountUSD || '0'}` : `${amount || '0'}`}
             </div>
-            <div className='mt-1 text-lg font-medium text-gray-600'>
+            <div className='mt-1 text-lg font-medium text-gray-600 dark:text-neutral-400'>
               {inputMode === 'usd' ? 'USD' : 'sats'}
             </div>
             <button
               onClick={toggleInputMode}
-              className='mx-auto mt-3 flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100'
+              className='mx-auto mt-3 flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
             >
               <ArrowUpDown className='h-4 w-4' />
               <span>
@@ -225,8 +225,8 @@ export function AmountInputSheet({
               onClick={handleSendAll}
               className={`w-full rounded-xl border px-4 py-3 text-center text-sm font-medium transition-colors ${
                 isSendAll
-                  ? 'border-gray-900 bg-gray-900 text-white'
-                  : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                  ? 'border-gray-900 bg-gray-900 text-white dark:border-neutral-200 dark:bg-neutral-100 dark:text-neutral-900'
+                  : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
               }`}
             >
               Send All ({maxAmount.toLocaleString()} sats)
@@ -257,13 +257,15 @@ export function AmountInputSheet({
 
           {/* Validation Message */}
           {getValidationMessage() && (
-            <div className='text-center text-sm text-red-500'>{getValidationMessage()}</div>
+            <div className='text-center text-sm text-red-500 dark:text-red-400'>
+              {getValidationMessage()}
+            </div>
           )}
           {/* Next Button */}
           <Button
             onClick={handleConfirm}
             disabled={isConverting || !hasValidSatsAmount || isLoading || !isWithinConstraints()}
-            className='h-12 w-full rounded-full bg-gray-50 font-medium text-gray-900 hover:bg-gray-100'
+            className='h-12 w-full rounded-full bg-gray-50 font-medium text-gray-900 hover:bg-gray-100 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-800'
             variant='outline'
           >
             {isLoading ? (

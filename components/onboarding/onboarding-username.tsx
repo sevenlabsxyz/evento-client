@@ -48,22 +48,22 @@ export const OnboardingUsername = ({
     // Use the username schema from user.ts
     const usernameSchema = updateUserProfileSchema.pick({ username: true }).shape.username;
 
-try {
+    try {
       usernameSchema.parse(username);
-      
+
       // Check if username is reserved
       if (RESERVED_USERNAMES.includes(username.toLowerCase())) {
         setValidationError('This username is reserved and cannot be used');
         setIsAvailable(null);
         return;
       }
-setValidationError('');
-} catch (error) {
-if (error instanceof z.ZodError) {
-setValidationError(error.issues?.[0]?.message || 'Invalid username');
-setIsAvailable(null);
-}
-}
+      setValidationError('');
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setValidationError(error.issues?.[0]?.message || 'Invalid username');
+        setIsAvailable(null);
+      }
+    }
   }, [username]);
 
   // Check availability when debounced username changes
@@ -116,7 +116,7 @@ setIsAvailable(null);
             disabled={updating}
             placeholder={'shakespeare123'}
             onChange={onUsernameChange}
-            className={`mb-2 min-h-[60px] rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 pr-12 text-2xl placeholder:text-gray-300 md:text-2xl ${validationError && showValidation ? 'border-red-500' : ''} ${canProceed ? 'border-green-500' : ''} `}
+            className={`mb-2 min-h-[60px] rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 pr-12 text-2xl placeholder:text-gray-300 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-400 md:text-2xl ${validationError && showValidation ? 'border-red-500 dark:border-red-500' : ''} ${canProceed ? 'border-green-500 dark:border-green-500' : ''} `}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && canProceed) onEnterPress();
             }}
@@ -125,11 +125,11 @@ setIsAvailable(null);
           {/* Status indicator */}
           <div className='absolute right-3 top-1/2 -translate-y-1/2'>
             {isCheckingAvailability || isLoading ? (
-              <Loader2 className='h-5 w-5 animate-spin text-gray-400' />
+              <Loader2 className='h-5 w-5 animate-spin text-gray-400 dark:text-neutral-400' />
             ) : isAvailable === true && !validationError && showValidation ? (
-              <CheckCircle className='h-5 w-5 text-green-500' />
+              <CheckCircle className='h-5 w-5 text-green-500 dark:text-green-400' />
             ) : isAvailable === false && showValidation ? (
-              <XCircle className='h-5 w-5 text-red-500' />
+              <XCircle className='h-5 w-5 text-red-500 dark:text-red-400' />
             ) : null}
           </div>
         </div>
@@ -138,11 +138,13 @@ setIsAvailable(null);
         {showValidation && (
           <div className='mt-1 text-sm'>
             {validationError ? (
-              <p className='text-red-500'>{validationError}</p>
+              <p className='text-red-500 dark:text-red-400'>{validationError}</p>
             ) : isAvailable === false ? (
-              <p className='text-red-500'>This username is already taken</p>
+              <p className='text-red-500 dark:text-red-400'>This username is already taken</p>
             ) : isAvailable === true ? (
-              <p className='text-green-500'>Great! This username is available</p>
+              <p className='text-green-500 dark:text-green-400'>
+                Great! This username is available
+              </p>
             ) : null}
           </div>
         )}

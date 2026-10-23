@@ -14,7 +14,7 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
   const PartnerCard = ({ partner }: { partner: EarnPartner }) => {
     return (
       <div
-        className='flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 hover:bg-gray-100'
+        className='flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
         onClick={() => window.open(partner.link, '_blank')}
       >
         {/* Left: Logo + Content */}
@@ -23,14 +23,14 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
             <Image src={partner.logo} alt={partner.name} fill className='object-cover' />
           </div>
           <div>
-            <h3 className='font-semibold text-gray-900'>{partner.name}</h3>
-            <p className='text-sm text-gray-600'>{partner.description}</p>
+            <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>{partner.name}</h3>
+            <p className='text-sm text-gray-600 dark:text-neutral-400'>{partner.description}</p>
           </div>
         </div>
 
         {/* Right: Button */}
         <CircledIconButton
-          className='flex-shrink-0 bg-white'
+          className='flex-shrink-0 bg-white dark:bg-neutral-900'
           icon={ArrowUpRight}
           onClick={() => window.open(partner.link, '_blank')}
         />
@@ -49,19 +49,19 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
                 <SheetWithDetentFull.ScrollContent>
                   {/* Handle */}
                   <div className='my-4 flex items-center'>
-                    <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+                    <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
                   </div>
 
                   {/* Header */}
-                  <div className='flex items-center justify-between border-gray-200 bg-white px-4 py-3 pt-0'>
+                  <div className='flex items-center justify-between border-gray-200 bg-white px-4 py-3 pt-0 dark:border-neutral-800 dark:bg-neutral-900'>
                     <h2 className='text-xl font-semibold'>Earn Bitcoin</h2>
                     <button onClick={() => onOpenChange(false)}>
-                      <X className='h-5 w-5 text-gray-500' />
+                      <X className='h-5 w-5 text-gray-500 dark:text-neutral-400' />
                     </button>
                   </div>
 
                   {/* Content */}
-                  <div className='bg-white px-4 py-6'>
+                  <div className='bg-white px-4 py-6 dark:bg-neutral-900'>
                     <div className='space-y-6'>
                       {/* Partners List */}
                       <div className='space-y-3'>
@@ -73,28 +73,30 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
                       </div>
 
                       {/* How It Works */}
-                      <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
-                        <h3 className='font-semibold text-gray-900'>How It Works</h3>
-                        <ol className='mt-3 space-y-2 text-sm text-gray-600'>
+                      <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
+                        <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                          How It Works
+                        </h3>
+                        <ol className='mt-3 space-y-2 text-sm text-gray-600 dark:text-neutral-400'>
                           <li className='flex gap-3'>
-                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white'>
+                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white dark:bg-neutral-100 dark:text-neutral-900'>
                               1
                             </span>
                             <span>Use a partner app to earn Bitcoin</span>
                           </li>
                           <li className='flex gap-3'>
-                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white'>
+                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white dark:bg-neutral-100 dark:text-neutral-900'>
                               2
                             </span>
                             <span>
                               Send your earnings to{' '}
-                              <span className='font-semibold text-gray-900'>
+                              <span className='font-semibold text-gray-900 dark:text-neutral-100'>
                                 {lightningAddress}
                               </span>
                             </span>
                           </li>
                           <li className='flex gap-3'>
-                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white'>
+                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white dark:bg-neutral-100 dark:text-neutral-900'>
                               3
                             </span>
                             <span>Use it inside Evento</span>

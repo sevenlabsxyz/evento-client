@@ -142,23 +142,23 @@ export function RegistrationOtpInput({
             onPaste={handlePaste}
             disabled={isLoading}
             className={cn(
-              'h-12 w-12 rounded-lg border text-center text-xl font-semibold',
+              'h-12 w-12 rounded-lg border text-center text-xl font-semibold dark:bg-neutral-900 dark:text-neutral-100',
               'focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20',
               'disabled:cursor-not-allowed disabled:opacity-50',
-              error ? 'border-red-500' : 'border-gray-300'
+              error ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
             )}
           />
         ))}
       </div>
 
       {/* Error message */}
-      {error && <p className='text-center text-sm text-red-500'>{error}</p>}
+      {error && <p className='text-center text-sm text-red-500 dark:text-red-400'>{error}</p>}
 
       {/* Verify button */}
       <Button
         onClick={handleSubmit}
         disabled={isLoading || code.join('').length !== 6}
-        className='w-full bg-red-500 hover:bg-red-600'
+        className='w-full bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:text-white dark:hover:bg-red-700'
       >
         {isLoading ? (
           <>
@@ -176,7 +176,7 @@ export function RegistrationOtpInput({
           type='button'
           onClick={handleResend}
           disabled={resendCooldown > 0 || isResending || isLoading}
-          className='text-sm text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50'
+          className='text-sm text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-400 dark:hover:text-neutral-300'
         >
           {isResending
             ? 'Sending...'

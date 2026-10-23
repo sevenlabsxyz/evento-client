@@ -223,10 +223,10 @@ export default function EventSearchSheet({
         <div className='space-y-3 px-4 pb-4'>
           {/* Search Input */}
           <div className='relative'>
-            <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+            <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
             <input
               ref={searchInputRef}
-              className='h-10 w-full rounded-full border-none bg-gray-100 px-10 py-0 text-sm text-gray-800 outline-none'
+              className='h-10 w-full rounded-full border-none bg-gray-100 px-10 py-0 text-sm text-gray-800 outline-none dark:bg-neutral-800 dark:text-neutral-200 dark:placeholder:text-neutral-400'
               type='text'
               placeholder='Search events'
               value={searchText}
@@ -263,14 +263,14 @@ export default function EventSearchSheet({
           {filter !== 'drafts' && (
             <div className='flex items-center gap-2'>
               {/* Timeframe Toggle */}
-              <div className='flex items-center rounded-full bg-gray-50 p-1'>
+              <div className='flex items-center rounded-full bg-gray-50 p-1 dark:bg-neutral-950'>
                 <button
                   onClick={() => setTimeframe('future')}
                   className={cn(
                     'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                     timeframe === 'future'
-                      ? 'bg-white text-black shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white'
+                      : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   )}
                 >
                   Upcoming
@@ -280,8 +280,8 @@ export default function EventSearchSheet({
                   className={cn(
                     'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                     timeframe === 'past'
-                      ? 'bg-white text-black shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white'
+                      : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   )}
                 >
                   Past
@@ -289,14 +289,14 @@ export default function EventSearchSheet({
               </div>
 
               {/* Sort Toggle */}
-              <div className='flex items-center rounded-full bg-gray-50 p-1'>
+              <div className='flex items-center rounded-full bg-gray-50 p-1 dark:bg-neutral-950'>
                 <button
                   onClick={() => setSortBy('date-desc')}
                   className={cn(
                     'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                     sortBy === 'date-desc'
-                      ? 'bg-white text-black shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white'
+                      : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   )}
                 >
                   Latest
@@ -306,8 +306,8 @@ export default function EventSearchSheet({
                   className={cn(
                     'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                     sortBy === 'date-asc'
-                      ? 'bg-white text-black shadow-sm'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white'
+                      : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   )}
                 >
                   Oldest
@@ -329,12 +329,14 @@ export default function EventSearchSheet({
       ) : error ? (
         // Error State
         <div className='flex flex-col items-center justify-center py-12'>
-          <div className='text-center text-base text-gray-600'>Failed to load events</div>
+          <div className='text-center text-base text-gray-600 dark:text-neutral-400'>
+            Failed to load events
+          </div>
         </div>
       ) : events.length === 0 ? (
         // Empty State
         <div className='flex flex-col items-center justify-center py-12'>
-          <div className='text-center text-base text-gray-600'>
+          <div className='text-center text-base text-gray-600 dark:text-neutral-400'>
             {searchText.trim()
               ? `No events found matching "${searchText}"`
               : `No ${filter} events found`}
@@ -345,7 +347,9 @@ export default function EventSearchSheet({
         <div className='flex w-full min-w-0 flex-col gap-4'>
           {groupedEvents.map((group) => (
             <div key={group.date} className='space-y-2'>
-              <h3 className='text-sm font-medium text-gray-500'>{formatDateHeader(group.date)}</h3>
+              <h3 className='text-sm font-medium text-gray-500 dark:text-neutral-400'>
+                {formatDateHeader(group.date)}
+              </h3>
               <div className='flex flex-col gap-2'>
                 {group.events.map((event) => (
                   <MasterEventCard key={event.id} event={event} />

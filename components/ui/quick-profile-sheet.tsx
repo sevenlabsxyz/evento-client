@@ -81,7 +81,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
         <SheetWithDetentFull.Portal>
           <SheetWithDetentFull.View>
             <SheetWithDetentFull.Backdrop />
-            <SheetWithDetentFull.Content className='relative flex flex-col bg-white md:!max-w-[500px]'>
+            <SheetWithDetentFull.Content className='relative flex flex-col bg-white dark:bg-neutral-900 md:!max-w-[500px]'>
               <div className='sticky top-0 z-10 bg-transparent px-4'>
                 <VisuallyHidden.Root asChild>
                   <SheetWithDetentFull.Title className='sr-only'>
@@ -135,7 +135,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                           variant={'link'}
                           className='shadow-none'
                           disabled={isNavigatingToProfile}
-                          // className='h-12 w-full rounded-full bg-black text-white hover:bg-gray-900'
+                          // className='h-12 w-full rounded-full bg-black dark:bg-neutral-100 text-white hover:bg-gray-900 dark:hover:bg-neutral-200 dark:text-neutral-900'
                         >
                           {isNavigatingToProfile ? (
                             <>

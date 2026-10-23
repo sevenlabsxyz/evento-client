@@ -127,9 +127,11 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
       {[0, 1, 2, 3, 4, 5].map((index) => (
         <div
           key={index}
-          className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
+          className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900'
         >
-          {currentPin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+          {currentPin.length > index && (
+            <div className='h-3 w-3 rounded-full bg-gray-900 dark:bg-neutral-100' />
+          )}
         </div>
       ))}
     </div>
@@ -140,8 +142,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
     return (
       <div className='flex min-h-[60vh] flex-col items-center justify-center space-y-6 px-6'>
         <div className='text-center'>
-          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-            <AlertCircle className='h-8 w-8 text-red-600' />
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60'>
+            <AlertCircle className='h-8 w-8 text-red-600 dark:text-red-400' />
           </div>
           <h2 className='text-2xl font-bold'>Setup Failed</h2>
           <p className='mt-2 text-sm text-muted-foreground'>{error}</p>
@@ -165,8 +167,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
     return (
       <div className='flex min-h-[60vh] flex-col items-center justify-center space-y-6'>
         <div className='text-center'>
-          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
-            <Loader2 className='h-8 w-8 animate-spin text-orange-600' />
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-950/40'>
+            <Loader2 className='h-8 w-8 animate-spin text-orange-600 dark:text-orange-400' />
           </div>
           <h2 className='text-2xl font-bold'>Creating Wallet</h2>
           <p className='mt-2 text-sm text-muted-foreground'>Setting up your wallet...</p>
@@ -180,8 +182,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
     return (
       <div className='space-y-6'>
         <div className='text-center'>
-          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
-            <Wallet className='h-8 w-8 text-orange-600' />
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-950/40'>
+            <Wallet className='h-8 w-8 text-orange-600 dark:text-orange-400' />
           </div>
           <h2 className='text-2xl font-bold'>Create a PIN</h2>
           <p className='mt-2 text-sm text-muted-foreground'>
@@ -201,10 +203,10 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
             maxLength={6}
           />
 
-          <div className='rounded-lg bg-amber-50 p-4'>
+          <div className='rounded-lg bg-amber-50 p-4 dark:bg-amber-950/40'>
             <div className='flex items-start gap-2'>
-              <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600' />
-              <div className='text-sm text-amber-900'>
+              <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400' />
+              <div className='text-sm text-amber-900 dark:text-amber-400'>
                 <p className='font-medium'>Important</p>
                 <p className='mt-1'>
                   Remember this PIN! You&apos;ll need it to access your wallet.
@@ -237,8 +239,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
     return (
       <div className='space-y-6'>
         <div className='text-center'>
-          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50'>
-            <Key className='h-8 w-8 text-black' />
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900'>
+            <Key className='h-8 w-8 text-black dark:text-neutral-100' />
           </div>
           <h2 className='text-2xl font-bold'>Confirm Your PIN</h2>
           <p className='mt-2 text-sm text-muted-foreground'>Enter your PIN again to confirm</p>

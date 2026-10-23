@@ -25,9 +25,11 @@ export default function PostPageClient({ posts }: { posts: GhostPost[] }) {
   if (!posts || posts.length === 0) {
     return (
       <div className='px-4 py-12 text-center'>
-        <div className='rounded-lg bg-gray-100 p-8'>
-          <h3 className='mb-2 text-xl font-semibold text-gray-700'>No posts yet</h3>
-          <p className='text-gray-500'>Check back soon for new content!</p>
+        <div className='rounded-lg bg-gray-100 p-8 dark:bg-neutral-800'>
+          <h3 className='mb-2 text-xl font-semibold text-gray-700 dark:text-neutral-300'>
+            No posts yet
+          </h3>
+          <p className='text-gray-500 dark:text-neutral-400'>Check back soon for new content!</p>
         </div>
       </div>
     );

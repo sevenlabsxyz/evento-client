@@ -61,7 +61,7 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
   return (
     <div
       className={cn(
-        'flex w-full flex-col gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4',
+        'flex w-full flex-col gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950',
         className
       )}
     >
@@ -80,24 +80,30 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
               }}
               size='xs'
             />
-            <span className='truncate text-sm text-gray-600'>
+            <span className='truncate text-sm text-gray-600 dark:text-neutral-400'>
               {inviter.name || inviter.username}
             </span>
-            <span className='shrink-0 text-gray-400'>·</span>
-            <span className='shrink-0 text-sm text-gray-500'>{invitedAgo}</span>
+            <span className='shrink-0 text-gray-400 dark:text-neutral-500'>·</span>
+            <span className='shrink-0 text-sm text-gray-500 dark:text-neutral-400'>
+              {invitedAgo}
+            </span>
           </div>
 
           {/* Event Title */}
-          <h3 className='text-lg font-bold leading-tight text-gray-900'>{event.title}</h3>
+          <h3 className='text-lg font-bold leading-tight text-gray-900 dark:text-neutral-100'>
+            {event.title}
+          </h3>
 
           {/* Time Row */}
           <div className='flex items-center gap-1 text-sm'>
-            <span className='font-medium text-amber-600'>{eventTimeWithTz}</span>
+            <span className='font-medium text-amber-600 dark:text-amber-400'>
+              {eventTimeWithTz}
+            </span>
           </div>
 
           {/* Location */}
           {event.location && (
-            <div className='flex items-center gap-1 text-sm text-gray-600'>
+            <div className='flex items-center gap-1 text-sm text-gray-600 dark:text-neutral-400'>
               <MapPin className='h-3.5 w-3.5 shrink-0' />
               <span className='truncate'>{event.location}</span>
             </div>
@@ -105,7 +111,7 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
 
           {/* Invite Message */}
           {invite.message && (
-            <p className='mt-1 line-clamp-2 text-sm italic text-gray-500'>
+            <p className='mt-1 line-clamp-2 text-sm italic text-gray-500 dark:text-neutral-400'>
               &quot;{invite.message}&quot;
             </p>
           )}
@@ -124,7 +130,7 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
         <div className='flex flex-col gap-2'>
           <Button
             onClick={onRSVP}
-            className='w-full rounded-full bg-red-500 text-white hover:bg-red-600'
+            className='w-full rounded-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             <Users className='mr-1.5 h-4 w-4' />
             RSVP
@@ -138,9 +144,12 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
           <span
             className={cn(
               'inline-flex items-center rounded-full px-3 py-1 text-sm font-medium',
-              invite.response === 'going' && 'bg-green-100 text-green-800',
-              invite.response === 'maybe' && 'bg-yellow-100 text-yellow-800',
-              invite.response === 'not_going' && 'bg-red-100 text-red-800'
+              invite.response === 'going' &&
+                'bg-green-100 text-green-800 dark:bg-green-950/60 dark:text-green-400',
+              invite.response === 'maybe' &&
+                'bg-yellow-100 text-yellow-800 dark:bg-yellow-950/60 dark:text-yellow-400',
+              invite.response === 'not_going' &&
+                'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-400'
             )}
           >
             {invite.response === 'going' && <Check className='mr-1 h-3 w-3' />}

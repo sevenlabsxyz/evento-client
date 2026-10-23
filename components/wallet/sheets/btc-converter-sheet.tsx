@@ -131,38 +131,44 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
                 <SheetWithDetentFull.ScrollContent>
                   {/* Handle */}
                   <div className='my-4 flex items-center'>
-                    <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+                    <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
                   </div>
 
                   {/* Header */}
-                  <div className='flex items-center justify-between bg-white px-4 py-3'>
+                  <div className='flex items-center justify-between bg-white px-4 py-3 dark:bg-neutral-900'>
                     <div className='flex-1'>
-                      <div className='text-2xl font-bold text-gray-900'>
+                      <div className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>
                         $<NumberTicker value={btcPrice} />
                       </div>
-                      <div className='text-sm text-gray-500'>Current BTC Price</div>
+                      <div className='text-sm text-gray-500 dark:text-neutral-400'>
+                        Current BTC Price
+                      </div>
                     </div>
                     <div className='flex items-center gap-3'>
                       <WalletBalanceDisplay />
                       <button onClick={() => onOpenChange(false)}>
-                        <X className='h-5 w-5 text-gray-500' />
+                        <X className='h-5 w-5 text-gray-500 dark:text-neutral-400' />
                       </button>
                     </div>
                   </div>
 
                   {/* Content */}
-                  <div className='bg-white px-4 py-6'>
+                  <div className='bg-white px-4 py-6 dark:bg-neutral-900'>
                     {isLoading ? (
                       <div className='flex items-center justify-center py-12'>
-                        <div className='text-gray-500'>Loading BTC price...</div>
+                        <div className='text-gray-500 dark:text-neutral-400'>
+                          Loading BTC price...
+                        </div>
                       </div>
                     ) : (
                       <div className='space-y-2'>
                         {/* USD Input */}
                         <div className='space-y-2'>
-                          <label className='block text-sm font-medium text-gray-700'>USD</label>
+                          <label className='block text-sm font-medium text-gray-700 dark:text-neutral-300'>
+                            USD
+                          </label>
                           <div className='relative'>
-                            <span className='absolute left-4 top-1/2 -translate-y-1/2 text-lg text-gray-500'>
+                            <span className='absolute left-4 top-1/2 -translate-y-1/2 text-lg text-gray-500 dark:text-neutral-400'>
                               $
                             </span>
                             <input
@@ -172,12 +178,12 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
                                 const parsed = parseNumericValue(e.target.value);
                                 handleUsdChange(parsed);
                               }}
-                              className='w-full rounded-xl border border-gray-200 bg-gray-50 py-4 pl-8 pr-12 text-lg font-semibold focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                              className='w-full rounded-xl border border-gray-200 bg-gray-50 py-4 pl-8 pr-12 text-lg font-semibold focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                               placeholder='0.00'
                             />
                             <button
                               onClick={handleCopyUsd}
-                              className='absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700'
+                              className='absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300'
                             >
                               <Copy className='h-4 w-4' />
                             </button>
@@ -186,22 +192,24 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
 
                         {/* BTC Input */}
                         <div className='space-y-2'>
-                          <label className='block text-sm font-medium text-gray-700'>BTC</label>
+                          <label className='block text-sm font-medium text-gray-700 dark:text-neutral-300'>
+                            BTC
+                          </label>
                           <div className='relative'>
-                            <span className='absolute left-4 top-1/2 -translate-y-1/2 text-lg text-gray-500'>
+                            <span className='absolute left-4 top-1/2 -translate-y-1/2 text-lg text-gray-500 dark:text-neutral-400'>
                               ₿
                             </span>
                             <input
                               type='number'
                               value={btcValue}
                               onChange={(e) => handleBtcChange(e.target.value)}
-                              className='w-full rounded-xl border border-gray-200 bg-gray-50 py-4 pl-8 pr-12 text-lg font-semibold focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500'
+                              className='w-full rounded-xl border border-gray-200 bg-gray-50 py-4 pl-8 pr-12 text-lg font-semibold focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                               placeholder='0.00000000'
                               step='0.00000001'
                             />
                             <button
                               onClick={handleCopyBtc}
-                              className='absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700'
+                              className='absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300'
                             >
                               <Copy className='h-4 w-4' />
                             </button>
@@ -210,7 +218,7 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
 
                         {/* SATS Input */}
                         <div className='space-y-2'>
-                          <label className='block text-sm font-medium text-gray-700'>
+                          <label className='block text-sm font-medium text-gray-700 dark:text-neutral-300'>
                             Satoshis (sats)
                           </label>
                           <div className='relative'>
@@ -221,12 +229,12 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
                                 const parsed = parseNumericValue(e.target.value);
                                 handleSatsChange(parsed);
                               }}
-                              className='w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-4 pr-12 text-lg font-semibold focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500'
+                              className='w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-4 pr-12 text-lg font-semibold focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                               placeholder='0'
                             />
                             <button
                               onClick={handleCopySats}
-                              className='absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700'
+                              className='absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300'
                             >
                               <Copy className='h-4 w-4' />
                             </button>

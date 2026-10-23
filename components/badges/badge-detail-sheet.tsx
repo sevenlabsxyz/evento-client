@@ -25,7 +25,7 @@ export function BadgeDetailSheet({ badge, isOpen, onClose }: BadgeDetailSheetPro
     >
       <div className='flex flex-col items-center space-y-6'>
         {/* Badge Image */}
-        <div className='relative h-32 w-32 overflow-hidden rounded-full bg-gray-100'>
+        <div className='relative h-32 w-32 overflow-hidden rounded-full bg-gray-100 dark:bg-neutral-800'>
           {badge.badge.image_url ? (
             <Image
               src={badge.badge.image_url}
@@ -42,25 +42,31 @@ export function BadgeDetailSheet({ badge, isOpen, onClose }: BadgeDetailSheetPro
         </div>
 
         {/* Badge Name */}
-        <h2 className='text-2xl font-bold text-gray-900'>{badge.badge.name}</h2>
+        <h2 className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+          {badge.badge.name}
+        </h2>
 
         {/* Badge Description */}
         {badge.badge.description && (
-          <p className='text-center text-gray-600'>{badge.badge.description}</p>
+          <p className='text-center text-gray-600 dark:text-neutral-400'>
+            {badge.badge.description}
+          </p>
         )}
 
         {/* Earned Date */}
         {earnedDate && (
-          <div className='rounded-xl bg-gray-100 px-4 py-3 text-center'>
-            <p className='text-sm text-gray-500'>Earned on</p>
-            <p className='font-medium text-gray-900'>{earnedDate}</p>
+          <div className='rounded-xl bg-gray-100 px-4 py-3 text-center dark:bg-neutral-800'>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>Earned on</p>
+            <p className='font-medium text-gray-900 dark:text-neutral-100'>{earnedDate}</p>
           </div>
         )}
 
         {/* Badge Type */}
         {badge.badge.type && (
-          <div className='rounded-full bg-amber-100 px-3 py-1'>
-            <p className='text-sm font-medium capitalize text-amber-700'>{badge.badge.type}</p>
+          <div className='rounded-full bg-amber-100 px-3 py-1 dark:bg-amber-950/60'>
+            <p className='text-sm font-medium capitalize text-amber-700 dark:text-amber-400'>
+              {badge.badge.type}
+            </p>
           </div>
         )}
       </div>

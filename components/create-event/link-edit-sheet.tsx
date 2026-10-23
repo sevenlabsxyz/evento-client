@@ -110,7 +110,7 @@ export function LinkEditSheet({
                       setError('');
                     }}
                     placeholder='Paste a link (https://...)'
-                    className='LinkEditSheet-input'
+                    className='LinkEditSheet-input dark:placeholder:text-neutral-400'
                     autoFocus
                     required
                   />
@@ -124,7 +124,7 @@ export function LinkEditSheet({
                     value={field.text}
                     onChange={(e) => setField({ ...field, text: e.target.value })}
                     placeholder='Text to display'
-                    className='LinkEditSheet-input'
+                    className='LinkEditSheet-input dark:placeholder:text-neutral-400'
                   />
                 </div>
 

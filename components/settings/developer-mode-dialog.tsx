@@ -27,7 +27,7 @@ export function DeveloperModeDialog({ open, onOpenChange, onConfirm }: Developer
             <span className='block'>
               Developer Mode is intended for advanced users building integrations with Evento.
             </span>
-            <span className='block font-medium text-amber-600'>
+            <span className='block font-medium text-amber-600 dark:text-amber-400'>
               Enabling this will grant access to API keys and technical settings. Make sure you
               understand the security implications of managing API credentials.
             </span>

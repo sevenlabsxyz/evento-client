@@ -47,7 +47,7 @@ export function WalletLoadingScreen({ className }: WalletLoadingScreenProps) {
     >
       {/* Animated Logo */}
       <motion.div
-        className='rounded-full border border-gray-200 bg-gray-50 shadow-sm'
+        className='rounded-full border border-gray-200 bg-gray-50 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'
         animate={{
           rotate: 360,
         }}
@@ -59,7 +59,13 @@ export function WalletLoadingScreen({ className }: WalletLoadingScreenProps) {
           },
         }}
       >
-        <Image src='/assets/img/evento-sublogo.svg' alt='Evento Logo' width={96} height={96} />
+        <Image
+          src='/assets/img/evento-sublogo.svg'
+          alt='Evento Logo'
+          width={96}
+          height={96}
+          className='dark:invert'
+        />
       </motion.div>
 
       {/* Rotating Messages */}
@@ -71,7 +77,7 @@ export function WalletLoadingScreen({ className }: WalletLoadingScreenProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className='absolute inset-0 text-center text-xl font-medium text-gray-900'
+            className='absolute inset-0 text-center text-xl font-medium text-gray-900 dark:text-neutral-100'
           >
             {LOADING_MESSAGES[currentMessageIndex]}
           </motion.p>
@@ -83,7 +89,7 @@ export function WalletLoadingScreen({ className }: WalletLoadingScreenProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 20 }}
-        className='mt-4 text-center text-sm text-gray-500'
+        className='mt-4 text-center text-sm text-gray-500 dark:text-neutral-400'
       >
         This may take longer on slower connections.
         <br />

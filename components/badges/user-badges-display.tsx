@@ -36,14 +36,19 @@ export function UserBadgesDisplay({
   }
 
   return (
-    <div className={cn('rounded-3xl border border-gray-200 bg-gray-50 p-6', className)}>
+    <div
+      className={cn(
+        'rounded-3xl border border-gray-200 bg-gray-50 p-6 dark:border-neutral-800 dark:bg-neutral-950',
+        className
+      )}
+    >
       {/* Header */}
       <div className='mb-4 flex items-center justify-between'>
-        <h2 className='text-lg font-bold text-gray-900'>Badges</h2>
+        <h2 className='text-lg font-bold text-gray-900 dark:text-neutral-100'>Badges</h2>
         {isOwnProfile && onManageClick && (
           <button
             onClick={onManageClick}
-            className='flex items-center gap-1 text-sm text-gray-500 transition-colors hover:text-gray-700'
+            className='flex items-center gap-1 text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
           >
             <Settings2 className='h-4 w-4' />
             <span>Manage</span>

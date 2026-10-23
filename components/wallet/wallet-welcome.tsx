@@ -33,7 +33,7 @@ export function WalletWelcome({ onSetup, onRestore }: WalletWelcomeProps) {
             </Button>
             <Button
               onClick={onRestore}
-              className='h-12 w-full rounded-full bg-gray-50 text-base'
+              className='h-12 w-full rounded-full bg-gray-50 text-base dark:bg-neutral-900'
               variant='outline'
             >
               I already have a wallet

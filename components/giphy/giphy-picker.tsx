@@ -89,20 +89,20 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
     <div className='flex h-full w-full flex-col'>
       {/* Search bar */}
       <div className='relative mb-4 mt-2'>
-        <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400' />
+        <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400 dark:text-neutral-500' />
         <Input
           type='text'
           placeholder='Search GIFs...'
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className='w-full bg-gray-100 pl-10'
+          className='w-full bg-gray-100 pl-10 dark:bg-neutral-800 dark:focus-visible:ring-offset-neutral-900'
         />
       </div>
 
       {/* Loading state */}
       {isLoading && (
         <div className='flex flex-1 items-center justify-center'>
-          <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
+          <Loader2 className='h-8 w-8 animate-spin text-gray-400 dark:text-neutral-500' />
         </div>
       )}
 
@@ -113,7 +113,9 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
             <div
               key={gif.id}
               className={`aspect-square cursor-pointer overflow-hidden rounded-lg transition-all duration-200 ${
-                selectedGif?.id === gif.id ? 'ring-2 ring-primary ring-offset-2' : ''
+                selectedGif?.id === gif.id
+                  ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-neutral-900'
+                  : ''
               }`}
               onClick={() => handleGifClick(gif)}
             >
@@ -131,8 +133,8 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
       {/* No results */}
       {!isLoading && gifs.length === 0 && (
         <div className='flex flex-1 flex-col items-center justify-center p-4 text-center'>
-          <p className='text-gray-500'>No GIFs found</p>
-          <p className='text-sm text-gray-400'>Try a different search term</p>
+          <p className='text-gray-500 dark:text-neutral-400'>No GIFs found</p>
+          <p className='text-sm text-gray-400 dark:text-neutral-500'>Try a different search term</p>
         </div>
       )}
     </div>

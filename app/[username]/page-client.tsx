@@ -320,7 +320,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   // Handle loading state
   if (isUserLoading || isCheckingAuth) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
         <Skeleton variant='profile' />
       </div>
     );
@@ -329,7 +329,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   // Handle user not found - check for valid user data (id must exist)
   if (userError || !userData?.id) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
         <Empty className='flex-1'>
           <EmptyHeader>
             <EmptyMedia variant='icon'>
@@ -344,7 +344,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
             <Button
               onClick={() => router.back()}
               variant='outline'
-              className='rounded-full bg-gray-50'
+              className='rounded-full bg-gray-50 dark:bg-neutral-950'
             >
               <ArrowLeft className='h-4 w-4' />
               Go Back
@@ -485,15 +485,15 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
         {/* Filter Controls */}
         <div className='flex justify-center'>
           {/* Timeframe Toggle */}
-          <div className='flex items-center rounded-full bg-gray-50 p-1'>
+          <div className='flex items-center rounded-full bg-gray-50 p-1 dark:bg-neutral-950'>
             <button
               type='button'
               onClick={() => setTimeframe('future')}
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                 timeframe === 'future'
-                  ? 'bg-white text-black shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white'
+                  : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
               Upcoming
@@ -504,8 +504,8 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                 timeframe === 'past'
-                  ? 'bg-white text-black shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white'
+                  : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
               Past
@@ -528,17 +528,17 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
             </div>
           ) : groupedEvents.length === 0 ? (
             <div className='flex h-40 flex-col items-center justify-center space-y-2 text-center'>
-              <div className='rounded-full bg-gray-100 p-3'>
-                <MessageCircle className='h-6 w-6 text-gray-400' />
+              <div className='rounded-full bg-gray-100 p-3 dark:bg-neutral-800'>
+                <MessageCircle className='h-6 w-6 text-gray-400 dark:text-neutral-400' />
               </div>
-              <p className='text-sm text-gray-500'>
+              <p className='text-sm text-gray-500 dark:text-neutral-400'>
                 {timeframe === 'future' ? 'No upcoming events found' : 'No past events found'}
               </p>
             </div>
           ) : (
             groupedEvents.map((group) => (
               <div key={group.date} className='space-y-3'>
-                <h3 className='text-sm font-medium text-gray-500'>
+                <h3 className='text-sm font-medium text-gray-500 dark:text-neutral-400'>
                   {formatDateHeader(group.date)}
                 </h3>
                 <div className='space-y-3'>
@@ -604,7 +604,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
     return (
       <div className='space-y-4'>
         {sortedBadges.length ? (
-          <div className='rounded-3xl border border-gray-200 bg-gray-50 p-4'>
+          <div className='rounded-3xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
             <div className='grid grid-cols-3 gap-4 sm:grid-cols-4'>
               {sortedBadges.map((userBadge) => (
                 <BadgeItem
@@ -634,8 +634,8 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   };
 
   return (
-    <div className='min-h-screen bg-white'>
-      <div className='mx-auto max-w-full bg-white md:max-w-md'>
+    <div className='min-h-screen bg-white dark:bg-neutral-900'>
+      <div className='mx-auto max-w-full bg-white dark:bg-neutral-900 md:max-w-md'>
         <div>
           {/* Profile Info */}
           <div>
@@ -655,21 +655,23 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
             </div>
 
             {/* Profile Section */}
-            <div className='mb-4 bg-white px-6 pb-2 pt-20'>
+            <div className='mb-4 bg-white px-6 pb-2 pt-20 dark:bg-neutral-900'>
               {/* User Info - Centered */}
               <div className='mb-6 text-center'>
-                <h2 className='text-2xl font-bold text-gray-900'>
+                <h2 className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>
                   {userProfile?.name || 'Unknown User'}
                 </h2>
-                <p className='text-gray-600'>{userProfile?.username || ''}</p>
+                <p className='text-gray-600 dark:text-neutral-400'>{userProfile?.username || ''}</p>
               </div>
 
               {/* Stats - Centered */}
               <div className='mb-4 flex justify-center'>
                 <div className='grid grid-cols-3 gap-8'>
                   <div className='text-center'>
-                    <div className='text-xl font-bold text-gray-900'>{eventCount}</div>
-                    <div className='text-sm text-gray-500'>Events</div>
+                    <div className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
+                      {eventCount}
+                    </div>
+                    <div className='text-sm text-gray-500 dark:text-neutral-400'>Events</div>
                   </div>
                   <motion.button
                     className='text-center'
@@ -677,8 +679,10 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                   >
-                    <div className='text-xl font-bold text-gray-900'>{followingCount}</div>
-                    <div className='text-sm text-gray-500'>Following</div>
+                    <div className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
+                      {followingCount}
+                    </div>
+                    <div className='text-sm text-gray-500 dark:text-neutral-400'>Following</div>
                   </motion.button>
                   <motion.button
                     className='text-center'
@@ -686,8 +690,10 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                   >
-                    <div className='text-xl font-bold text-gray-900'>{followersCount}</div>
-                    <div className='text-sm text-gray-500'>Followers</div>
+                    <div className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
+                      {followersCount}
+                    </div>
+                    <div className='text-sm text-gray-500 dark:text-neutral-400'>Followers</div>
                   </motion.button>
                 </div>
               </div>
@@ -698,10 +704,10 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                   <Button
                     onClick={handleFollowToggle}
                     disabled={isFollowStatusLoading || followActionMutation.isPending}
-                    className={`h-12 flex-1 rounded-full border border-gray-200 px-6 text-base ${
+                    className={`h-12 flex-1 rounded-full border border-gray-200 px-6 text-base dark:border-neutral-800 ${
                       followStatus?.isFollowing
-                        ? 'bg-gray-50 text-gray-900 hover:bg-gray-200'
-                        : 'bg-red-500 text-white hover:bg-red-600'
+                        ? 'bg-gray-50 text-gray-900 hover:bg-gray-200 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-800'
+                        : 'bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                     }`}
                   >
                     {followStatus?.isFollowing ? (
@@ -744,7 +750,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
           {/* Tabs */}
           <div className='pb-20'>
             {/* Tabbed Section */}
-            <div className='mb-4 w-full bg-white px-6 pb-5 md:pb-0 lg:px-0'>
+            <div className='mb-4 w-full bg-white px-6 pb-5 dark:bg-neutral-900 md:pb-0 lg:px-0'>
               {/* Tab Headers */}
               <AnimatedTabs
                 expanded
@@ -811,18 +817,20 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
       {/* Website Redirect Modal */}
       {showWebsiteModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center dark:bg-neutral-900 md:max-w-sm'>
             <h3 className='mb-4 text-xl font-bold'>Leaving Evento</h3>
-            <p className='mb-6 text-gray-600'>
+            <p className='mb-6 text-gray-600 dark:text-neutral-400'>
               Are you about to leave Evento and be redirected to sarahchen.com?
             </p>
-            <div className='mb-6 text-6xl font-bold text-red-500'>{countdown}</div>
+            <div className='mb-6 text-6xl font-bold text-red-500 dark:text-red-400'>
+              {countdown}
+            </div>
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
                 window.open(safeExternalUrl(userData?.bio_link), '_blank', 'noopener,noreferrer');
               }}
-              className='w-full bg-red-500 text-white hover:bg-red-600'
+              className='w-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
             >
               Take me to sarahchen.com
             </Button>
@@ -833,12 +841,14 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
       {/* Verification Modal */}
       {showVerificationModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
-            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center dark:bg-neutral-900 md:max-w-sm'>
+            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40'>
               <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
             </div>
-            <h3 className='mb-4 text-xl font-bold text-gray-900'>This user is verified</h3>
-            <p className='mb-6 text-gray-600'>
+            <h3 className='mb-4 text-xl font-bold text-gray-900 dark:text-neutral-100'>
+              This user is verified
+            </h3>
+            <p className='mb-6 text-gray-600 dark:text-neutral-400'>
               This user is a premium member with a verified account. Verified users have enhanced
               credibility and access to exclusive features on our platform.
             </p>
@@ -850,7 +860,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     '/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.'
                   );
                 }}
-                className='w-full bg-red-500 text-white hover:bg-red-600'
+                className='w-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 Get in touch about verification
               </Button>

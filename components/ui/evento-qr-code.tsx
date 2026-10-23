@@ -21,7 +21,7 @@ export function EventoQRCode({
   return (
     <div
       className={cn(
-        'inline-block rounded-2xl border border-gray-200 bg-white p-4 shadow-sm',
+        'inline-block rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-neutral-200 dark:bg-white',
         className
       )}
     >

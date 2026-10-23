@@ -31,8 +31,8 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
 
   return (
     <>
-      <div className='border-t border-gray-100 py-6'>
-        <h2 className='mb-4 text-lg font-semibold text-gray-900'>Location</h2>
+      <div className='border-t border-gray-100 py-6 dark:border-neutral-800'>
+        <h2 className='mb-4 text-lg font-semibold text-gray-900 dark:text-neutral-100'>Location</h2>
 
         {/* Location Info */}
         <div className='mb-4 flex items-start justify-between'>
@@ -42,12 +42,12 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
             onClick={() => !isTBDLocation && setShowMapOptions(true)}
           >
             <h3
-              className={`mb-1 font-semibold ${isTBDLocation ? 'text-gray-500' : 'text-gray-900'}`}
+              className={`mb-1 font-semibold ${isTBDLocation ? 'text-gray-500 dark:text-neutral-400' : 'text-gray-900 dark:text-neutral-100'}`}
             >
               {event.location.name}
             </h3>
             {!isTBDLocation && (event.location.city || event.location.country) && (
-              <p className={`text-sm text-gray-600`}>
+              <p className={`text-sm text-gray-600 dark:text-neutral-400`}>
                 {event.location.city}
                 {event.location.city && event.location.country && `, ${event.location.country}`}
               </p>
@@ -58,7 +58,7 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
           {weather && (
             <button
               onClick={() => setShowWeatherDetail(true)}
-              className='flex cursor-pointer items-center gap-2 rounded-lg p-1 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800'
+              className='flex cursor-pointer items-center gap-2 rounded-lg p-1 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200'
               type='button'
             >
               <Sun className='h-5 w-5' />
@@ -71,11 +71,11 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
 
         {/* Google Maps Embed - Only show if not TBD */}
         {!isTBDLocation && (
-          <div className='relative h-48 overflow-hidden rounded-xl border border-gray-200'>
+          <div className='relative h-48 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800'>
             <iframe
               width='100%'
               height='100%'
-              className='border-0'
+              className='border-0 dark:hue-rotate-180 dark:invert-[0.9]'
               loading='lazy'
               allowFullScreen
               referrerPolicy='no-referrer-when-downgrade'
@@ -94,7 +94,7 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
 
             {/* Map Pin */}
             <div className='pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform'>
-              <div className='-translate-y-1/2 transform rounded-full bg-red-500 p-2'>
+              <div className='-translate-y-1/2 transform rounded-full bg-red-500 p-2 dark:bg-red-600'>
                 <MapPin className='h-4 w-4 text-white' />
               </div>
             </div>
@@ -107,10 +107,10 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
             {/* Expand button */}
             <button
               onClick={() => setShowMapOptions(true)}
-              className='absolute right-2 top-2 z-20 rounded-full bg-white bg-opacity-90 p-1.5 transition-all hover:bg-opacity-100'
+              className='absolute right-2 top-2 z-20 rounded-full bg-white bg-opacity-90 p-1.5 transition-all hover:bg-opacity-100 dark:bg-neutral-900 dark:ring-1 dark:ring-neutral-700'
               type='button'
             >
-              <ExternalLink className='h-4 w-4 text-gray-700' />
+              <ExternalLink className='h-4 w-4 text-gray-700 dark:text-neutral-300' />
             </button>
           </div>
         )}

@@ -90,7 +90,7 @@ function EventBlock({
       type='button'
       aria-label={`${segment.title}, ${dateLabel}, ${timeLabel}. ${continuationLabel}`.trim()}
       title={`${segment.title} · ${timeLabel}`}
-      className='absolute overflow-hidden rounded-2xl border border-gray-900/10 bg-gray-900 px-2 py-1 text-left text-white shadow-sm transition-colors hover:bg-gray-800 focus-visible:z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2'
+      className='absolute overflow-hidden rounded-2xl border border-gray-900/10 bg-gray-900 px-2 py-1 text-left text-white shadow-sm transition-colors hover:bg-gray-800 focus-visible:z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 dark:border-neutral-200/10 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:focus-visible:ring-neutral-200'
       style={{
         top,
         height,
@@ -101,7 +101,9 @@ function EventBlock({
     >
       <span className='block truncate text-xs font-semibold leading-4'>{segment.title}</span>
       {height >= 40 && (
-        <span className='block truncate text-[10px] text-gray-300'>{timeLabel}</span>
+        <span className='block truncate text-[10px] text-gray-300 dark:text-neutral-600'>
+          {timeLabel}
+        </span>
       )}
     </button>
   );
@@ -138,13 +140,13 @@ export function SubEventCalendarModal({
         data-vaul-no-drag
       >
         <div
-          className='min-h-0 flex-1 overflow-auto overscroll-contain border-y border-gray-200 bg-white [-webkit-overflow-scrolling:touch] [touch-action:pan-x_pan-y]'
+          className='min-h-0 flex-1 overflow-auto overscroll-contain border-y border-gray-200 bg-white [-webkit-overflow-scrolling:touch] [touch-action:pan-x_pan-y] dark:border-neutral-800 dark:bg-neutral-900'
           data-testid='sub-event-calendar-grid'
         >
           <div className='w-full' style={{ minWidth: canvasWidth }}>
-            <div className='sticky top-0 z-30 flex h-16 border-b border-gray-200 bg-white'>
+            <div className='sticky top-0 z-30 flex h-16 border-b border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
               <div
-                className='sticky left-0 z-30 shrink-0 border-r border-gray-200 bg-white'
+                className='sticky left-0 z-30 shrink-0 border-r border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
                 style={{ width: TIME_RAIL_WIDTH_PX }}
               />
               {model.dates.map((date) => {
@@ -152,13 +154,15 @@ export function SubEventCalendarModal({
                 return (
                   <div
                     key={date.key}
-                    className='flex min-w-0 flex-1 shrink-0 flex-col items-center justify-center border-r border-gray-200 bg-white px-3'
+                    className='flex min-w-0 flex-1 shrink-0 flex-col items-center justify-center border-r border-gray-200 bg-white px-3 dark:border-neutral-800 dark:bg-neutral-900'
                     style={{ minWidth: DATE_COLUMN_WIDTH_PX }}
                   >
-                    <span className='text-xs font-medium uppercase tracking-wide text-gray-500'>
+                    <span className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
                       {label.weekday}
                     </span>
-                    <span className='text-sm font-semibold text-gray-900'>{label.date}</span>
+                    <span className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+                      {label.date}
+                    </span>
                   </div>
                 );
               })}
@@ -166,13 +170,13 @@ export function SubEventCalendarModal({
 
             <div className='flex'>
               <div
-                className='sticky left-0 z-10 shrink-0 border-r border-gray-200 bg-white'
+                className='sticky left-0 z-10 shrink-0 border-r border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
                 style={{ width: TIME_RAIL_WIDTH_PX, height: gridHeight }}
               >
                 {hourMarkers.slice(0, -1).map((hour, index) => (
                   <span
                     key={`${hour}-${index}`}
-                    className='absolute right-2 -translate-y-2 text-[10px] font-medium text-gray-500'
+                    className='absolute right-2 -translate-y-2 text-[10px] font-medium text-gray-500 dark:text-neutral-400'
                     style={{ top: index * HOUR_HEIGHT_PX }}
                   >
                     {formatMinute((hour % 24) * 60)}
@@ -183,14 +187,14 @@ export function SubEventCalendarModal({
               {model.dates.map((date) => (
                 <div
                   key={date.key}
-                  className='relative min-w-0 flex-1 shrink-0 border-r border-gray-200 bg-white'
+                  className='relative min-w-0 flex-1 shrink-0 border-r border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
                   style={{ minWidth: DATE_COLUMN_WIDTH_PX, height: gridHeight }}
                 >
                   {hourMarkers.map((hour, index) => (
                     <div
                       key={`${hour}-${index}`}
                       aria-hidden='true'
-                      className='pointer-events-none absolute inset-x-0 border-t border-gray-100'
+                      className='pointer-events-none absolute inset-x-0 border-t border-gray-100 dark:border-neutral-800'
                       style={{ top: index * HOUR_HEIGHT_PX }}
                     />
                   ))}
@@ -209,9 +213,9 @@ export function SubEventCalendarModal({
         </div>
 
         {model.unscheduled.length > 0 && (
-          <div className='shrink-0 border-t border-gray-200 bg-gray-50 px-4 py-3'>
-            <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900'>
-              <Clock3 className='h-4 w-4 text-gray-500' />
+          <div className='shrink-0 border-t border-gray-200 bg-gray-50 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950'>
+            <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+              <Clock3 className='h-4 w-4 text-gray-500 dark:text-neutral-400' />
               Time TBD
             </div>
             <div className='flex gap-2 overflow-x-auto pb-1'>
@@ -220,7 +224,7 @@ export function SubEventCalendarModal({
                   key={event.id}
                   type='button'
                   aria-label={`${event.title}, time to be determined`}
-                  className='max-w-56 shrink-0 truncate rounded-full border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+                  className='max-w-56 shrink-0 truncate rounded-full border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800'
                   onClick={() => onSelectEvent(event.id)}
                 >
                   {event.title}

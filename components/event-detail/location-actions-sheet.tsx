@@ -44,7 +44,7 @@ export function LocationActionsSheet({
   return (
     <MasterScrollableSheet title='Open in Maps' open={open} onOpenChange={onOpenChange}>
       <div className='px-4 pb-6'>
-        <p className='mb-5 text-sm text-gray-600'>{fullAddress}</p>
+        <p className='mb-5 text-sm text-gray-600 dark:text-neutral-400'>{fullAddress}</p>
 
         <div className='space-y-3'>
           <Button
@@ -77,7 +77,7 @@ export function LocationActionsSheet({
           <Button
             type='button'
             variant='outline'
-            className='mt-2 h-14 w-full text-base font-medium text-gray-600'
+            className='mt-2 h-14 w-full text-base font-medium text-gray-600 dark:text-neutral-400'
             onClick={() => onOpenChange(false)}
           >
             Cancel

@@ -151,15 +151,15 @@ export default function EditEventDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-md'>
+      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-md'>
         <div className='space-y-4 p-4'>
           {/* Cover image skeleton */}
           <Skeleton className='aspect-video w-full rounded-2xl' />
 
           {/* Form sections skeleton */}
-          <div className='space-y-4 rounded-2xl bg-gray-50 p-4'>
+          <div className='space-y-4 rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'>
             {/* Title section */}
-            <div className='rounded-2xl bg-white p-4'>
+            <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
               <Skeleton className='mb-2 h-4 w-20' />
               <div className='flex items-center gap-3'>
                 <Skeleton className='h-8 w-8 rounded-lg' />
@@ -168,7 +168,7 @@ export default function EditEventDetailsPage() {
             </div>
 
             {/* Date & time section */}
-            <div className='space-y-4 rounded-2xl bg-white p-4'>
+            <div className='space-y-4 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
               <div className='flex items-center gap-4'>
                 <Skeleton className='h-8 w-8 rounded-lg' />
                 <Skeleton className='h-4 w-16' />
@@ -189,7 +189,7 @@ export default function EditEventDetailsPage() {
 
             {/* Other sections */}
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className='rounded-2xl bg-white p-4'>
+              <div key={i} className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
                 <div className='flex items-center gap-4'>
                   <Skeleton className='h-8 w-8 rounded-lg' />
                   <div className='flex-1'>
@@ -208,16 +208,18 @@ export default function EditEventDetailsPage() {
 
   if (error || !eventData) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+            Event Not Found
+          </h1>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             The event you&apos;re trying to edit doesn&apos;t exist or you don&apos;t have
             permission.
           </p>
           <button
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -258,7 +260,7 @@ export default function EditEventDetailsPage() {
   };
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-md'>
       {/* Cover Image Selector */}
       <div className='mb-4 px-4'>
         <CoverImageSelector
@@ -268,11 +270,13 @@ export default function EditEventDetailsPage() {
       </div>
 
       {/* Form Content */}
-      <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4'>
+      <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4 dark:bg-neutral-950'>
         {/* Event Title Module */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
           <div className='space-y-2'>
-            <label className='text-sm font-medium text-gray-500'>Event Title</label>
+            <label className='text-sm font-medium text-gray-500 dark:text-neutral-400'>
+              Event Title
+            </label>
             <div className='flex items-center gap-3'>
               <EmojiSelector selectedEmoji={emoji} onEmojiSelect={setEmoji} />
               <input
@@ -280,29 +284,29 @@ export default function EditEventDetailsPage() {
                 placeholder='Enter event name'
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className='flex-1 border-none bg-transparent text-lg font-medium text-gray-900 outline-none'
+                className='flex-1 border-none bg-transparent text-lg font-medium text-gray-900 outline-none dark:text-neutral-100'
               />
             </div>
           </div>
         </div>
 
         {/* Date & Time Module */}
-        <div className='space-y-4 rounded-2xl bg-white p-4'>
+        <div className='space-y-4 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-              <Calendar className='h-4 w-4 text-gray-600' />
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
+              <Calendar className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
-            <span className='w-16 font-medium text-gray-700'>Starts</span>
+            <span className='w-16 font-medium text-gray-700 dark:text-neutral-300'>Starts</span>
             <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowStartDateModal(true)}
-                className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900'
+                className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900 dark:bg-neutral-800 dark:text-neutral-100'
               >
                 {formatDateForDisplay(startDate)}
               </button>
               <button
                 onClick={() => setShowStartTimeModal(true)}
-                className='whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600'
+                className='whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'
               >
                 {formatTimeForDisplay(startTime)}
               </button>
@@ -310,20 +314,20 @@ export default function EditEventDetailsPage() {
           </div>
 
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-              <Calendar className='h-4 w-4 text-gray-600' />
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
+              <Calendar className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
-            <span className='w-16 font-medium text-gray-700'>Ends</span>
+            <span className='w-16 font-medium text-gray-700 dark:text-neutral-300'>Ends</span>
             <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowEndDateModal(true)}
-                className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900'
+                className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900 dark:bg-neutral-800 dark:text-neutral-100'
               >
                 {formatDateForDisplay(endDate)}
               </button>
               <button
                 onClick={() => setShowEndTimeModal(true)}
-                className='whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600'
+                className='whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'
               >
                 {formatTimeForDisplay(endTime)}
               </button>
@@ -332,65 +336,73 @@ export default function EditEventDetailsPage() {
         </div>
 
         {/* Address Module */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
           <button
             onClick={() => setShowLocationModal(true)}
             className='flex w-full items-center gap-4 text-left'
           >
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-              <MapPin className='h-4 w-4 text-gray-600' />
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
+              <MapPin className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
             <div className='flex-1'>
-              <label className='mb-1 block text-sm font-medium text-gray-500'>Address</label>
+              <label className='mb-1 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
+                Address
+              </label>
               <div className='flex items-center justify-between'>
-                <span className={`font-medium ${location ? 'text-gray-900' : 'text-gray-400'}`}>
+                <span
+                  className={`font-medium ${location ? 'text-gray-900 dark:text-neutral-100' : 'text-gray-400 dark:text-neutral-400'}`}
+                >
                   {location ? getLocationDisplayName(location) : 'Choose address'}
                 </span>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+                <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
               </div>
             </div>
           </button>
         </div>
 
         {/* Description Module */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
           <button
             onClick={() => setShowDescriptionModal(true)}
             className='flex w-full items-start gap-4 text-left'
           >
-            <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-              <Edit3 className='h-4 w-4 text-gray-600' />
+            <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
+              <Edit3 className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
             <div className='flex-1'>
-              <label className='mb-2 block text-sm font-medium text-gray-500'>Description</label>
+              <label className='mb-2 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
+                Description
+              </label>
               <div className='flex items-center justify-between'>
                 <span
-                  className={`${isContentEmpty(description) ? 'text-gray-400' : 'text-gray-900'}`}
+                  className={`${isContentEmpty(description) ? 'text-gray-400 dark:text-neutral-400' : 'text-gray-900 dark:text-neutral-100'}`}
                 >
                   {isContentEmpty(description)
                     ? 'Add description about this event...'
                     : getContentPreview(description, 80)}
                 </span>
-                <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400' />
+                <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
               </div>
             </div>
           </button>
         </div>
 
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
           <div className='space-y-3'>
             <div className='flex items-center gap-4'>
-              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-                <Users className='h-4 w-4 text-gray-600' />
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
+                <Users className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
               </div>
               <div className='flex-1'>
                 <div className='flex items-center justify-between'>
                   <div className='flex flex-col'>
-                    <label className='mb-1 text-sm font-medium text-gray-500'>
+                    <label className='mb-1 text-sm font-medium text-gray-500 dark:text-neutral-400'>
                       {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
                     </label>
                     {hasCapacity && capacity && (
-                      <span className='text-xs text-gray-400'>Maximum attendees: {capacity}</span>
+                      <span className='text-xs text-gray-400 dark:text-neutral-400'>
+                        Maximum attendees: {capacity}
+                      </span>
                     )}
                   </div>
                   <button
@@ -402,11 +414,11 @@ export default function EditEventDetailsPage() {
                       }
                     }}
                     className={`h-6 w-12 rounded-full transition-colors ${
-                      hasCapacity ? 'bg-purple-500' : 'bg-gray-300'
+                      hasCapacity ? 'bg-purple-500' : 'bg-gray-300 dark:bg-neutral-600'
                     }`}
                   >
                     <div
-                      className={`h-5 w-5 rounded-full bg-white transition-transform ${
+                      className={`h-5 w-5 rounded-full bg-white transition-transform dark:bg-neutral-100 ${
                         hasCapacity ? 'translate-x-6' : 'translate-x-0.5'
                       }`}
                     ></div>
@@ -416,19 +428,23 @@ export default function EditEventDetailsPage() {
             </div>
 
             {hasCapacity && (
-              <div className='flex items-center justify-between rounded-xl border border-gray-200 px-3 py-2'>
+              <div className='flex items-center justify-between rounded-xl border border-gray-200 px-3 py-2 dark:border-neutral-800'>
                 <div>
-                  <p className='text-sm font-medium text-gray-700'>Show capacity count</p>
-                  <p className='text-xs text-gray-500'>Display spots remaining to guests</p>
+                  <p className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
+                    Show capacity count
+                  </p>
+                  <p className='text-xs text-gray-500 dark:text-neutral-400'>
+                    Display spots remaining to guests
+                  </p>
                 </div>
                 <button
                   onClick={() => setShowCapacityCount(!showCapacityCount)}
                   className={`h-6 w-12 rounded-full transition-colors ${
-                    showCapacityCount ? 'bg-purple-500' : 'bg-gray-300'
+                    showCapacityCount ? 'bg-purple-500' : 'bg-gray-300 dark:bg-neutral-600'
                   }`}
                 >
                   <div
-                    className={`h-5 w-5 rounded-full bg-white transition-transform ${
+                    className={`h-5 w-5 rounded-full bg-white transition-transform dark:bg-neutral-100 ${
                       showCapacityCount ? 'translate-x-6' : 'translate-x-0.5'
                     }`}
                   ></div>
@@ -540,7 +556,7 @@ export default function EditEventDetailsPage() {
       />
 
       {/* Fixed Bottom Button */}
-      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:mx-auto md:max-w-3xl md:border-l md:border-r md:border-t'>
+      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900 md:mx-auto md:max-w-3xl md:border-l md:border-r md:border-t'>
         <div className='mx-auto max-w-full md:max-w-md'>
           <SubmitButton
             onClick={handleSaveChanges}

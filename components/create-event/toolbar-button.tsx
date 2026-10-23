@@ -26,8 +26,9 @@ const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(function
             className={cn(
               'rounded disabled:pointer-events-auto disabled:cursor-not-allowed disabled:text-muted-foreground disabled:hover:bg-transparent',
               {
-                'bg-red-100 text-red-600 hover:bg-red-100 hover:text-red-600': isActive,
-                'hover:bg-gray-100': !isActive,
+                'bg-red-100 text-red-600 hover:bg-red-100 hover:text-red-600 dark:bg-red-950/60 dark:text-red-400 dark:hover:bg-red-950/60 dark:hover:text-red-400':
+                  isActive,
+                'hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-800': !isActive,
               },
               className
             )}

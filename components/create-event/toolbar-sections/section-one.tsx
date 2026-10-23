@@ -48,7 +48,7 @@ export default function SectionOne({ editor, onOpenSheet }: SectionOneProps) {
       {showDropdown && (
         <>
           <div className='fixed inset-0 z-40' onClick={() => setShowDropdown(false)} />
-          <div className='absolute left-0 top-full z-50 mt-1 w-64 rounded-md border bg-white shadow-lg'>
+          <div className='absolute left-0 top-full z-50 mt-1 w-64 rounded-md border bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:shadow-black/40'>
             <button
               onClick={setParagraph}
               className={cn(DropdownMenuItemClass, {
@@ -66,7 +66,7 @@ export default function SectionOne({ editor, onOpenSheet }: SectionOneProps) {
               })}
               aria-label='Heading 1'
             >
-              <h1 className='m-0 grow text-3xl font-extrabold'>Heading 1</h1>
+              <h1 className='m-0 grow text-3xl font-extrabold dark:text-neutral-100'>Heading 1</h1>
               <ShortcutKey keys={['mod', 'alt', '1']} />
             </button>
             <button
@@ -76,7 +76,7 @@ export default function SectionOne({ editor, onOpenSheet }: SectionOneProps) {
               })}
               aria-label='Heading 2'
             >
-              <h2 className='m-0 grow text-xl font-bold'>Heading 2</h2>
+              <h2 className='m-0 grow text-xl font-bold dark:text-neutral-100'>Heading 2</h2>
               <ShortcutKey keys={['mod', 'alt', '2']} />
             </button>
             <button
@@ -86,7 +86,7 @@ export default function SectionOne({ editor, onOpenSheet }: SectionOneProps) {
               })}
               aria-label='Heading 3'
             >
-              <h3 className='m-0 grow text-lg font-semibold'>Heading 3</h3>
+              <h3 className='m-0 grow text-lg font-semibold dark:text-neutral-100'>Heading 3</h3>
               <ShortcutKey keys={['mod', 'alt', '3']} />
             </button>
           </div>

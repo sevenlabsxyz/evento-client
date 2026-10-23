@@ -1,6 +1,7 @@
 'use client';
 
 import { UserOnboardingFlow } from '@/components/onboarding';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { Loader2 } from 'lucide-react';
 import { Suspense } from 'react';
@@ -21,7 +22,10 @@ function OnboardingContent() {
   }
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-white'>
+    <div className='flex min-h-screen items-center justify-center bg-white dark:bg-neutral-950'>
+      <div className='fixed right-4 top-4 z-50'>
+        <ThemeToggle />
+      </div>
       <div className='h-screen w-full max-w-md md:h-auto'>
         <UserOnboardingFlow onSubmit={handleOnboardingComplete} />
       </div>

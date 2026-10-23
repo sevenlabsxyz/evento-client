@@ -78,7 +78,7 @@ export default function GalleryItem({
 
   return (
     <div
-      className='group relative aspect-square cursor-pointer overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2'
+      className='group relative aspect-square cursor-pointer overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-950'
       onClick={onImageClick}
       onKeyDown={handleKeyDown}
       onMouseEnter={() => setShowControls(true)}
@@ -112,7 +112,7 @@ export default function GalleryItem({
 
       {/* Loading state */}
       {!isLoaded && (
-        <div className='absolute inset-0 flex items-center justify-center bg-gray-100'>
+        <div className='absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-neutral-800'>
           <div className='h-8 w-8 animate-spin rounded-full border-t-2 border-solid border-red-500'></div>
         </div>
       )}
@@ -134,7 +134,7 @@ export default function GalleryItem({
           }`}
         >
           <Heart
-            className={`h-3.5 w-3.5 ${hasLiked ? 'fill-red-500 text-red-500' : 'text-white'}`}
+            className={`h-3.5 w-3.5 ${hasLiked ? 'fill-red-500 text-red-500 dark:text-red-400' : 'text-white'}`}
           />
           <span className='text-xs'>{likes}</span>
         </button>
@@ -151,7 +151,7 @@ export default function GalleryItem({
                 <button
                   type='button'
                   aria-label='Photo actions'
-                  className='rounded-full bg-black bg-opacity-50 p-1.5 text-white'
+                  className='rounded-full bg-black bg-opacity-50 p-1.5 text-white dark:bg-neutral-100 dark:text-neutral-900'
                   onClick={(event) => event.stopPropagation()}
                 >
                   <MoreHorizontal className='h-4 w-4' />
@@ -163,7 +163,7 @@ export default function GalleryItem({
                     e.stopPropagation();
                     handleDelete();
                   }}
-                  className='cursor-pointer text-red-600 focus:text-red-700'
+                  className='cursor-pointer text-red-600 focus:text-red-700 dark:text-red-400 dark:focus:text-red-400'
                 >
                   <Trash2 className='mr-2 h-4 w-4' />
                   Delete Photo

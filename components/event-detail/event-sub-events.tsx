@@ -48,9 +48,11 @@ export default function EventSubEvents({
   if (subEventsError) return null;
 
   return (
-    <div className='space-y-4 border-t border-gray-100 pt-6'>
+    <div className='space-y-4 border-t border-gray-100 pt-6 dark:border-neutral-800'>
       <div className='mb-4 flex items-center justify-between gap-2'>
-        <h3 className='min-w-0 text-lg font-semibold text-gray-900'>Sub Events</h3>
+        <h3 className='min-w-0 text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+          Sub Events
+        </h3>
         <div className='flex shrink-0 items-center gap-2'>
           {hasCalendar && !subEventsLoading && (
             <Button type='button' variant='outline' size='sm' onClick={() => setCalendarOpen(true)}>
@@ -77,11 +79,11 @@ export default function EventSubEvents({
             {Array.from({ length: 2 }).map((_, idx) => (
               <div key={idx} className='rounded-lg border p-4'>
                 <div className='flex items-start gap-3'>
-                  <div className='h-12 w-12 animate-pulse rounded-lg bg-gray-200' />
+                  <div className='h-12 w-12 animate-pulse rounded-lg bg-gray-200 dark:bg-neutral-700' />
                   <div className='flex-1'>
-                    <div className='h-4 w-3/4 animate-pulse rounded bg-gray-200' />
-                    <div className='mt-2 h-3 w-1/2 animate-pulse rounded bg-gray-200' />
-                    <div className='mt-2 h-3 w-1/3 animate-pulse rounded bg-gray-200' />
+                    <div className='h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
+                    <div className='mt-2 h-3 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
+                    <div className='mt-2 h-3 w-1/3 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
                   </div>
                 </div>
               </div>
@@ -98,7 +100,7 @@ export default function EventSubEvents({
               {!isExpanded && hasMoreSubEvents && (
                 <div
                   aria-hidden='true'
-                  className='pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white via-white/90 to-transparent'
+                  className='pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-white via-white/90 to-transparent dark:from-neutral-900 dark:via-neutral-900/90'
                 />
               )}
             </div>
@@ -106,7 +108,7 @@ export default function EventSubEvents({
               <Button
                 type='button'
                 variant='outline'
-                className='h-12 w-full bg-gray-50'
+                className='h-12 w-full bg-gray-50 dark:bg-neutral-950'
                 onClick={() => setIsExpanded((expanded) => !expanded)}
               >
                 {isExpanded ? 'Show less' : 'View all'}
@@ -114,8 +116,8 @@ export default function EventSubEvents({
             )}
           </div>
         ) : (
-          <div className='rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center'>
-            <p className='text-sm text-gray-500'>No sub events found.</p>
+          <div className='rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center dark:border-neutral-700 dark:bg-neutral-950'>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>No sub events found.</p>
           </div>
         )}
       </div>

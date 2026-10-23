@@ -63,13 +63,16 @@ export default function CapacitySettingSheet({
               {/* Header */}
               <div className='mb-6'>
                 <div className='mb-6 flex items-center justify-between'>
-                  <button onClick={handleClose} className='font-medium text-red-500'>
+                  <button
+                    onClick={handleClose}
+                    className='font-medium text-red-500 dark:text-red-400'
+                  >
                     Cancel
                   </button>
                   <h2 className='text-lg font-semibold'>Set Event Capacity</h2>
                   <button
                     onClick={handleSave}
-                    className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white'
+                    className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white dark:bg-red-600'
                   >
                     Save
                   </button>
@@ -79,7 +82,7 @@ export default function CapacitySettingSheet({
               {/* Form */}
               <div className='space-y-4'>
                 <div className='space-y-2'>
-                  <label className='text-sm font-medium text-gray-700'>
+                  <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
                     Maximum number of attendees
                   </label>
 
@@ -91,8 +94,8 @@ export default function CapacitySettingSheet({
                         onClick={() => handleQuickSelect(num)}
                         className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                           capacity === num.toString()
-                            ? 'bg-red-500 text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-red-500 text-white dark:bg-red-600'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
                         }`}
                       >
                         {num}
@@ -108,11 +111,11 @@ export default function CapacitySettingSheet({
                       setError('');
                     }}
                     placeholder='Enter capacity'
-                    className='w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500'
+                    className='w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                     min='1'
                     autoFocus
                   />
-                  {error && <p className='mt-1 text-sm text-red-500'>{error}</p>}
+                  {error && <p className='mt-1 text-sm text-red-500 dark:text-red-400'>{error}</p>}
                 </div>
               </div>
             </div>

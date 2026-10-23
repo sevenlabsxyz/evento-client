@@ -47,22 +47,24 @@ export default function WebsiteSheet({ isOpen, onClose, url }: WebsiteSheetProps
 
               {/* Website Info */}
               <div className='mb-6 flex items-center gap-3'>
-                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-blue-100'>
-                  <Globe className='h-6 w-6 text-blue-600' />
+                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-950/60'>
+                  <Globe className='h-6 w-6 text-blue-600 dark:text-blue-400' />
                 </div>
                 <div>
-                  <h3 className='font-semibold text-gray-900'>{getDomainFromUrl(url)}</h3>
-                  <p className='text-sm text-gray-500'>External website</p>
+                  <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                    {getDomainFromUrl(url)}
+                  </h3>
+                  <p className='text-sm text-gray-500 dark:text-neutral-400'>External website</p>
                 </div>
               </div>
 
               {/* Description */}
               <div className='mb-6'>
-                <p className='mb-4 text-gray-600'>
+                <p className='mb-4 text-gray-600 dark:text-neutral-400'>
                   You&apos;re about to visit an external website. This will open in a new tab.
                 </p>
-                <div className='rounded-lg bg-gray-50 p-3'>
-                  <p className='break-all text-sm text-gray-700'>{url}</p>
+                <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
+                  <p className='break-all text-sm text-gray-700 dark:text-neutral-300'>{url}</p>
                 </div>
               </div>
 

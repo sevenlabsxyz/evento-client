@@ -105,8 +105,11 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                     maxLength={50}
                     disabled={createApiKey.isPending}
                     autoFocus
+                    className='dark:focus-visible:ring-offset-neutral-900'
                   />
-                  <p className='text-xs text-gray-500'>Maximum 50 characters</p>
+                  <p className='text-xs text-gray-500 dark:text-neutral-400'>
+                    Maximum 50 characters
+                  </p>
                 </div>
               </div>
 
@@ -122,7 +125,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                 <Button
                   type='submit'
                   disabled={!name.trim() || createApiKey.isPending}
-                  className='bg-red-500 hover:bg-red-600'
+                  className='bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 >
                   {createApiKey.isPending ? 'Creating...' : 'Create Key'}
                 </Button>
@@ -135,7 +138,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
               <DialogTitle>API Key Created</DialogTitle>
               <DialogDescription className='space-y-2'>
                 <span className='block'>Your API key has been created successfully.</span>
-                <span className='block font-semibold text-red-600'>
+                <span className='block font-semibold text-red-600 dark:text-red-400'>
                   Make sure to copy it now. You won&apos;t be able to see it again!
                 </span>
               </DialogDescription>
@@ -149,7 +152,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                     id='api-key'
                     value={generatedKey}
                     readOnly
-                    className='h-10 pr-12 font-mono text-sm'
+                    className='h-10 pr-12 font-mono text-sm dark:focus-visible:ring-offset-neutral-900'
                   />
                   <MotionButton
                     type='button'
@@ -160,7 +163,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                     className='absolute right-0 top-0 h-full w-10 origin-center rounded-l-none rounded-r-md'
                   >
                     {copied ? (
-                      <Check className='h-4 w-4 text-green-600' />
+                      <Check className='h-4 w-4 text-green-600 dark:text-green-400' />
                     ) : (
                       <Copy className='h-4 w-4' />
                     )}
@@ -168,8 +171,8 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                 </div>
               </div>
 
-              <div className='rounded-lg border border-red-200 bg-red-50 p-4'>
-                <p className='text-sm text-red-800'>
+              <div className='rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/40'>
+                <p className='text-sm text-red-800 dark:text-red-400'>
                   <strong>Important:</strong> Store this API key securely. It will not be shown
                   again after you close this dialog.
                 </p>
@@ -177,7 +180,10 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
             </div>
 
             <DialogFooter>
-              <Button onClick={handleClose} className='bg-red-500 hover:bg-red-600'>
+              <Button
+                onClick={handleClose}
+                className='bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
+              >
                 I&apos;ve Saved My Key
               </Button>
             </DialogFooter>

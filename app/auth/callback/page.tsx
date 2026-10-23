@@ -172,7 +172,7 @@ function AuthCallbackContent() {
   }, [router, setUser]);
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4'>
+    <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-neutral-950'>
       <Card className='w-full max-w-md'>
         <CardHeader>
           <CardTitle className='text-center'>
@@ -184,8 +184,8 @@ function AuthCallbackContent() {
         <CardContent className='flex flex-col items-center space-y-4'>
           {status === 'loading' && (
             <>
-              <Loader2 className='h-8 w-8 animate-spin text-blue-600' />
-              <p className='text-center text-gray-600'>
+              <Loader2 className='h-8 w-8 animate-spin text-blue-600 dark:text-blue-400' />
+              <p className='text-center text-gray-600 dark:text-neutral-400'>
                 Please wait while we complete your sign in...
               </p>
             </>
@@ -193,8 +193,8 @@ function AuthCallbackContent() {
 
           {status === 'success' && (
             <>
-              <CheckCircle className='h-8 w-8 text-green-600' />
-              <p className='text-center text-gray-600'>
+              <CheckCircle className='h-8 w-8 text-green-600 dark:text-green-400' />
+              <p className='text-center text-gray-600 dark:text-neutral-400'>
                 Sign in successful! Redirecting to home...
               </p>
             </>
@@ -202,11 +202,13 @@ function AuthCallbackContent() {
 
           {status === 'error' && (
             <>
-              <XCircle className='h-8 w-8 text-red-600' />
-              <p className='text-center text-gray-600'>
+              <XCircle className='h-8 w-8 text-red-600 dark:text-red-400' />
+              <p className='text-center text-gray-600 dark:text-neutral-400'>
                 {error || 'An error occurred during sign in'}
               </p>
-              <p className='text-center text-sm text-gray-500'>Redirecting to login page...</p>
+              <p className='text-center text-sm text-gray-500 dark:text-neutral-400'>
+                Redirecting to login page...
+              </p>
             </>
           )}
         </CardContent>
@@ -219,14 +221,14 @@ export default function AuthCallbackPage() {
   return (
     <Suspense
       fallback={
-        <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4'>
+        <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-neutral-950'>
           <Card className='w-full max-w-md'>
             <CardHeader>
               <CardTitle className='text-center'>Loading...</CardTitle>
             </CardHeader>
             <CardContent className='flex flex-col items-center space-y-4'>
-              <Loader2 className='h-8 w-8 animate-spin text-blue-600' />
-              <p className='text-center text-gray-600'>Please wait...</p>
+              <Loader2 className='h-8 w-8 animate-spin text-blue-600 dark:text-blue-400' />
+              <p className='text-center text-gray-600 dark:text-neutral-400'>Please wait...</p>
             </CardContent>
           </Card>
         </div>

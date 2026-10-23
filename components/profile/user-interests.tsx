@@ -24,15 +24,17 @@ export function UserInterests({ interests }: UserInterestsProps) {
   });
 
   return (
-    <div className='rounded-3xl border border-gray-200 bg-gray-50 p-6'>
-      <h2 className='mb-4 text-lg font-bold text-gray-900'>Interests</h2>
+    <div className='rounded-3xl border border-gray-200 bg-gray-50 p-6 dark:border-neutral-800 dark:bg-neutral-950'>
+      <h2 className='mb-4 text-lg font-bold text-gray-900 dark:text-neutral-100'>Interests</h2>
 
       <div className='space-y-4'>
         {Object.entries(groupedInterests).map(([parentName, items]) => (
           <div key={parentName}>
             {/* Parent category label */}
             {parentName !== 'Other' && (
-              <h3 className='mb-2 text-sm font-semibold text-gray-500'>{parentName}</h3>
+              <h3 className='mb-2 text-sm font-semibold text-gray-500 dark:text-neutral-400'>
+                {parentName}
+              </h3>
             )}
 
             {/* Interest tags */}

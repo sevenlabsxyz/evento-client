@@ -45,11 +45,13 @@ export default function EventDescription({ event }: EventDescriptionProps) {
   if (!event.description || event.description === '<p></p>') return null;
 
   return (
-    <div className='border-t border-gray-100 py-6'>
-      <h2 className='mb-4 text-lg font-semibold text-gray-900'>About Event</h2>
+    <div className='border-t border-gray-100 py-6 dark:border-neutral-800'>
+      <h2 className='mb-4 text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+        About Event
+      </h2>
 
       {/* Description with collapsible behavior */}
-      <div className='space-y-4 leading-relaxed text-gray-700'>
+      <div className='space-y-4 leading-relaxed text-gray-700 dark:text-neutral-300'>
         <div className='relative'>
           <div
             ref={contentRef}
@@ -63,7 +65,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
 
           {/* Fade-out gradient when collapsed and overflowing */}
           {!expanded && isOverflowing && (
-            <div className='pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white to-transparent' />
+            <div className='pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white to-transparent dark:from-neutral-900' />
           )}
         </div>
 
@@ -74,7 +76,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
               type='button'
               variant={'outline'}
               onClick={() => setExpanded(true)}
-              className='h-12 w-full bg-gray-50'
+              className='h-12 w-full bg-gray-50 dark:bg-neutral-950'
             >
               Read more
             </Button>
@@ -88,7 +90,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
               type='button'
               variant={'outline'}
               onClick={() => setExpanded(false)}
-              className='h-12 w-full bg-gray-50'
+              className='h-12 w-full bg-gray-50 dark:bg-neutral-950'
             >
               Show less
             </Button>

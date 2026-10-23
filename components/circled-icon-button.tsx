@@ -23,7 +23,7 @@ export function CircledIconButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={ariaLabel}
-      className={`rounded-full bg-gray-50 ${className || ''}`}
+      className={`rounded-full bg-gray-50 dark:bg-neutral-950 ${className || ''}`}
     >
       <Icon className='!h-[1.25rem] !w-[1.25rem]' />
     </Button>

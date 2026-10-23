@@ -28,6 +28,14 @@ export default function GlobalError({
   return (
     <html lang='en'>
       <body>
+        <style>{`
+          :root { color-scheme: light dark; }
+          @media (prefers-color-scheme: dark) {
+            body { background-color: #0a0a0a; color: #f5f5f5; }
+            p { color: #a3a3a3 !important; }
+            button { background-color: #f5f5f5 !important; color: #171717 !important; }
+          }
+        `}</style>
         <div
           style={{
             display: 'flex',

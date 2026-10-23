@@ -43,12 +43,12 @@ export function WalletEducationalSheet({
       open={open}
       onOpenChange={onOpenChange}
       title={article.title}
-      contentClassName='bg-white'
+      contentClassName='bg-white dark:bg-neutral-900'
     >
       {/* Feature Image */}
       {article.feature_image && (
         <div className='mb-6 px-6'>
-          <div className='relative aspect-video w-full overflow-hidden rounded-3xl border border-gray-200'>
+          <div className='relative aspect-video w-full overflow-hidden rounded-3xl border border-gray-200 dark:border-neutral-800'>
             <Image
               src={article.feature_image}
               alt={article.title}
@@ -62,7 +62,7 @@ export function WalletEducationalSheet({
 
       {/* Article Content */}
       <div className='px-6 pb-24'>
-        <div className='prose prose-lg mx-auto max-w-full prose-headings:break-words prose-headings:font-bold prose-headings:text-gray-900 prose-p:break-words prose-p:leading-relaxed prose-p:text-gray-700 prose-a:break-words prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:font-semibold prose-strong:text-gray-900 prose-code:break-words prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-gray-900 prose-ol:my-4 prose-ul:my-4 prose-li:text-gray-700 prose-img:max-w-full prose-img:rounded-2xl prose-img:border prose-img:border-gray-200'>
+        <div className='prose prose-lg mx-auto max-w-full prose-headings:break-words prose-headings:font-bold prose-headings:text-gray-900 prose-p:break-words prose-p:leading-relaxed prose-p:text-gray-700 prose-a:break-words prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:font-semibold prose-strong:text-gray-900 prose-code:break-words prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-gray-900 prose-ol:my-4 prose-ul:my-4 prose-li:text-gray-700 prose-img:max-w-full prose-img:rounded-2xl prose-img:border prose-img:border-gray-200 dark:prose-headings:text-neutral-100 dark:prose-p:text-neutral-300 dark:prose-a:text-blue-400 dark:prose-strong:text-neutral-100 dark:prose-code:bg-neutral-800 dark:prose-code:text-neutral-100 dark:prose-li:text-neutral-300 dark:prose-img:border-neutral-800'>
           <EnhancedBlogContent html={article.html || ''} />
         </div>
 
@@ -71,7 +71,7 @@ export function WalletEducationalSheet({
           <Button
             onClick={() => onOpenChange(false)}
             variant='outline'
-            className='font-lg h-12 w-full rounded-full bg-gray-50'
+            className='font-lg h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
           >
             Done
           </Button>

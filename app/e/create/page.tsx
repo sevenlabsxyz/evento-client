@@ -61,12 +61,12 @@ interface CreatedEventModalData {
 
 function CreatePageFallback() {
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-md'>
       <div className='flex-1 overflow-y-auto pb-24'>
         <div className='mb-2 mt-2 px-4'>
           <Skeleton className='h-40 w-full rounded-2xl' />
         </div>
-        <div className='space-y-4 bg-gray-50 px-4 pt-4'>
+        <div className='space-y-4 bg-gray-50 px-4 pt-4 dark:bg-neutral-950'>
           <Skeleton className='h-24 w-full rounded-2xl' />
           <Skeleton className='h-28 w-full rounded-2xl' />
           <Skeleton className='h-20 w-full rounded-2xl' />
@@ -74,7 +74,7 @@ function CreatePageFallback() {
           <Skeleton className='h-20 w-full rounded-2xl' />
         </div>
       </div>
-      <div className='sticky bottom-0 z-50 border-t border-gray-200 bg-white p-4 md:bottom-2 md:rounded-b-xl'>
+      <div className='sticky bottom-0 z-50 border-t border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900 md:bottom-2 md:rounded-b-xl'>
         <div className='mx-auto max-w-full md:max-w-md'>
           <Skeleton className='h-10 w-full rounded-xl' />
         </div>
@@ -324,7 +324,7 @@ function CreatePageContent() {
 
   if (isCheckingAuth) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-md'>
         {/* Create Page Loading Skeleton */}
         <div className='flex-1 overflow-y-auto pb-24'>
           <div className='mb-2 mt-2 px-4'>
@@ -332,9 +332,9 @@ function CreatePageContent() {
             <Skeleton className='h-40 w-full rounded-2xl' />
           </div>
 
-          <div className='space-y-4 bg-gray-50 px-4 pt-4'>
+          <div className='space-y-4 bg-gray-50 px-4 pt-4 dark:bg-neutral-950'>
             {/* Title */}
-            <div className='rounded-2xl bg-white p-4'>
+            <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
               <div className='mb-2 h-4 w-24'>
                 <Skeleton className='h-4 w-24' />
               </div>
@@ -345,7 +345,7 @@ function CreatePageContent() {
             </div>
 
             {/* Date & Time */}
-            <div className='space-y-4 rounded-2xl bg-white p-4'>
+            <div className='space-y-4 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
               {[0, 1].map((i) => (
                 <div key={i} className='flex items-center gap-4'>
                   <Skeleton className='h-8 w-8 rounded-lg' />
@@ -359,7 +359,7 @@ function CreatePageContent() {
             </div>
 
             {/* Address */}
-            <div className='rounded-2xl bg-white p-4'>
+            <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
               <div className='flex items-center gap-4'>
                 <Skeleton className='h-8 w-8 rounded-lg' />
                 <div className='flex-1'>
@@ -375,7 +375,7 @@ function CreatePageContent() {
             </div>
 
             {/* Visibility */}
-            <div className='rounded-2xl bg-white p-4'>
+            <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
               <div className='flex items-center gap-4'>
                 <Skeleton className='h-8 w-8 rounded-lg' />
                 <div className='flex-1'>
@@ -391,7 +391,7 @@ function CreatePageContent() {
             </div>
 
             {/* Capacity */}
-            <div className='rounded-2xl bg-white p-4'>
+            <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
               <div className='flex items-center justify-between gap-4'>
                 <div className='flex flex-1 items-center gap-4'>
                   <Skeleton className='h-8 w-8 rounded-lg' />
@@ -405,7 +405,7 @@ function CreatePageContent() {
             </div>
 
             {/* Description */}
-            <div className='rounded-2xl bg-white p-4'>
+            <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
               <div className='flex items-start gap-4'>
                 <Skeleton className='mt-1 h-8 w-8 rounded-lg' />
                 <div className='flex-1'>
@@ -416,7 +416,7 @@ function CreatePageContent() {
             </div>
 
             {/* Attachments */}
-            <div className='rounded-2xl bg-white p-4'>
+            <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
               <div className='flex items-center gap-4'>
                 <Skeleton className='h-8 w-8 rounded-lg' />
                 <Skeleton className='h-5 w-56' />
@@ -426,7 +426,7 @@ function CreatePageContent() {
         </div>
 
         {/* Bottom CTA */}
-        <div className='sticky bottom-0 z-50 border-t border-gray-200 bg-white p-4 md:bottom-2 md:rounded-b-xl'>
+        <div className='sticky bottom-0 z-50 border-t border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900 md:bottom-2 md:rounded-b-xl'>
           <div className='mx-auto max-w-full md:max-w-md'>
             <Skeleton className='h-10 w-full rounded-xl' />
           </div>
@@ -436,16 +436,16 @@ function CreatePageContent() {
   }
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-md'>
       {/* Header */}
 
       {/* Sub Event Banner */}
       {parentEventId && (
-        <div className='mx-4 mt-2 flex items-center gap-3 rounded-2xl border border-teal-200 bg-teal-50 p-3'>
-          <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-teal-100'>
-            <Layers className='h-4 w-4 text-teal-600' />
+        <div className='mx-4 mt-2 flex items-center gap-3 rounded-2xl border border-teal-200 bg-teal-50 p-3 dark:border-teal-900 dark:bg-teal-950/40'>
+          <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-950/60'>
+            <Layers className='h-4 w-4 text-teal-600 dark:text-teal-400' />
           </div>
-          <p className='text-sm text-teal-900'>
+          <p className='text-sm text-teal-900 dark:text-teal-400'>
             This event will be created as a sub event
             {parentEvent?.title ? (
               <>
@@ -467,11 +467,13 @@ function CreatePageContent() {
       </div>
 
       {/* Form Content */}
-      <div className='flex-1 space-y-4 overflow-y-auto bg-white px-4 pb-32 pt-4'>
+      <div className='flex-1 space-y-4 overflow-y-auto bg-white px-4 pb-32 pt-4 dark:bg-neutral-900'>
         {/* Event Title Module - Moved to top */}
-        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
           <div className='space-y-2'>
-            <label className='text-sm font-medium text-gray-500'>Event Title</label>
+            <label className='text-sm font-medium text-gray-500 dark:text-neutral-400'>
+              Event Title
+            </label>
             <div className='flex items-center gap-3'>
               <EmojiSelector selectedEmoji={emoji} onEmojiSelect={setEmoji} />
               <input
@@ -479,29 +481,31 @@ function CreatePageContent() {
                 placeholder='Enter event name'
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className='flex-1 border-none bg-transparent text-lg font-medium text-gray-900 outline-none'
+                className='flex-1 border-none bg-transparent text-lg font-medium text-gray-900 outline-none dark:text-neutral-100 dark:placeholder:text-neutral-400'
               />
             </div>
           </div>
         </div>
 
         {/* Date & Time Module */}
-        <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+        <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
-              <Calendar className='h-4 w-4 text-gray-600' />
+            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
+              <Calendar className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
-            <span className='w-12 min-w-10 font-medium text-gray-700'>Starts</span>
+            <span className='w-12 min-w-10 font-medium text-gray-700 dark:text-neutral-300'>
+              Starts
+            </span>
             <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowStartDateModal(true)}
-                className='flex-1 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-2 py-2 text-sm font-medium text-gray-900'
+                className='flex-1 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-2 py-2 text-sm font-medium text-gray-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100'
               >
                 {formatDateForDisplay(startDate)}
               </button>
               <button
                 onClick={() => setShowStartTimeModal(true)}
-                className='whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600'
+                className='whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400'
               >
                 {formatTimeForDisplay(startTime)}
               </button>
@@ -509,20 +513,22 @@ function CreatePageContent() {
           </div>
 
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
-              <Calendar className='h-4 w-4 text-gray-600' />
+            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
+              <Calendar className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
-            <span className='w-12 min-w-10 font-medium text-gray-700'>Ends</span>
+            <span className='w-12 min-w-10 font-medium text-gray-700 dark:text-neutral-300'>
+              Ends
+            </span>
             <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowEndDateModal(true)}
-                className='flex-1 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-2 py-2 text-sm font-medium text-gray-900'
+                className='flex-1 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-2 py-2 text-sm font-medium text-gray-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100'
               >
                 {formatDateForDisplay(endDate)}
               </button>
               <button
                 onClick={() => setShowEndTimeModal(true)}
-                className='whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600'
+                className='whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400'
               >
                 {formatTimeForDisplay(endTime)}
               </button>
@@ -531,92 +537,100 @@ function CreatePageContent() {
         </div>
 
         {/* Address Module */}
-        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
           <button
             onClick={() => setShowLocationModal(true)}
             className='flex w-full items-center gap-4 text-left'
           >
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
-              <MapPin className='h-4 w-4 text-gray-600' />
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
+              <MapPin className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
             <div className='flex-1'>
-              <label className='mb-1 block text-sm font-medium text-gray-500'>Address</label>
+              <label className='mb-1 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
+                Address
+              </label>
               <div className='flex items-center justify-between'>
-                <span className={`font-medium ${location ? 'text-gray-900' : 'text-gray-400'}`}>
+                <span
+                  className={`font-medium ${location ? 'text-gray-900 dark:text-neutral-100' : 'text-gray-400 dark:text-neutral-400'}`}
+                >
                   {location ? getLocationDisplayName(location) : 'Choose address'}
                 </span>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+                <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
               </div>
             </div>
           </button>
         </div>
 
-        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
           <button
             onClick={() => setShowTypeSheet(true)}
             className='flex w-full items-center gap-4 text-left'
           >
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
-              <Users className='h-4 w-4 text-gray-600' />
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
+              <Users className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
             <div className='flex-1'>
-              <label className='mb-1 block text-sm font-medium text-gray-500'>Event Type</label>
+              <label className='mb-1 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
+                Event Type
+              </label>
               <div className='flex items-center justify-between'>
-                <span className='font-medium text-gray-900'>
+                <span className='font-medium text-gray-900 dark:text-neutral-100'>
                   {type === 'registration'
                     ? 'Registration'
                     : type === 'ticketed'
                       ? 'Ticketed'
                       : 'RSVP'}
                 </span>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+                <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
               </div>
             </div>
           </button>
         </div>
 
         {/* Event Visibility */}
-        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
           <button
             onClick={() => setShowVisibilitySheet(true)}
             className='flex w-full items-center gap-4 text-left'
           >
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
               {visibility === 'public' ? (
-                <Globe className='h-4 w-4 text-gray-600' />
+                <Globe className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
               ) : (
-                <Lock className='h-4 w-4 text-gray-600' />
+                <Lock className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
               )}
             </div>
             <div className='flex-1'>
-              <label className='mb-1 block text-sm font-medium text-gray-500'>
+              <label className='mb-1 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
                 Event Visibility
               </label>
               <div className='flex items-center justify-between'>
-                <span className='font-medium text-gray-900'>
+                <span className='font-medium text-gray-900 dark:text-neutral-100'>
                   {visibility === 'public' ? 'Public' : 'Private'}
                 </span>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+                <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
               </div>
             </div>
           </button>
         </div>
 
         {/* Capacity Options */}
-        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
           <div className='space-y-3'>
             <div className='flex items-center gap-4'>
-              <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
-                <Users className='h-4 w-4 text-gray-600' />
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
+                <Users className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
               </div>
               <div className='flex-1'>
                 <div className='flex items-center justify-between'>
                   <div className='flex flex-col'>
-                    <label className='mb-1 text-sm font-medium text-gray-500'>
+                    <label className='mb-1 text-sm font-medium text-gray-500 dark:text-neutral-400'>
                       {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
                     </label>
                     {hasCapacity && capacity && (
-                      <span className='text-xs text-gray-400'>Maximum attendees: {capacity}</span>
+                      <span className='text-xs text-gray-400 dark:text-neutral-400'>
+                        Maximum attendees: {capacity}
+                      </span>
                     )}
                   </div>
                   <button
@@ -630,11 +644,11 @@ function CreatePageContent() {
                       }
                     }}
                     className={`h-6 w-12 rounded-full transition-colors ${
-                      hasCapacity ? 'bg-purple-500' : 'bg-gray-300'
+                      hasCapacity ? 'bg-purple-500' : 'bg-gray-300 dark:bg-neutral-600'
                     }`}
                   >
                     <div
-                      className={`h-5 w-5 rounded-full bg-white transition-transform ${
+                      className={`h-5 w-5 rounded-full bg-white transition-transform dark:bg-neutral-900 ${
                         hasCapacity ? 'translate-x-6' : 'translate-x-0.5'
                       }`}
                     ></div>
@@ -644,19 +658,23 @@ function CreatePageContent() {
             </div>
 
             {hasCapacity && (
-              <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
+              <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-neutral-900'>
                 <div>
-                  <p className='text-sm font-medium text-gray-700'>Show capacity count</p>
-                  <p className='text-xs text-gray-500'>Display spots remaining to guests</p>
+                  <p className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
+                    Show capacity count
+                  </p>
+                  <p className='text-xs text-gray-500 dark:text-neutral-400'>
+                    Display spots remaining to guests
+                  </p>
                 </div>
                 <button
                   onClick={() => setShowCapacityCount(!showCapacityCount)}
                   className={`h-6 w-12 rounded-full transition-colors ${
-                    showCapacityCount ? 'bg-purple-500' : 'bg-gray-300'
+                    showCapacityCount ? 'bg-purple-500' : 'bg-gray-300 dark:bg-neutral-600'
                   }`}
                 >
                   <div
-                    className={`h-5 w-5 rounded-full bg-white transition-transform ${
+                    className={`h-5 w-5 rounded-full bg-white transition-transform dark:bg-neutral-900 ${
                       showCapacityCount ? 'translate-x-6' : 'translate-x-0.5'
                     }`}
                   ></div>
@@ -667,40 +685,42 @@ function CreatePageContent() {
         </div>
 
         {/* Description Module */}
-        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
           <button
             onClick={() => setShowDescriptionModal(true)}
             className='flex w-full items-start gap-4 text-left'
           >
-            <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
-              <Edit3 className='h-4 w-4 text-gray-600' />
+            <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
+              <Edit3 className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
             <div className='flex-1'>
-              <label className='mb-2 block text-sm font-medium text-gray-500'>Description</label>
+              <label className='mb-2 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
+                Description
+              </label>
               <div className='flex items-center justify-between'>
                 <span
-                  className={`${isContentEmpty(description) ? 'text-gray-400' : 'text-gray-900'}`}
+                  className={`${isContentEmpty(description) ? 'text-gray-400 dark:text-neutral-400' : 'text-gray-900 dark:text-neutral-100'}`}
                 >
                   {isContentEmpty(description)
                     ? 'Add description about this event...'
                     : getContentPreview(description, 80)}
                 </span>
-                <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400' />
+                <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
               </div>
             </div>
           </button>
         </div>
 
         {/* Attachments Module */}
-        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
-              <Music className='h-4 w-4 text-gray-600' />
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
+              <Music className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
             <div className='flex-1'>
               <button
                 onClick={() => setShowAttachmentModal(true)}
-                className='text-left font-medium text-gray-500'
+                className='text-left font-medium text-gray-500 dark:text-neutral-400'
               >
                 Add Music
               </button>
@@ -710,7 +730,7 @@ function CreatePageContent() {
       </div>
 
       {/* Fixed Bottom Button */}
-      <div className='sticky bottom-0 z-50 border-t border-gray-200 bg-white p-4 md:bottom-2 md:rounded-b-xl'>
+      <div className='sticky bottom-0 z-50 border-t border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900 md:bottom-2 md:rounded-b-xl'>
         <div className='mx-auto max-w-full md:max-w-md'>
           <SubmitButton
             onClick={handleCreateEvent}

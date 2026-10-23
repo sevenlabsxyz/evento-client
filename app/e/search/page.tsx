@@ -97,7 +97,7 @@ export default function SearchPage() {
 
   return (
     <>
-      <div className='flex min-h-screen flex-col bg-white pb-24'>
+      <div className='flex min-h-screen flex-col bg-white pb-24 dark:bg-neutral-900'>
         <div
           className={`flex flex-1 flex-col items-center justify-center px-4 pb-32 transition-all duration-500 ease-out ${
             isEmptyState
@@ -106,12 +106,19 @@ export default function SearchPage() {
           }`}
         >
           <div className='mb-8 flex flex-col items-center text-center'>
-            <h1 className='mb-2 text-3xl font-semibold text-gray-900'>Find Evento Users</h1>
-            <p className='text-sm text-gray-500'>Search by username or name</p>
+            <h1 className='mb-2 text-3xl font-semibold text-gray-900 dark:text-neutral-100'>
+              Find Evento Users
+            </h1>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>
+              Search by username or name
+            </p>
           </div>
 
           <div className='w-full max-w-md'>
-            <PromptInput onSubmit={handlePromptSubmit} className='shadow-xl shadow-gray-200/50'>
+            <PromptInput
+              onSubmit={handlePromptSubmit}
+              className='shadow-xl shadow-gray-200/50 dark:shadow-black/40'
+            >
               <PromptInputTextarea
                 placeholder='Search for users...'
                 className='min-h-[56px] text-base'
@@ -121,7 +128,7 @@ export default function SearchPage() {
               />
               <PromptInputFooter>
                 <PromptInputTools>
-                  <div className='flex items-center gap-2 text-xs text-gray-400'>
+                  <div className='flex items-center gap-2 text-xs text-gray-400 dark:text-neutral-400'>
                     <Search className='h-3.5 w-3.5' />
                     <span>Search as you type</span>
                   </div>
@@ -139,7 +146,7 @@ export default function SearchPage() {
               : 'pointer-events-none absolute -translate-y-4 opacity-0'
           }`}
         >
-          <div className='border-b border-gray-100 px-4 py-3'>
+          <div className='border-b border-gray-100 px-4 py-3 dark:border-neutral-800'>
             <div className='mx-auto max-w-2xl'>
               <PromptInput onSubmit={handlePromptSubmit}>
                 <PromptInputTextarea
@@ -151,7 +158,7 @@ export default function SearchPage() {
                 />
                 <PromptInputFooter>
                   <PromptInputTools>
-                    <div className='flex items-center gap-2 text-xs text-gray-400'>
+                    <div className='flex items-center gap-2 text-xs text-gray-400 dark:text-neutral-400'>
                       <Users className='h-3.5 w-3.5' />
                       <span>
                         {isPending
@@ -175,7 +182,7 @@ export default function SearchPage() {
                   {Array.from({ length: 5 }).map((_, index) => (
                     <div
                       key={`skeleton-${index}`}
-                      className='flex items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-3'
+                      className='flex items-center gap-3 rounded-2xl border border-gray-100 bg-gray-50 p-3 dark:border-neutral-800 dark:bg-neutral-950'
                     >
                       <Skeleton className='h-10 w-10 rounded-full' />
                       <div className='flex-1 space-y-2'>
@@ -187,11 +194,13 @@ export default function SearchPage() {
                 </div>
               ) : !hasResults ? (
                 <div className='flex flex-col items-center justify-center py-16 text-center'>
-                  <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-                    <Search className='h-8 w-8 text-gray-400' />
+                  <div className='mb-4 rounded-2xl bg-gray-100 p-4 dark:bg-neutral-800'>
+                    <Search className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
                   </div>
-                  <h3 className='mb-2 text-base font-semibold text-gray-900'>No users found</h3>
-                  <p className='text-sm text-gray-500'>
+                  <h3 className='mb-2 text-base font-semibold text-gray-900 dark:text-neutral-100'>
+                    No users found
+                  </h3>
+                  <p className='text-sm text-gray-500 dark:text-neutral-400'>
                     No users matching &quot;{searchText}&quot;
                   </p>
                 </div>
@@ -201,7 +210,7 @@ export default function SearchPage() {
                     <button
                       key={user.id}
                       onClick={() => handleUserClick(user)}
-                      className='flex w-full items-center gap-3 rounded-2xl border border-gray-100 bg-white p-3 text-left transition-all hover:border-gray-200 hover:bg-gray-50 hover:shadow-sm'
+                      className='flex w-full items-center gap-3 rounded-2xl border border-gray-100 bg-white p-3 text-left transition-all hover:border-gray-200 hover:bg-gray-50 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-800 dark:hover:bg-neutral-950'
                     >
                       <UserAvatar
                         user={{
@@ -215,10 +224,10 @@ export default function SearchPage() {
                         size='sm'
                       />
                       <div className='min-w-0 flex-1'>
-                        <div className='truncate text-sm font-medium text-gray-900'>
+                        <div className='truncate text-sm font-medium text-gray-900 dark:text-neutral-100'>
                           @{user.username}
                         </div>
-                        <div className='truncate text-xs text-gray-500'>
+                        <div className='truncate text-xs text-gray-500 dark:text-neutral-400'>
                           {user.name || user.username}
                         </div>
                       </div>

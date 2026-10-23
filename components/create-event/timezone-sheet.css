@@ -138,3 +138,41 @@
   font-size: 1rem;
   color: rgb(107, 114, 128);
 }
+
+/* Dark theme overrides */
+.dark .TimezoneSheet-header {
+  border-bottom-color: rgb(38, 38, 38); /* neutral-800 */
+}
+
+.dark .TimezoneSheet-input {
+  background-color: rgb(38, 38, 38); /* neutral-800 */
+  color: rgb(245, 245, 245); /* neutral-100 */
+}
+
+.dark .TimezoneSheet-input::placeholder {
+  color: rgb(163, 163, 163); /* neutral-400 */
+}
+
+.dark .TimezoneSheet-timezoneContainer {
+  border-bottom-color: rgb(38, 38, 38); /* neutral-800 */
+}
+
+.dark .TimezoneSheet-timezoneContainer:hover {
+  background-color: rgb(38, 38, 38); /* neutral-800 */
+}
+
+.dark .TimezoneSheet-timezoneCity {
+  color: rgb(245, 245, 245); /* neutral-100 */
+}
+
+.dark .TimezoneSheet-timezoneOffset {
+  color: rgb(248, 113, 113); /* red-400 */
+}
+
+.dark .TimezoneSheet-sectionHeader {
+  color: rgb(163, 163, 163); /* neutral-400 */
+}
+
+.dark .TimezoneSheet-noResults {
+  color: rgb(163, 163, 163); /* neutral-400 */
+}

@@ -109,7 +109,7 @@ export function EventCard({
   };
 
   return (
-    <div className={cn('bg-white', className)}>
+    <div className={cn('bg-white dark:bg-neutral-900', className)}>
       {/* Post Header */}
       <div className='flex items-center justify-between px-4 py-3'>
         <div className='flex items-center gap-3'>
@@ -126,7 +126,7 @@ export function EventCard({
             <p className='text-sm font-semibold'>
               {event.user_details.name || event.user_details.username}
             </p>
-            <p className='text-xs text-gray-500'>
+            <p className='text-xs text-gray-500 dark:text-neutral-400'>
               Posted by @{event.user_details.username} {timeAgo}
             </p>
           </div>
@@ -135,7 +135,7 @@ export function EventCard({
           <Button
             variant='ghost'
             size='icon'
-            className='h-8 w-8 rounded-full bg-gray-100'
+            className='h-8 w-8 rounded-full bg-gray-100 dark:bg-neutral-800 dark:hover:bg-neutral-700'
             onClick={() => {
               if (customMenuOptions && onMenuClick) {
                 onMenuClick(event.id);
@@ -173,14 +173,14 @@ export function EventCard({
       {/* Event Details */}
       <div className='px-4 py-3'>
         <h3
-          className='mb-2 cursor-pointer text-xl font-semibold transition-colors hover:text-red-600'
+          className='mb-2 cursor-pointer text-xl font-semibold transition-colors hover:text-red-600 dark:hover:text-red-400'
           onClick={handleEventClick}
         >
           {event.title}
         </h3>
 
         {/* Date, Time, Location */}
-        <div className='mb-3 flex items-center gap-4 text-base text-gray-500'>
+        <div className='mb-3 flex items-center gap-4 text-base text-gray-500 dark:text-neutral-400'>
           <div className='flex items-center gap-1'>
             <Calendar className='h-4 w-4' />
             <span>{date}</span>
@@ -194,7 +194,7 @@ export function EventCard({
         </div>
 
         {event.location && (
-          <div className='mb-4 flex items-center gap-1 text-sm text-gray-600'>
+          <div className='mb-4 flex items-center gap-1 text-sm text-gray-600 dark:text-neutral-400'>
             <MapPin className='h-4 w-4' />
             <span>{event.location}</span>
           </div>
@@ -202,29 +202,43 @@ export function EventCard({
 
         {/* Event Description (if exists) */}
         {event.description && (
-          <p className='mb-4 line-clamp-3 text-sm text-gray-700'>
+          <p className='mb-4 line-clamp-3 text-sm text-gray-700 dark:text-neutral-300'>
             {htmlToPlainText(event.description)}
           </p>
         )}
 
         {/* Post Actions - All on left side */}
         <div className='mb-3 flex items-center gap-4'>
-          <Button variant='ghost' size='icon' className='h-8 w-8 rounded-full bg-gray-100 p-0'>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='h-8 w-8 rounded-full bg-gray-100 p-0 dark:bg-neutral-800 dark:hover:bg-neutral-700'
+          >
             <Heart className='h-5 w-5' />
           </Button>
-          <Button variant='ghost' size='icon' className='h-8 w-8 rounded-full bg-gray-100 p-0'>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='h-8 w-8 rounded-full bg-gray-100 p-0 dark:bg-neutral-800 dark:hover:bg-neutral-700'
+          >
             <MessageCircle className='h-5 w-5' />
           </Button>
-          <Button variant='ghost' size='icon' className='h-8 w-8 rounded-full bg-gray-100 p-0'>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='h-8 w-8 rounded-full bg-gray-100 p-0 dark:bg-neutral-800 dark:hover:bg-neutral-700'
+          >
             <Send className='h-5 w-5' />
           </Button>
           <Button
             variant='ghost'
             size='icon'
-            className='h-8 w-8 rounded-full bg-gray-100 p-0'
+            className='h-8 w-8 rounded-full bg-gray-100 p-0 dark:bg-neutral-800 dark:hover:bg-neutral-700'
             onClick={() => onBookmark?.(event.id)}
           >
-            <Bookmark className={`h-5 w-5 ${isBookmarked ? 'fill-current text-red-600' : ''}`} />
+            <Bookmark
+              className={`h-5 w-5 ${isBookmarked ? 'fill-current text-red-600 dark:text-red-400' : ''}`}
+            />
           </Button>
         </div>
       </div>

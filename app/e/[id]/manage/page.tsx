@@ -77,8 +77,8 @@ export default function ManageEventPage() {
             title: 'Registrations',
             description: 'Review and manage guest registrations',
             icon: <ClipboardList className='h-6 w-6' />,
-            iconBg: 'bg-blue-100',
-            iconColor: 'text-blue-700',
+            iconBg: 'bg-blue-100 dark:bg-blue-950/60',
+            iconColor: 'text-blue-700 dark:text-blue-400',
             route: `/e/${eventId}/manage/registration/submissions`,
             isPriority: true,
           },
@@ -89,8 +89,8 @@ export default function ManageEventPage() {
       title: 'Event Details',
       description: 'Setup event time and location',
       icon: <FileText className='h-6 w-6' />,
-      iconBg: 'bg-gray-100',
-      iconColor: 'text-gray-600',
+      iconBg: 'bg-gray-100 dark:bg-neutral-800',
+      iconColor: 'text-gray-600 dark:text-neutral-400',
       route: `/e/${eventId}/manage/details`,
     },
     {
@@ -98,8 +98,8 @@ export default function ManageEventPage() {
       title: 'Guest List',
       description: 'View guests and invites',
       icon: <Users className='h-6 w-6' />,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      iconBg: 'bg-blue-100 dark:bg-blue-950/60',
+      iconColor: 'text-blue-600 dark:text-blue-400',
       route: `/e/${eventId}/manage/guests`,
     },
     ...(showRegistrationOption
@@ -109,8 +109,8 @@ export default function ManageEventPage() {
             title: 'Registration Forms',
             description: 'Create and edit your registration form',
             icon: <FileText className='h-6 w-6' />,
-            iconBg: 'bg-purple-100',
-            iconColor: 'text-purple-600',
+            iconBg: 'bg-purple-100 dark:bg-purple-950/60',
+            iconColor: 'text-purple-600 dark:text-purple-400',
             route: `/e/${eventId}/manage/registration`,
           },
         ]
@@ -120,8 +120,8 @@ export default function ManageEventPage() {
       title: 'Cohosts',
       description: 'Invite others to help manage',
       icon: <UserPlus className='h-6 w-6' />,
-      iconBg: 'bg-orange-100',
-      iconColor: 'text-orange-600',
+      iconBg: 'bg-orange-100 dark:bg-orange-950/60',
+      iconColor: 'text-orange-600 dark:text-orange-400',
       route: `/e/${eventId}/manage/hosts`,
     },
     {
@@ -129,8 +129,8 @@ export default function ManageEventPage() {
       title: 'Security & Privacy',
       description: 'Visibility and password settings',
       icon: <Shield className='h-6 w-6' />,
-      iconBg: 'bg-sky-100',
-      iconColor: 'text-sky-600',
+      iconBg: 'bg-sky-100 dark:bg-sky-950/60',
+      iconColor: 'text-sky-600 dark:text-sky-400',
       route: `/e/${eventId}/manage/security`,
     },
     {
@@ -138,8 +138,8 @@ export default function ManageEventPage() {
       title: 'Email Blasts',
       description: 'Send emails to guests',
       icon: <Mail className='h-6 w-6' />,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
+      iconBg: 'bg-red-100 dark:bg-red-950/60',
+      iconColor: 'text-red-600 dark:text-red-400',
       route: `/e/${eventId}/manage/email-blast`,
     },
     {
@@ -147,8 +147,8 @@ export default function ManageEventPage() {
       title: 'Reminders',
       description: 'Automatic emails to guests who RSVP Yes',
       icon: <Bell className='h-6 w-6' />,
-      iconBg: 'bg-amber-100',
-      iconColor: 'text-amber-600',
+      iconBg: 'bg-amber-100 dark:bg-amber-950/60',
+      iconColor: 'text-amber-600 dark:text-amber-400',
       route: `/e/${eventId}/manage/reminders`,
     },
     {
@@ -156,8 +156,8 @@ export default function ManageEventPage() {
       title: 'Sub Events',
       description: 'Create and manage sub events',
       icon: <Layers className='h-6 w-6' />,
-      iconBg: 'bg-teal-100',
-      iconColor: 'text-teal-600',
+      iconBg: 'bg-teal-100 dark:bg-teal-950/60',
+      iconColor: 'text-teal-600 dark:text-teal-400',
       route: `/e/${eventId}/manage/sub-events`,
     },
     {
@@ -165,8 +165,8 @@ export default function ManageEventPage() {
       title: 'Music',
       description: 'Add Spotify and Wavlake tracks',
       icon: <Music className='h-6 w-6' />,
-      iconBg: 'bg-indigo-100',
-      iconColor: 'text-indigo-600',
+      iconBg: 'bg-indigo-100 dark:bg-indigo-950/60',
+      iconColor: 'text-indigo-600 dark:text-indigo-400',
       route: `/e/${eventId}/manage/music`,
     },
     {
@@ -174,8 +174,8 @@ export default function ManageEventPage() {
       title: 'Contributions',
       description: 'Accept event donations',
       icon: <DollarSign className='h-6 w-6' />,
-      iconBg: 'bg-green-100',
-      iconColor: 'text-green-600',
+      iconBg: 'bg-green-100 dark:bg-green-950/60',
+      iconColor: 'text-green-600 dark:text-green-400',
       route: `/e/${eventId}/manage/contributions`,
     },
     {
@@ -183,8 +183,8 @@ export default function ManageEventPage() {
       title: 'Crowdfunding',
       description: 'Set up a Lightning crowdfunding campaign',
       icon: <Zap className='h-6 w-6' />,
-      iconBg: 'bg-amber-100',
-      iconColor: 'text-amber-600',
+      iconBg: 'bg-amber-100 dark:bg-amber-950/60',
+      iconColor: 'text-amber-600 dark:text-amber-400',
       route: `/e/${eventId}/manage/crowdfunding`,
     },
   ];
@@ -215,7 +215,7 @@ export default function ManageEventPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-md'>
+      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-md'>
         <div className='space-y-6 p-4'>
           {/* Action buttons skeleton */}
           <div className='flex gap-2'>
@@ -224,7 +224,10 @@ export default function ManageEventPage() {
           {/* Management options skeleton */}
           <div className='space-y-1'>
             {Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+              <div
+                key={i}
+                className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'
+              >
                 <Skeleton className='h-12 w-12 rounded-xl' />
                 <div className='flex-1 space-y-2'>
                   <Skeleton className='h-4 w-32' />
@@ -248,17 +251,17 @@ export default function ManageEventPage() {
 
   if (error) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <MessageCircle className='mx-auto mb-4 h-8 w-8 text-red-500' />
-          <p className='text-gray-600'>Event not found</p>
+          <MessageCircle className='mx-auto mb-4 h-8 w-8 text-red-500 dark:text-red-400' />
+          <p className='text-gray-600 dark:text-neutral-400'>Event not found</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-md'>
+    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-md'>
       {/* Content */}
       <div className='p-4'>
         {/* Square Action Buttons */}
@@ -266,7 +269,7 @@ export default function ManageEventPage() {
         {/* Check In Guests Button */}
         {/* <button
             onClick={handleCheckInGuests}
-            className='flex h-16 flex-col items-center justify-center rounded-xl bg-red-500 text-white transition-colors hover:bg-red-600'
+            className='flex h-16 flex-col items-center justify-center rounded-xl bg-red-500 dark:bg-red-600 text-white transition-colors hover:bg-red-600 dark:hover:bg-red-700'
           >
             <UserCheck className='mb-1 h-5 w-5' />
             <span className='text-xs font-medium'>Check In Guests</span>
@@ -277,9 +280,11 @@ export default function ManageEventPage() {
 
         {/* Management Options */}
         {eventDetails?.status === 'draft' && (
-          <div className='mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4'>
-            <p className='text-sm font-medium text-amber-900'>Event currently in draft</p>
-            <p className='mt-1 text-sm text-amber-800'>
+          <div className='mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-950/40'>
+            <p className='text-sm font-medium text-amber-900 dark:text-amber-400'>
+              Event currently in draft
+            </p>
+            <p className='mt-1 text-sm text-amber-800 dark:text-amber-400'>
               Publish when you are ready to make it visible in feeds and discovery.
             </p>
             <Button className='mt-3 h-11 w-full' onClick={() => setShowPublishSheet(true)}>
@@ -295,8 +300,8 @@ export default function ManageEventPage() {
               onClick={() => handleOptionClick(option.route)}
               className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition-colors ${
                 option.isPriority
-                  ? 'mb-6 border-blue-200 bg-blue-50 hover:bg-blue-100'
-                  : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
+                  ? 'mb-6 border-blue-200 bg-blue-50 hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/40 dark:hover:bg-blue-950/60'
+                  : 'border-gray-200 bg-gray-50 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
               }`}
             >
               <div
@@ -305,10 +310,12 @@ export default function ManageEventPage() {
                 <div className={option.iconColor}>{option.icon}</div>
               </div>
               <div className='flex-1 text-left'>
-                <h3 className='font-semibold text-gray-900'>{option.title}</h3>
-                <p className='text-sm text-gray-500'>{option.description}</p>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                  {option.title}
+                </h3>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>{option.description}</p>
               </div>
-              <div className='text-gray-400'>
+              <div className='text-gray-400 dark:text-neutral-500'>
                 <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path
                     strokeLinecap='round'
@@ -326,12 +333,12 @@ export default function ManageEventPage() {
         <div className='pt-6'>
           <button
             onClick={handleCancelEvent}
-            className='flex w-full items-center gap-3 rounded-xl bg-gray-50 p-4 hover:bg-red-50'
+            className='flex w-full items-center gap-3 rounded-xl bg-gray-50 p-4 hover:bg-red-50 dark:bg-neutral-950 dark:hover:bg-red-950/40'
           >
-            <div className='text-red-600'>
+            <div className='text-red-600 dark:text-red-400'>
               <X className='h-5 w-5' />
             </div>
-            <span className='font-medium text-red-600'>Cancel Event</span>
+            <span className='font-medium text-red-600 dark:text-red-400'>Cancel Event</span>
           </button>
         </div>
       </div>
@@ -368,7 +375,7 @@ export default function ManageEventPage() {
           </div>
         }
       >
-        <div className='px-4 pb-4 text-sm text-gray-600'>
+        <div className='px-4 pb-4 text-sm text-gray-600 dark:text-neutral-400'>
           Are you sure you want to publish this event? It will be visible in feeds and discovery.
         </div>
       </MasterScrollableSheet>

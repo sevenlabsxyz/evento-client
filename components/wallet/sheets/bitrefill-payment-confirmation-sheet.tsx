@@ -149,13 +149,13 @@ export function BitrefillPaymentConfirmationSheet({
                 </div>
 
                 <div className='mb-6 flex justify-center'>
-                  <div className='flex h-16 w-16 items-center justify-center rounded-full bg-amber-100'>
-                    <ShieldAlert className='h-8 w-8 text-amber-600' />
+                  <div className='flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950/60'>
+                    <ShieldAlert className='h-8 w-8 text-amber-600 dark:text-amber-400' />
                   </div>
                 </div>
 
                 <h2 className='mb-2 text-center text-xl font-semibold'>Backup Required</h2>
-                <p className='mb-6 text-center text-sm text-gray-600'>
+                <p className='mb-6 text-center text-sm text-gray-600 dark:text-neutral-400'>
                   We recommend backing up your wallet before making your first payment. If you lose
                   access to your device, you&apos;ll need your backup to recover your funds.
                 </p>
@@ -171,7 +171,7 @@ export function BitrefillPaymentConfirmationSheet({
                   <Button
                     onClick={handleProceedWithoutBackup}
                     variant='ghost'
-                    className='h-12 w-full rounded-full text-gray-500'
+                    className='h-12 w-full rounded-full text-gray-500 dark:text-neutral-400'
                     disabled={isSending}
                   >
                     {isSending ? 'Processing...' : 'Continue Without Backup'}
@@ -208,41 +208,41 @@ export function BitrefillPaymentConfirmationSheet({
                   <Skeleton className='h-12 w-full' />
                 </div>
               ) : paymentError && !invoiceDetails ? (
-                <div className='mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-center'>
-                  <p className='text-sm text-red-600'>{paymentError}</p>
+                <div className='mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-center dark:border-red-900 dark:bg-red-950/40'>
+                  <p className='text-sm text-red-600 dark:text-red-400'>{paymentError}</p>
                 </div>
               ) : invoiceDetails ? (
                 <>
                   {/* Amount Display */}
-                  <div className='mb-6 rounded-3xl border border-gray-200 bg-gray-50 p-6 text-center'>
-                    <div className='text-4xl font-bold text-gray-900'>
+                  <div className='mb-6 rounded-3xl border border-gray-200 bg-gray-50 p-6 text-center dark:border-neutral-800 dark:bg-neutral-950'>
+                    <div className='text-4xl font-bold text-gray-900 dark:text-neutral-100'>
                       ${invoiceDetails.amountUSD.toFixed(2)}
                     </div>
-                    <div className='mt-1 text-sm text-gray-500'>
+                    <div className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
                       {invoiceDetails.amountSats.toLocaleString()} sats
                     </div>
                   </div>
 
                   {/* Fee Breakdown */}
-                  <div className='mb-6 space-y-2 rounded-lg border border-gray-200 bg-white p-4'>
+                  <div className='mb-6 space-y-2 rounded-lg border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
                     <div className='flex justify-between text-sm'>
-                      <span className='text-gray-500'>Amount</span>
+                      <span className='text-gray-500 dark:text-neutral-400'>Amount</span>
                       <span className='font-medium'>
                         {invoiceDetails.amountSats.toLocaleString()} sats
                       </span>
                     </div>
                     <div className='flex justify-between text-sm'>
-                      <span className='text-gray-500'>Network Fee</span>
+                      <span className='text-gray-500 dark:text-neutral-400'>Network Fee</span>
                       <span className='font-medium'>{totalFees.toLocaleString()} sats</span>
                     </div>
-                    <div className='border-t border-gray-100 pt-2'>
+                    <div className='border-t border-gray-100 pt-2 dark:border-neutral-800'>
                       <div className='flex justify-between'>
-                        <span className='font-bold text-gray-900'>Total</span>
+                        <span className='font-bold text-gray-900 dark:text-neutral-100'>Total</span>
                         <div className='flex flex-col'>
-                          <span className='text-lg font-bold text-gray-900'>
+                          <span className='text-lg font-bold text-gray-900 dark:text-neutral-100'>
                             {totalAmount.toLocaleString()} sats
                           </span>
-                          <span className='text-right text-sm text-gray-500'>
+                          <span className='text-right text-sm text-gray-500 dark:text-neutral-400'>
                             ${invoiceDetails.amountUSD.toFixed(2)}
                           </span>
                         </div>
@@ -252,9 +252,9 @@ export function BitrefillPaymentConfirmationSheet({
 
                   {/* Insufficient Balance Warning */}
                   {hasInsufficientBalance && (
-                    <div className='mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3'>
-                      <AlertTriangle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-500' />
-                      <p className='text-sm text-red-600'>
+                    <div className='mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950/40'>
+                      <AlertTriangle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-500 dark:text-red-400' />
+                      <p className='text-sm text-red-600 dark:text-red-400'>
                         Insufficient balance. You need {totalAmount.toLocaleString()} sats but only
                         have {walletState.balance.toLocaleString()} sats.
                       </p>
@@ -263,14 +263,14 @@ export function BitrefillPaymentConfirmationSheet({
 
                   {/* Payment Error */}
                   {paymentError && (
-                    <div className='mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3'>
-                      <AlertTriangle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-500' />
-                      <p className='text-sm text-red-600'>{paymentError}</p>
+                    <div className='mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950/40'>
+                      <AlertTriangle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-500 dark:text-red-400' />
+                      <p className='text-sm text-red-600 dark:text-red-400'>{paymentError}</p>
                     </div>
                   )}
 
                   {/* Warning Text */}
-                  <p className='mb-6 text-center text-xs text-gray-500'>
+                  <p className='mb-6 text-center text-xs text-gray-500 dark:text-neutral-400'>
                     Lightning payments are instant and irreversible. Please verify the amount before
                     confirming.
                   </p>

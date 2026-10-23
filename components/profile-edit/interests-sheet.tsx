@@ -125,7 +125,9 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
     const currentIds = Array.from(
       new Set(selectedSlugs.map((slug) => slugToIdMap[slug]).filter(Boolean))
     ).sort();
-    const originalIds = Array.from(new Set((userInterests?.map((i) => i.id) || []).filter(Boolean))).sort();
+    const originalIds = Array.from(
+      new Set((userInterests?.map((i) => i.id) || []).filter(Boolean))
+    ).sort();
     return JSON.stringify(currentIds) !== JSON.stringify(originalIds);
   }, [selectedSlugs, slugToIdMap, userInterests]);
 
@@ -140,7 +142,7 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
       headerLeft={
         <div>
           <h2 className='text-xl font-semibold'>Interests</h2>
-          <p className='text-sm text-gray-500'>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>
             {selectedSlugs.length} interest{selectedSlugs.length !== 1 ? 's' : ''} selected
           </p>
         </div>
@@ -148,7 +150,7 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
       headerSecondary={
         <div className='px-4 pb-4'>
           <input
-            className='w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-gray-300 focus:bg-white'
+            className='w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-gray-300 focus:bg-white dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-700 dark:focus:bg-neutral-900'
             type='text'
             placeholder='Search interests...'
             value={searchQuery}
@@ -175,7 +177,7 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
       ) : filteredCategories.length === 0 ? (
         // Empty State
         <div className='flex flex-col items-center justify-center py-12'>
-          <p className='text-gray-500'>
+          <p className='text-gray-500 dark:text-neutral-400'>
             {searchQuery.trim()
               ? `No interests found matching "${searchQuery}"`
               : 'No interests available'}
@@ -198,7 +200,7 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
             <Button
               onClick={handleSave}
               disabled={!hasChanges || isSaving}
-              className='w-full bg-red-500 text-white hover:bg-red-600'
+              className='w-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
             >
               {isSaving ? (
                 <>

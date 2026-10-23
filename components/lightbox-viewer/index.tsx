@@ -422,7 +422,7 @@ export const LightboxViewer = React.memo(
             selectedImage !== null &&
             isGalleryImageObject(images[selectedImage]) && (
               <div
-                className='flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4'
+                className='flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'
                 style={{ height: '15dvh' }}
               >
                 <div
@@ -441,7 +441,7 @@ export const LightboxViewer = React.memo(
                     </Avatar>
                     <div>
                       <div className='flex flex-row items-center'>
-                        <p className='cursor-pointer text-sm font-semibold leading-none text-gray-500'>
+                        <p className='cursor-pointer text-sm font-semibold leading-none text-gray-500 dark:text-neutral-400'>
                           @{images[selectedImage].user_details?.username}
                         </p>
                         {images[selectedImage].user_details?.verification_status === 'verified' && (
@@ -449,12 +449,12 @@ export const LightboxViewer = React.memo(
                         )}
                       </div>
                       {!images[selectedImage].user_details?.name ? null : (
-                        <p className='cursor-pointer text-sm text-gray-400'>
+                        <p className='cursor-pointer text-sm text-gray-400 dark:text-neutral-500'>
                           {images[selectedImage].user_details?.name}
                         </p>
                       )}
                       {images[selectedImage].created_at && (
-                        <p className='cursor-pointer pt-2 text-[10px] text-gray-400'>
+                        <p className='cursor-pointer pt-2 text-[10px] text-gray-400 dark:text-neutral-500'>
                           posted on{' '}
                           {new Date(images[selectedImage].created_at).toLocaleDateString()}
                         </p>

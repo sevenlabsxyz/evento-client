@@ -46,7 +46,7 @@ function LinkableEventRow({
   });
 
   return (
-    <div className='flex items-center gap-3 rounded-xl border border-gray-100 p-2'>
+    <div className='flex items-center gap-3 rounded-xl border border-gray-100 p-2 dark:border-neutral-800'>
       <div className='h-12 w-12 shrink-0 overflow-hidden rounded-lg'>
         <Image
           src={getEventCoverDisplayUrl(event.cover, 'feed')}
@@ -59,14 +59,16 @@ function LinkableEventRow({
       </div>
       <div className='min-w-0 flex-1'>
         <div className='flex items-center gap-2'>
-          <h4 className='line-clamp-1 font-medium text-gray-900'>{event.title}</h4>
+          <h4 className='line-clamp-1 font-medium text-gray-900 dark:text-neutral-100'>
+            {event.title}
+          </h4>
           {event.status === 'draft' && (
-            <span className='shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800'>
+            <span className='shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950/60 dark:text-amber-400'>
               Draft
             </span>
           )}
         </div>
-        <p className='line-clamp-1 text-sm text-gray-500'>
+        <p className='line-clamp-1 text-sm text-gray-500 dark:text-neutral-400'>
           {date}
           {timeWithTz ? ` · ${timeWithTz}` : ''}
         </p>
@@ -181,10 +183,10 @@ export default function LinkSubEventSheet({
         <div className='space-y-3 px-4 pb-4'>
           {/* Search Input */}
           <div className='relative'>
-            <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+            <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
             <input
               ref={searchInputRef}
-              className='h-10 w-full rounded-full border-none bg-gray-100 px-10 py-0 text-sm text-gray-800 outline-none'
+              className='h-10 w-full rounded-full border-none bg-gray-100 px-10 py-0 text-sm text-gray-800 outline-none dark:bg-neutral-800 dark:text-neutral-200 dark:placeholder:text-neutral-400'
               type='text'
               placeholder='Search your events'
               value={searchText}
@@ -193,14 +195,14 @@ export default function LinkSubEventSheet({
           </div>
 
           {/* Filter Toggle */}
-          <div className='flex items-center rounded-full bg-gray-50 p-1'>
+          <div className='flex items-center rounded-full bg-gray-50 p-1 dark:bg-neutral-950'>
             <button
               onClick={() => setFilter('hosting')}
               className={cn(
                 'flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                 filter === 'hosting'
-                  ? 'bg-white text-black shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white text-black shadow-sm dark:bg-neutral-900 dark:text-white'
+                  : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
               Hosting
@@ -210,8 +212,8 @@ export default function LinkSubEventSheet({
               className={cn(
                 'flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                 filter === 'drafts'
-                  ? 'bg-white text-black shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white text-black shadow-sm dark:bg-neutral-900 dark:text-white'
+                  : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
               Drafts
@@ -226,7 +228,7 @@ export default function LinkSubEventSheet({
           {Array.from({ length: 4 }).map((_, index) => (
             <div
               key={`loading-${index}`}
-              className='flex items-center gap-3 rounded-xl border border-gray-100 p-2'
+              className='flex items-center gap-3 rounded-xl border border-gray-100 p-2 dark:border-neutral-800'
             >
               <Skeleton className='h-12 w-12 rounded-lg' />
               <div className='flex-1'>
@@ -239,18 +241,20 @@ export default function LinkSubEventSheet({
         </div>
       ) : activeQuery.error ? (
         <div className='flex flex-col items-center justify-center py-12'>
-          <div className='text-center text-base text-gray-600'>Failed to load your events</div>
+          <div className='text-center text-base text-gray-600 dark:text-neutral-400'>
+            Failed to load your events
+          </div>
         </div>
       ) : events.length === 0 ? (
         <div className='flex flex-col items-center justify-center py-12'>
-          <div className='text-center text-base text-gray-600'>
+          <div className='text-center text-base text-gray-600 dark:text-neutral-400'>
             {activeQuery.hasNextPage
               ? 'No linkable events loaded yet'
               : searchText.trim()
                 ? `No events found matching "${searchText}"`
                 : 'No events available to link'}
           </div>
-          <p className='mt-2 text-center text-sm text-gray-500'>
+          <p className='mt-2 text-center text-sm text-gray-500 dark:text-neutral-400'>
             {activeQuery.hasNextPage
               ? 'Load more to keep checking your remaining events.'
               : 'Only your own events without a parent event can be linked.'}

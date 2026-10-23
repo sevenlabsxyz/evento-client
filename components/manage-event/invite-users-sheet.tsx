@@ -98,7 +98,11 @@ export default function InviteUsersSheet({ eventId, isOpen, onClose }: InviteUse
   const title = step === 1 ? 'Invite Guests' : 'Add Note';
   const headerLeft =
     step === 2 ? (
-      <CircledIconButton icon={ArrowLeft} onClick={() => setStep(1)} className='bg-white' />
+      <CircledIconButton
+        icon={ArrowLeft}
+        onClick={() => setStep(1)}
+        className='bg-white dark:bg-neutral-900'
+      />
     ) : undefined;
 
   return (

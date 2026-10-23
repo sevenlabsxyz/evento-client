@@ -29,19 +29,19 @@ export function BlogPostCard({ post, className }: BlogPostCardProps) {
               placeholder='empty'
             />
           ) : (
-            <div className='aspect-video w-full bg-muted' />
+            <div className='aspect-video w-full bg-muted dark:bg-neutral-800' />
           )}
         </div>
       </div>
 
       {/* Title */}
-      <div className='mb-2 line-clamp-3 break-words pt-4 text-lg font-medium md:mb-3 md:text-2xl lg:text-3xl'>
+      <div className='mb-2 line-clamp-3 break-words pt-4 text-lg font-medium dark:text-neutral-100 md:mb-3 md:text-2xl lg:text-3xl'>
         {post.title}
       </div>
 
       {/* Excerpt */}
       {excerpt && (
-        <div className='mb-4 line-clamp-2 text-sm text-muted-foreground md:mb-5 md:text-base'>
+        <div className='mb-4 line-clamp-2 text-sm text-muted-foreground dark:text-neutral-400 md:mb-5 md:text-base'>
           {excerpt}
         </div>
       )}

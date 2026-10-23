@@ -126,13 +126,15 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
 
                 {/* Header with close button */}
                 <div className='mb-4 flex items-center justify-between'>
-                  <h2 className='text-xl font-bold text-gray-900'>Upload Photos</h2>
+                  <h2 className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
+                    Upload Photos
+                  </h2>
                   <button
                     onClick={handleClose}
                     disabled={isUploading}
-                    className='rounded-full p-2 hover:bg-gray-100 disabled:opacity-50'
+                    className='rounded-full p-2 hover:bg-gray-100 disabled:opacity-50 dark:hover:bg-neutral-800'
                   >
-                    <X className='h-5 w-5 text-gray-600' />
+                    <X className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
                   </button>
                 </div>
               </div>
@@ -142,13 +144,13 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                 {/* Photo selection area */}
                 {selectedFilesData.length === 0 ? (
                   <div className='mb-6'>
-                    <div className='flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center'>
-                      <Camera className='mb-3 h-12 w-12 text-gray-400' />
-                      <p className='mb-4 text-sm text-gray-500'>
+                    <div className='flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center dark:border-neutral-700 dark:bg-neutral-950'>
+                      <Camera className='mb-3 h-12 w-12 text-gray-400 dark:text-neutral-500' />
+                      <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>
                         Select up to {MAX_PHOTOS} photos to upload to this event&apos;s gallery
                       </p>
                       <label htmlFor='photo-upload' className='cursor-pointer'>
-                        <div className='rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600'>
+                        <div className='rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'>
                           Select Photos
                         </div>
                         <input
@@ -168,13 +170,13 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                   <>
                     {/* Selected photos preview */}
                     <div className='mb-4 flex items-center justify-between'>
-                      <h3 className='text-sm font-medium text-gray-700'>
+                      <h3 className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
                         {selectedFilesData.length} photo
                         {selectedFilesData.length !== 1 && 's'} selected
                       </h3>
                       <label
                         htmlFor='photo-upload-more'
-                        className='cursor-pointer text-sm text-red-600'
+                        className='cursor-pointer text-sm text-red-600 dark:text-red-400'
                       >
                         Add More
                         <input
@@ -212,7 +214,7 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                           ) : (
                             <button
                               onClick={() => removeFileFromSelection(fileData.file.name)}
-                              className='absolute right-1 top-1 rounded-full bg-black bg-opacity-70 p-1.5 text-white hover:bg-opacity-90'
+                              className='absolute right-1 top-1 rounded-full bg-black bg-opacity-70 p-1.5 text-white hover:bg-opacity-90 dark:bg-neutral-100 dark:text-neutral-900'
                             >
                               <Trash2 className='h-4 w-4' />
                             </button>
@@ -225,7 +227,7 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
               </div>
 
               {/* Action buttons - fixed at bottom */}
-              <div className='fixed bottom-0 left-0 right-0 flex flex-col gap-2 border-t border-gray-100 bg-white p-6'>
+              <div className='fixed bottom-0 left-0 right-0 flex flex-col gap-2 border-t border-gray-100 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
                 {selectedFilesData.length > 0 && (
                   <Button
                     onClick={handleUpload}
@@ -234,7 +236,7 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                   >
                     {isUploading ? (
                       <span className='flex items-center'>
-                        <span className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white'></span>
+                        <span className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white dark:border-neutral-400 dark:border-t-neutral-900'></span>
                         Uploading...
                       </span>
                     ) : (

@@ -277,49 +277,53 @@ export function BackupChoiceSheet({
             {/* Encrypted Backup Option - Recommended */}
             <button
               onClick={() => setStep('password')}
-              className='flex w-full items-center gap-4 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100'
+              className='flex w-full items-center gap-4 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
             >
-              <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-green-300 bg-green-100'>
-                <Shield className='h-6 w-6 text-green-600' />
+              <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-green-300 bg-green-100 dark:border-green-800 dark:bg-green-950/60'>
+                <Shield className='h-6 w-6 text-green-600 dark:text-green-400' />
               </div>
               <div className='min-w-0 flex-1'>
                 <div className='flex items-center gap-2'>
-                  <p className='font-semibold text-gray-900'>Encrypted Backup</p>
-                  <span className='rounded-full border border-green-300 bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700'>
+                  <p className='font-semibold text-gray-900 dark:text-neutral-100'>
+                    Encrypted Backup
+                  </p>
+                  <span className='rounded-full border border-green-300 bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:border-green-800 dark:bg-green-950/60 dark:text-green-400'>
                     Recommended
                   </span>
                 </div>
-                <p className='mt-0.5 text-sm text-gray-500'>
+                <p className='mt-0.5 text-sm text-gray-500 dark:text-neutral-400'>
                   PIN-protected backup that you can save to cloud storage.
                 </p>
               </div>
-              <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400' />
+              <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
             </button>
 
             {/* Recovery Phrase Option */}
             <button
               onClick={() => setStep('seed-pin')}
-              className='flex w-full items-center gap-4 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100'
+              className='flex w-full items-center gap-4 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
             >
-              <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-orange-300 bg-orange-100'>
-                <Key className='h-6 w-6 text-orange-600' />
+              <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-orange-300 bg-orange-100 dark:border-orange-800 dark:bg-orange-950/60'>
+                <Key className='h-6 w-6 text-orange-600 dark:text-orange-400' />
               </div>
               <div className='min-w-0 flex-1'>
                 <div className='flex items-center gap-2'>
-                  <p className='font-semibold text-gray-900'>Recovery Phrase</p>
-                  <span className='rounded-full border border-orange-300 bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700'>
+                  <p className='font-semibold text-gray-900 dark:text-neutral-100'>
+                    Recovery Phrase
+                  </p>
+                  <span className='rounded-full border border-orange-300 bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700 dark:border-orange-800 dark:bg-orange-950/60 dark:text-orange-400'>
                     Advanced
                   </span>
                 </div>
-                <p className='mt-0.5 text-sm text-gray-500'>
+                <p className='mt-0.5 text-sm text-gray-500 dark:text-neutral-400'>
                   Write down your 12-word recovery phrase (also known as seed phrase)
                 </p>
               </div>
-              <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400' />
+              <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
             </button>
           </div>
 
-          <p className='mx-auto mt-6 max-w-sm text-center text-xs text-gray-400'>
+          <p className='mx-auto mt-6 max-w-sm text-center text-xs text-gray-400 dark:text-neutral-500'>
             Your backup is the only way to recover your funds if you lose access to this device.
             <br />
             <br />
@@ -333,11 +337,11 @@ export function BackupChoiceSheet({
       {step === 'password' && (
         <div className='space-y-6 px-4 pb-8'>
           <div className='text-center'>
-            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
+            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-950/40'>
               {isPasswordMode ? (
-                <KeyRound className='h-8 w-8 text-orange-600' />
+                <KeyRound className='h-8 w-8 text-orange-600 dark:text-orange-400' />
               ) : (
-                <Shield className='h-8 w-8 text-orange-600' />
+                <Shield className='h-8 w-8 text-orange-600 dark:text-orange-400' />
               )}
             </div>
             <p className='text-sm text-muted-foreground'>
@@ -358,7 +362,7 @@ export function BackupChoiceSheet({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder='Enter admin password'
-                className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg'
+                className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg dark:border-neutral-800 dark:bg-neutral-950'
                 autoFocus
                 disabled={isLoading}
               />
@@ -370,9 +374,11 @@ export function BackupChoiceSheet({
                 {[0, 1, 2, 3, 4, 5].map((index) => (
                   <div
                     key={index}
-                    className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
+                    className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950'
                   >
-                    {pin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+                    {pin.length > index && (
+                      <div className='h-3 w-3 rounded-full bg-gray-900 dark:bg-neutral-100' />
+                    )}
                   </div>
                 ))}
               </div>
@@ -421,8 +427,8 @@ export function BackupChoiceSheet({
       {step === 'backup' && (
         <div className='space-y-6 px-4 pb-8'>
           <div className='text-center'>
-            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50'>
-              <Shield className='h-8 w-8 text-green-600' />
+            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-950/40'>
+              <Shield className='h-8 w-8 text-green-600 dark:text-green-400' />
             </div>
             <p className='text-sm text-muted-foreground'>
               Save this encrypted backup to a secure location
@@ -445,7 +451,7 @@ export function BackupChoiceSheet({
               <Button
                 onClick={handleCopy}
                 variant='ghost'
-                className='flex-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100'
+                className='flex-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
                 size='lg'
               >
                 {copied ? (
@@ -463,7 +469,7 @@ export function BackupChoiceSheet({
               <Button
                 onClick={handleSave}
                 variant='ghost'
-                className='flex-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100'
+                className='flex-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
                 size='lg'
               >
                 <Download className='mr-2 h-4 w-4' />
@@ -471,10 +477,10 @@ export function BackupChoiceSheet({
               </Button>
             </div>
 
-            <div className='rounded-2xl border border-blue-300 bg-blue-50 p-4'>
+            <div className='rounded-2xl border border-blue-300 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/40'>
               <div className='flex items-start gap-2'>
-                <Shield className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600' />
-                <div className='text-sm text-blue-900'>
+                <Shield className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400' />
+                <div className='text-sm text-blue-900 dark:text-blue-400'>
                   <p className='font-medium'>Why Backup?</p>
                   <p className='mt-1'>
                     If you lose your device, forget your PIN, or need to restore your wallet on a
@@ -485,7 +491,7 @@ export function BackupChoiceSheet({
               </div>
             </div>
 
-            <div className='flex items-start gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            <div className='flex items-start gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
               <Checkbox
                 id='confirm-backup'
                 checked={confirmed}
@@ -515,11 +521,11 @@ export function BackupChoiceSheet({
       {step === 'seed-pin' && (
         <div className='space-y-6 px-4 pb-8'>
           <div className='text-center'>
-            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
+            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-950/40'>
               {isSeedPasswordMode ? (
-                <KeyRound className='h-8 w-8 text-orange-600' />
+                <KeyRound className='h-8 w-8 text-orange-600 dark:text-orange-400' />
               ) : (
-                <Key className='h-8 w-8 text-orange-600' />
+                <Key className='h-8 w-8 text-orange-600 dark:text-orange-400' />
               )}
             </div>
             <p className='text-sm text-muted-foreground'>
@@ -540,7 +546,7 @@ export function BackupChoiceSheet({
                 value={seedPassword}
                 onChange={(e) => setSeedPassword(e.target.value)}
                 placeholder='Enter admin password'
-                className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg'
+                className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg dark:border-neutral-800 dark:bg-neutral-950'
                 autoFocus
                 disabled={isVerifying}
               />
@@ -552,9 +558,11 @@ export function BackupChoiceSheet({
                 {[0, 1, 2, 3, 4, 5].map((index) => (
                   <div
                     key={index}
-                    className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
+                    className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950'
                   >
-                    {seedPin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+                    {seedPin.length > index && (
+                      <div className='h-3 w-3 rounded-full bg-gray-900 dark:bg-neutral-100' />
+                    )}
                   </div>
                 ))}
               </div>
@@ -615,10 +623,10 @@ export function BackupChoiceSheet({
             </p>
           </div>
 
-          <div className='rounded-2xl bg-red-50 p-4'>
+          <div className='rounded-2xl bg-red-50 p-4 dark:bg-red-950/40'>
             <div className='flex gap-3'>
-              <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600' />
-              <div className='text-sm text-red-900'>
+              <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400' />
+              <div className='text-sm text-red-900 dark:text-red-400'>
                 <p className='font-medium'>Keep this private</p>
                 <p className='mt-1'>
                   Anyone with these words can access your wallet. Store them securely offline.
@@ -645,12 +653,17 @@ export function BackupChoiceSheet({
               </Button>
             </div>
 
-            <div className={`rounded-2xl border-2 border-dashed p-4 ${showSeed ? '' : 'blur-sm'}`}>
+            <div
+              className={`rounded-2xl border-2 border-dashed p-4 dark:border-neutral-700 ${showSeed ? '' : 'blur-sm'}`}
+            >
               <div className='grid grid-cols-2 gap-3'>
                 {words.map((word, index) => (
-                  <div key={index} className='flex items-center gap-2 rounded-xl bg-gray-50 p-2'>
+                  <div
+                    key={index}
+                    className='flex items-center gap-2 rounded-xl bg-gray-50 p-2 dark:bg-neutral-950'
+                  >
                     <span className='w-6 text-xs text-muted-foreground'>{index + 1}.</span>
-                    <span className='font-mono text-sm'>{word}</span>
+                    <span className='font-mono text-sm dark:text-neutral-100'>{word}</span>
                   </div>
                 ))}
               </div>
@@ -661,7 +674,7 @@ export function BackupChoiceSheet({
                 <Button
                   variant='ghost'
                   onClick={handleSeedCopy}
-                  className='flex-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100'
+                  className='flex-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
                 >
                   {seedCopied ? (
                     <>
@@ -678,7 +691,7 @@ export function BackupChoiceSheet({
                 <Button
                   variant='ghost'
                   onClick={handleSeedSave}
-                  className='flex-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100'
+                  className='flex-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
                 >
                   <Download className='mr-2 h-4 w-4' />
                   Save
@@ -686,7 +699,7 @@ export function BackupChoiceSheet({
               </div>
             )}
 
-            <div className='flex items-start gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            <div className='flex items-start gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
               <Checkbox
                 id='confirm-seed'
                 checked={seedConfirmed}

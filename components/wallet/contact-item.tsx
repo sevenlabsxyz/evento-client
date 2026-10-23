@@ -64,7 +64,7 @@ export function ContactItem({
   return (
     <div
       className={cn(
-        'w-full cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100',
+        'w-full cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800',
         className
       )}
       onClick={handleClick}
@@ -88,10 +88,12 @@ export function ContactItem({
 
         {/* Contact info */}
         <div className='min-w-0 flex-1 overflow-hidden'>
-          <p className='block w-full truncate font-medium text-gray-900'>
+          <p className='block w-full truncate font-medium text-gray-900 dark:text-neutral-100'>
             {isProfileLoading ? contact.name : displayName}
           </p>
-          <p className='block w-full truncate text-sm text-gray-500'>{contact.paymentIdentifier}</p>
+          <p className='block w-full truncate text-sm text-gray-500 dark:text-neutral-400'>
+            {contact.paymentIdentifier}
+          </p>
         </div>
 
         {/* Action buttons - visible on hover */}
@@ -104,7 +106,7 @@ export function ContactItem({
                 {onEdit && (
                   <button
                     onClick={handleEdit}
-                    className='rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200'
+                    className='rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 dark:text-neutral-400 dark:hover:bg-neutral-700'
                     aria-label='Edit contact'
                     title='Edit'
                   >
@@ -114,7 +116,7 @@ export function ContactItem({
                 {onDelete && (
                   <button
                     onClick={handleDelete}
-                    className='rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-red-500'
+                    className='rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-red-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-red-400'
                     aria-label='Delete contact'
                     title='Delete'
                   >
@@ -123,7 +125,7 @@ export function ContactItem({
                 )}
               </div>
             )}
-            <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400' />
+            <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
           </div>
         )}
       </div>

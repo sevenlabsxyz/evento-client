@@ -38,7 +38,7 @@ export default function EventHost({ event }: EventHostProps) {
     <>
       <div className='py-6'>
         <div className='mb-4 flex items-center justify-between'>
-          <h2 className='text-lg font-semibold text-gray-900'>
+          <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
             {event.hosts.length === 1 ? 'Host' : 'Hosts'}
           </h2>
         </div>
@@ -64,8 +64,12 @@ export default function EventHost({ event }: EventHostProps) {
                 />
 
                 <div className='min-w-0 text-left'>
-                  <p className='truncate text-sm text-gray-500'>@{host.username}</p>
-                  <h3 className='truncate font-semibold text-gray-900'>{host.name}</h3>
+                  <p className='truncate text-sm text-gray-500 dark:text-neutral-400'>
+                    @{host.username}
+                  </p>
+                  <h3 className='truncate font-semibold text-gray-900 dark:text-neutral-100'>
+                    {host.name}
+                  </h3>
                 </div>
               </button>
 

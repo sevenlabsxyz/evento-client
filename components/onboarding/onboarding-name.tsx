@@ -34,7 +34,7 @@ export const OnboardingName = ({
           disabled={updating}
           onChange={onNameChange}
           className={
-            'mb-2 min-h-[60px] rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-2xl placeholder:text-gray-300 md:text-2xl'
+            'mb-2 min-h-[60px] rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-2xl placeholder:text-gray-300 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-400 md:text-2xl'
           }
           onKeyDown={(e) => {
             if (e.key === 'Enter') onEnterPress();

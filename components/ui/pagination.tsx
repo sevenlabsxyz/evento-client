@@ -39,6 +39,7 @@ const PaginationLink = ({ className, isActive, size = 'icon', ...props }: Pagina
         variant: isActive ? 'outline' : 'ghost',
         size,
       }),
+      isActive && 'dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100',
       className
     )}
     {...props}
@@ -78,7 +79,7 @@ PaginationNext.displayName = 'PaginationNext';
 const PaginationEllipsis = ({ className, ...props }: React.ComponentProps<'span'>) => (
   <span
     aria-hidden
-    className={cn('flex h-9 w-9 items-center justify-center', className)}
+    className={cn('flex h-9 w-9 items-center justify-center dark:text-neutral-400', className)}
     {...props}
   >
     <MoreHorizontal className='h-4 w-4' />

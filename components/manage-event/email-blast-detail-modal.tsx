@@ -52,18 +52,18 @@ export default function EmailBlastDetailModal({
       case 'delivered':
       case 'sent':
       case 'completed':
-        return 'text-green-600 bg-green-100';
+        return 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-950/60';
       case 'pending':
       case 'sending':
-        return 'text-yellow-600 bg-yellow-100';
+        return 'text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-950/60';
       case 'scheduled':
-        return 'text-blue-600 bg-blue-100';
+        return 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-950/60';
       case 'failed':
-        return 'text-red-600 bg-red-100';
+        return 'text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-950/60';
       case 'cancelled':
-        return 'text-gray-700 bg-gray-200';
+        return 'text-gray-700 dark:text-neutral-300 bg-gray-200 dark:bg-neutral-700';
       default:
-        return 'text-gray-600 bg-gray-100';
+        return 'text-gray-600 dark:text-neutral-400 bg-gray-100 dark:bg-neutral-800';
     }
   };
 
@@ -88,7 +88,7 @@ export default function EmailBlastDetailModal({
       contentClassName='p-6'
       footer={
         canEditOrCancel ? (
-          <div className='grid grid-cols-2 gap-3 border-t border-gray-100 bg-white p-4'>
+          <div className='grid grid-cols-2 gap-3 border-t border-gray-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
             <Button type='button' variant='outline' onClick={() => onEditRequested?.(blast)}>
               Edit
             </Button>
@@ -102,7 +102,7 @@ export default function EmailBlastDetailModal({
             </Button>
           </div>
         ) : isSendingInProgress ? (
-          <div className='border-t border-gray-100 bg-white p-4 text-center text-sm text-gray-600'>
+          <div className='border-t border-gray-100 bg-white p-4 text-center text-sm text-gray-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400'>
             Sending in progress
           </div>
         ) : undefined
@@ -118,43 +118,53 @@ export default function EmailBlastDetailModal({
           </span>
         </div>
 
-        <div className='rounded-2xl border border-gray-200 bg-white'>
-          <div className='border-b border-gray-100 px-4 py-3'>
-            <p className='text-xs font-medium uppercase tracking-wide text-gray-500'>Title</p>
-            <p className='mt-1 text-base font-semibold text-gray-900'>
+        <div className='rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
+          <div className='border-b border-gray-100 px-4 py-3 dark:border-neutral-800'>
+            <p className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
+              Title
+            </p>
+            <p className='mt-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
               {blast.subject || 'No subject'}
             </p>
           </div>
-          <div className='border-b border-gray-100 px-4 py-3'>
-            <p className='text-xs font-medium uppercase tracking-wide text-gray-500'>
+          <div className='border-b border-gray-100 px-4 py-3 dark:border-neutral-800'>
+            <p className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
               Scheduled For Sending
             </p>
-            <p className='mt-1 text-base font-semibold text-gray-900'>{scheduleLabel}</p>
+            <p className='mt-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
+              {scheduleLabel}
+            </p>
           </div>
-          <div className='border-b border-gray-100 px-4 py-3'>
-            <p className='text-xs font-medium uppercase tracking-wide text-gray-500'>Created</p>
-            <p className='mt-1 text-base font-semibold text-gray-900'>
+          <div className='border-b border-gray-100 px-4 py-3 dark:border-neutral-800'>
+            <p className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
+              Created
+            </p>
+            <p className='mt-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
               {formatDate(blast.created_at)}
             </p>
           </div>
           <div className='px-4 py-3'>
-            <p className='text-xs font-medium uppercase tracking-wide text-gray-500'>ID</p>
-            <p className='mt-1 break-all text-base font-semibold text-gray-900'>{blast.id}</p>
+            <p className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
+              ID
+            </p>
+            <p className='mt-1 break-all text-base font-semibold text-gray-900 dark:text-neutral-100'>
+              {blast.id}
+            </p>
           </div>
         </div>
       </div>
 
       {/* Recipients Info */}
       <div className='mb-6'>
-        <h4 className='mb-3 flex items-center gap-2 font-semibold text-gray-900'>
+        <h4 className='mb-3 flex items-center gap-2 font-semibold text-gray-900 dark:text-neutral-100'>
           <Users className='h-4 w-4' />
           Recipients
         </h4>
-        <div className='rounded-lg bg-gray-50 p-4'>
-          <p className='mb-2 text-sm text-gray-700'>
+        <div className='rounded-lg bg-gray-50 p-4 dark:bg-neutral-950'>
+          <p className='mb-2 text-sm text-gray-700 dark:text-neutral-300'>
             <strong>Target:</strong> {blast.recipients || 'All Recipients'}
           </p>
-          <p className='text-sm text-gray-700'>
+          <p className='text-sm text-gray-700 dark:text-neutral-300'>
             <strong>Total Recipients:</strong> {blast.recipientCount ?? 0}
           </p>
         </div>
@@ -162,43 +172,59 @@ export default function EmailBlastDetailModal({
 
       {/* Delivery Statistics */}
       <div className='mb-6'>
-        <h4 className='mb-3 font-semibold text-gray-900'>Delivery Statistics</h4>
+        <h4 className='mb-3 font-semibold text-gray-900 dark:text-neutral-100'>
+          Delivery Statistics
+        </h4>
         <div className='mb-4 grid grid-cols-2 gap-4'>
-          <div className='rounded-lg border border-green-200 bg-green-50 p-4'>
+          <div className='rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950/40'>
             <div className='mb-1 flex items-center gap-2'>
-              <CheckCircle className='h-4 w-4 text-green-600' />
-              <span className='text-sm font-medium text-green-900'>Delivered</span>
+              <CheckCircle className='h-4 w-4 text-green-600 dark:text-green-400' />
+              <span className='text-sm font-medium text-green-900 dark:text-green-400'>
+                Delivered
+              </span>
             </div>
-            <p className='text-2xl font-bold text-green-600'>{blast.delivered ?? 0}</p>
+            <p className='text-2xl font-bold text-green-600 dark:text-green-400'>
+              {blast.delivered ?? 0}
+            </p>
           </div>
 
           {(blast.failed ?? 0) > 0 && (
-            <div className='rounded-lg border border-red-200 bg-red-50 p-4'>
+            <div className='rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/40'>
               <div className='mb-1 flex items-center gap-2'>
-                <XCircle className='h-4 w-4 text-red-600' />
-                <span className='text-sm font-medium text-red-900'>Failed</span>
+                <XCircle className='h-4 w-4 text-red-600 dark:text-red-400' />
+                <span className='text-sm font-medium text-red-900 dark:text-red-400'>Failed</span>
               </div>
-              <p className='text-2xl font-bold text-red-600'>{blast.failed ?? 0}</p>
+              <p className='text-2xl font-bold text-red-600 dark:text-red-400'>
+                {blast.failed ?? 0}
+              </p>
             </div>
           )}
 
           {(blast.pending ?? 0) > 0 && (
-            <div className='rounded-lg border border-yellow-200 bg-yellow-50 p-4'>
+            <div className='rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900 dark:bg-yellow-950/40'>
               <div className='mb-1 flex items-center gap-2'>
-                <AlertCircle className='h-4 w-4 text-yellow-600' />
-                <span className='text-sm font-medium text-yellow-900'>Pending</span>
+                <AlertCircle className='h-4 w-4 text-yellow-600 dark:text-yellow-400' />
+                <span className='text-sm font-medium text-yellow-900 dark:text-yellow-400'>
+                  Pending
+                </span>
               </div>
-              <p className='text-2xl font-bold text-yellow-600'>{blast.pending ?? 0}</p>
+              <p className='text-2xl font-bold text-yellow-600 dark:text-yellow-400'>
+                {blast.pending ?? 0}
+              </p>
             </div>
           )}
         </div>
 
-        <div className='rounded-lg bg-gray-50 p-4'>
+        <div className='rounded-lg bg-gray-50 p-4 dark:bg-neutral-950'>
           <div className='mb-2 flex items-center justify-between'>
-            <span className='text-sm font-medium text-gray-700'>Delivery Rate</span>
-            <span className='text-sm font-bold text-gray-900'>{deliveryRate}%</span>
+            <span className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
+              Delivery Rate
+            </span>
+            <span className='text-sm font-bold text-gray-900 dark:text-neutral-100'>
+              {deliveryRate}%
+            </span>
           </div>
-          <div className='h-2 w-full rounded-full bg-gray-200'>
+          <div className='h-2 w-full rounded-full bg-gray-200 dark:bg-neutral-700'>
             <div
               className='h-2 rounded-full bg-green-500 transition-all duration-300'
               style={{ width: `${deliveryRate}%` }}
@@ -209,10 +235,10 @@ export default function EmailBlastDetailModal({
 
       {/* Message Preview */}
       <div className='mb-6'>
-        <h4 className='mb-3 font-semibold text-gray-900'>Message</h4>
-        <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+        <h4 className='mb-3 font-semibold text-gray-900 dark:text-neutral-100'>Message</h4>
+        <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
           <div
-            className='prose prose-sm max-w-none text-gray-700'
+            className='prose prose-sm max-w-none text-gray-700 dark:text-neutral-300'
             dangerouslySetInnerHTML={{ __html: cleanMessage }}
           />
         </div>

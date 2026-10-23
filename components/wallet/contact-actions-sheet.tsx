@@ -84,8 +84,10 @@ export function ContactActionsSheet({
             onClick={canOpenProfile ? handleOpenProfile : undefined}
             disabled={!canOpenProfile}
             className={cn(
-              'mb-5 flex w-full items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4 text-left',
-              canOpenProfile ? 'transition-colors hover:bg-gray-100' : 'cursor-default'
+              'mb-5 flex w-full items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4 text-left dark:border-neutral-800 dark:bg-neutral-950',
+              canOpenProfile
+                ? 'transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
+                : 'cursor-default'
             )}
           >
             <UserAvatar
@@ -98,14 +100,20 @@ export function ContactActionsSheet({
               className='shrink-0'
             />
             <div className='min-w-0 flex-1'>
-              <p className='truncate text-base font-semibold text-gray-900'>{displayName}</p>
+              <p className='truncate text-base font-semibold text-gray-900 dark:text-neutral-100'>
+                {displayName}
+              </p>
               {displayUsername ? (
-                <p className='truncate text-sm text-gray-500'>{displayUsername}</p>
+                <p className='truncate text-sm text-gray-500 dark:text-neutral-400'>
+                  {displayUsername}
+                </p>
               ) : null}
-              <p className='truncate text-sm text-gray-500'>{contact.paymentIdentifier}</p>
+              <p className='truncate text-sm text-gray-500 dark:text-neutral-400'>
+                {contact.paymentIdentifier}
+              </p>
             </div>
             {canOpenProfile ? (
-              <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400' />
+              <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
             ) : null}
           </button>
 
@@ -123,7 +131,7 @@ export function ContactActionsSheet({
             <Button
               type='button'
               variant='outline'
-              className='h-14 w-full justify-start text-base font-medium text-red-600 hover:bg-red-50 hover:text-red-700'
+              className='h-14 w-full justify-start text-base font-medium text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/40 dark:hover:text-red-400'
               onClick={() => setShowDeleteDialog(true)}
             >
               <Trash2 className='mr-3 h-4 w-4' />
@@ -133,7 +141,7 @@ export function ContactActionsSheet({
             <Button
               type='button'
               variant='outline'
-              className='mt-2 h-14 w-full text-base font-medium text-gray-600'
+              className='mt-2 h-14 w-full text-base font-medium text-gray-600 dark:text-neutral-400'
               onClick={() => onOpenChange(false)}
             >
               Cancel

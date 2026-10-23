@@ -172,10 +172,10 @@ export default function SecurityPrivacyPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-md'>
+      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-md'>
         <div className='space-y-4 p-4'>
           {Array.from({ length: 2 }).map((_, index) => (
-            <div key={index} className='rounded-2xl bg-gray-50 p-4'>
+            <div key={index} className='rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'>
               <div className='flex items-center gap-4'>
                 <Skeleton className='h-8 w-8 rounded-lg' />
                 <div className='flex-1'>
@@ -193,16 +193,18 @@ export default function SecurityPrivacyPage() {
 
   if (error || !eventData) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+            Event Not Found
+          </h1>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             The event you&apos;re trying to edit doesn&apos;t exist or you don&apos;t have
             permission.
           </p>
           <button
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -212,73 +214,81 @@ export default function SecurityPrivacyPage() {
   }
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
-      <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4'>
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-md'>
+      <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4 dark:bg-neutral-950'>
         {/* Event details */}
         <div>
-          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400'>
+          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-400'>
             Event details
           </h2>
-          <div className='overflow-hidden rounded-2xl bg-white'>
+          <div className='overflow-hidden rounded-2xl bg-white dark:bg-neutral-900'>
             <button
               onClick={() => setShowVisibilitySheet(true)}
               className='flex w-full items-center gap-4 p-4 text-left'
             >
-              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
                 {visibility === 'public' ? (
-                  <Globe className='h-4 w-4 text-gray-600' />
+                  <Globe className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
                 ) : (
-                  <Lock className='h-4 w-4 text-gray-600' />
+                  <Lock className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
                 )}
               </div>
               <div className='flex-1'>
-                <label className='mb-1 block text-sm font-medium text-gray-500'>
+                <label className='mb-1 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
                   Event Visibility
                 </label>
                 <div className='flex items-center justify-between'>
-                  <span className='font-medium text-gray-900'>
+                  <span className='font-medium text-gray-900 dark:text-neutral-100'>
                     {visibility === 'public' ? 'Public' : 'Private'}
                   </span>
-                  <ChevronRight className='h-4 w-4 text-gray-400' />
+                  <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
                 </div>
               </div>
             </button>
 
             {isRegistrationMode && (
               <>
-                <div className='mx-4 border-t border-gray-100' />
+                <div className='mx-4 border-t border-gray-100 dark:border-neutral-800' />
                 <div className='p-4'>
                   <div className='mb-3 flex items-start gap-4'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-                      <EyeOff className='h-4 w-4 text-gray-600' />
+                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
+                      <EyeOff className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
                     </div>
                     <div>
-                      <p className='text-sm font-medium text-gray-900'>Registration Visibility</p>
-                      <p className='mt-0.5 text-xs text-gray-500'>
+                      <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
+                        Registration Visibility
+                      </p>
+                      <p className='mt-0.5 text-xs text-gray-500 dark:text-neutral-400'>
                         Hide details from unapproved guests
                       </p>
                     </div>
                   </div>
 
-                  <div className='overflow-hidden rounded-xl bg-gray-50'>
+                  <div className='overflow-hidden rounded-xl bg-gray-50 dark:bg-neutral-950'>
                     <label className='flex items-center justify-between px-4 py-3'>
-                      <span className='text-sm text-gray-700'>Hide location until approved</span>
+                      <span className='text-sm text-gray-700 dark:text-neutral-300'>
+                        Hide location until approved
+                      </span>
                       <Switch
                         checked={hideLocationForUnapproved}
                         onCheckedChange={(checked) => setHideLocationForUnapproved(checked)}
                       />
                     </label>
-                    <div className='mx-4 border-t border-gray-200/60' />
+                    <div className='mx-4 border-t border-gray-200/60 dark:border-neutral-800/60' />
                     <label className='flex items-center justify-between px-4 py-3'>
-                      <span className='text-sm text-gray-700'>Hide guest list until approved</span>
+                      <span className='text-sm text-gray-700 dark:text-neutral-300'>
+                        Hide guest list until approved
+                      </span>
                       <Switch
                         checked={hideGuestListForUnapproved}
                         onCheckedChange={(checked) => setHideGuestListForUnapproved(checked)}
                       />
                     </label>
-                    <div className='mx-4 border-t border-gray-200/60' />
+                    <div className='mx-4 border-t border-gray-200/60 dark:border-neutral-800/60' />
                     <label className='flex items-center justify-between px-4 py-3'>
-                      <span className='text-sm text-gray-700'>Hide description until approved</span>
+                      <span className='text-sm text-gray-700 dark:text-neutral-300'>
+                        Hide description until approved
+                      </span>
                       <Switch
                         checked={hideDescriptionForUnapproved}
                         onCheckedChange={(checked) => setHideDescriptionForUnapproved(checked)}
@@ -293,47 +303,51 @@ export default function SecurityPrivacyPage() {
 
         {/* Event security */}
         <div>
-          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400'>
+          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-400'>
             Event security
           </h2>
-          <div className='overflow-hidden rounded-2xl bg-white'>
+          <div className='overflow-hidden rounded-2xl bg-white dark:bg-neutral-900'>
             <button
               onClick={() => setShowPasswordSheet(true)}
               className='flex w-full items-center gap-4 p-4 text-left'
             >
               <div
-                className={`flex h-8 w-8 items-center justify-center rounded-lg ${passwordProtected ? 'bg-red-100' : 'bg-gray-100'}`}
+                className={`flex h-8 w-8 items-center justify-center rounded-lg ${passwordProtected ? 'bg-red-100 dark:bg-red-950/60' : 'bg-gray-100 dark:bg-neutral-800'}`}
               >
                 {passwordProtected ? (
-                  <ShieldCheck className='h-4 w-4 text-red-600' />
+                  <ShieldCheck className='h-4 w-4 text-red-600 dark:text-red-400' />
                 ) : (
-                  <ShieldOff className='h-4 w-4 text-gray-600' />
+                  <ShieldOff className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
                 )}
               </div>
               <div className='flex-1'>
-                <label className='mb-1 block text-sm font-medium text-gray-500'>
+                <label className='mb-1 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
                   Password Protection
                 </label>
                 <div className='flex items-center justify-between'>
                   <span
-                    className={`font-medium ${passwordProtected ? 'text-red-600' : 'text-gray-900'}`}
+                    className={`font-medium ${passwordProtected ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-neutral-100'}`}
                   >
                     {passwordProtected ? 'Protected' : 'Not Protected'}
                   </span>
-                  <ChevronRight className='h-4 w-4 text-gray-400' />
+                  <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
                 </div>
               </div>
             </button>
 
-            <div className='mx-4 border-t border-gray-100' />
+            <div className='mx-4 border-t border-gray-100 dark:border-neutral-800' />
             <div className='flex items-center justify-between p-4'>
               <div className='flex items-center gap-3'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-                  <EyeOff className='h-4 w-4 text-gray-600' />
+                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
+                  <EyeOff className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
                 </div>
                 <div>
-                  <p className='text-sm font-medium text-gray-900'>Guest List Visibility</p>
-                  <p className='mt-0.5 text-xs text-gray-500'>Hidden from non-hosts</p>
+                  <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
+                    Guest List Visibility
+                  </p>
+                  <p className='mt-0.5 text-xs text-gray-500 dark:text-neutral-400'>
+                    Hidden from non-hosts
+                  </p>
                 </div>
               </div>
               <Switch
@@ -360,7 +374,7 @@ export default function SecurityPrivacyPage() {
         currentPassword={password}
       />
 
-      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:left-1/2 md:w-full md:max-w-md md:-translate-x-1/2 md:rounded-t-2xl md:border md:shadow-sm'>
+      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900 md:left-1/2 md:w-full md:max-w-md md:-translate-x-1/2 md:rounded-t-2xl md:border md:shadow-sm'>
         <div className='mx-auto max-w-full'>
           <SubmitButton
             onClick={handleSaveChanges}

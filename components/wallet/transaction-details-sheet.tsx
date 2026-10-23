@@ -81,20 +81,20 @@ export function TransactionDetailsSheet({
     if (status === 'completed') {
       return {
         label: 'Completed',
-        icon: <Check className='h-4 w-4 text-green-600' />,
-        color: 'text-green-600',
+        icon: <Check className='h-4 w-4 text-green-600 dark:text-green-400' />,
+        color: 'text-green-600 dark:text-green-400',
       };
     } else if (status === 'pending') {
       return {
         label: 'Pending',
-        icon: <Clock className='h-4 w-4 text-amber-600' />,
-        color: 'text-amber-600',
+        icon: <Clock className='h-4 w-4 text-amber-600 dark:text-amber-400' />,
+        color: 'text-amber-600 dark:text-amber-400',
       };
     } else {
       return {
         label: 'Failed',
-        icon: <XCircle className='h-4 w-4 text-red-600' />,
-        color: 'text-red-600',
+        icon: <XCircle className='h-4 w-4 text-red-600 dark:text-red-400' />,
+        color: 'text-red-600 dark:text-red-400',
       };
     }
   };
@@ -191,60 +191,70 @@ export function TransactionDetailsSheet({
     >
       <div className='mx-auto min-h-fit max-w-md space-y-4 pb-8'>
         {/* Amount Card - Glassmorphic */}
-        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm backdrop-blur-xl'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm backdrop-blur-xl dark:border-neutral-800 dark:bg-neutral-950'>
           <div className='mb-4 flex flex-col items-center justify-center gap-2 text-center'>
             <div
               className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                payment.paymentType === 'receive' ? 'bg-green-100' : 'bg-blue-100'
+                payment.paymentType === 'receive'
+                  ? 'bg-green-100 dark:bg-green-950/60'
+                  : 'bg-blue-100 dark:bg-blue-950/60'
               }`}
             >
               {payment.paymentType === 'receive' ? (
                 <ArrowDownLeft
                   className={`h-5 w-5 ${
-                    payment.paymentType === 'receive' ? 'text-green-600' : 'text-blue-600'
+                    payment.paymentType === 'receive'
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-blue-600 dark:text-blue-400'
                   }`}
                 />
               ) : (
-                <ArrowUpRight className='h-5 w-5 text-blue-600' />
+                <ArrowUpRight className='h-5 w-5 text-blue-600 dark:text-blue-400' />
               )}
             </div>
             <div className='space-y-1'>
-              <p className='text-sm font-medium text-gray-600'>{getTypeLabel()}</p>
+              <p className='text-sm font-medium text-gray-600 dark:text-neutral-400'>
+                {getTypeLabel()}
+              </p>
               {contact && <p className='text-sm font-semibold text-primary'>{contact.name}</p>}
             </div>
           </div>
           <div className='text-center'>
             <div className='flex items-baseline justify-center gap-2'>
-              <span className='text-5xl font-semibold tracking-tight text-gray-900'>
+              <span className='text-5xl font-semibold tracking-tight text-gray-900 dark:text-neutral-100'>
                 {Number(payment.amount).toLocaleString()}
               </span>
               <InfoTooltip text='Satoshis (sats) are the smallest unit of Bitcoin. 100,000,000 sats = 1 Bitcoin.'>
-                <span className='text-lg font-medium text-gray-500'>sats</span>
+                <span className='text-lg font-medium text-gray-500 dark:text-neutral-400'>
+                  sats
+                </span>
               </InfoTooltip>
             </div>
-            <div className='mt-2 text-lg font-medium text-gray-500'>
+            <div className='mt-2 text-lg font-medium text-gray-500 dark:text-neutral-400'>
               ≈ ${amountUSD.toFixed(2)} USD
             </div>
           </div>
         </div>
 
         {/* Transaction Info Group */}
-        <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm'>
+        <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm dark:border-neutral-800 dark:bg-neutral-950'>
           {/* Time */}
-          <div className='flex items-center justify-between border-b border-gray-200 px-4 py-3'>
-            <span className='text-sm font-medium text-gray-600'>Time</span>
-            <span className='text-sm text-gray-900'>{formatTimestamp(payment.timestamp)}</span>
+          <div className='flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-neutral-800'>
+            <span className='text-sm font-medium text-gray-600 dark:text-neutral-400'>Time</span>
+            <span className='text-sm text-gray-900 dark:text-neutral-100'>
+              {formatTimestamp(payment.timestamp)}
+            </span>
           </div>
 
           {/* Type */}
-          <div className='flex items-center justify-between border-b border-gray-200 px-4 py-3'>
-            <span className='text-sm font-medium text-gray-600'>Type</span>
-            <span className='text-sm text-gray-900'>{getTypeLabel()}</span>
+          <div className='flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-neutral-800'>
+            <span className='text-sm font-medium text-gray-600 dark:text-neutral-400'>Type</span>
+            <span className='text-sm text-gray-900 dark:text-neutral-100'>{getTypeLabel()}</span>
           </div>
 
           {/* Status */}
           <div className='flex items-center justify-between px-4 py-3'>
-            <span className='text-sm font-medium text-gray-600'>Status</span>
+            <span className='text-sm font-medium text-gray-600 dark:text-neutral-400'>Status</span>
             <div className='flex items-center gap-2'>
               {statusInfo.icon}
               <span className={`text-sm font-medium ${statusInfo.color}`}>{statusInfo.label}</span>
@@ -254,25 +264,29 @@ export function TransactionDetailsSheet({
 
         {/* Financial Details Group */}
         {Number(payment.fees) > 0 && (
-          <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm'>
+          <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm dark:border-neutral-800 dark:bg-neutral-950'>
             <div className='px-4 py-3'>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-1'>
-                  <span className='text-sm font-medium text-gray-600'>Total Fees</span>
+                  <span className='text-sm font-medium text-gray-600 dark:text-neutral-400'>
+                    Total Fees
+                  </span>
                   <InfoTooltip text='Network fees paid to process this Lightning transaction.'>
-                    <Info className='h-3 w-3 text-gray-400' />
+                    <Info className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
                   </InfoTooltip>
                 </div>
                 <div className='text-right'>
                   <div className='flex items-center gap-1'>
-                    <span className='text-sm font-medium text-gray-900'>
+                    <span className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
                       {Number(payment.fees).toLocaleString()}
                     </span>
                     <InfoTooltip text='Satoshis (sats) are the smallest unit of Bitcoin. 100,000,000 sats = 1 Bitcoin.'>
-                      <span className='text-sm text-gray-600'>sats</span>
+                      <span className='text-sm text-gray-600 dark:text-neutral-400'>sats</span>
                     </InfoTooltip>
                   </div>
-                  <span className='text-xs text-gray-500'>≈ ${feesUSD.toFixed(2)} USD</span>
+                  <span className='text-xs text-gray-500 dark:text-neutral-400'>
+                    ≈ ${feesUSD.toFixed(2)} USD
+                  </span>
                 </div>
               </div>
             </div>
@@ -281,20 +295,22 @@ export function TransactionDetailsSheet({
 
         {/* Payment Details Group */}
         {(detailRows.length > 0 || invoice) && (
-          <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm'>
+          <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm dark:border-neutral-800 dark:bg-neutral-950'>
             {detailRows.map((row, index) => {
               const shouldShowBorder = index < detailRows.length - 1 || Boolean(invoice);
 
               return (
                 <div
                   key={row.label}
-                  className={`px-4 py-3 ${shouldShowBorder ? 'border-b border-gray-200' : ''}`}
+                  className={`px-4 py-3 ${shouldShowBorder ? 'border-b border-gray-200 dark:border-neutral-800' : ''}`}
                 >
-                  <div className='mb-1 text-xs font-medium uppercase tracking-wide text-gray-500'>
+                  <div className='mb-1 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
                     {row.label}
                   </div>
                   <div className='flex items-start gap-2'>
-                    <p className='flex-1 break-all text-sm text-gray-900'>{row.value}</p>
+                    <p className='flex-1 break-all text-sm text-gray-900 dark:text-neutral-100'>
+                      {row.value}
+                    </p>
                     {row.copyable && (
                       <Button
                         onClick={() => handleCopy(row.value, row.label)}
@@ -314,15 +330,17 @@ export function TransactionDetailsSheet({
             {invoice && (
               <div className='px-4 py-3'>
                 <div className='mb-2 flex items-center gap-1'>
-                  <span className='text-xs font-medium uppercase tracking-wide text-gray-500'>
+                  <span className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
                     Invoice
                   </span>
                   <InfoTooltip text='A Lightning invoice is a payment request that contains the amount, destination, and other payment details.'>
-                    <Info className='h-3 w-3 text-gray-400' />
+                    <Info className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
                   </InfoTooltip>
                 </div>
                 <div className='flex items-start gap-2'>
-                  <code className='flex-1 break-all text-xs text-gray-900'>{invoice}</code>
+                  <code className='flex-1 break-all text-xs text-gray-900 dark:text-neutral-100'>
+                    {invoice}
+                  </code>
                   <Button
                     onClick={() => handleCopy(invoice, 'Invoice')}
                     variant='ghost'
@@ -341,18 +359,25 @@ export function TransactionDetailsSheet({
         {(advancedRows.length > 0 || preimage || paymentHash || destinationPubkey) && (
           <Accordion type='single' collapsible className='w-full'>
             <AccordionItem value='advanced' className='border-none'>
-              <AccordionTrigger className='h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 shadow-sm hover:bg-gray-100 hover:no-underline'>
-                <span className='text-sm font-medium text-gray-900'>Advanced Details</span>
+              <AccordionTrigger className='h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 shadow-sm hover:bg-gray-100 hover:no-underline dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'>
+                <span className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
+                  Advanced Details
+                </span>
               </AccordionTrigger>
               <AccordionContent className='pt-4'>
-                <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm'>
+                <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm dark:border-neutral-800 dark:bg-neutral-950'>
                   {advancedRows.map((row) => (
-                    <div key={row.label} className='border-b border-gray-200 px-4 py-3'>
-                      <div className='mb-1 text-xs font-medium uppercase tracking-wide text-gray-500'>
+                    <div
+                      key={row.label}
+                      className='border-b border-gray-200 px-4 py-3 dark:border-neutral-800'
+                    >
+                      <div className='mb-1 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
                         {row.label}
                       </div>
                       <div className='flex items-start gap-2'>
-                        <p className='flex-1 break-all text-sm text-gray-900'>{row.value}</p>
+                        <p className='flex-1 break-all text-sm text-gray-900 dark:text-neutral-100'>
+                          {row.value}
+                        </p>
                         <Button
                           onClick={() => handleCopy(row.value, row.label)}
                           variant='ghost'
@@ -369,20 +394,20 @@ export function TransactionDetailsSheet({
                     <div
                       className={`px-4 py-3 ${
                         preimage || destinationPubkey || payment.id
-                          ? 'border-b border-gray-200'
+                          ? 'border-b border-gray-200 dark:border-neutral-800'
                           : ''
                       }`}
                     >
                       <div className='mb-2 flex items-center gap-1'>
-                        <span className='text-xs font-medium uppercase tracking-wide text-gray-500'>
+                        <span className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
                           Payment Hash
                         </span>
                         <InfoTooltip text='A unique identifier for this Lightning payment, derived from the preimage.'>
-                          <Info className='h-3 w-3 text-gray-400' />
+                          <Info className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
                         </InfoTooltip>
                       </div>
                       <div className='flex items-start gap-2'>
-                        <code className='flex-1 break-all text-xs text-gray-900'>
+                        <code className='flex-1 break-all text-xs text-gray-900 dark:text-neutral-100'>
                           {paymentHash}
                         </code>
                         <Button
@@ -400,18 +425,20 @@ export function TransactionDetailsSheet({
                   {/* Preimage */}
                   {preimage && (
                     <div
-                      className={`px-4 py-3 ${destinationPubkey || payment.id ? 'border-b border-gray-200' : ''}`}
+                      className={`px-4 py-3 ${destinationPubkey || payment.id ? 'border-b border-gray-200 dark:border-neutral-800' : ''}`}
                     >
                       <div className='mb-2 flex items-center gap-1'>
-                        <span className='text-xs font-medium uppercase tracking-wide text-gray-500'>
+                        <span className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
                           Preimage
                         </span>
                         <InfoTooltip text="The secret value that proves this payment was completed. It's the cryptographic proof of payment.">
-                          <Info className='h-3 w-3 text-gray-400' />
+                          <Info className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
                         </InfoTooltip>
                       </div>
                       <div className='flex items-start gap-2'>
-                        <code className='flex-1 break-all text-xs text-gray-900'>{preimage}</code>
+                        <code className='flex-1 break-all text-xs text-gray-900 dark:text-neutral-100'>
+                          {preimage}
+                        </code>
                         <Button
                           onClick={() => handleCopy(preimage, 'Preimage')}
                           variant='ghost'
@@ -426,17 +453,19 @@ export function TransactionDetailsSheet({
 
                   {/* Destination Pubkey */}
                   {destinationPubkey && (
-                    <div className={`px-4 py-3 ${payment.id ? 'border-b border-gray-200' : ''}`}>
+                    <div
+                      className={`px-4 py-3 ${payment.id ? 'border-b border-gray-200 dark:border-neutral-800' : ''}`}
+                    >
                       <div className='mb-2 flex items-center gap-1'>
-                        <span className='text-xs font-medium uppercase tracking-wide text-gray-500'>
+                        <span className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
                           Destination Node
                         </span>
                         <InfoTooltip text='The public key of the Lightning node that received this payment.'>
-                          <Info className='h-3 w-3 text-gray-400' />
+                          <Info className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
                         </InfoTooltip>
                       </div>
                       <div className='flex items-start gap-2'>
-                        <code className='flex-1 break-all text-xs text-gray-900'>
+                        <code className='flex-1 break-all text-xs text-gray-900 dark:text-neutral-100'>
                           {destinationPubkey}
                         </code>
                         <Button
@@ -454,15 +483,17 @@ export function TransactionDetailsSheet({
                   {/* Transaction ID */}
                   <div className='px-4 py-3'>
                     <div className='mb-2 flex items-center gap-1'>
-                      <span className='text-xs font-medium uppercase tracking-wide text-gray-500'>
+                      <span className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
                         Transaction ID
                       </span>
                       <InfoTooltip text='The unique identifier for this transaction in your wallet.'>
-                        <Info className='h-3 w-3 text-gray-400' />
+                        <Info className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
                       </InfoTooltip>
                     </div>
                     <div className='flex items-start gap-2'>
-                      <code className='flex-1 break-all text-xs text-gray-900'>{payment.id}</code>
+                      <code className='flex-1 break-all text-xs text-gray-900 dark:text-neutral-100'>
+                        {payment.id}
+                      </code>
                       <Button
                         onClick={() => handleCopy(payment.id, 'Transaction ID')}
                         variant='ghost'

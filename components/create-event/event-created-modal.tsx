@@ -54,15 +54,15 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
 
   return (
     <>
-      <div className='fixed inset-0 z-50 bg-white'>
+      <div className='fixed inset-0 z-50 bg-white dark:bg-neutral-900'>
         {/* Close Button */}
         <div className='absolute right-4 top-4'>
           <button
             onClick={onClose}
             disabled={isNavigating}
-            className='rounded-full p-2 hover:bg-gray-100 disabled:opacity-60'
+            className='rounded-full p-2 hover:bg-gray-100 disabled:opacity-60 dark:hover:bg-neutral-800'
           >
-            <X className='h-6 w-6 text-gray-400' />
+            <X className='h-6 w-6 text-gray-400 dark:text-neutral-500' />
           </button>
         </div>
 
@@ -78,21 +78,23 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
           </div>
 
           {/* Title */}
-          <h1 className='mb-4 text-2xl font-medium text-gray-500'>
+          <h1 className='mb-4 text-2xl font-medium text-gray-500 dark:text-neutral-400'>
             {isDraft ? 'Draft Created!' : 'Event Created!'}
           </h1>
 
           {/* Event Name */}
-          <h2 className='mb-8 text-4xl font-bold text-gray-900'>{eventData.title}</h2>
+          <h2 className='mb-8 text-4xl font-bold text-gray-900 dark:text-neutral-100'>
+            {eventData.title}
+          </h2>
 
           {isDraft && (
-            <p className='mb-8 max-w-sm text-base text-gray-600'>
+            <p className='mb-8 max-w-sm text-base text-gray-600 dark:text-neutral-400'>
               Great work. Next up, complete setup and publish when you are ready.
             </p>
           )}
 
           {/* Date and Time */}
-          <div className='mb-16 flex items-center gap-2 text-gray-500'>
+          <div className='mb-16 flex items-center gap-2 text-gray-500 dark:text-neutral-400'>
             <Clock className='h-5 w-5' />
             <span className='text-lg'>
               {formatDate(eventData.date)} at {formatTime(eventData.time)} PDT
@@ -120,7 +122,7 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
               <button
                 onClick={handleInviteGuests}
                 disabled={isNavigating}
-                className='w-full py-4 text-lg font-medium text-gray-500'
+                className='w-full py-4 text-lg font-medium text-gray-500 dark:text-neutral-400'
               >
                 Invite Guests
               </button>

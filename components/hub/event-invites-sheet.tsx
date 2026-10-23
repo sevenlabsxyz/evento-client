@@ -74,10 +74,10 @@ export function EventInvitesSheet({
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className='flex flex-col bg-white'>
+          <SheetWithDetentFull.Content className='flex flex-col bg-white dark:bg-neutral-900'>
             <div className='px-4 pt-2'>
               <div className='mb-4 flex justify-center'>
-                <SheetWithDetentFull.Handle />
+                <SheetWithDetentFull.Handle className='dark:bg-neutral-700' />
               </div>
 
               <VisuallyHidden.Root asChild>
@@ -108,7 +108,10 @@ export function EventInvitesSheet({
                       shouldShowPendingLoading ? (
                         <div className='space-y-4'>
                           {[...Array(3)].map((_, i) => (
-                            <div key={i} className='h-32 animate-pulse rounded-2xl bg-gray-100' />
+                            <div
+                              key={i}
+                              className='h-32 animate-pulse rounded-2xl bg-gray-100 dark:bg-neutral-800'
+                            />
                           ))}
                         </div>
                       ) : pendingSheetError ? (
@@ -150,7 +153,10 @@ export function EventInvitesSheet({
                     isLoadingResponded ? (
                       <div className='space-y-4'>
                         {[...Array(3)].map((_, i) => (
-                          <div key={i} className='h-32 animate-pulse rounded-2xl bg-gray-100' />
+                          <div
+                            key={i}
+                            className='h-32 animate-pulse rounded-2xl bg-gray-100 dark:bg-neutral-800'
+                          />
                         ))}
                       </div>
                     ) : respondedInvites.length === 0 ? (

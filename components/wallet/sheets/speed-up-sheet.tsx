@@ -208,7 +208,7 @@ export function SpeedUpSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             <div className='my-4 flex items-center'>
-              <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+              <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
             </div>
             <VisuallyHidden.Root asChild>
               <SheetWithDetentFull.Title>Speed It Up</SheetWithDetentFull.Title>
@@ -220,7 +220,7 @@ export function SpeedUpSheet({
                 <h2 className='text-xl font-semibold'>Speed It Up</h2>
                 <button
                   onClick={() => onOpenChange(false)}
-                  className='rounded-full p-2 transition-colors hover:bg-gray-100'
+                  className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
                 >
                   <X className='h-5 w-5' />
                 </button>
@@ -228,25 +228,25 @@ export function SpeedUpSheet({
 
               {/* Amount Display */}
               <div className='px-4 pb-4'>
-                <p className='text-center text-gray-600'>
+                <p className='text-center text-gray-600 dark:text-neutral-400'>
                   You have{' '}
-                  <span className='font-semibold text-gray-900'>
+                  <span className='font-semibold text-gray-900 dark:text-neutral-100'>
                     {formatAmount(deposit.amountSats)} sats
                   </span>{' '}
                   incoming
                 </p>
                 {selectedSpeed && selectedSpeed !== 'custom' && selectedFeeRate && (
-                  <p className='mt-2 text-center text-sm text-gray-500'>
+                  <p className='mt-2 text-center text-sm text-gray-500 dark:text-neutral-400'>
                     You will receive{' '}
-                    <span className='font-semibold text-gray-700'>
+                    <span className='font-semibold text-gray-700 dark:text-neutral-300'>
                       {formatAmount(calculateReceiveAmount(selectedFeeRate))} sats
                     </span>
                   </p>
                 )}
                 {selectedSpeed === 'custom' && customFeeRate && parseFloat(customFeeRate) > 0 && (
-                  <p className='mt-2 text-center text-sm text-gray-500'>
+                  <p className='mt-2 text-center text-sm text-gray-500 dark:text-neutral-400'>
                     You will receive{' '}
-                    <span className='font-semibold text-gray-700'>
+                    <span className='font-semibold text-gray-700 dark:text-neutral-300'>
                       {formatAmount(calculateReceiveAmount(parseFloat(customFeeRate)))} sats
                     </span>
                   </p>
@@ -257,7 +257,7 @@ export function SpeedUpSheet({
               <div className='px-4'>
                 {isLoadingFees ? (
                   <div className='flex items-center justify-center py-8'>
-                    <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
+                    <Loader2 className='h-6 w-6 animate-spin text-gray-400 dark:text-neutral-500' />
                   </div>
                 ) : (
                   <AnimatePresence mode='wait'>
@@ -275,17 +275,19 @@ export function SpeedUpSheet({
                           onClick={() => handleSpeedSelect('fast')}
                           className={`w-full rounded-xl border p-4 text-left transition-all ${
                             selectedSpeed === 'fast'
-                              ? 'border-gray-900 bg-gray-50'
-                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                              ? 'border-gray-900 bg-gray-50 dark:border-neutral-200 dark:bg-neutral-950'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-950'
                           }`}
                         >
                           <div className='flex items-center gap-3'>
-                            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-orange-100'>
-                              <Rocket className='h-5 w-5 text-orange-600' />
+                            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-950/60'>
+                              <Rocket className='h-5 w-5 text-orange-600 dark:text-orange-400' />
                             </div>
                             <div className='flex-1'>
-                              <div className='font-semibold text-gray-900'>Fast</div>
-                              <div className='text-sm text-gray-600'>
+                              <div className='font-semibold text-gray-900 dark:text-neutral-100'>
+                                Fast
+                              </div>
+                              <div className='text-sm text-gray-600 dark:text-neutral-400'>
                                 ~10 minutes •{' '}
                                 {feeEstimates
                                   ? `~${formatAmount(calculateFee(feeEstimates.fastestFee))} sats fee`
@@ -293,7 +295,7 @@ export function SpeedUpSheet({
                               </div>
                             </div>
                             {selectedSpeed === 'fast' && (
-                              <div className='h-5 w-5 rounded-full bg-gray-900' />
+                              <div className='h-5 w-5 rounded-full bg-gray-900 dark:bg-neutral-100' />
                             )}
                           </div>
                         </button>
@@ -303,17 +305,19 @@ export function SpeedUpSheet({
                           onClick={() => handleSpeedSelect('normal')}
                           className={`w-full rounded-xl border p-4 text-left transition-all ${
                             selectedSpeed === 'normal'
-                              ? 'border-gray-900 bg-gray-50'
-                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                              ? 'border-gray-900 bg-gray-50 dark:border-neutral-200 dark:bg-neutral-950'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-950'
                           }`}
                         >
                           <div className='flex items-center gap-3'>
-                            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-blue-100'>
-                              <Clock className='h-5 w-5 text-blue-600' />
+                            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-950/60'>
+                              <Clock className='h-5 w-5 text-blue-600 dark:text-blue-400' />
                             </div>
                             <div className='flex-1'>
-                              <div className='font-semibold text-gray-900'>Normal</div>
-                              <div className='text-sm text-gray-600'>
+                              <div className='font-semibold text-gray-900 dark:text-neutral-100'>
+                                Normal
+                              </div>
+                              <div className='text-sm text-gray-600 dark:text-neutral-400'>
                                 ~1 hour •{' '}
                                 {feeEstimates
                                   ? `~${formatAmount(calculateFee(feeEstimates.hourFee))} sats fee`
@@ -321,7 +325,7 @@ export function SpeedUpSheet({
                               </div>
                             </div>
                             {selectedSpeed === 'normal' && (
-                              <div className='h-5 w-5 rounded-full bg-gray-900' />
+                              <div className='h-5 w-5 rounded-full bg-gray-900 dark:bg-neutral-100' />
                             )}
                           </div>
                         </button>
@@ -331,17 +335,19 @@ export function SpeedUpSheet({
                           onClick={() => handleSpeedSelect('slow')}
                           className={`w-full rounded-xl border p-4 text-left transition-all ${
                             selectedSpeed === 'slow'
-                              ? 'border-gray-900 bg-gray-50'
-                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                              ? 'border-gray-900 bg-gray-50 dark:border-neutral-200 dark:bg-neutral-950'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-950'
                           }`}
                         >
                           <div className='flex items-center gap-3'>
-                            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-100'>
-                              <Turtle className='h-5 w-5 text-green-600' />
+                            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-950/60'>
+                              <Turtle className='h-5 w-5 text-green-600 dark:text-green-400' />
                             </div>
                             <div className='flex-1'>
-                              <div className='font-semibold text-gray-900'>Slow</div>
-                              <div className='text-sm text-gray-600'>
+                              <div className='font-semibold text-gray-900 dark:text-neutral-100'>
+                                Slow
+                              </div>
+                              <div className='text-sm text-gray-600 dark:text-neutral-400'>
                                 ~12 hours •{' '}
                                 {feeEstimates
                                   ? `~${formatAmount(calculateFee(feeEstimates.economyFee))} sats fee`
@@ -349,7 +355,7 @@ export function SpeedUpSheet({
                               </div>
                             </div>
                             {selectedSpeed === 'slow' && (
-                              <div className='h-5 w-5 rounded-full bg-gray-900' />
+                              <div className='h-5 w-5 rounded-full bg-gray-900 dark:bg-neutral-100' />
                             )}
                           </div>
                         </button>
@@ -359,17 +365,21 @@ export function SpeedUpSheet({
                           onClick={() => handleSpeedSelect('custom')}
                           className={`w-full rounded-xl border p-4 text-left transition-all ${
                             selectedSpeed === 'custom'
-                              ? 'border-gray-900 bg-gray-50'
-                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                              ? 'border-gray-900 bg-gray-50 dark:border-neutral-200 dark:bg-neutral-950'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:hover:border-neutral-700 dark:hover:bg-neutral-950'
                           }`}
                         >
                           <div className='flex items-center gap-3'>
-                            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-purple-100'>
-                              <Settings className='h-5 w-5 text-purple-600' />
+                            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-950/60'>
+                              <Settings className='h-5 w-5 text-purple-600 dark:text-purple-400' />
                             </div>
                             <div className='flex-1'>
-                              <div className='font-semibold text-gray-900'>Custom</div>
-                              <div className='text-sm text-gray-600'>Set your own fee rate</div>
+                              <div className='font-semibold text-gray-900 dark:text-neutral-100'>
+                                Custom
+                              </div>
+                              <div className='text-sm text-gray-600 dark:text-neutral-400'>
+                                Set your own fee rate
+                              </div>
                             </div>
                           </div>
                         </button>
@@ -383,25 +393,27 @@ export function SpeedUpSheet({
                         transition={{ duration: 0.2 }}
                         className='space-y-4'
                       >
-                        <div className='rounded-xl border border-gray-200 bg-gray-50 p-4'>
-                          <label className='mb-2 block text-sm font-medium text-gray-900'>
+                        <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
+                          <label className='mb-2 block text-sm font-medium text-gray-900 dark:text-neutral-100'>
                             Fee Rate (sat/vbyte)
                           </label>
-                          <div className='flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-3'>
+                          <div className='flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900'>
                             <input
                               type='number'
                               value={customFeeRate}
                               onChange={(e) => setCustomFeeRate(e.target.value)}
-                              className='flex-1 border-none bg-transparent text-lg outline-none'
+                              className='flex-1 border-none bg-transparent text-lg outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500'
                               placeholder='Enter fee rate'
                               min='1'
                               step='0.1'
                               autoFocus
                             />
-                            <span className='text-sm text-gray-600'>sat/vbyte</span>
+                            <span className='text-sm text-gray-600 dark:text-neutral-400'>
+                              sat/vbyte
+                            </span>
                           </div>
                           {customFeeRate && parseFloat(customFeeRate) > 0 && (
-                            <p className='mt-2 text-sm text-gray-600'>
+                            <p className='mt-2 text-sm text-gray-600 dark:text-neutral-400'>
                               Estimated fee: ~
                               {formatAmount(calculateFee(parseFloat(customFeeRate)))} sats
                             </p>
@@ -410,28 +422,28 @@ export function SpeedUpSheet({
 
                         {/* Reference rates */}
                         {feeEstimates && (
-                          <div className='rounded-lg bg-gray-100 p-3'>
-                            <p className='mb-2 text-xs font-medium text-gray-500'>
+                          <div className='rounded-lg bg-gray-100 p-3 dark:bg-neutral-800'>
+                            <p className='mb-2 text-xs font-medium text-gray-500 dark:text-neutral-400'>
                               Current network rates
                             </p>
                             <div className='grid grid-cols-3 gap-2 text-center text-xs'>
                               <div>
-                                <div className='font-semibold text-gray-900'>
+                                <div className='font-semibold text-gray-900 dark:text-neutral-100'>
                                   {feeEstimates.fastestFee}
                                 </div>
-                                <div className='text-gray-500'>Fast</div>
+                                <div className='text-gray-500 dark:text-neutral-400'>Fast</div>
                               </div>
                               <div>
-                                <div className='font-semibold text-gray-900'>
+                                <div className='font-semibold text-gray-900 dark:text-neutral-100'>
                                   {feeEstimates.hourFee}
                                 </div>
-                                <div className='text-gray-500'>Normal</div>
+                                <div className='text-gray-500 dark:text-neutral-400'>Normal</div>
                               </div>
                               <div>
-                                <div className='font-semibold text-gray-900'>
+                                <div className='font-semibold text-gray-900 dark:text-neutral-100'>
                                   {feeEstimates.economyFee}
                                 </div>
-                                <div className='text-gray-500'>Slow</div>
+                                <div className='text-gray-500 dark:text-neutral-400'>Slow</div>
                               </div>
                             </div>
                           </div>

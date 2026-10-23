@@ -215,10 +215,10 @@ export default function CrowdfundingManagementPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
         <div className='space-y-6 p-4'>
           <Skeleton className='h-4 w-3/4' />
-          <div className='rounded-2xl bg-gray-50 p-6'>
+          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
             <div className='mb-4 flex items-center gap-3'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='space-y-2'>
@@ -233,7 +233,7 @@ export default function CrowdfundingManagementPage() {
               <Skeleton className='h-12 w-full rounded-xl' />
             </div>
           </div>
-          <div className='rounded-2xl bg-amber-50 p-4'>
+          <div className='rounded-2xl bg-amber-50 p-4 dark:bg-amber-950/40'>
             <Skeleton className='mb-2 h-5 w-32' />
             <Skeleton className='h-4 w-full' />
             <Skeleton className='mt-1 h-4 w-3/4' />
@@ -245,19 +245,19 @@ export default function CrowdfundingManagementPage() {
 
   if (error && !isMissingCampaign) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <MessageCircle className='mx-auto mb-4 h-8 w-8 text-red-500' />
-          <p className='text-gray-600'>Could not load campaign settings</p>
+          <MessageCircle className='mx-auto mb-4 h-8 w-8 text-red-500 dark:text-red-400' />
+          <p className='text-gray-600 dark:text-neutral-400'>Could not load campaign settings</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
       <div className='space-y-6 p-4'>
-        <div className='text-sm text-gray-500'>
+        <div className='text-sm text-gray-500 dark:text-neutral-400'>
           {isUpdate
             ? 'Update your crowdfunding campaign settings below.'
             : 'Set up a Lightning crowdfunding campaign for your event.'}
@@ -266,22 +266,29 @@ export default function CrowdfundingManagementPage() {
         {/* Campaign Settings */}
         <form onSubmit={form.handleSubmit(handleSave)} className='space-y-6'>
           {/* Title */}
-          <div className='rounded-2xl bg-gray-50 p-6'>
+          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
             <div className='mb-4 flex items-center gap-3'>
-              <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100'>
-                <Zap className='h-5 w-5 text-amber-600' />
+              <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-950/60'>
+                <Zap className='h-5 w-5 text-amber-600 dark:text-amber-400' />
               </div>
               <div>
-                <h3 className='font-semibold text-gray-900'>Campaign Details</h3>
-                <p className='text-sm text-gray-600'>Name and describe your campaign</p>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                  Campaign Details
+                </h3>
+                <p className='text-sm text-gray-600 dark:text-neutral-400'>
+                  Name and describe your campaign
+                </p>
               </div>
             </div>
 
             <div className='space-y-4'>
               {/* Title field */}
               <div className='space-y-2'>
-                <label htmlFor='campaign-title' className='text-sm font-medium text-gray-700'>
-                  Title <span className='text-red-500'>*</span>
+                <label
+                  htmlFor='campaign-title'
+                  className='text-sm font-medium text-gray-700 dark:text-neutral-300'
+                >
+                  Title <span className='text-red-500 dark:text-red-400'>*</span>
                 </label>
                 <input
                   id='campaign-title'
@@ -289,16 +296,21 @@ export default function CrowdfundingManagementPage() {
                   {...form.register('title')}
                   placeholder='e.g. Help fund our event'
                   maxLength={200}
-                  className='w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500'
+                  className='w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
                 />
                 {form.formState.errors.title && (
-                  <p className='text-sm text-red-500'>{form.formState.errors.title.message}</p>
+                  <p className='text-sm text-red-500 dark:text-red-400'>
+                    {form.formState.errors.title.message}
+                  </p>
                 )}
               </div>
 
               {/* Description field */}
               <div className='space-y-2'>
-                <label htmlFor='campaign-description' className='text-sm font-medium text-gray-700'>
+                <label
+                  htmlFor='campaign-description'
+                  className='text-sm font-medium text-gray-700 dark:text-neutral-300'
+                >
                   Description
                 </label>
                 <textarea
@@ -306,20 +318,23 @@ export default function CrowdfundingManagementPage() {
                   {...form.register('description')}
                   placeholder='Tell supporters what this campaign is for...'
                   rows={3}
-                  className='w-full resize-none rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500'
+                  className='w-full resize-none rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
                 />
               </div>
             </div>
           </div>
 
           {/* Goal */}
-          <div className='rounded-2xl bg-gray-50 p-6'>
+          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
             <div className='space-y-2'>
-              <label htmlFor='campaign-goal' className='text-sm font-medium text-gray-700'>
+              <label
+                htmlFor='campaign-goal'
+                className='text-sm font-medium text-gray-700 dark:text-neutral-300'
+              >
                 Goal (sats)
               </label>
               <div className='flex items-center gap-3'>
-                <div className='rounded-lg bg-gray-100 px-3 py-2 font-medium text-gray-700'>
+                <div className='rounded-lg bg-gray-100 px-3 py-2 font-medium text-gray-700 dark:bg-neutral-800 dark:text-neutral-300'>
                   sats
                 </div>
                 <input
@@ -329,22 +344,26 @@ export default function CrowdfundingManagementPage() {
                   placeholder='Optional'
                   min='1'
                   step='1'
-                  className='w-32 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500'
+                  className='w-32 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
                 />
               </div>
-              <p className='text-xs text-gray-500'>
+              <p className='text-xs text-gray-500 dark:text-neutral-400'>
                 Leave empty for an open-ended campaign with no specific target.
               </p>
               {form.formState.errors.goal_sats && (
-                <p className='text-sm text-red-500'>{form.formState.errors.goal_sats.message}</p>
+                <p className='text-sm text-red-500 dark:text-red-400'>
+                  {form.formState.errors.goal_sats.message}
+                </p>
               )}
             </div>
           </div>
 
           {/* Visibility */}
-          <div className='rounded-2xl bg-gray-50 p-6'>
+          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
             <div className='space-y-2'>
-              <label className='text-sm font-medium text-gray-700'>Visibility</label>
+              <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
+                Visibility
+              </label>
               <div className='flex gap-3'>
                 {(['public', 'private'] as const).map((option) => (
                   <button
@@ -353,15 +372,15 @@ export default function CrowdfundingManagementPage() {
                     onClick={() => form.setValue('visibility', option, { shouldValidate: true })}
                     className={`flex-1 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
                       form.watch('visibility') === option
-                        ? 'border-amber-500 bg-amber-50 text-amber-700'
-                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+                        ? 'border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-950'
                     }`}
                   >
                     {option === 'public' ? 'Public' : 'Private'}
                   </button>
                 ))}
               </div>
-              <p className='text-xs text-gray-500'>
+              <p className='text-xs text-gray-500 dark:text-neutral-400'>
                 {form.watch('visibility') === 'public'
                   ? 'Anyone can view and contribute to this campaign.'
                   : 'Only people with the link can view and contribute.'}
@@ -370,9 +389,11 @@ export default function CrowdfundingManagementPage() {
           </div>
 
           {/* Status */}
-          <div className='rounded-2xl bg-gray-50 p-6'>
+          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
             <div className='space-y-2'>
-              <label className='text-sm font-medium text-gray-700'>Status</label>
+              <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
+                Status
+              </label>
               <div className='flex gap-3'>
                 {(['active', 'paused'] as const).map((option) => (
                   <button
@@ -381,15 +402,15 @@ export default function CrowdfundingManagementPage() {
                     onClick={() => form.setValue('status', option, { shouldValidate: true })}
                     className={`flex-1 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
                       form.watch('status') === option
-                        ? 'border-amber-500 bg-amber-50 text-amber-700'
-                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+                        ? 'border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-950'
                     }`}
                   >
                     {option === 'active' ? 'Active' : 'Paused'}
                   </button>
                 ))}
               </div>
-              <p className='text-xs text-gray-500'>
+              <p className='text-xs text-gray-500 dark:text-neutral-400'>
                 {form.watch('status') === 'active'
                   ? 'Campaign is accepting pledges.'
                   : 'Campaign is paused and not accepting new pledges.'}
@@ -398,56 +419,66 @@ export default function CrowdfundingManagementPage() {
           </div>
 
           {/* Destination Address (read-only) */}
-          <div className='rounded-2xl border border-amber-200 bg-amber-50 p-4'>
+          <div className='rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-950/40'>
             <div className='mb-2 flex items-center gap-2'>
-              <Info className='h-4 w-4 text-amber-700' />
-              <h4 className='font-medium text-amber-900'>Payment Destination</h4>
+              <Info className='h-4 w-4 text-amber-700 dark:text-amber-400' />
+              <h4 className='font-medium text-amber-900 dark:text-amber-400'>
+                Payment Destination
+              </h4>
             </div>
-            <p className='text-sm text-amber-700'>
+            <p className='text-sm text-amber-700 dark:text-amber-400'>
               Funds are sent directly to your Lightning address. The destination is automatically
               set to your account&apos;s Lightning address and cannot be changed.
             </p>
             {campaign?.destination_address && (
-              <div className='mt-3 rounded-lg bg-amber-100/50 px-3 py-2'>
-                <p className='text-xs font-medium text-amber-800'>Current destination</p>
-                <p className='font-mono text-sm text-amber-900'>{campaign.destination_address}</p>
+              <div className='mt-3 rounded-lg bg-amber-100/50 px-3 py-2 dark:bg-amber-950/60'>
+                <p className='text-xs font-medium text-amber-800 dark:text-amber-400'>
+                  Current destination
+                </p>
+                <p className='font-mono text-sm text-amber-900 dark:text-amber-400'>
+                  {campaign.destination_address}
+                </p>
               </div>
             )}
           </div>
 
           {/* Progress (only when campaign exists) */}
           {isUpdate && campaign && (
-            <div className='rounded-2xl bg-gray-50 p-6'>
-              <h4 className='mb-3 font-semibold text-gray-900'>Campaign Progress</h4>
+            <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+              <h4 className='mb-3 font-semibold text-gray-900 dark:text-neutral-100'>
+                Campaign Progress
+              </h4>
               <div className='space-y-2'>
                 <div className='flex justify-between text-sm'>
-                  <span className='text-gray-600'>Raised</span>
-                  <span className='font-medium text-gray-900'>
+                  <span className='text-gray-600 dark:text-neutral-400'>Raised</span>
+                  <span className='font-medium text-gray-900 dark:text-neutral-100'>
                     {campaign.raised_sats.toLocaleString()} sats
                   </span>
                 </div>
                 {campaign.goal_sats && (
                   <>
                     <div className='flex justify-between text-sm'>
-                      <span className='text-gray-600'>Goal</span>
-                      <span className='font-medium text-gray-900'>
+                      <span className='text-gray-600 dark:text-neutral-400'>Goal</span>
+                      <span className='font-medium text-gray-900 dark:text-neutral-100'>
                         {campaign.goal_sats.toLocaleString()} sats
                       </span>
                     </div>
-                    <div className='h-2 overflow-hidden rounded-full bg-gray-200'>
+                    <div className='h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-neutral-700'>
                       <div
                         className='h-full rounded-full bg-amber-500 transition-all'
                         style={{ width: `${Math.min(campaign.progressPercent, 100)}%` }}
                       />
                     </div>
-                    <p className='text-xs text-gray-500'>
+                    <p className='text-xs text-gray-500 dark:text-neutral-400'>
                       {campaign.progressPercent.toFixed(1)}% of goal reached
                     </p>
                   </>
                 )}
                 <div className='flex justify-between text-sm'>
-                  <span className='text-gray-600'>Pledges</span>
-                  <span className='font-medium text-gray-900'>{campaign.pledge_count}</span>
+                  <span className='text-gray-600 dark:text-neutral-400'>Pledges</span>
+                  <span className='font-medium text-gray-900 dark:text-neutral-100'>
+                    {campaign.pledge_count}
+                  </span>
                 </div>
               </div>
             </div>

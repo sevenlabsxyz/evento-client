@@ -113,29 +113,31 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
     <>
       <div className='space-y-6'>
         {/* Balance Card */}
-        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-950'>
           {/* Lightning Address Row */}
           <div className='mb-4 flex items-center gap-3'>
             <motion.button
               onClick={onReceive}
-              className='flex flex-1 items-center justify-between rounded-full border border-gray-200 bg-white p-3 text-left shadow-sm transition-colors hover:bg-gray-100'
+              className='flex flex-1 items-center justify-between rounded-full border border-gray-200 bg-white p-3 text-left shadow-sm transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800'
               whileTap={{ scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             >
               <div className='flex min-w-0 flex-1 items-center gap-2'>
-                <Zap className='h-4 w-4 flex-shrink-0 text-black' />
+                <Zap className='h-4 w-4 flex-shrink-0 text-black dark:text-white' />
                 {isAddressLoading || !address ? (
                   <div className='flex items-center gap-2'>
-                    <Loader2 className='h-4 w-4 animate-spin text-gray-400' />
-                    <span className='text-sm text-gray-500'>Registering...</span>
+                    <Loader2 className='h-4 w-4 animate-spin text-gray-400 dark:text-neutral-500' />
+                    <span className='text-sm text-gray-500 dark:text-neutral-400'>
+                      Registering...
+                    </span>
                   </div>
                 ) : (
-                  <div className='truncate font-mono text-sm font-bold text-gray-900'>
+                  <div className='truncate font-mono text-sm font-bold text-gray-900 dark:text-neutral-100'>
                     {address.lightningAddress}
                   </div>
                 )}
               </div>
-              <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400' />
+              <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
             </motion.button>
             <CircledIconButton icon={HelpCircle} onClick={() => setShowEducationalSheet(true)} />
           </div>
@@ -147,28 +149,45 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
             disabled={balanceHidden}
           >
             {balanceHidden ? (
-              <div className='text-5xl font-bold'>$••••</div>
+              <div className='text-5xl font-bold dark:text-neutral-100'>$••••</div>
             ) : (
               <div className='space-y-1'>
                 {showUSD ? (
                   <>
-                    <div className='text-5xl font-bold text-gray-900'>
-                      $<NumberTicker value={balanceUSD} decimalPlaces={2} />
+                    <div className='text-5xl font-bold text-gray-900 dark:text-neutral-100'>
+                      $
+                      <NumberTicker
+                        value={balanceUSD}
+                        decimalPlaces={2}
+                        className='dark:text-neutral-100'
+                      />
                     </div>
-                    <div className='text-sm text-gray-600'>
-                      <NumberTicker value={walletState.balance} /> sats
+                    <div className='text-sm text-gray-600 dark:text-neutral-400'>
+                      <NumberTicker value={walletState.balance} className='dark:text-neutral-400' />{' '}
+                      sats
                     </div>
                   </>
                 ) : (
                   <>
                     <div className='flex items-baseline justify-center gap-2'>
-                      <span className='text-5xl font-bold text-gray-900'>
-                        <NumberTicker value={walletState.balance} />
+                      <span className='text-5xl font-bold text-gray-900 dark:text-neutral-100'>
+                        <NumberTicker
+                          value={walletState.balance}
+                          className='dark:text-neutral-100'
+                        />
                       </span>
-                      <span className='text-2xl font-medium text-gray-600'>sats</span>
+                      <span className='text-2xl font-medium text-gray-600 dark:text-neutral-400'>
+                        sats
+                      </span>
                     </div>
-                    <div className='text-sm text-gray-600'>
-                      ≈ $<NumberTicker value={balanceUSD} decimalPlaces={2} /> USD
+                    <div className='text-sm text-gray-600 dark:text-neutral-400'>
+                      ≈ $
+                      <NumberTicker
+                        value={balanceUSD}
+                        decimalPlaces={2}
+                        className='dark:text-neutral-400'
+                      />{' '}
+                      USD
                     </div>
                   </>
                 )}
@@ -182,7 +201,7 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
               <Button
                 onClick={onReceive}
                 variant='outline'
-                className='font-lg h-12 rounded-full bg-white font-semibold active:bg-gray-100'
+                className='font-lg h-12 rounded-full bg-white font-semibold active:bg-gray-100 dark:bg-neutral-900 dark:active:bg-neutral-800'
               >
                 <ArrowDownLeft className='h-5 w-5' />
                 Receive
@@ -190,7 +209,7 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
               <Button
                 onClick={onSend}
                 variant='outline'
-                className='font-lg h-12 rounded-full bg-white font-semibold active:bg-gray-100'
+                className='font-lg h-12 rounded-full bg-white font-semibold active:bg-gray-100 dark:bg-neutral-900 dark:active:bg-neutral-800'
               >
                 <ArrowUpRight className='h-5 w-5' />
                 Send
@@ -199,7 +218,7 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
             <Button
               onClick={onScan}
               variant='outline'
-              className='font-lg h-12 w-full rounded-full bg-white font-semibold active:bg-gray-100'
+              className='font-lg h-12 w-full rounded-full bg-white font-semibold active:bg-gray-100 dark:bg-neutral-900 dark:active:bg-neutral-800'
             >
               <Scan className='h-5 w-5' />
               Scan

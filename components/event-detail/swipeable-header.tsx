@@ -74,7 +74,7 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
           src={images[currentIndex]}
           alt={`${event.title} - Image ${currentIndex + 1}`}
           fill
-          className='rounded-3xl border border-gray-200 object-cover transition-transform duration-300 ease-out'
+          className='rounded-3xl border border-gray-200 object-cover transition-transform duration-300 ease-out dark:border-neutral-800'
           priority
           unoptimized={images[currentIndex]?.endsWith('.gif')} // Optimizing GIFs may impact performance
         />
@@ -90,7 +90,7 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
                   setCurrentIndex(index);
                 }}
                 className={`h-2 w-2 rounded-full transition-colors ${
-                  index === currentIndex ? 'bg-white' : 'bg-white/50'
+                  index === currentIndex ? 'bg-white' : 'bg-white/50 dark:bg-white/40'
                 }`}
               />
             ))}

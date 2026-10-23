@@ -140,12 +140,16 @@ export default function Step1SearchUsers({
   return (
     <>
       <div className='px-4 pt-4'>
-        <div className='w-full max-w-full overflow-hidden rounded-2xl border border-blue-200 bg-blue-50 p-3'>
+        <div className='w-full max-w-full overflow-hidden rounded-2xl border border-blue-200 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950/40'>
           <div className='grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2'>
             <div className='min-w-0 overflow-hidden'>
-              <p className='text-sm font-semibold text-blue-900'>Share event link</p>
-              <p className='mt-0.5 text-xs text-blue-700'>Use your share menu to send this URL.</p>
-              <p className='mt-2 truncate font-mono text-xs text-blue-900'>
+              <p className='text-sm font-semibold text-blue-900 dark:text-blue-400'>
+                Share event link
+              </p>
+              <p className='mt-0.5 text-xs text-blue-700 dark:text-blue-400'>
+                Use your share menu to send this URL.
+              </p>
+              <p className='mt-2 truncate font-mono text-xs text-blue-900 dark:text-blue-400'>
                 {inviteLink || `/e/${eventId}`}
               </p>
             </div>
@@ -155,7 +159,7 @@ export default function Step1SearchUsers({
               whileTap={{ scale: 0.95 }}
               disabled={!canShareLink}
               aria-label='Share event link'
-              className='inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-blue-300 bg-white text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50'
+              className='inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-blue-300 bg-white text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-blue-800 dark:bg-neutral-900 dark:text-blue-400 dark:hover:bg-blue-950/60'
             >
               <Share2 className='h-4 w-4' />
             </motion.button>
@@ -166,9 +170,9 @@ export default function Step1SearchUsers({
       {/* Search Bar */}
       <div className='mt-3 flex items-center gap-2 px-4'>
         <div className='relative flex-1'>
-          <Search className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+          <Search className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
           <input
-            className='w-full rounded-full bg-gray-100 py-2 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500'
+            className='w-full rounded-full bg-gray-100 py-2 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-400'
             type='text'
             placeholder='Email or @username'
             value={searchText}
@@ -177,7 +181,7 @@ export default function Step1SearchUsers({
         </div>
         <button
           onClick={onCSVClick}
-          className='inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm hover:bg-gray-50'
+          className='inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-neutral-950'
           type='button'
         >
           <Upload className='h-4 w-4' /> CSV
@@ -200,10 +204,10 @@ export default function Step1SearchUsers({
                   <button
                     key={u.id}
                     onClick={() => toggleUser(u)}
-                    className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
+                    className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
                   >
                     {'isEmailInvite' in u && u.isEmailInvite ? (
-                      <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-100'>
+                      <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
                         <MailIcon size={16} />
                       </div>
                     ) : (
@@ -218,20 +222,24 @@ export default function Step1SearchUsers({
                       />
                     )}
                     <div className='min-w-0 flex-1'>
-                      <div className='truncate text-sm font-medium text-gray-900'>
+                      <div className='truncate text-sm font-medium text-gray-900 dark:text-neutral-100'>
                         {'isEmailInvite' in u && u.isEmailInvite ? u.email : `@${u.username}`}
                       </div>
-                      <div className='truncate text-xs text-gray-500'>
+                      <div className='truncate text-xs text-gray-500 dark:text-neutral-400'>
                         {'isEmailInvite' in u && u.isEmailInvite ? 'Email invitation' : u.name}
                       </div>
                     </div>
                     <span
                       aria-hidden
                       className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 ${
-                        isSelected ? 'border-black' : 'border-gray-400'
+                        isSelected
+                          ? 'border-black dark:border-neutral-100'
+                          : 'border-gray-400 dark:border-neutral-500'
                       }`}
                     >
-                      {isSelected ? <span className='h-2.5 w-2.5 rounded-full bg-black' /> : null}
+                      {isSelected ? (
+                        <span className='h-2.5 w-2.5 rounded-full bg-black dark:bg-neutral-100' />
+                      ) : null}
                     </span>
                   </button>
                 );
@@ -239,11 +247,15 @@ export default function Step1SearchUsers({
             </div>
           ) : (
             <div className='flex flex-col items-center justify-center py-16 text-center'>
-              <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-                <Users className='h-8 w-8 text-gray-400' />
+              <div className='mb-4 rounded-2xl bg-gray-100 p-4 dark:bg-neutral-800'>
+                <Users className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
               </div>
-              <h3 className='mb-2 text-base font-semibold text-gray-900'>Find Evento Users</h3>
-              <p className='text-sm text-gray-500'>Search by @username or import a CSV</p>
+              <h3 className='mb-2 text-base font-semibold text-gray-900 dark:text-neutral-100'>
+                Find Evento Users
+              </h3>
+              <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                Search by @username or import a CSV
+              </p>
             </div>
           )
         ) : isSearching ? (
@@ -252,7 +264,7 @@ export default function Step1SearchUsers({
             {Array.from({ length: 5 }).map((_, index) => (
               <div
                 key={`skeleton-${index}`}
-                className='flex items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-3'
+                className='flex items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-3 dark:border-neutral-800 dark:bg-neutral-950'
               >
                 <Skeleton className='h-10 w-10 rounded-full' />
                 <div className='flex-1 space-y-2'>
@@ -265,11 +277,15 @@ export default function Step1SearchUsers({
         ) : !hasResults && !isEmailQuery(debouncedSearch.trim()) ? (
           // No results state
           <div className='flex flex-col items-center justify-center py-16 text-center'>
-            <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-              <Search className='h-8 w-8 text-gray-400' />
+            <div className='mb-4 rounded-2xl bg-gray-100 p-4 dark:bg-neutral-800'>
+              <Search className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
             </div>
-            <h3 className='mb-2 text-base font-semibold text-gray-900'>No users found</h3>
-            <p className='text-sm text-gray-500'>No users matching &quot;{searchText}&quot;</p>
+            <h3 className='mb-2 text-base font-semibold text-gray-900 dark:text-neutral-100'>
+              No users found
+            </h3>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>
+              No users matching &quot;{searchText}&quot;
+            </p>
           </div>
         ) : (
           // Results list
@@ -284,10 +300,10 @@ export default function Step1SearchUsers({
                 <button
                   key={u.id}
                   onClick={() => toggleUser(u)}
-                  className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
+                  className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
                 >
                   {'isEmailInvite' in u && u.isEmailInvite ? (
-                    <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-100'>
+                    <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
                       <MailIcon size={16} />
                     </div>
                   ) : (
@@ -302,20 +318,24 @@ export default function Step1SearchUsers({
                     />
                   )}
                   <div className='min-w-0 flex-1'>
-                    <div className='truncate text-sm font-medium text-gray-900'>
+                    <div className='truncate text-sm font-medium text-gray-900 dark:text-neutral-100'>
                       {'isEmailInvite' in u && u.isEmailInvite ? u.email : `@${u.username}`}
                     </div>
-                    <div className='truncate text-xs text-gray-500'>
+                    <div className='truncate text-xs text-gray-500 dark:text-neutral-400'>
                       {'isEmailInvite' in u && u.isEmailInvite ? 'Email invitation' : u.name}
                     </div>
                   </div>
                   <span
                     aria-hidden
                     className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 ${
-                      isSelected ? 'border-black' : 'border-gray-400'
+                      isSelected
+                        ? 'border-black dark:border-neutral-100'
+                        : 'border-gray-400 dark:border-neutral-500'
                     }`}
                   >
-                    {isSelected ? <span className='h-2.5 w-2.5 rounded-full bg-black' /> : null}
+                    {isSelected ? (
+                      <span className='h-2.5 w-2.5 rounded-full bg-black dark:bg-neutral-100' />
+                    ) : null}
                   </span>
                 </button>
               );
@@ -330,7 +350,7 @@ export default function Step1SearchUsers({
           disabled={selectedCount === 0}
           onClick={onNext}
           className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-white ${
-            selectedCount === 0 ? 'bg-gray-300' : 'bg-red-600 hover:bg-red-700'
+            selectedCount === 0 ? 'bg-gray-300 dark:bg-neutral-600' : 'bg-red-600 hover:bg-red-700'
           }`}
         >
           Next ({selectedCount}) <ChevronRight className='h-4 w-4' />

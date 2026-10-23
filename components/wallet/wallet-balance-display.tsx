@@ -54,10 +54,12 @@ export function WalletBalanceDisplay({
 
   return (
     <div className={`text-right ${className}`}>
-      <div className={`font-semibold text-gray-900 ${size === 'sm' ? 'text-sm' : 'text-sm'}`}>
+      <div
+        className={`font-semibold text-gray-900 dark:text-neutral-100 ${size === 'sm' ? 'text-sm' : 'text-sm'}`}
+      >
         ${balanceUSD.toFixed(2)}
       </div>
-      {showLabel && <div className='text-xs text-gray-500'>available</div>}
+      {showLabel && <div className='text-xs text-gray-500 dark:text-neutral-400'>available</div>}
     </div>
   );
 }

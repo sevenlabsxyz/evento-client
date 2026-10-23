@@ -19,15 +19,15 @@ export function ZapSuccessStep({ selectedAmount, recipientName, onClose }: ZapSu
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className='flex h-24 w-24 items-center justify-center rounded-full bg-green-100'
+          className='flex h-24 w-24 items-center justify-center rounded-full bg-green-100 dark:bg-green-950/60'
         >
-          <Check className='h-12 w-12 text-green-600' />
+          <Check className='h-12 w-12 text-green-600 dark:text-green-400' />
         </motion.div>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className='mt-6 text-2xl font-bold text-gray-900'
+          className='mt-6 text-2xl font-bold text-gray-900 dark:text-neutral-100'
         >
           Zap Sent!
         </motion.p>
@@ -35,7 +35,7 @@ export function ZapSuccessStep({ selectedAmount, recipientName, onClose }: ZapSu
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className='mt-2 text-lg text-gray-600'
+          className='mt-2 text-lg text-gray-600 dark:text-neutral-400'
         >
           {selectedAmount.toLocaleString()} sats to {recipientName}
         </motion.p>
@@ -48,7 +48,7 @@ export function ZapSuccessStep({ selectedAmount, recipientName, onClose }: ZapSu
         >
           <Button
             onClick={onClose}
-            className='h-12 w-full rounded-full bg-gray-900 font-semibold text-white hover:bg-gray-800'
+            className='h-12 w-full rounded-full bg-gray-900 font-semibold text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
           >
             Done
           </Button>

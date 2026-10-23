@@ -63,8 +63,8 @@ export default function GalleryPage() {
 
   if (eventLoading || galleryLoading) {
     return (
-      <div className='min-h-screen bg-gray-50'>
-        <div className='mx-auto max-w-full bg-white md:max-w-sm'>
+      <div className='min-h-screen bg-gray-50 dark:bg-neutral-950'>
+        <div className='mx-auto max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
           <div className='space-y-4 p-6'>
             {/* Header skeleton */}
             <div className='flex items-center justify-between'>
@@ -86,15 +86,17 @@ export default function GalleryPage() {
 
   if (!eventData) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+            Event Not Found
+          </h1>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             The event you&apos;re trying to view doesn&apos;t exist.
           </p>
           <button
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -136,21 +138,23 @@ export default function GalleryPage() {
   };
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
       {/* Header */}
-      <div className='sticky top-0 z-40 flex items-center justify-between border-b border-gray-100 bg-white p-4'>
+      <div className='sticky top-0 z-40 flex items-center justify-between border-b border-gray-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
         <div className='flex items-center gap-4'>
           <button
             type='button'
             onClick={() => router.back()}
             aria-label='Go back'
-            className='rounded-full p-2 hover:bg-gray-100'
+            className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <ArrowLeft className='h-5 w-5' />
           </button>
           <div>
             <h1 className='text-xl font-semibold'>Gallery</h1>
-            <p className='text-sm text-gray-500'>{galleryImages.length} photos</p>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>
+              {galleryImages.length} photos
+            </p>
           </div>
         </div>
 
@@ -160,20 +164,20 @@ export default function GalleryPage() {
             type='button'
             onClick={handleShareGallery}
             aria-label='Share gallery'
-            className='rounded-full p-2 hover:bg-gray-100'
+            className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
             title='Share Gallery'
           >
-            <Share className='h-5 w-5 text-gray-600' />
+            <Share className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
           </button>
           {isEventHost && (
             <button
               type='button'
               onClick={handleAddPhoto}
               aria-label='Add photos'
-              className='rounded-full p-2 hover:bg-gray-100'
+              className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
               title='Add Photos'
             >
-              <Plus className='h-5 w-5 text-gray-600' />
+              <Plus className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
             </button>
           )}
         </div>
@@ -196,9 +200,9 @@ export default function GalleryPage() {
           </div>
         ) : (
           <div className='py-16 text-center'>
-            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
+            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
               <svg
-                className='h-8 w-8 text-gray-400'
+                className='h-8 w-8 text-gray-400 dark:text-neutral-500'
                 fill='none'
                 stroke='currentColor'
                 viewBox='0 0 24 24'
@@ -211,8 +215,10 @@ export default function GalleryPage() {
                 />
               </svg>
             </div>
-            <h3 className='mb-2 text-lg font-medium text-gray-900'>No Photos Yet</h3>
-            <p className='text-sm text-gray-500'>
+            <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
+              No Photos Yet
+            </h3>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>
               Photos from this event will appear here once they&apos;re added.
             </p>
           </div>

@@ -9,7 +9,10 @@ import { Suspense } from 'react';
 export const revalidate = 30;
 
 const ErrorAlert = ({ message }: { message: string }) => (
-  <div className='mx-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700' role='alert'>
+  <div
+    className='mx-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400'
+    role='alert'
+  >
     <div className='mb-1 flex items-center gap-2'>
       <AlertTriangle className='h-5 w-5' />
       <p className='font-semibold'>Error</p>

@@ -514,3 +514,40 @@
   max-width: 100%;
   border-radius: 1.5rem;
 }
+
+/* Dark mode typography for long-form content */
+.dark .typeset-evento-article {
+  color: rgb(229 231 235);
+}
+
+.dark .typeset-evento-article :where(h1, h2, h3, h4, h5, h6) {
+  color: rgb(249 250 251);
+}
+
+.dark .typeset-evento-article :where(a) {
+  color: rgb(248 113 113);
+  text-decoration-color: rgb(248 113 113 / 0.45);
+}
+
+.dark .typeset-evento-article :where(a:hover) {
+  color: rgb(252 165 165);
+  text-decoration-color: rgb(252 165 165 / 0.7);
+}
+
+.dark .typeset-evento-article :where(blockquote) {
+  border-left-color: rgb(64 64 64);
+  color: rgb(212 212 212);
+}
+
+.dark .typeset-evento-article :where(code):not(pre code) {
+  background-color: rgb(38 38 38);
+}
+
+.dark .typeset-evento-article :where(pre) {
+  background-color: rgb(23 23 23);
+}
+
+.dark .typeset-evento-article :where(mark) {
+  background-color: rgb(120 53 15 / 0.55);
+  color: rgb(254 243 199);
+}

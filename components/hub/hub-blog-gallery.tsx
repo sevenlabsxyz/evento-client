@@ -100,7 +100,7 @@ export function HubBlogGallery({ posts }: HubBlogGalleryProps) {
                       </div>
                     </div>
                   </div>
-                  <div className='min-h-[130px] rounded-2xl rounded-t-none border border-t-0 bg-gray-50 px-4'>
+                  <div className='min-h-[130px] rounded-2xl rounded-t-none border border-t-0 bg-gray-50 px-4 dark:border-neutral-800 dark:bg-neutral-950'>
                     <div className='mb-2 line-clamp-2 break-words pt-4 text-lg font-medium md:mb-3 md:pt-4 md:text-lg lg:pt-4 lg:text-xl'>
                       {post.title}
                     </div>

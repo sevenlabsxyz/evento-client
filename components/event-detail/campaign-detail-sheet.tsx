@@ -81,16 +81,18 @@ export function CampaignDetailSheet({ eventId, open, onOpenChange }: CampaignDet
                   size='sm'
                 />
               ) : (
-                <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100'>
-                  <Zap className='h-4 w-4 text-amber-600' />
+                <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950/60'>
+                  <Zap className='h-4 w-4 text-amber-600 dark:text-amber-400' />
                 </div>
               )}
               <div className='min-w-0'>
-                <p className='truncate text-sm font-medium text-gray-900'>
+                <p className='truncate text-sm font-medium text-gray-900 dark:text-neutral-100'>
                   {creatorDetails?.name || creatorDetails?.username || 'Campaign organizer'}
                 </p>
                 {creatorDetails?.username && (
-                  <p className='truncate text-xs text-gray-500'>@{creatorDetails.username}</p>
+                  <p className='truncate text-xs text-gray-500 dark:text-neutral-400'>
+                    @{creatorDetails.username}
+                  </p>
                 )}
               </div>
             </div>
@@ -111,7 +113,7 @@ export function CampaignDetailSheet({ eventId, open, onOpenChange }: CampaignDet
             <button
               data-testid='campaign-detail-contribute-btn'
               onClick={() => setPledgeSheetOpen(true)}
-              className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700'
+              className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:active:bg-neutral-300'
             >
               <Zap className='h-4 w-4' />
               Contribute
@@ -161,16 +163,16 @@ function DetailsTabContent({
   return (
     <div className='space-y-5'>
       {/* Stats */}
-      <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+      <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
         <div className='mb-2 flex items-baseline gap-1'>
-          <span className='text-2xl font-bold tabular-nums text-gray-900'>
+          <span className='text-2xl font-bold tabular-nums text-gray-900 dark:text-neutral-100'>
             {formatSatsAbbreviated(campaign.raised_sats)}
           </span>
-          <span className='text-sm text-gray-500'>sats raised</span>
+          <span className='text-sm text-gray-500 dark:text-neutral-400'>sats raised</span>
           {hasGoal && (
             <>
-              <span className='text-sm text-gray-400'>of</span>
-              <span className='text-sm font-medium text-gray-700'>
+              <span className='text-sm text-gray-400 dark:text-neutral-400'>of</span>
+              <span className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
                 {formatSatsAbbreviated(campaign.goal_sats!)} goal
               </span>
             </>
@@ -181,18 +183,18 @@ function DetailsTabContent({
           <div className='mb-3'>
             <Progress
               value={Math.min(progressPercent, 100)}
-              className='h-2 bg-gray-200 [&>div]:bg-amber-500'
+              className='h-2 bg-gray-200 dark:bg-neutral-700 [&>div]:bg-amber-500'
             />
           </div>
         )}
 
-        <p className='text-sm text-gray-500'>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>
           {campaign.pledge_count} {campaign.pledge_count === 1 ? 'contribution' : 'contributions'}
         </p>
       </div>
 
       {/* Created date — lower hierarchy */}
-      <p className='text-xs italic tracking-wide text-gray-400'>
+      <p className='text-xs italic tracking-wide text-gray-400 dark:text-neutral-400'>
         Created{' '}
         {new Date(campaign.created_at).toLocaleDateString('en-US', {
           month: 'long',
@@ -203,7 +205,9 @@ function DetailsTabContent({
 
       {/* Description */}
       {campaign.description && (
-        <p className='text-sm leading-relaxed text-gray-600'>{campaign.description}</p>
+        <p className='text-sm leading-relaxed text-gray-600 dark:text-neutral-400'>
+          {campaign.description}
+        </p>
       )}
     </div>
   );
@@ -224,11 +228,13 @@ function ContributorsTabContent({
   if (feed.length === 0) {
     return (
       <div className='flex flex-col items-center justify-center py-16 text-center'>
-        <div className='mb-4 rounded-2xl bg-gray-100 p-4 text-gray-400'>
+        <div className='mb-4 rounded-2xl bg-gray-100 p-4 text-gray-400 dark:bg-neutral-800 dark:text-neutral-500'>
           <Zap className='h-6 w-6' />
         </div>
-        <h3 className='mb-1 text-base font-semibold text-gray-900'>No contributions yet</h3>
-        <p className='max-w-xs text-sm text-gray-500'>
+        <h3 className='mb-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
+          No contributions yet
+        </h3>
+        <p className='max-w-xs text-sm text-gray-500 dark:text-neutral-400'>
           Be the first to contribute to this campaign.
         </p>
       </div>
@@ -248,13 +254,17 @@ function ContributorsTabContent({
           />
 
           <div className='min-w-0 flex-1'>
-            <p className='truncate text-sm font-medium text-gray-900'>
+            <p className='truncate text-sm font-medium text-gray-900 dark:text-neutral-100'>
               {item.payer_username ? `@${item.payer_username}` : 'Anonymous'}
             </p>
-            {item.settled_at && <p className='text-xs text-gray-400'>{timeAgo(item.settled_at)}</p>}
+            {item.settled_at && (
+              <p className='text-xs text-gray-400 dark:text-neutral-400'>
+                {timeAgo(item.settled_at)}
+              </p>
+            )}
           </div>
 
-          <div className='flex shrink-0 items-center gap-1 text-sm font-semibold tabular-nums text-amber-600'>
+          <div className='flex shrink-0 items-center gap-1 text-sm font-semibold tabular-nums text-amber-600 dark:text-amber-400'>
             <Zap className='h-3.5 w-3.5' />
             {formatSatsAbbreviated(item.amount_sats)}
           </div>

@@ -22,15 +22,15 @@ interface PaymentMethodConfig {
 const PAYMENT_METHOD_CONFIG: Record<string, PaymentMethodConfig> = {
   cashapp: {
     icon: <CashAppSVGIcon className='h-6 w-6' />,
-    bgColor: 'bg-green-100',
+    bgColor: 'bg-green-100 dark:bg-green-950/60',
   },
   venmo: {
     icon: <VenmoSVGIcon className='h-6 w-6' />,
-    bgColor: 'bg-blue-100',
+    bgColor: 'bg-blue-100 dark:bg-blue-950/60',
   },
   paypal: {
     icon: <PayPalSVGIcon className='h-6 w-6' />,
-    bgColor: 'bg-blue-100',
+    bgColor: 'bg-blue-100 dark:bg-blue-950/60',
   },
 };
 
@@ -57,12 +57,14 @@ export default function EventContributions({ eventData, eventId }: EventContribu
     <>
       <div className=''>
         <div className='mb-3 flex items-center gap-2'>
-          <span className='text-lg font-semibold text-gray-900'>Contributions</span>
+          <span className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+            Contributions
+          </span>
         </div>
 
         <button
           onClick={() => setShowPaymentSheet(true)}
-          className='flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100'
+          className='flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
         >
           <div className='flex items-center gap-3'>
             <div className='flex -space-x-2'>
@@ -72,7 +74,7 @@ export default function EventContributions({ eventData, eventId }: EventContribu
                 return (
                   <div
                     key={method.type}
-                    className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-white ${config.bgColor}`}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-white dark:border-neutral-950 ${config.bgColor}`}
                   >
                     {config.icon}
                   </div>
@@ -80,16 +82,16 @@ export default function EventContributions({ eventData, eventId }: EventContribu
               })}
             </div>
             <div className='text-left'>
-              <p className='font-medium text-gray-900'>
+              <p className='font-medium text-gray-900 dark:text-neutral-100'>
                 {cost > 0 ? `Suggested: ${formatUSD(cost)}` : 'Contributions welcome'}
               </p>
-              <p className='text-sm text-gray-500'>
+              <p className='text-sm text-gray-500 dark:text-neutral-400'>
                 {contributionMethods.length} payment method
                 {contributionMethods.length > 1 ? 's' : ''} available
               </p>
             </div>
           </div>
-          <ChevronRight className='h-5 w-5 text-gray-400' />
+          <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
         </button>
       </div>
 

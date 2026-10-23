@@ -194,7 +194,10 @@ export default function CommentItem({
             <div className='flex items-center justify-between'>
               <div className='flex items-center'>
                 <span className='text-sm font-semibold'>@{comment.user_details.username}</span>
-                <span className='ml-2 text-xs text-gray-500' title={formattedDate}>
+                <span
+                  className='ml-2 text-xs text-gray-500 dark:text-neutral-400'
+                  title={formattedDate}
+                >
                   {timeAgo}
                 </span>
               </div>
@@ -214,7 +217,7 @@ export default function CommentItem({
                   ref={textareaRef}
                   value={editText}
                   onChange={(e) => setEditText(e.target.value)}
-                  className='min-h-[60px] w-full resize-none rounded-md border border-gray-200 p-2 text-sm'
+                  className='min-h-[60px] w-full resize-none rounded-md border border-gray-200 p-2 text-sm dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                 />
                 <div className='flex justify-end gap-2'>
                   <Button
@@ -233,7 +236,7 @@ export default function CommentItem({
                 </div>
               </div>
             ) : (
-              <p className='text-base text-gray-800'>{comment.message}</p>
+              <p className='text-base text-gray-800 dark:text-neutral-200'>{comment.message}</p>
             )}
 
             {/* Comment actions */}
@@ -243,7 +246,7 @@ export default function CommentItem({
                   icon={Heart}
                   count={reactions.like}
                   isActive={userReaction === 'like'}
-                  activeClassName='bg-red-50 text-red-500'
+                  activeClassName='bg-red-50 dark:bg-red-950/40 text-red-500 dark:text-red-400'
                   fillWhenActive
                   onClick={handleReaction}
                   disabled={isToggling}
@@ -277,15 +280,15 @@ export default function CommentItem({
                       onChange={(e) => setReplyText(e.target.value)}
                       onKeyDown={handleReplyKeyDown}
                       placeholder={`Reply to @${comment.user_details.username}`}
-                      className='w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500'
+                      className='w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                       rows={1}
                     />
                     <button
                       className={cn(
-                        'absolute bottom-0 right-2 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors',
+                        'absolute bottom-0 right-2 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors dark:text-neutral-500',
                         replyText.trim()
-                          ? 'text-red-500 hover:text-red-600'
-                          : 'cursor-default text-gray-300'
+                          ? 'text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-400'
+                          : 'cursor-default text-gray-300 dark:text-neutral-600'
                       )}
                       onClick={handleSubmitReply}
                       disabled={!replyText.trim()}
@@ -314,7 +317,7 @@ export default function CommentItem({
           <div className='mt-3'>
             {comment.replies.length > 0 && (
               <button
-                className='mb-2 ml-11 text-xs font-medium text-gray-500 hover:text-gray-700'
+                className='mb-2 ml-11 text-xs font-medium text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                 onClick={() => setShowReplies(!showReplies)}
               >
                 {showReplies

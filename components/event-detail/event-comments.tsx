@@ -80,7 +80,7 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
   if (isLoading) {
     return (
       <div className='flex items-center justify-center py-12'>
-        <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
+        <Loader2 className='h-8 w-8 animate-spin text-gray-400 dark:text-neutral-500' />
       </div>
     );
   }
@@ -88,9 +88,11 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
   if (error) {
     return (
       <div className='flex flex-col items-center justify-center py-12'>
-        <MessageCircle className='mb-4 h-12 w-12 text-gray-300' />
-        <h3 className='mb-2 text-lg font-medium text-gray-900'>Could not load comments</h3>
-        <p className='text-center text-sm text-gray-500'>
+        <MessageCircle className='mb-4 h-12 w-12 text-gray-300 dark:text-neutral-600' />
+        <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
+          Could not load comments
+        </h3>
+        <p className='text-center text-sm text-gray-500 dark:text-neutral-400'>
           There was a problem loading comments. Please try again later.
         </p>
       </div>
@@ -123,16 +125,16 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
                 onChange={(e) => setCommentText(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder='Add a comment'
-                className='min-h-[40px] w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500'
+                className='min-h-[40px] w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                 disabled={!user}
                 rows={1}
               />
               <button
                 className={cn(
-                  'absolute bottom-0 right-2 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors',
+                  'absolute bottom-0 right-2 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors dark:text-neutral-500',
                   commentText.trim()
-                    ? 'text-red-500 hover:text-red-600'
-                    : 'cursor-default text-gray-300'
+                    ? 'text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-400'
+                    : 'cursor-default text-gray-300 dark:text-neutral-600'
                 )}
                 onClick={handleAddComment}
                 disabled={!commentText.trim() || !user}
@@ -142,7 +144,9 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
             </div>
           </div>
           {!user && (
-            <p className='mt-2 text-xs text-gray-500'>Please sign in to leave a comment.</p>
+            <p className='mt-2 text-xs text-gray-500 dark:text-neutral-400'>
+              Please sign in to leave a comment.
+            </p>
           )}
         </div>
 
@@ -164,7 +168,7 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
         ) : (
           <Empty className='py-8'>
             <EmptyHeader>
-              <EmptyMedia variant='default' className='text-gray-300'>
+              <EmptyMedia variant='default' className='text-gray-300 dark:text-neutral-600'>
                 <MessageCircle className='h-12 w-12' />
               </EmptyMedia>
               <EmptyTitle className='text-lg sm:text-lg'>No Comments Yet</EmptyTitle>

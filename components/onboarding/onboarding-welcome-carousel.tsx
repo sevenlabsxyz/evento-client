@@ -20,21 +20,21 @@ const slides: CarouselSlide[] = [
     title: 'Discover Amazing Events',
     description:
       "Find and attend events that match your interests. From concerts to conferences, discover what's happening around you.",
-    color: 'text-blue-600',
+    color: 'text-blue-600 dark:text-blue-400',
   },
   {
     icon: <Zap className='h-16 w-16' />,
     title: 'Built-in Lightning Wallet',
     description:
       'Send and receive Bitcoin instantly with your built-in Lightning wallet. Pay for tickets, tip creators, and manage your funds seamlessly.',
-    color: 'text-orange-600',
+    color: 'text-orange-600 dark:text-orange-400',
   },
   {
     icon: <Sparkles className='h-16 w-16' />,
     title: 'Connect & Share',
     description:
       'Connect with friends, share your experiences, and build your community. Evento brings people together through shared experiences.',
-    color: 'text-purple-600',
+    color: 'text-purple-600 dark:text-purple-400',
   },
 ];
 
@@ -70,8 +70,10 @@ export const OnboardingWelcomeCarousel = () => {
       className='flex flex-col items-center'
     >
       <div className='mb-6 text-center'>
-        <h2 className='mb-2 text-3xl font-bold text-gray-900'>Welcome to Evento!</h2>
-        <p className='text-gray-600'>Here&apos;s what you can do</p>
+        <h2 className='mb-2 text-3xl font-bold text-gray-900 dark:text-neutral-100'>
+          Welcome to Evento!
+        </h2>
+        <p className='text-gray-600 dark:text-neutral-400'>Here&apos;s what you can do</p>
       </div>
 
       {/* Navigation Arrows */}
@@ -93,10 +95,14 @@ export const OnboardingWelcomeCarousel = () => {
         <CarouselContent>
           {slides.map((slide, index) => (
             <CarouselItem key={index}>
-              <div className='flex flex-col items-center rounded-2xl bg-gradient-to-br from-gray-50 to-white p-8 shadow-sm'>
+              <div className='flex flex-col items-center rounded-2xl bg-gradient-to-br from-gray-50 to-white p-8 shadow-sm dark:from-neutral-950 dark:to-neutral-900 dark:ring-1 dark:ring-neutral-800'>
                 <div className={`mb-6 ${slide.color}`}>{slide.icon}</div>
-                <h3 className='mb-4 text-center text-2xl font-bold text-gray-900'>{slide.title}</h3>
-                <p className='text-center leading-relaxed text-gray-600'>{slide.description}</p>
+                <h3 className='mb-4 text-center text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+                  {slide.title}
+                </h3>
+                <p className='text-center leading-relaxed text-gray-600 dark:text-neutral-400'>
+                  {slide.description}
+                </p>
               </div>
             </CarouselItem>
           ))}
@@ -110,7 +116,9 @@ export const OnboardingWelcomeCarousel = () => {
             key={index}
             onClick={() => carouselApi?.scrollTo(index)}
             className={`h-2 rounded-full transition-all ${
-              index === currentSlide ? 'w-8 bg-red-600' : 'w-2 bg-gray-300 hover:bg-gray-400'
+              index === currentSlide
+                ? 'w-8 bg-red-600'
+                : 'w-2 bg-gray-300 hover:bg-gray-400 dark:bg-neutral-600 dark:hover:bg-neutral-500'
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
@@ -118,7 +126,7 @@ export const OnboardingWelcomeCarousel = () => {
       </div>
 
       {/* Progress Text */}
-      <div className='mt-4 text-sm text-gray-500'>
+      <div className='mt-4 text-sm text-gray-500 dark:text-neutral-400'>
         {currentSlide + 1} of {slides.length}
       </div>
     </motion.div>

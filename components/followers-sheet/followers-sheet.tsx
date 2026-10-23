@@ -98,13 +98,13 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
           <SheetWithDetent.View>
             <SheetWithDetent.Backdrop />
             <SheetWithDetent.Content className='grid grid-rows-[min-content_1fr_min-content]'>
-              <div className='grid grid-rows-[min-content_1fr] gap-3 border-b border-gray-200 px-5 pb-3 text-[0]'>
+              <div className='grid grid-rows-[min-content_1fr] gap-3 border-b border-gray-200 px-5 pb-3 text-[0] dark:border-neutral-800'>
                 <SheetWithDetent.Handle className='col-start-1 col-end-[-1] row-start-1 mt-2 self-start justify-self-center' />
                 <VisuallyHidden.Root asChild>
                   <SheetWithDetent.Title>Followers</SheetWithDetent.Title>
                 </VisuallyHidden.Root>
                 <input
-                  className='box-border h-11 w-full appearance-none rounded-xl border-none bg-gray-200 px-3 text-lg text-gray-800 outline-none placeholder:text-gray-500'
+                  className='box-border h-11 w-full appearance-none rounded-xl border-none bg-gray-200 px-3 text-lg text-gray-800 outline-none placeholder:text-gray-500 dark:bg-neutral-700 dark:text-neutral-200 dark:placeholder:text-neutral-400'
                   type='text'
                   placeholder='Search followers'
                   value={searchText}
@@ -132,14 +132,14 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                     ) : error && allFollowers.length === 0 ? (
                       // Error State
                       <div className='flex items-center justify-center px-4 py-12'>
-                        <div className='text-center text-base text-red-500'>
+                        <div className='text-center text-base text-red-500 dark:text-red-400'>
                           Failed to load followers
                         </div>
                       </div>
                     ) : filteredFollowers.length === 0 ? (
                       // Empty State
                       <div className='flex items-center justify-center px-4 py-12'>
-                        <div className='text-center text-base text-gray-500'>
+                        <div className='text-center text-base text-gray-500 dark:text-neutral-400'>
                           {searchText.trim()
                             ? `No followers found matching "${searchText}"`
                             : `@${username} has no followers yet`}
@@ -170,7 +170,7 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                                 <div className='truncate text-sm font-medium'>
                                   @{follower.username}
                                 </div>
-                                <div className='truncate text-xs text-gray-500'>
+                                <div className='truncate text-xs text-gray-500 dark:text-neutral-400'>
                                   {follower.name || follower.username}
                                 </div>
                               </div>
@@ -179,10 +179,10 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                               <Button
                                 variant='ghost'
                                 size='icon'
-                                className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
+                                className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200 dark:border-neutral-800 dark:bg-neutral-800 dark:hover:bg-neutral-700'
                                 onClick={() => handleUserClick(follower.username)}
                               >
-                                <ArrowRight className='h-4 w-4 text-gray-500' />
+                                <ArrowRight className='h-4 w-4 text-gray-500 dark:text-neutral-400' />
                               </Button>
                             </div>
                           </div>

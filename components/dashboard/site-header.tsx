@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -59,7 +60,7 @@ export function SiteHeader() {
             alt='Evento'
             width={80}
             height={20}
-            className='h-5 w-auto'
+            className='h-5 w-auto dark:invert'
           />
         </Link>
       );
@@ -79,7 +80,7 @@ export function SiteHeader() {
               alt='Evento'
               width={80}
               height={20}
-              className='h-5 w-auto'
+              className='h-5 w-auto dark:invert'
             />
           </Link>
         )}
@@ -162,7 +163,13 @@ export function SiteHeader() {
               className='pointer-events-none absolute inset-0 flex items-center justify-center md:hidden'
               {...fadeConfig}
             >
-              <Image src='/assets/img/evento-sublogo.svg' alt='Evento' width={28} height={28} />
+              <Image
+                src='/assets/img/evento-sublogo.svg'
+                alt='Evento'
+                width={28}
+                height={28}
+                className='dark:invert'
+              />
             </motion.div>
           )}
         </AnimatePresence>
@@ -170,6 +177,7 @@ export function SiteHeader() {
         {/* Right section */}
         <AnimatePresence mode='wait'>
           <motion.div key={rightKey} className='ml-auto flex items-center gap-2' {...fadeConfig}>
+            <ThemeToggle className='h-8 w-8' />
             {textButtons.length > 0 && (
               <div className='flex gap-2'>
                 {textButtons.map((button) => {

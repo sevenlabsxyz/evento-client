@@ -75,14 +75,14 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className='flex flex-col rounded-t-2xl bg-white'>
-            <div className='sticky top-0 z-10 border-b bg-white px-4 pb-3 pt-3'>
+          <SheetWithDetentFull.Content className='flex flex-col rounded-t-2xl bg-white dark:bg-neutral-900'>
+            <div className='sticky top-0 z-10 border-b bg-white px-4 pb-3 pt-3 dark:bg-neutral-900'>
               <div className='mb-3 flex justify-center'>
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='text-center'>
                 <h2 className='text-xl font-semibold'>Importing CSV Files</h2>
-                <p className='mt-1 text-sm text-gray-500'>
+                <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
                   How to import contacts to Evento in CSV format.
                 </p>
               </div>
@@ -91,34 +91,34 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
             <div className='flex-1 overflow-y-auto p-6 pb-4'>
               <div className='mb-6 space-y-4'>
                 <div className='flex items-start gap-3'>
-                  <div className='flex h-8 w-8 rounded-full bg-gray-100 p-2'>
+                  <div className='flex h-8 w-8 rounded-full bg-gray-100 p-2 dark:bg-neutral-800'>
                     <AtSignIcon size={16} />
                   </div>
                   <div>
                     <h3 className='font-medium'>Emails Only</h3>
-                    <p className='text-sm text-gray-500'>
+                    <p className='text-sm text-gray-500 dark:text-neutral-400'>
                       Ensure your CSV file contains only emails in 1 single list.
                     </p>
                   </div>
                 </div>
                 <div className='flex items-start gap-3'>
-                  <div className='flex h-8 w-8 rounded-full bg-gray-100 p-2'>
+                  <div className='flex h-8 w-8 rounded-full bg-gray-100 p-2 dark:bg-neutral-800'>
                     <EyeIcon size={16} />
                   </div>
                   <div>
                     <h3 className='font-medium'>Header Item</h3>
-                    <p className='text-sm text-gray-500'>
+                    <p className='text-sm text-gray-500 dark:text-neutral-400'>
                       Ensure your CSV file contains a header item.
                     </p>
                   </div>
                 </div>
                 <div className='flex items-start gap-3'>
-                  <div className='flex h-8 w-8 rounded-full bg-gray-100 p-2'>
+                  <div className='flex h-8 w-8 rounded-full bg-gray-100 p-2 dark:bg-neutral-800'>
                     <FileIcon size={16} />
                   </div>
                   <div>
                     <h3 className='font-medium'>Use Our Template</h3>
-                    <p className='text-sm text-gray-500'>
+                    <p className='text-sm text-gray-500 dark:text-neutral-400'>
                       In case you face any problems importing CSVs, try using our demo below:
                     </p>
                   </div>
@@ -134,7 +134,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                     </h3>
                     <button
                       onClick={() => setEmails([])}
-                      className='text-sm text-red-600 hover:text-red-800'
+                      className='text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-400'
                     >
                       Clear
                     </button>
@@ -146,7 +146,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                       </div>
                     ))}
                     {emails.length > 10 && (
-                      <div className='bg-gray-50 p-3 text-center text-xs text-gray-500'>
+                      <div className='bg-gray-50 p-3 text-center text-xs text-gray-500 dark:bg-neutral-950 dark:text-neutral-400'>
                         + {emails.length - 10} more emails
                       </div>
                     )}
@@ -162,13 +162,15 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                 onDragLeave={() => setIsDragging(false)}
                 onDrop={handleDrop}
                 className={`flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center ${
-                  isDragging ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                  isDragging
+                    ? 'border-red-500 bg-red-50 dark:bg-red-950/40'
+                    : 'border-gray-300 dark:border-neutral-700'
                 }`}
               >
-                <Upload className='mb-3 h-10 w-10 text-gray-400' />
+                <Upload className='mb-3 h-10 w-10 text-gray-400 dark:text-neutral-500' />
                 <h3 className='mb-1 text-lg font-medium'>Drag and drop your CSV file here</h3>
-                <p className='mb-4 text-sm text-gray-500'>or</p>
-                <label className='cursor-pointer rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800'>
+                <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>or</p>
+                <label className='cursor-pointer rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'>
                   Browse files
                   <input
                     type='file'
@@ -177,24 +179,28 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                     className='hidden'
                   />
                 </label>
-                <p className='mt-2 text-xs text-gray-500'>
+                <p className='mt-2 text-xs text-gray-500 dark:text-neutral-400'>
                   CSV file with email addresses (max 10MB)
                 </p>
               </div>
 
               {error && (
-                <div className='mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600'>{error}</div>
+                <div className='mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-950/40 dark:text-red-400'>
+                  {error}
+                </div>
               )}
 
               {isLoading && (
                 <div className='mt-4 text-center'>
-                  <div className='inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-red-500' />
-                  <p className='mt-2 text-sm text-gray-500'>Processing file...</p>
+                  <div className='inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-red-500 dark:border-neutral-700 dark:border-t-red-500' />
+                  <p className='mt-2 text-sm text-gray-500 dark:text-neutral-400'>
+                    Processing file...
+                  </p>
                 </div>
               )}
             </div>
 
-            <div className='min-h-[11.5rem] border-t bg-white p-4'>
+            <div className='min-h-[11.5rem] border-t bg-white p-4 dark:bg-neutral-900'>
               <div className='space-y-3'>
                 <Button
                   variant='outline'

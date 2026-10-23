@@ -76,7 +76,7 @@ export default function SubEventsManagementPage() {
   };
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
       <div className='p-4'>
         {/* List / states */}
         {isLoading ? (
@@ -84,7 +84,7 @@ export default function SubEventsManagementPage() {
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className='flex items-center justify-between rounded-xl border border-gray-100 p-3'
+                className='flex items-center justify-between rounded-xl border border-gray-100 p-3 dark:border-neutral-800'
               >
                 <div className='flex flex-1 items-center gap-3'>
                   <Skeleton className='h-12 w-12 rounded-lg' />
@@ -102,18 +102,18 @@ export default function SubEventsManagementPage() {
             {subEvents.map((se) => (
               <div
                 key={se.id}
-                className='flex items-center justify-between rounded-xl border border-gray-100'
+                className='flex items-center justify-between rounded-xl border border-gray-100 dark:border-neutral-800'
               >
                 <div className='min-w-0 flex-1'>
                   <EventCompactItem event={se} />
                 </div>
                 {se.status === 'draft' && (
-                  <span className='shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800'>
+                  <span className='shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950/60 dark:text-amber-400'>
                     Draft
                   </span>
                 )}
                 <button
-                  className='mr-2 shrink-0 rounded-full p-2 text-red-600 hover:bg-red-50'
+                  className='mr-2 shrink-0 rounded-full p-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40'
                   onClick={(e) => {
                     e.stopPropagation();
                     setPendingRemove(se);
@@ -127,28 +127,32 @@ export default function SubEventsManagementPage() {
             ))}
           </div>
         ) : error ? (
-          <div className='rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center'>
-            <p className='text-sm text-gray-500'>Failed to load sub events.</p>
+          <div className='rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center dark:border-neutral-700 dark:bg-neutral-950'>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>
+              Failed to load sub events.
+            </p>
           </div>
         ) : (
           <div className='py-12 text-center'>
-            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-              <Plus className='h-8 w-8 text-gray-400' />
+            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
+              <Plus className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
             </div>
-            <h3 className='mb-2 text-lg font-medium text-gray-900'>No Sub Events</h3>
-            <p className='mb-6 text-sm text-gray-500'>
+            <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
+              No Sub Events
+            </h3>
+            <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
               Create a new event under this one, or link one of your existing events
             </p>
             <div className='flex flex-col items-center gap-2'>
               <button
                 onClick={handleCreateNew}
-                className='w-full max-w-xs rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600'
+                className='w-full max-w-xs rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 Create New Sub Event
               </button>
               <button
                 onClick={handleLinkExisting}
-                className='w-full max-w-xs rounded-lg border border-gray-200 px-6 py-2 text-gray-900 transition-colors hover:bg-gray-50'
+                className='w-full max-w-xs rounded-lg border border-gray-200 px-6 py-2 text-gray-900 transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-950'
               >
                 Link Existing Event
               </button>
@@ -171,33 +175,39 @@ export default function SubEventsManagementPage() {
                   <DetachedSheet.Handle />
                 </div>
 
-                <h2 className='mb-6 text-xl font-semibold'>Add Sub Event</h2>
+                <h2 className='mb-6 text-xl font-semibold dark:text-neutral-100'>Add Sub Event</h2>
 
                 <div className='flex flex-col gap-2 pb-2'>
                   <button
                     onClick={handleCreateNew}
-                    className='flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100'
+                    className='flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
                   >
-                    <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-teal-100'>
-                      <CalendarPlus className='h-6 w-6 text-teal-600' />
+                    <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-teal-100 dark:bg-teal-950/60'>
+                      <CalendarPlus className='h-6 w-6 text-teal-600 dark:text-teal-400' />
                     </div>
                     <div className='flex-1 text-left'>
-                      <h3 className='font-semibold text-gray-900'>Create New Sub Event</h3>
-                      <p className='text-sm text-gray-500'>
+                      <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                        Create New Sub Event
+                      </h3>
+                      <p className='text-sm text-gray-500 dark:text-neutral-400'>
                         Set up a brand new event under this one
                       </p>
                     </div>
                   </button>
                   <button
                     onClick={handleLinkExisting}
-                    className='flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100'
+                    className='flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
                   >
-                    <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100'>
-                      <Link2 className='h-6 w-6 text-blue-600' />
+                    <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-950/60'>
+                      <Link2 className='h-6 w-6 text-blue-600 dark:text-blue-400' />
                     </div>
                     <div className='flex-1 text-left'>
-                      <h3 className='font-semibold text-gray-900'>Link Existing Event</h3>
-                      <p className='text-sm text-gray-500'>Choose one of your own events</p>
+                      <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                        Link Existing Event
+                      </h3>
+                      <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                        Choose one of your own events
+                      </p>
                     </div>
                   </button>
                 </div>

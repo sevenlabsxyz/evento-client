@@ -31,7 +31,10 @@ export function ZapConfirmStep({
     <div className='flex flex-col'>
       {/* Header */}
       <div className='flex items-center justify-between p-4 pt-0'>
-        <button onClick={onBack} className='rounded-full p-2 transition-colors hover:bg-gray-100'>
+        <button
+          onClick={onBack}
+          className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
+        >
           <ArrowLeft className='h-5 w-5' />
         </button>
         <h2 className='text-xl font-semibold'>Confirm Zap</h2>
@@ -39,7 +42,7 @@ export function ZapConfirmStep({
           <WalletBalanceDisplay />
           <button
             onClick={onClose}
-            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+            className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <X className='h-5 w-5' />
           </button>
@@ -50,17 +53,19 @@ export function ZapConfirmStep({
       <div className='flex-1 overflow-y-auto p-6'>
         <div className='mx-auto max-w-md space-y-6'>
           {/* Amount Display */}
-          <div className='rounded-xl border border-red-200 bg-red-50 p-8 text-center'>
-            <Zap className='mx-auto h-12 w-12 text-red-500' />
-            <p className='mt-4 text-4xl font-bold text-gray-900'>
+          <div className='rounded-xl border border-red-200 bg-red-50 p-8 text-center dark:border-red-900 dark:bg-red-950/40'>
+            <Zap className='mx-auto h-12 w-12 text-red-500 dark:text-red-400' />
+            <p className='mt-4 text-4xl font-bold text-gray-900 dark:text-neutral-100'>
               {selectedAmount.toLocaleString()} sats
             </p>
-            {amountUSD && <p className='mt-1 text-lg text-gray-600'>≈ ${amountUSD} USD</p>}
+            {amountUSD && (
+              <p className='mt-1 text-lg text-gray-600 dark:text-neutral-400'>≈ ${amountUSD} USD</p>
+            )}
           </div>
 
           {/* Recipient */}
-          <div className='rounded-xl border border-gray-200 bg-gray-50 p-4'>
-            <p className='mb-1 text-xs text-gray-500'>Sending to</p>
+          <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
+            <p className='mb-1 text-xs text-gray-500 dark:text-neutral-400'>Sending to</p>
             <div className='flex items-center gap-3'>
               <UserAvatar
                 user={{
@@ -73,17 +78,21 @@ export function ZapConfirmStep({
                 className='flex-shrink-0'
               />
               <div>
-                <p className='font-semibold text-gray-900'>{recipient.name}</p>
-                <p className='font-mono text-xs text-gray-500'>{recipient.lightningAddress}</p>
+                <p className='font-semibold text-gray-900 dark:text-neutral-100'>
+                  {recipient.name}
+                </p>
+                <p className='font-mono text-xs text-gray-500 dark:text-neutral-400'>
+                  {recipient.lightningAddress}
+                </p>
               </div>
             </div>
           </div>
 
           {/* Fee */}
           {feeSats !== undefined && (
-            <div className='rounded-xl border border-gray-200 bg-gray-50 p-4'>
+            <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
               <div className='flex justify-between'>
-                <span className='text-sm text-gray-500'>Network Fee</span>
+                <span className='text-sm text-gray-500 dark:text-neutral-400'>Network Fee</span>
                 <span className='text-sm font-medium'>{feeSats} sats</span>
               </div>
             </div>
@@ -91,16 +100,16 @@ export function ZapConfirmStep({
 
           {/* Comment (if provided) */}
           {comment && (
-            <div className='rounded-xl border border-gray-200 bg-gray-50 p-4'>
-              <p className='mb-1 text-xs text-gray-500'>Message</p>
-              <p className='text-sm text-gray-700'>{comment}</p>
+            <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
+              <p className='mb-1 text-xs text-gray-500 dark:text-neutral-400'>Message</p>
+              <p className='text-sm text-gray-700 dark:text-neutral-300'>{comment}</p>
             </div>
           )}
 
           {/* Confirm Button */}
           <Button
             onClick={onConfirm}
-            className='h-12 w-full rounded-full bg-red-500 font-semibold text-white hover:bg-red-600'
+            className='h-12 w-full rounded-full bg-red-500 font-semibold text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Confirm & Send
           </Button>

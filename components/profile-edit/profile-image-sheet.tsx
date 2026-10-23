@@ -111,17 +111,20 @@ export default function ProfileImageSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
+            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4 dark:border-neutral-800 dark:bg-neutral-900'>
               <div className='flex items-center justify-center'>
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Profile Image</h2>
-                <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
+                <button
+                  onClick={handleCancel}
+                  className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
+                >
                   <X className='h-5 w-5' />
                 </button>
               </div>
-              <p className='mt-1 text-sm text-gray-500'>Choose your photo</p>
+              <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>Choose your photo</p>
             </div>
 
             {/* Content */}
@@ -136,7 +139,7 @@ export default function ProfileImageSheet({
                         <Image
                           src='/assets/img/evento-sublogo.svg'
                           alt='Evento'
-                          className='h-full w-full p-1'
+                          className='h-full w-full p-1 dark:invert'
                           fill
                         />
                       </AvatarFallback>
@@ -145,9 +148,9 @@ export default function ProfileImageSheet({
                     {/* Camera Icon Overlay */}
                     <button
                       onClick={triggerFileInput}
-                      className='absolute bottom-0 right-0 rounded-full bg-white p-3 shadow-md transition-shadow hover:shadow-lg'
+                      className='absolute bottom-0 right-0 rounded-full bg-white p-3 shadow-md transition-shadow hover:shadow-lg dark:bg-neutral-800 dark:ring-1 dark:ring-neutral-700'
                     >
-                      <Camera className='h-6 w-6 text-gray-600' />
+                      <Camera className='h-6 w-6 text-gray-600 dark:text-neutral-400' />
                     </button>
                   </div>
 
@@ -170,7 +173,7 @@ export default function ProfileImageSheet({
                   <div className='flex flex-col gap-3'>
                     <Button
                       onClick={handleSave}
-                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                       disabled={!selectedFile || isUploading || updateProfileMutation.isPending}
                     >
                       {isUploading

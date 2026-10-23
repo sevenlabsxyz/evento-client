@@ -51,31 +51,33 @@ export default function EventCampaignCard({
       <button
         data-testid='event-campaign-card'
         onClick={() => setDetailSheetOpen(true)}
-        className='flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100'
+        className='flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
       >
         <div className='flex items-center gap-3'>
           {/* Zap icon in amber circle */}
-          <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100'>
-            <Zap className='h-5 w-5 text-amber-600' />
+          <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950/60'>
+            <Zap className='h-5 w-5 text-amber-600 dark:text-amber-400' />
           </div>
           {/* Text block */}
           <div className='min-w-0 flex-1 text-left'>
-            <p className='truncate font-medium text-gray-900'>{campaign.title || 'Crowdfunding'}</p>
+            <p className='truncate font-medium text-gray-900 dark:text-neutral-100'>
+              {campaign.title || 'Crowdfunding'}
+            </p>
             <div className='mt-1 flex items-center gap-2'>
               {/* Thin progress bar */}
               {hasGoal && (
                 <Progress
                   value={Math.min(progressPercent, 100)}
-                  className='h-1 flex-1 bg-gray-200 [&>div]:bg-amber-500'
+                  className='h-1 flex-1 bg-gray-200 dark:bg-neutral-700 [&>div]:bg-amber-500'
                 />
               )}
-              <span className='shrink-0 text-xs text-gray-500'>
+              <span className='shrink-0 text-xs text-gray-500 dark:text-neutral-400'>
                 {formatSats(campaign.raised_sats)} raised
               </span>
             </div>
           </div>
         </div>
-        <ChevronRight className='h-5 w-5 shrink-0 text-gray-400' />
+        <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 dark:text-neutral-500' />
       </button>
 
       <CampaignDetailSheet

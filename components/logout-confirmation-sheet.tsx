@@ -38,13 +38,15 @@ export function LogoutConfirmationSheet({
         <div className='flex items-center gap-3'>
           <div
             className={`flex h-10 w-10 items-center justify-center rounded-full ${
-              showWalletWarning ? 'bg-amber-50' : 'bg-gray-100'
+              showWalletWarning
+                ? 'bg-amber-50 dark:bg-amber-950/40'
+                : 'bg-gray-100 dark:bg-neutral-800'
             }`}
           >
             {showWalletWarning ? (
-              <AlertTriangle className='h-5 w-5 text-amber-500' />
+              <AlertTriangle className='h-5 w-5 text-amber-500 dark:text-amber-400' />
             ) : (
-              <LogOut className='h-5 w-5 text-gray-500' />
+              <LogOut className='h-5 w-5 text-gray-500 dark:text-neutral-400' />
             )}
           </div>
           <h2 className='text-xl font-semibold'>{title}</h2>
@@ -53,15 +55,17 @@ export function LogoutConfirmationSheet({
     >
       <div className='px-4 pb-8'>
         {/* Body */}
-        <div className='mb-6 space-y-4 text-gray-600'>
+        <div className='mb-6 space-y-4 text-gray-600 dark:text-neutral-400'>
           {showWalletWarning ? (
             <>
-              <p className='font-medium text-gray-900'>You have a wallet set up on this device.</p>
+              <p className='font-medium text-gray-900 dark:text-neutral-100'>
+                You have a wallet set up on this device.
+              </p>
               <p>
                 Logging out will permanently delete your wallet data from this device, including
                 your encrypted seed phrase.
               </p>
-              <div className='rounded-lg bg-amber-50 p-3 text-amber-800'>
+              <div className='rounded-lg bg-amber-50 p-3 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400'>
                 <p className='flex items-center gap-2 font-medium'>
                   <Shield className='h-4 w-4' />
                   Make sure you have a backup!
