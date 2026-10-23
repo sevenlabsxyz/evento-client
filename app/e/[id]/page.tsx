@@ -2,6 +2,7 @@ import { Env } from '@/lib/constants/env';
 import { buildEventJsonLd, serializeJsonLd } from '@/lib/seo/event-jsonld';
 import type { Event as ApiEvent } from '@/lib/types/api';
 import { getAbsoluteAppUrl } from '@/lib/utils/app-url';
+import { getErrorMessage } from '@/lib/utils/error-message';
 import {
   buildEventSocialImageUrl,
   formatEventSeoDescription,
@@ -46,6 +47,8 @@ type EventSeoData = Pick<
 // Metadata fetch runs with the service-role key (bypasses RLS), so it must be
 // filtered to public, non-draft events only. Non-public events fall back to
 // generic noindex metadata — the authenticated client page still renders them.
+// Cancelling an event sets status='archived' (there is no 'cancelled' value in
+// the event_status enum), so archived events stay previewable.
 const fetchEventSeoData = cache(async (eventId: string): Promise<EventSeoData | null> => {
   const supabase = getEventMetadataClient();
 
@@ -85,7 +88,7 @@ const fetchEventSeoData = cache(async (eventId: string): Promise<EventSeoData | 
     )
     .eq('id', eventId)
     .eq('visibility', 'public')
-    .in('status', ['published', 'cancelled'])
+    .in('status', ['published', 'archived'])
     .maybeSingle<EventSeoData>();
 
   if (error) {
@@ -160,7 +163,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     };
   } catch (error) {
     logger.error('Error fetching event data', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
     });
     return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
   }
@@ -215,7 +218,7 @@ export default async function EventDetailPage({ params }: Pick<Props, 'params'>)
     }
   } catch (error) {
     logger.error('Error building event JSON-LD', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       eventId: params.id,
     });
   }

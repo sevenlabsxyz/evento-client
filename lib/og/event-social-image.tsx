@@ -1,5 +1,6 @@
 import { NO_COVER_FALLBACK } from '@/lib/constants/default-covers';
 import { Env } from '@/lib/constants/env';
+import { getErrorMessage } from '@/lib/utils/error-message';
 import { resolveEventSocialCoverUrl } from '@/lib/utils/event-social-metadata';
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
@@ -348,13 +349,13 @@ export async function renderEventSocialImage(eventId: string) {
       .select('cover, title')
       .eq('id', eventId)
       .eq('visibility', 'public')
-      .in('status', ['published', 'cancelled'])
+      .in('status', ['published', 'archived'])
       .maybeSingle();
 
     if (error) {
       logger.error('Error fetching event for OG image', {
         eventId,
-        error: error?.message,
+        error: getErrorMessage(error),
       });
       return renderFallbackEventImage('Evento Event');
     }
@@ -373,7 +374,7 @@ export async function renderEventSocialImage(eventId: string) {
   } catch (error) {
     logger.error('Unexpected error rendering event OG image', {
       eventId,
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
     });
     return renderFallbackEventImage('Evento Event');
   }
