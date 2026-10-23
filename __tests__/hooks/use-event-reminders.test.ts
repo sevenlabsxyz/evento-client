@@ -105,7 +105,7 @@ describe('useEventReminders', () => {
     expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/evt_123/reminders', {
       suppressErrorStatuses: [404],
     });
-    expect(result.current.data).toEqual({ offsets: ['1h', '1d'] });
+    expect(result.current.data).toEqual({ offsets: ['1h', '1d'], available: true });
     expect(queryKeys.eventReminders('evt_123')).toEqual(['events', 'evt_123', 'reminders']);
   });
 
@@ -124,7 +124,7 @@ describe('useEventReminders', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(result.current.data).toEqual({ offsets: [] });
+    expect(result.current.data).toEqual({ offsets: [], available: false });
   });
 
   it('does not fetch when eventId is empty', () => {

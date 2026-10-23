@@ -14,13 +14,15 @@ import {
   EVENT_REMINDER_OFFSETS,
   EVENT_REMINDER_OFFSET_LABELS,
   MAX_EVENT_REMINDERS,
+  type ApiError,
   type EventReminderOffset,
 } from '@/lib/types/api';
+import { getErrorMessage } from '@/lib/utils/error-message';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Bell } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function offsetsMatch(left: EventReminderOffset[], right: EventReminderOffset[]) {
   if (left.length !== right.length) {
@@ -39,6 +41,7 @@ export default function EventRemindersPage() {
   const { data, isLoading, error } = useEventReminders(eventId);
   const updateReminders = useUpdateEventReminders(eventId);
   const [selectedOffsets, setSelectedOffsets] = useState<EventReminderOffset[]>([]);
+  const hasInitializedSelection = useRef(false);
 
   useEffect(() => {
     applyRouteConfig(pathname);
@@ -54,11 +57,24 @@ export default function EventRemindersPage() {
     };
   }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute]);
 
+  // Only seed local state on first load. Background refetches must not
+  // overwrite toggles the host has not saved yet.
   useEffect(() => {
-    if (data?.offsets) {
-      setSelectedOffsets(data.offsets);
+    if (hasInitializedSelection.current || !data?.offsets) {
+      return;
     }
+
+    hasInitializedSelection.current = true;
+    setSelectedOffsets(data.offsets);
   }, [data?.offsets]);
+
+  const isForbidden = (error as ApiError | null)?.status === 403;
+
+  useEffect(() => {
+    if (isForbidden) {
+      router.replace(`/e/${eventId}`);
+    }
+  }, [isForbidden, router, eventId]);
 
   const savedOffsets = data?.offsets ?? [];
   const hasChanges = !offsetsMatch(selectedOffsets, savedOffsets);
@@ -90,11 +106,15 @@ export default function EventRemindersPage() {
       );
       router.push(`/e/${eventId}/manage`);
     } catch (saveError) {
+      const status = (saveError as ApiError)?.status;
       const message =
-        saveError instanceof Error ? saveError.message : 'Failed to update guest reminders';
+        status === 404
+          ? 'Guest reminders are not available yet. Please try again later.'
+          : getErrorMessage(saveError) || 'Failed to update guest reminders';
+
       toast.error(message);
       logger.error('Failed to update guest reminders', {
-        error: saveError instanceof Error ? saveError.message : String(saveError),
+        error: getErrorMessage(saveError),
       });
     }
   };
@@ -117,6 +137,10 @@ export default function EventRemindersPage() {
     );
   }
 
+  if (isForbidden) {
+    return null;
+  }
+
   if (error) {
     return (
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
@@ -128,6 +152,28 @@ export default function EventRemindersPage() {
           <button
             onClick={() => router.push(`/e/${eventId}/manage`)}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (data?.available === false) {
+    return (
+      <div
+        data-testid='reminders-unavailable'
+        className='flex min-h-screen items-center justify-center bg-gray-50'
+      >
+        <div className='max-w-sm text-center'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Reminders coming soon</h1>
+          <p className='mb-4 text-gray-600'>
+            Guest reminders aren&apos;t available for this event yet. Please check back later.
+          </p>
+          <button
+            onClick={() => router.push(`/e/${eventId}/manage`)}
+            className='rounded-lg bg-gray-900 px-4 py-2 text-white hover:bg-gray-800'
           >
             Go Back
           </button>
@@ -176,7 +222,7 @@ export default function EventRemindersPage() {
             return (
               <div key={offset}>
                 {index > 0 ? <div className='mx-4 border-t border-gray-100' /> : null}
-                <label className='flex items-center justify-between p-4'>
+                <div className='flex items-center justify-between p-4'>
                   <span className='text-sm font-medium text-gray-900'>
                     {EVENT_REMINDER_OFFSET_LABELS[offset]}
                   </span>
@@ -185,7 +231,7 @@ export default function EventRemindersPage() {
                     onCheckedChange={(nextChecked) => handleToggle(offset, nextChecked)}
                     aria-label={EVENT_REMINDER_OFFSET_LABELS[offset]}
                   />
-                </label>
+                </div>
               </div>
             );
           })}

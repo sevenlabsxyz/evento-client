@@ -573,6 +573,11 @@ export interface EventReminders {
   offsets: EventReminderOffset[];
 }
 
+/** Client-side reminder state; `available` is false when the API route is missing. */
+export interface EventRemindersState extends EventReminders {
+  available: boolean;
+}
+
 export interface UpdateEventRemindersBody {
   offsets: EventReminderOffset[];
 }

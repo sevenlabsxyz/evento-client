@@ -6,6 +6,7 @@ import {
   MAX_EVENT_REMINDERS,
   type EventReminderOffset,
   type EventReminders,
+  type EventRemindersState,
   type UpdateEventRemindersBody,
 } from '@/lib/types/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -15,6 +16,7 @@ export const INVALID_REMINDER_OFFSET_ERROR =
   'Only 1h, 2h, 3h, 8h, 1d, and 3d reminders are allowed';
 
 const EMPTY_REMINDERS: EventReminders = { offsets: [] };
+const UNAVAILABLE_REMINDERS: EventRemindersState = { offsets: [], available: false };
 
 export function isEventReminderOffset(value: unknown): value is EventReminderOffset {
   return typeof value === 'string' && (EVENT_REMINDER_OFFSETS as readonly string[]).includes(value);
@@ -100,7 +102,7 @@ function isMissingRemindersError(error: unknown): error is ApiError {
   return (error as ApiError).status === 404;
 }
 
-async function getEventReminders(eventId: string): Promise<EventReminders> {
+async function getEventReminders(eventId: string): Promise<EventRemindersState> {
   try {
     const response = await apiClient.get<ApiResponse<EventReminders>>(
       `/v1/events/${eventId}/reminders`,
@@ -109,10 +111,10 @@ async function getEventReminders(eventId: string): Promise<EventReminders> {
       }
     );
 
-    return parseEventReminders(response?.data ?? response);
+    return { ...parseEventReminders(response?.data ?? response), available: true };
   } catch (error) {
     if (isMissingRemindersError(error)) {
-      return EMPTY_REMINDERS;
+      return UNAVAILABLE_REMINDERS;
     }
 
     throw error;
@@ -147,8 +149,7 @@ export function useUpdateEventReminders(eventId: string) {
 
       return parseEventReminders(response?.data ?? response);
     },
-    onSuccess: (data) => {
-      queryClient.setQueryData(queryKeys.eventReminders(eventId), data);
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.eventReminders(eventId) });
     },
   });

@@ -1,20 +1,21 @@
 import EventRemindersPage from '@/app/e/[id]/manage/reminders/page';
 import {
   FOURTH_REMINDER_ERROR,
-  toggleReminderOffset,
   useEventReminders,
   useUpdateEventReminders,
 } from '@/lib/hooks/use-event-reminders';
+import type { EventReminderOffset } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 const mockRouterPush = jest.fn();
+const mockRouterReplace = jest.fn();
 const mockMutateAsync = jest.fn();
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: mockRouterPush,
-    replace: jest.fn(),
+    replace: mockRouterReplace,
     prefetch: jest.fn(),
     back: jest.fn(),
     forward: jest.fn(),
@@ -54,9 +55,23 @@ jest.mock('@/lib/utils/toast', () => ({
   },
 }));
 
-const mockUseEventReminders = useEventReminders as jest.MockedFunction<typeof useEventReminders>;
-const mockUseUpdateEventReminders = useUpdateEventReminders as jest.MockedFunction<
-  typeof useUpdateEventReminders
+interface RemindersHookResult {
+  data?: { offsets?: EventReminderOffset[]; available?: boolean };
+  isLoading?: boolean;
+  error?: { status?: number; message?: string } | null;
+}
+
+interface UpdateRemindersHookResult {
+  mutateAsync: jest.Mock;
+  isPending: boolean;
+}
+
+// Test doubles expose only the fields the page reads.
+const mockUseEventReminders = useEventReminders as unknown as jest.MockedFunction<
+  () => RemindersHookResult
+>;
+const mockUseUpdateEventReminders = useUpdateEventReminders as unknown as jest.MockedFunction<
+  () => UpdateRemindersHookResult
 >;
 const mockToast = toast as jest.Mocked<typeof toast>;
 
@@ -66,7 +81,7 @@ describe('EventRemindersPage', () => {
     mockUseUpdateEventReminders.mockReturnValue({
       mutateAsync: mockMutateAsync,
       isPending: false,
-    } as any);
+    });
   });
 
   it('shows an empty state when no reminders are selected', () => {
@@ -74,7 +89,7 @@ describe('EventRemindersPage', () => {
       data: { offsets: [] },
       isLoading: false,
       error: null,
-    } as any);
+    });
 
     render(<EventRemindersPage />);
 
@@ -87,17 +102,14 @@ describe('EventRemindersPage', () => {
       data: { offsets: ['1h', '2h', '1d'] },
       isLoading: false,
       error: null,
-    } as any);
+    });
 
     render(<EventRemindersPage />);
 
     fireEvent.click(screen.getByLabelText('3 days before'));
 
     expect(mockToast.error).toHaveBeenCalledWith(FOURTH_REMINDER_ERROR);
-    expect(toggleReminderOffset(['1h', '2h', '1d'], '3d')).toEqual({
-      offsets: ['1h', '2h', '1d'],
-      error: FOURTH_REMINDER_ERROR,
-    });
+    expect(screen.getByLabelText('3 days before')).toHaveAttribute('aria-checked', 'false');
   });
 
   it('saves the selected offsets array to the API', async () => {
@@ -105,7 +117,7 @@ describe('EventRemindersPage', () => {
       data: { offsets: [] },
       isLoading: false,
       error: null,
-    } as any);
+    });
     mockMutateAsync.mockResolvedValue({ offsets: ['8h', '1d'] });
 
     render(<EventRemindersPage />);
@@ -119,5 +131,66 @@ describe('EventRemindersPage', () => {
     });
     expect(mockToast.success).toHaveBeenCalled();
     expect(mockRouterPush).toHaveBeenCalledWith('/e/evt_test123/manage');
+  });
+
+  it('keeps save disabled until an offset changes', async () => {
+    mockUseEventReminders.mockReturnValue({
+      data: { offsets: ['1h'] },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<EventRemindersPage />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+    });
+  });
+
+  it('shows a coming-soon state when the reminders API is missing', () => {
+    mockUseEventReminders.mockReturnValue({
+      data: { offsets: [], available: false },
+      isLoading: false,
+      error: null,
+    });
+
+    render(<EventRemindersPage />);
+
+    expect(screen.getByTestId('reminders-unavailable')).toHaveTextContent('Reminders coming soon');
+    expect(screen.queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
+  });
+
+  it('redirects non-hosts back to the event page', async () => {
+    mockUseEventReminders.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: { status: 403, message: 'Only event hosts can manage guest reminders' },
+    });
+
+    render(<EventRemindersPage />);
+
+    await waitFor(() => {
+      expect(mockRouterReplace).toHaveBeenCalledWith('/e/evt_test123');
+    });
+  });
+
+  it('explains when saving is not available yet', async () => {
+    mockUseEventReminders.mockReturnValue({
+      data: { offsets: [] },
+      isLoading: false,
+      error: null,
+    });
+    mockMutateAsync.mockRejectedValue({ status: 404, message: 'Not found' });
+
+    render(<EventRemindersPage />);
+
+    fireEvent.click(screen.getByLabelText('8 hours before'));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(mockToast.error).toHaveBeenCalledWith(
+        'Guest reminders are not available yet. Please try again later.'
+      );
+    });
   });
 });
