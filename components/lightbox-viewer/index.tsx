@@ -211,13 +211,13 @@ export const LightboxViewer = React.memo(
                   if ((error as Error).name !== 'AbortError') {
                     logger.error('Error sharing image', { error });
                     // Fallback to opening in new tab if sharing fails
-                    window.open(imageUrl, '_blank');
+                    window.open(imageUrl, '_blank', 'noopener,noreferrer');
                     toast.info('Image opened in new tab');
                   }
                 }
               } else {
                 // Fallback for iOS devices without Share API support
-                window.open(imageUrl, '_blank');
+                window.open(imageUrl, '_blank', 'noopener,noreferrer');
                 toast.info('Image opened in new tab');
               }
             } else {

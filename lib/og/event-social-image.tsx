@@ -1,5 +1,6 @@
 import { NO_COVER_FALLBACK } from '@/lib/constants/default-covers';
 import { Env } from '@/lib/constants/env';
+import { getErrorMessage } from '@/lib/utils/error-message';
 import { resolveEventSocialCoverUrl } from '@/lib/utils/event-social-metadata';
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
@@ -341,17 +342,27 @@ export async function renderEventSocialImage(eventId: string) {
       return renderFallbackEventImage('Evento Event');
     }
 
+    // This fetch runs with the service-role key (bypasses RLS); only public,
+    // non-draft events may have their title/cover rendered into the OG image.
     const { data: event, error } = await supabase
       .from('events')
       .select('cover, title')
       .eq('id', eventId)
-      .single();
+      .eq('visibility', 'public')
+      .in('status', ['published', 'archived'])
+      .maybeSingle();
 
-    if (error || !event) {
+    if (error) {
       logger.error('Error fetching event for OG image', {
         eventId,
-        error: error?.message,
+        error: getErrorMessage(error),
       });
+      return renderFallbackEventImage('Evento Event');
+    }
+
+    if (!event) {
+      // Non-public, draft, or nonexistent event: generic fallback image only.
+      logger.info('No public event found for OG image', { eventId });
       return renderFallbackEventImage('Evento Event');
     }
 
@@ -363,7 +374,7 @@ export async function renderEventSocialImage(eventId: string) {
   } catch (error) {
     logger.error('Unexpected error rendering event OG image', {
       eventId,
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
     });
     return renderFallbackEventImage('Evento Event');
   }

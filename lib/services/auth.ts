@@ -2,6 +2,7 @@ import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
 import { logger } from '@/lib/utils/logger';
 import { apiClient } from '../api/client';
 import { createClient } from '../supabase/client';
+import { isTestAuthEmail } from '../test-auth';
 import { ApiError, ApiResponse, UserDetails } from '../types/api';
 
 export class UnauthenticatedError extends Error {
@@ -25,11 +26,38 @@ export interface TryGetCurrentUserResult {
   settled: boolean;
 }
 
+function mapVerifiedUser(user: {
+  id: string;
+  user_metadata?: Record<string, unknown> | null;
+}): UserDetails {
+  // Don't populate username/name from email as it causes false positive onboarding checks
+  return {
+    id: user.id,
+    username: (user.user_metadata?.username as string) || '',
+    name: (user.user_metadata?.full_name as string) || '',
+    bio: '',
+    image: (user.user_metadata?.avatar_url as string) || DEFAULT_AVATAR_IMAGE,
+    bio_link: '',
+    x_handle: '',
+    instagram_handle: '',
+    ln_address: '',
+    nip05: '',
+    verification_status: null,
+    verification_date: '',
+  };
+}
+
 export const authService = {
   /**
    * Send OTP code to email via Supabase SDK
    */
   sendLoginCode: async (email: string): Promise<void> => {
+    if (isTestAuthEmail(email)) {
+      // Fixed-code test login: no email is sent; verifyCode mints a session.
+      logger.debug('Auth: skipping OTP email for test auth address', { email });
+      return;
+    }
+
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -48,6 +76,38 @@ export const authService = {
    */
   verifyCode: async (email: string, code: string): Promise<UserDetails> => {
     const supabase = createClient();
+
+    if (isTestAuthEmail(email)) {
+      const response = await fetch('/api/test-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code }),
+      });
+
+      const session = await response.json().catch(() => null);
+
+      if (!response.ok || !session?.access_token || !session?.refresh_token) {
+        throw new Error(session?.error || 'Invalid code. Please try again.');
+      }
+
+      const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+      });
+
+      if (sessionError) {
+        throw new Error(sessionError.message);
+      }
+
+      if (!sessionData.user) {
+        throw new Error('No user data returned from verification');
+      }
+
+      const testUserDetails = mapVerifiedUser(sessionData.user);
+      logger.debug('Auth: test auth session established', { userId: sessionData.user.id });
+      return testUserDetails;
+    }
+
     const { data, error } = await supabase.auth.verifyOtp({
       email,
       token: code,
@@ -66,21 +126,7 @@ export const authService = {
     logger.debug('Auth: User metadata', { metadata: data.user.user_metadata });
 
     // Return minimal user details - actual data will come from backend
-    // Don't populate username/name from email as it causes false positive onboarding checks
-    const userDetails = {
-      id: data.user.id,
-      username: data.user.user_metadata?.username || '',
-      name: data.user.user_metadata?.full_name || '',
-      bio: '',
-      image: data.user.user_metadata?.avatar_url || DEFAULT_AVATAR_IMAGE,
-      bio_link: '',
-      x_handle: '',
-      instagram_handle: '',
-      ln_address: '',
-      nip05: '',
-      verification_status: null,
-      verification_date: '',
-    };
+    const userDetails = mapVerifiedUser(data.user);
 
     logger.debug('Auth: Returning user details from verifyCode', { userDetails });
     return userDetails;

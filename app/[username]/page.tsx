@@ -37,6 +37,10 @@ export async function generateMetadata(
   // fallback to parent SEO metadata image details
   const previousImages = (await parent).openGraph?.images || [];
 
+  // NOTE: user profiles have no privacy/visibility concept in the data model
+  // (UserDetails in lib/types/api.ts — username/name/image are public handles),
+  // so the profile metadata fetch stays unfiltered. Missing users fall back to
+  // generic noindex metadata below.
   try {
     const supabase = getProfileMetadataClient();
 
@@ -103,6 +107,8 @@ export async function generateMetadata(
   }
 }
 
+// Generic metadata for missing profiles (noindex so nonexistent usernames
+// don't index placeholder pages; real profiles index via generateMetadata).
 function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallbackImage?: string) {
   const openGraphImages = fallbackImage
     ? [
@@ -123,6 +129,11 @@ function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallback
     openGraph: {
       url: canonicalPath,
       images: openGraphImages,
+    },
+    robots: {
+      index: false,
+      follow: true,
+      nocache: true,
     },
     twitter: fallbackImage ? { card: 'summary_large_image', images: [fallbackImage] } : undefined,
   };

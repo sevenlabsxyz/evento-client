@@ -44,8 +44,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
   };
 
   const handleCreatePinNext = (pinToConfirm = pin) => {
-    if (pinToConfirm.length < 4) {
-      toast.error('PIN must be at least 4 digits');
+    if (pinToConfirm.length < 6) {
+      toast.error('PIN must be at least 6 digits');
       return;
     }
     setStep('confirm-pin');
@@ -185,7 +185,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
           </div>
           <h2 className='text-2xl font-bold'>Create a PIN</h2>
           <p className='mt-2 text-sm text-muted-foreground'>
-            Set a 4-6 digit PIN to protect your wallet
+            Set a 6-digit PIN to protect your wallet
           </p>
         </div>
 
@@ -217,7 +217,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
             onClick={() => handleCreatePinNext()}
             className='mt-6 w-full rounded-full'
             size='lg'
-            disabled={pin.length < 4}
+            disabled={pin.length < 6}
           >
             Next
           </Button>
@@ -260,7 +260,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
             onClick={() => handleConfirmAndCreate()}
             className='mt-6 w-full rounded-full'
             size='lg'
-            disabled={confirmPin.length < 4}
+            disabled={confirmPin.length < 6}
           >
             Create Wallet
           </Button>

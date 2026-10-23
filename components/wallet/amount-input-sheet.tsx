@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
+import { BTCPriceService } from '@/lib/services/btc-price';
 import { ArrowUpDown, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -30,6 +31,8 @@ export function AmountInputSheet({
   const [amountUSD, setAmountUSD] = useState('');
   const [inputMode, setInputMode] = useState<'sats' | 'usd'>('usd');
   const [isSendAll, setIsSendAll] = useState(false);
+  // True while any satsToUSD/usdToSats promise is in flight; gates confirm
+  const [isConverting, setIsConverting] = useState(false);
   const { satsToUSD, usdToSats } = useAmountConverter();
 
   const satsAmount = Number(amount);
@@ -72,6 +75,7 @@ export function AmountInputSheet({
     setIsSendAll(true);
     setAmount(maxAmount.toString());
 
+    setIsConverting(true);
     try {
       const usd = await satsToUSD(maxAmount);
       // Check if component is still mounted before updating state
@@ -81,6 +85,8 @@ export function AmountInputSheet({
     } catch (error) {
       // Silently ignore conversion errors to prevent state updates after unmount
       console.warn('Currency conversion failed:', error);
+    } finally {
+      setIsConverting(false);
     }
   };
 
@@ -91,6 +97,7 @@ export function AmountInputSheet({
     const currentValue = inputMode === 'usd' ? amountUSD : amount;
     const newValue = currentValue + num;
 
+    setIsConverting(true);
     try {
       if (inputMode === 'sats') {
         setAmount(newValue);
@@ -111,6 +118,8 @@ export function AmountInputSheet({
       }
     } catch (error) {
       console.warn('Currency conversion failed:', error);
+    } finally {
+      setIsConverting(false);
     }
   };
 
@@ -119,6 +128,7 @@ export function AmountInputSheet({
     const currentValue = inputMode === 'usd' ? amountUSD : amount;
     const newValue = currentValue.slice(0, -1);
 
+    setIsConverting(true);
     try {
       if (inputMode === 'sats') {
         setAmount(newValue);
@@ -143,6 +153,8 @@ export function AmountInputSheet({
       }
     } catch (error) {
       console.warn('Currency conversion failed:', error);
+    } finally {
+      setIsConverting(false);
     }
   };
 
@@ -151,9 +163,32 @@ export function AmountInputSheet({
   };
 
   const handleConfirm = () => {
+    if (isConverting) return;
+
     if (hasValidSatsAmount) {
-      onConfirm(Number(amount), isSendAll);
-      // Don't close the sheet here - parent will close it after async operations complete
+      // In USD mode the sats state may be stale (async conversion).
+      // Synchronously recompute sats from the typed field using the
+      // last-known cached price so onConfirm never receives a stale
+      // conversion; fall back to the last converted value when no
+      // price is cached.
+      const cachedPrice = BTCPriceService.getCachedPrice();
+      let satsValue = satsAmount;
+      if (inputMode === 'usd' && Number(amountUSD) > 0 && cachedPrice) {
+        const satsFromTyped = Math.round((Number(amountUSD) / cachedPrice.usd) * 100_000_000);
+        if (Number.isFinite(satsFromTyped)) {
+          satsValue = satsFromTyped;
+        }
+      }
+
+      const isInteger = Number.isInteger(satsValue);
+      const withinConstraints =
+        !(minAmount != null && satsValue < minAmount) &&
+        !(maxAmount != null && satsValue > maxAmount);
+
+      if (isInteger && satsValue > 0 && withinConstraints) {
+        onConfirm(satsValue, isSendAll);
+        // Don't close the sheet here - parent will close it after async operations complete
+      }
     }
   };
 
@@ -227,7 +262,7 @@ export function AmountInputSheet({
           {/* Next Button */}
           <Button
             onClick={handleConfirm}
-            disabled={!hasValidSatsAmount || isLoading || !isWithinConstraints()}
+            disabled={isConverting || !hasValidSatsAmount || isLoading || !isWithinConstraints()}
             className='h-12 w-full rounded-full bg-gray-50 font-medium text-gray-900 hover:bg-gray-100'
             variant='outline'
           >

@@ -2,6 +2,7 @@
 
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { ImageSizes, isGif } from '@/lib/utils/image';
+import { sanitizeRichText } from '@/lib/utils/sanitize';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 
@@ -29,9 +30,18 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
       return;
     }
 
-    // Create a temporary element to parse the HTML
+    // Sanitize untrusted Ghost CMS HTML (blog + wallet education articles)
+    // BEFORE parsing it into a live element, so nothing unvetted (script,
+    // on* handlers, javascript: URLs) ever reaches innerHTML.
+    const cleanHtml = sanitizeRichText(html);
+    if (!cleanHtml) {
+      setProcessedContent([]);
+      return;
+    }
+
+    // Create a temporary element to parse the sanitized HTML
     const tempElement = document.createElement('div');
-    tempElement.innerHTML = html;
+    tempElement.innerHTML = cleanHtml;
 
     // Process all nodes and replace img tags
     const processedNodes: React.ReactNode[] = [];

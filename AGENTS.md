@@ -46,7 +46,6 @@ evento-client/
 │   │   │   ├── page.tsx         # Event view
 │   │   │   └── manage/          # Event management (host only)
 │   │   ├── profile/page.tsx     # Current user profile
-│   │   ├── messages/            # Chat/messaging
 │   │   ├── wallet/              # Bitcoin wallet
 │   │   ├── settings/page.tsx    # User settings
 │   │   ├── saved/page.tsx       # Saved events
@@ -78,7 +77,6 @@ evento-client/
 │   ├── profile/                 # User profile
 │   ├── profile-edit/            # Profile editing sheets
 │   ├── wallet/                  # Bitcoin wallet UI
-│   ├── chat/                    # Messaging components
 │   ├── hub/                     # Hub/home components
 │   ├── zap/                     # Lightning zap/tip flow
 │   ├── onboarding/              # Onboarding flow
@@ -109,7 +107,6 @@ evento-client/
 │   ├── services/                # Business logic
 │   │   ├── auth.ts              # Auth service
 │   │   ├── breez-sdk.ts         # Bitcoin wallet
-│   │   ├── stream-chat.ts       # Chat service
 │   │   └── ...
 │   │
 │   ├── schemas/                 # Zod validation schemas
@@ -778,7 +775,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 # External Services
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 NEXT_PUBLIC_GIPHY_API_KEY=
-NEXT_PUBLIC_STREAM_CHAT_API_KEY=
 NEXT_PUBLIC_BREEZ_API_KEY=
 
 # Ghost CMS (Blog)

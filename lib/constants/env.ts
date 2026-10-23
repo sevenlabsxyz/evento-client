@@ -30,9 +30,6 @@ export const Env = {
   // OpenWeatherMap
   NEXT_PUBLIC_OPENWEATHERMAP_API_KEY: process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY || '',
 
-  // Stream Chat
-  NEXT_PUBLIC_STREAM_CHAT_API_KEY: process.env.NEXT_PUBLIC_STREAM_CHAT_API_KEY || '',
-
   // Breez SDK
   NEXT_PUBLIC_BREEZ_API_KEY: process.env.NEXT_PUBLIC_BREEZ_API_KEY || '',
 

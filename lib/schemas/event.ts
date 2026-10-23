@@ -73,8 +73,19 @@ export const eventFormSchema = z.object({
   status: z.enum(['published', 'draft']).optional(),
 
   // Social media URLs
-  spotify_url: z.string().url().optional().or(z.literal('')),
-  wavlake_url: z.string().url().optional().or(z.literal('')),
+  spotify_url: z
+    .string()
+    .refine(
+      (url) => url.startsWith('https://open.spotify.com/'),
+      'Spotify URL must be a valid open.spotify.com link'
+    )
+    .optional()
+    .or(z.literal('')),
+  wavlake_url: z
+    .string()
+    .refine((url) => url.startsWith('https://wavlake.'), 'Wavlake URL must be a valid wavlake link')
+    .optional()
+    .or(z.literal('')),
 
   // Contribution methods
   contrib_cashapp: z.string().optional(),
@@ -142,8 +153,19 @@ export const updateEventSchema = z.object({
   visibility: z.enum(['public', 'private']).optional(),
   status: z.enum(['published', 'draft']).optional(),
 
-  spotify_url: z.string().url().optional().or(z.literal('')),
-  wavlake_url: z.string().url().optional().or(z.literal('')),
+  spotify_url: z
+    .string()
+    .refine(
+      (url) => url.startsWith('https://open.spotify.com/'),
+      'Spotify URL must be a valid open.spotify.com link'
+    )
+    .optional()
+    .or(z.literal('')),
+  wavlake_url: z
+    .string()
+    .refine((url) => url.startsWith('https://wavlake.'), 'Wavlake URL must be a valid wavlake link')
+    .optional()
+    .or(z.literal('')),
 
   contrib_cashapp: z.string().optional(),
   contrib_venmo: z.string().optional(),

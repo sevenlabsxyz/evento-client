@@ -2,6 +2,7 @@ import { Env } from '@/lib/constants/env';
 import { buildEventJsonLd, serializeJsonLd } from '@/lib/seo/event-jsonld';
 import type { Event as ApiEvent } from '@/lib/types/api';
 import { getAbsoluteAppUrl } from '@/lib/utils/app-url';
+import { getErrorMessage } from '@/lib/utils/error-message';
 import {
   buildEventSocialImageUrl,
   formatEventSeoDescription,
@@ -10,8 +11,13 @@ import {
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import { ResolvingMetadata } from 'next';
+import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import EventDetailPageClient from './page-client';
+
+// The dynamic /e/[id] route also catches unknown static paths (e.g. /e/messages).
+// Reject anything that is not a real event id before rendering or fetching.
+const EVENT_ID_PATTERN = /^evt_[A-Za-z0-9]+$/;
 
 function getEventMetadataClient() {
   if (!Env.NEXT_PUBLIC_SUPABASE_URL || !Env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -43,6 +49,11 @@ type EventSeoData = Pick<
   | 'computed_end_date'
 >;
 
+// Metadata fetch runs with the service-role key (bypasses RLS), so it must be
+// filtered to public, non-draft events only. Non-public events fall back to
+// generic noindex metadata — the authenticated client page still renders them.
+// Cancelling an event sets status='archived' (there is no 'cancelled' value in
+// the event_status enum), so archived events stay previewable.
 const fetchEventSeoData = cache(async (eventId: string): Promise<EventSeoData | null> => {
   const supabase = getEventMetadataClient();
 
@@ -81,7 +92,9 @@ const fetchEventSeoData = cache(async (eventId: string): Promise<EventSeoData | 
       `
     )
     .eq('id', eventId)
-    .single<EventSeoData>();
+    .eq('visibility', 'public')
+    .in('status', ['published', 'archived'])
+    .maybeSingle<EventSeoData>();
 
   if (error) {
     throw error;
@@ -98,11 +111,15 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
   const previousImages = (await parent).openGraph?.images || [];
   const fallbackOgImage = buildEventSocialImageUrl(eventId);
 
+  if (!EVENT_ID_PATTERN.test(eventId)) {
+    return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
+  }
+
   try {
     const event = await fetchEventSeoData(eventId);
 
     if (!event) {
-      logger.info('No event found for ID', { eventId });
+      // Non-public, draft, or nonexistent event: generic noindex metadata only.
       return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
     }
 
@@ -154,12 +171,14 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     };
   } catch (error) {
     logger.error('Error fetching event data', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
     });
     return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
   }
 }
 
+// Generic, leak-free metadata used for private/draft/nonexistent events.
+// `index: false` keeps non-public event pages out of search indexes.
 function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallbackImage?: string) {
   const openGraphImages = fallbackImage
     ? [
@@ -181,6 +200,11 @@ function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallback
       url: canonicalPath,
       images: openGraphImages,
     },
+    robots: {
+      index: false,
+      follow: true,
+      nocache: true,
+    },
     twitter: fallbackImage ? { card: 'summary_large_image', images: [fallbackImage] } : undefined,
   };
 }
@@ -188,6 +212,10 @@ function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallback
 export const dynamic = 'force-dynamic';
 
 export default async function EventDetailPage({ params }: Pick<Props, 'params'>) {
+  if (!EVENT_ID_PATTERN.test(params.id)) {
+    notFound();
+  }
+
   let jsonLd: string | null = null;
 
   try {
@@ -202,7 +230,7 @@ export default async function EventDetailPage({ params }: Pick<Props, 'params'>)
     }
   } catch (error) {
     logger.error('Error building event JSON-LD', {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       eventId: params.id,
     });
   }

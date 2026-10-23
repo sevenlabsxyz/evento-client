@@ -469,6 +469,9 @@ export function SendLightningSheet({
           payRequest,
           amount: BigInt(amountSats),
           comment: comment || undefined,
+          // LUD-09 hardening: only accept success-action URLs that match the
+          // LNURL provider's declared domain (prevents phishing via callback URL)
+          validateSuccessActionUrl: true,
         });
 
         logger.debug('✅ [SEND] LNURL payment prepared', { prepareResponse });

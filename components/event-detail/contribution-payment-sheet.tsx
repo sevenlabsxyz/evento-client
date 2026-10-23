@@ -30,7 +30,7 @@ const PAYMENT_METHOD_CONFIG: Record<string, PaymentMethodConfig> = {
     bgColor: 'bg-green-100',
     label: 'Cash App',
     getPaymentUrl: (username, amount, isMobile) => {
-      const strippedUsername = username.replace(/^[@$]/, '');
+      const strippedUsername = encodeURIComponent(username.replace(/^[@$]/, ''));
       return isMobile
         ? `https://cash.app/${strippedUsername}/${amount}`
         : `https://cash.app/${strippedUsername}`;
@@ -41,7 +41,7 @@ const PAYMENT_METHOD_CONFIG: Record<string, PaymentMethodConfig> = {
     bgColor: 'bg-blue-100',
     label: 'Venmo',
     getPaymentUrl: (username, amount, isMobile) => {
-      const strippedUsername = username.replace(/^[@$]/, '');
+      const strippedUsername = encodeURIComponent(username.replace(/^[@$]/, ''));
       return isMobile
         ? `venmo://paycharge?txn=pay&recipients=${strippedUsername}&amount=${amount}&note=Evento`
         : `https://account.venmo.com/u/${strippedUsername}`;
@@ -52,7 +52,7 @@ const PAYMENT_METHOD_CONFIG: Record<string, PaymentMethodConfig> = {
     bgColor: 'bg-blue-100',
     label: 'PayPal',
     getPaymentUrl: (username, amount) => {
-      const strippedUsername = username.replace(/^[@$]/, '');
+      const strippedUsername = encodeURIComponent(username.replace(/^[@$]/, ''));
       return `https://www.paypal.com/paypalme/${strippedUsername}/${amount}`;
     },
   },
@@ -89,7 +89,9 @@ export default function ContributionPaymentSheet({
   const getPaymentUrl = (methodType: string, methodValue: string) => {
     const config = PAYMENT_METHOD_CONFIG[methodType];
     if (!config) return '#';
-    return config.getPaymentUrl(methodValue, customAmount, isMobile);
+    // Only template a positive, finite amount into the URL
+    const amount = Number.isFinite(customAmount) && customAmount > 0 ? customAmount : 0;
+    return config.getPaymentUrl(methodValue, amount, isMobile);
   };
 
   return (

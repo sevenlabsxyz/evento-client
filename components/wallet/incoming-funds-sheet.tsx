@@ -24,6 +24,32 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { SpeedUpSheet } from './sheets/speed-up-sheet';
 
+/**
+ * Version-skew carrier for the claimDeposit result: the installed 0.17.1
+ * `ClaimDepositResponse` is `{ payment }`, while 0.26.0 is `{ outcome }`.
+ * Binding through this named type keeps the read checked without an inline
+ * cast; post-upgrade it can be dropped for the SDK's own response type.
+ */
+type ClaimResultWithOutcome = { payment?: unknown; outcome?: ClaimOutcome };
+
+/**
+ * Outcome of a deposit claim, per breez-sdk-spark 0.26.0's ClaimDepositResponse.
+ * The installed 0.17.1 returns only `{ payment }` (no `outcome`), so that legacy
+ * shape is the `outcome === undefined` branch below. Structurally narrowed so
+ * this compiles against 0.17.1 today; post-upgrade the local type can be
+ * replaced by the SDK's own `ClaimDepositResponse['outcome']`.
+ */
+type ClaimOutcome =
+  | { type: 'settled'; payment: unknown }
+  | { type: 'submitted' }
+  | {
+      type: 'deferred';
+      reason:
+        | { type: 'maxFeeExceeded'; requiredFeeSats?: unknown; maxFeeSats?: unknown }
+        | { type: 'noEarlyClaimAvailable' }
+        | { type: 'providerDeclined'; message?: string };
+    };
+
 interface IncomingFundsSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -85,8 +111,41 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
       // depending on the actual transaction size.
       const maxFee: Fee = { type: 'fixed', amount: totalFeeSats };
 
-      await breezSDK.claimDeposit(deposit.txid, deposit.vout, maxFee);
-      toast.success('Swap completed successfully!');
+      const result = await breezSDK.claimDeposit(deposit.txid, deposit.vout, maxFee);
+
+      // 0.26.0+: claim result carries an `outcome`; 0.17.1 returns `{ payment }`
+      // only, in which case `outcome` is undefined and the claim settled
+      // immediately (legacy path).
+      const claimResult: ClaimResultWithOutcome = result;
+      const outcome = claimResult.outcome;
+
+      if (outcome?.type === 'settled' || outcome === undefined) {
+        toast.success('Swap completed successfully!');
+      } else if (outcome.type === 'submitted') {
+        toast.info('Claim submitted — it will complete automatically.');
+      } else if (outcome.type === 'deferred') {
+        const reason = outcome.reason;
+        if (reason.type === 'maxFeeExceeded') {
+          const feeParts: string[] = [];
+          const { requiredFeeSats, maxFeeSats } = reason;
+          if (typeof requiredFeeSats === 'number' || typeof requiredFeeSats === 'bigint') {
+            feeParts.push(`required: ${requiredFeeSats.toLocaleString()} sats`);
+          }
+          if (typeof maxFeeSats === 'number' || typeof maxFeeSats === 'bigint') {
+            feeParts.push(`limit: ${maxFeeSats.toLocaleString()} sats`);
+          }
+          const feeDetail = feeParts.length > 0 ? ` (${feeParts.join(', ')})` : '';
+          toast.error(
+            `Claim fee would exceed the selected max fee. It will be retried automatically within your fee limit.${feeDetail}`
+          );
+        } else if (reason.type === 'providerDeclined' && reason.message) {
+          toast.warning(`Claim deferred: ${reason.type} (${reason.message})`);
+        } else {
+          toast.warning(`Claim deferred: ${reason.type}`);
+        }
+      } else {
+        toast.success('Swap completed successfully!');
+      }
       await loadDeposits();
       onRefresh?.();
       setSelectedDeposit(null);

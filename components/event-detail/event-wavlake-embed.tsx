@@ -2,7 +2,10 @@ export const WavlakeEmbed = ({ link }: { link: string }) => {
   if (!link) return null;
 
   const trackId = link.split('/').pop();
-  const embedUrl = `https://wavlake.evento.so/track/${trackId}`;
+  // Reject empty/whitespace track IDs so nothing is rendered for malformed links
+  if (!trackId || trackId.trim() === '') return null;
+
+  const embedUrl = `https://wavlake.evento.so/track/${encodeURIComponent(trackId)}`;
 
   return (
     <div className='w-full rounded-lg md:mt-4'>

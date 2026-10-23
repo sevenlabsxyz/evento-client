@@ -3,8 +3,9 @@
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { EmailBlast } from '@/lib/types/api';
-import DOMPurify from 'dompurify';
+import { sanitizeRichText } from '@/lib/utils/sanitize';
 import { AlertCircle, CheckCircle, Users, XCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface EmailBlastDetailModalProps {
   blast: EmailBlast;
@@ -23,6 +24,15 @@ export default function EmailBlastDetailModal({
   onCancelRequested,
   isCancelling = false,
 }: EmailBlastDetailModalProps) {
+  // Sanitized after mount: DOMPurify can't run during SSR (no window), so raw
+  // HTML must never reach dangerouslySetInnerHTML on the server. Empty until
+  // the effect below replaces it with the sanitized value.
+  const [cleanMessage, setCleanMessage] = useState('');
+
+  useEffect(() => {
+    setCleanMessage(sanitizeRichText(blast.message));
+  }, [blast.message]);
+
   if (!isOpen) return null;
 
   const formatDate = (dateString: string) => {
@@ -203,7 +213,7 @@ export default function EmailBlastDetailModal({
         <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
           <div
             className='prose prose-sm max-w-none text-gray-700'
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(blast.message) }}
+            dangerouslySetInnerHTML={{ __html: cleanMessage }}
           />
         </div>
       </div>

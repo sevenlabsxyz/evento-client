@@ -3,7 +3,6 @@
 import {
   BookOpen,
   Calendar1,
-  MessageCircle,
   PanelRightClose,
   PanelRightOpen,
   Plus,
@@ -48,11 +47,6 @@ const navMain = [
     title: 'Search',
     url: '/e/search',
     icon: Search,
-  },
-  {
-    title: 'Messages',
-    url: '/e/messages',
-    icon: MessageCircle,
   },
   {
     title: 'Lists',

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { Env } from '@/lib/constants/env';
 import { useAuthStore } from '@/lib/stores/auth-store';
+import { createClient } from '@/lib/supabase/client';
 import { toast } from '@/lib/utils/toast';
 import { CheckCircle, Loader2, Send, Unlink } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -21,7 +22,9 @@ declare global {
   }
 }
 
-const EVENTO_API_BASE = 'https://evento.so';
+// Match the apiClient base URL shape (lib/api/client.ts) by stripping the trailing '/api'
+// so the fetch below hits `${EVENTO_API_BASE}/api/v1/user/telegram/link`.
+const EVENTO_API_BASE = Env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, '');
 const BOT_USERNAME = Env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
 
 export function TelegramConnectSheet({
@@ -44,7 +47,15 @@ export function TelegramConnectSheet({
     // Define the callback Telegram widget will call after auth
     window.onTelegramAuth = async (telegramUser) => {
       try {
-        const token = localStorage.getItem('supabase_access_token') ?? '';
+        const {
+          data: { session },
+        } = await createClient().auth.getSession();
+        const token = session?.access_token;
+
+        if (!token) {
+          throw new Error('No active session. Please sign in and try again.');
+        }
+
         const res = await fetch(`${EVENTO_API_BASE}/api/v1/user/telegram/link`, {
           method: 'POST',
           headers: {
@@ -90,7 +101,15 @@ export function TelegramConnectSheet({
   const handleDisconnect = async () => {
     setIsDisconnecting(true);
     try {
-      const token = localStorage.getItem('supabase_access_token') ?? '';
+      const {
+        data: { session },
+      } = await createClient().auth.getSession();
+      const token = session?.access_token;
+
+      if (!token) {
+        throw new Error('No active session. Please sign in and try again.');
+      }
+
       const res = await fetch(`${EVENTO_API_BASE}/api/v1/user/telegram/link`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },

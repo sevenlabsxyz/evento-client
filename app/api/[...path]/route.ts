@@ -14,8 +14,10 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const startTime = Date.now();
 
-  // Reconstruct the path
-  const path = params.path?.join('/') || '';
+  // Reconstruct the path, stripping dot-segments that could escape the proxy target prefix
+  const path = (params.path || [])
+    .filter((segment) => segment !== '..' && segment !== '.')
+    .join('/');
   const targetUrl = `${Env.API_PROXY_TARGET}/${path}`;
 
   // Get query parameters
@@ -181,6 +183,12 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
   } catch (error) {
     const duration = Date.now() - startTime;
 
+    // Redact sensitive query params before logging server-side
+    const redactQueryString = (qs: string) =>
+      qs
+        .replace(/([?&](?:access_token|refresh_token|token|ticket)=)[^&]*/gi, '$1***')
+        .slice(0, 200);
+
     // Log comprehensive error information
     console.error('API Proxy Error:', {
       error: error instanceof Error ? error.message : String(error),
@@ -193,13 +201,11 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       duration,
       targetUrl: Env.API_PROXY_TARGET,
       pathParams: params.path,
-      queryString: request.nextUrl.search,
+      queryString: redactQueryString(request.nextUrl.search),
     });
 
-    return errorResponse(
-      `Proxy error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      500
-    );
+    // Return a generic error to the client; details stay in the server-side log
+    return errorResponse('Upstream service error', 500);
   }
 }
 

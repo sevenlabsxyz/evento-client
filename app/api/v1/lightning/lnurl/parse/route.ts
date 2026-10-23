@@ -82,18 +82,27 @@ export async function POST(request: NextRequest) {
     try {
       validatedUrl = new URL(callbackUrl);
       const hostname = validatedUrl.hostname.toLowerCase();
-      if (!ALLOWED_DOMAINS.some(domain => hostname === domain)) {
-        logger.warn('LNURL callback domain not in allowlist', { hostname, allowed: ALLOWED_DOMAINS });
+      if (!ALLOWED_DOMAINS.some((domain) => hostname === domain)) {
+        logger.warn('LNURL callback domain not in allowlist', {
+          hostname,
+          allowed: ALLOWED_DOMAINS,
+        });
         return NextResponse.json({ error: 'LNURL service domain not allowed' }, { status: 400 });
       }
     } catch {
       return NextResponse.json({ error: 'Invalid callback URL in LNURL' }, { status: 400 });
     }
-    try {
-      new URL(callbackUrl);
-    } catch {
-      return NextResponse.json({ error: 'Invalid callback URL in LNURL' }, { status: 400 });
-    }
+
+    // Validate that a remote-returned callback URL belongs to an allowed domain
+    const isAllowedRemoteCallback = (remoteCallback: string): boolean => {
+      try {
+        const remoteUrl = new URL(remoteCallback);
+        const remoteHostname = remoteUrl.hostname.toLowerCase();
+        return ALLOWED_DOMAINS.some((domain) => remoteHostname === domain);
+      } catch {
+        return false;
+      }
+    };
 
     // Fetch LNURL details from callback URL
     let lnurlData: Record<string, unknown>;
@@ -166,6 +175,15 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      // Never pass through a remote callback from a non-allowlisted domain
+      if (!isAllowedRemoteCallback(response.callback)) {
+        logger.warn('Remote LNURL withdraw callback domain not in allowlist', {
+          callback: response.callback,
+          allowed: ALLOWED_DOMAINS,
+        });
+        return NextResponse.json({ error: 'LNURL callback domain not allowed' }, { status: 400 });
+      }
+
       return NextResponse.json(response);
     } else if (tag === 'payRequest') {
       // LNURL Pay
@@ -177,6 +195,15 @@ export async function POST(request: NextRequest) {
         metadata: String(lnurlData.metadata || ''),
         commentAllowed: lnurlData.commentAllowed ? Number(lnurlData.commentAllowed) : undefined,
       };
+
+      // Never pass through a remote callback from a non-allowlisted domain
+      if (!isAllowedRemoteCallback(response.callback)) {
+        logger.warn('Remote LNURL pay callback domain not in allowlist', {
+          callback: response.callback,
+          allowed: ALLOWED_DOMAINS,
+        });
+        return NextResponse.json({ error: 'LNURL callback domain not allowed' }, { status: 400 });
+      }
 
       return NextResponse.json(response);
     } else {

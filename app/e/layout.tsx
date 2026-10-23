@@ -10,7 +10,6 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useWalletEventListener } from '@/lib/hooks/use-wallet-event-listener';
-import { StreamChatProvider } from '@/lib/providers/stream-chat-provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { getSessionValue, markAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
 import { usePathname } from 'next/navigation';
@@ -44,25 +43,23 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
   }, [pathname]);
 
   return (
-    <StreamChatProvider>
-      <SidebarProvider
-        defaultOpen={isAuthenticated}
-        open={isAuthenticated ? undefined : false}
-        style={
-          {
-            '--sidebar-width': '18rem',
-            '--header-height': '3.5rem',
-          } as React.CSSProperties
-        }
-      >
-        {isAuthenticated && <AppSidebar variant='inset' />}
-        <SidebarInset className='max-h-svh min-w-0 md:max-h-[calc(100svh-1rem)]'>
-          {!isOverlaid && <SiteHeader />}
-          <div className='flex-1 overflow-auto'>{children}</div>
-          <BottomTabBar />
-        </SidebarInset>
-        {/* {isAuthenticated && <SidebarRight />} */}
-      </SidebarProvider>
-    </StreamChatProvider>
+    <SidebarProvider
+      defaultOpen={isAuthenticated}
+      open={isAuthenticated ? undefined : false}
+      style={
+        {
+          '--sidebar-width': '18rem',
+          '--header-height': '3.5rem',
+        } as React.CSSProperties
+      }
+    >
+      {isAuthenticated && <AppSidebar variant='inset' />}
+      <SidebarInset className='max-h-svh min-w-0 md:max-h-[calc(100svh-1rem)]'>
+        {!isOverlaid && <SiteHeader />}
+        <div className='flex-1 overflow-auto'>{children}</div>
+        <BottomTabBar />
+      </SidebarInset>
+      {/* {isAuthenticated && <SidebarRight />} */}
+    </SidebarProvider>
   );
 }

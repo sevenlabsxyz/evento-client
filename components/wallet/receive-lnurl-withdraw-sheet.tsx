@@ -171,6 +171,13 @@ export function ReceiveLnurlWithdrawSheet({
 
       try {
         // ATTEMPT 1: Try Breez SDK first
+        // SDK 0.24.0+ lnurl withdraw details carry the raw `url` (callback-URL
+        // trust hardening); 0.17.1 types lack the field, so read it at runtime
+        // and pass it through only when present.
+        const rawUrl =
+          'url' in withdrawRequest && typeof withdrawRequest.url === 'string'
+            ? withdrawRequest.url
+            : undefined;
         await breezSDK.lnurlWithdraw({
           amountSats,
           withdrawRequest: {
@@ -179,6 +186,7 @@ export function ReceiveLnurlWithdrawSheet({
             defaultDescription: withdrawRequest.defaultDescription,
             minWithdrawable: withdrawRequest.minWithdrawable,
             maxWithdrawable: withdrawRequest.maxWithdrawable,
+            ...(rawUrl ? { url: rawUrl } : {}),
           },
         });
       } catch (breezError) {

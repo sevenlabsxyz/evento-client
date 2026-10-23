@@ -85,6 +85,8 @@ export default async function Image({ params }: { params: { username: string } }
     return renderFallbackProfileImage(params.username);
   }
 
+  // Only fetch avatar images from known-good hosts; anything else falls back
+  // to the initials avatar below.
   const getProperURL = (url?: string) => {
     if (!url) return null;
 
@@ -92,7 +94,27 @@ export default async function Image({ params }: { params: { username: string } }
       return `https://api.evento.so/storage/v1/object/public/cdn${url}?width=400&height=400`;
     }
 
-    return url;
+    let parsed: URL;
+    try {
+      parsed = new URL(url);
+    } catch {
+      return null;
+    }
+
+    const supabaseStorageHost = Env.NEXT_PUBLIC_SUPABASE_URL
+      ? new URL(Env.NEXT_PUBLIC_SUPABASE_URL).hostname
+      : null;
+    const allowedAvatarHosts = [
+      supabaseStorageHost,
+      'api.evento.so',
+      'evento.so',
+      'avatars.githubusercontent.com',
+      'lh3.googleusercontent.com',
+      'www.gravatar.com',
+      'gravatar.com',
+    ].filter(Boolean) as string[];
+
+    return allowedAvatarHosts.includes(parsed.hostname) ? url : null;
   };
 
   const profileImageUrl = getProperURL(user.image);

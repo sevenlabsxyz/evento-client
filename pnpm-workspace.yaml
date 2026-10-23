@@ -2,7 +2,10 @@ packages:
   - .
 
 allowBuilds:
+  sharp: true
   supabase: false
+  tailwindcss-corner-shape: false
+  unrs-resolver: false
 
 overrides:
   flatted: ^3.4.2

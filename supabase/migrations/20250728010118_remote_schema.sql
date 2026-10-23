@@ -955,7 +955,8 @@ CREATE INDEX "wallet_passes_ticket_id_idx" ON "public"."wallet_passes" USING "bt
 
 
 
--- CREATE OR REPLACE TRIGGER "evento-update-notification" AFTER INSERT OR UPDATE ON "public"."events" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://evento.so/api/v1/webhooks/events/update', 'POST', '{"Content-type":"application/json","k":"856e19627bbfc850b024709c994d82f6"}', '{}', '5000');
+-- NOTE: the real webhook key value has been redacted here; it must be rotated and stored via the Supabase secret manager using the {"secret-k"} indirection form.
+-- CREATE OR REPLACE TRIGGER "evento-update-notification" AFTER INSERT OR UPDATE ON "public"."events" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://evento.so/api/v1/webhooks/events/update', 'POST', '{"Content-type":"application/json","k":"<redacted>"}', '{}', '5000');
 
 
 
