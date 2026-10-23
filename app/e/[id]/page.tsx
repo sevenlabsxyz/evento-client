@@ -11,8 +11,13 @@ import {
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import { ResolvingMetadata } from 'next';
+import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import EventDetailPageClient from './page-client';
+
+// The dynamic /e/[id] route also catches unknown static paths (e.g. /e/messages).
+// Reject anything that is not a real event id before rendering or fetching.
+const EVENT_ID_PATTERN = /^evt_[A-Za-z0-9]+$/;
 
 function getEventMetadataClient() {
   if (!Env.NEXT_PUBLIC_SUPABASE_URL || !Env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -105,6 +110,10 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
   const previousImages = (await parent).openGraph?.images || [];
   const fallbackOgImage = buildEventSocialImageUrl(eventId);
+
+  if (!EVENT_ID_PATTERN.test(eventId)) {
+    return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
+  }
 
   try {
     const event = await fetchEventSeoData(eventId);
@@ -203,6 +212,10 @@ function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallback
 export const dynamic = 'force-dynamic';
 
 export default async function EventDetailPage({ params }: Pick<Props, 'params'>) {
+  if (!EVENT_ID_PATTERN.test(params.id)) {
+    notFound();
+  }
+
   let jsonLd: string | null = null;
 
   try {
