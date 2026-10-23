@@ -55,10 +55,6 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
     );
   }, [followStatus?.isFollowing, followActionMutation, user.id, user.name]);
 
-  const handleMessage = useCallback(() => {
-    toast.success('Message feature coming soon!');
-  }, []);
-
   const handleViewFullProfile = useCallback(() => {
     // Validate username before navigation to prevent potential exploits
     if (!validateUsername(user.username)) {
@@ -123,13 +119,12 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                               currentUsername={loggedInUser?.username}
                             />
 
-                            {/* Follow & Message Buttons */}
+                            {/* Follow Button */}
                             <ProfileActions
                               isFollowing={followStatus?.isFollowing || false}
                               isLoading={isLoading}
                               isPending={followActionMutation.isPending}
                               onFollowToggle={handleFollowToggle}
-                              onMessage={handleMessage}
                             />
                           </>
                         )}

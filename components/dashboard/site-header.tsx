@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -38,7 +37,6 @@ export function SiteHeader() {
     onBadgeClick,
     textButtons,
     buttons,
-    chatPartner,
     hideMobileBreadcrumb,
   } = useTopBar();
 
@@ -92,25 +90,6 @@ export function SiteHeader() {
   const renderCenterContent = () => {
     if (!isAuthenticated || centerMode === 'empty') {
       return null;
-    }
-
-    if (centerMode === 'chat-partner' && chatPartner) {
-      return (
-        <div className='flex items-center gap-3'>
-          <Avatar className='h-8 w-8'>
-            <AvatarImage src={chatPartner.image} alt={chatPartner.name} />
-            <AvatarFallback className='bg-gray-100 text-sm'>
-              {chatPartner.name.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className='flex flex-col'>
-            <h1 className='text-sm font-semibold'>{chatPartner.name}</h1>
-            {chatPartner.username && (
-              <p className='text-xs text-muted-foreground'>@{chatPartner.username}</p>
-            )}
-          </div>
-        </div>
-      );
     }
 
     if (centerMode === 'title') {

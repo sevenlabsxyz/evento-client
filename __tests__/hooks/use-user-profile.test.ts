@@ -2,7 +2,6 @@ import { useCheckUsername } from '@/lib/hooks/use-check-username';
 import {
   useFollowAction,
   useFollowStatus,
-  useSearchUsers,
   useUpdateUserProfile,
   useUploadProfileImage,
   useUserByUsername,
@@ -283,77 +282,6 @@ describe('User Profile Hooks', () => {
       });
 
       expect(result.current.error).toBe(updateError);
-    });
-  });
-
-  describe('useSearchUsers', () => {
-    it('searches users successfully', async () => {
-      const mockUsers = [
-        {
-          id: 'user1',
-          username: 'user1',
-          name: 'User One',
-          bio: '',
-          image: '',
-          bio_link: '',
-          x_handle: '',
-          instagram_handle: '',
-          ln_address: '',
-          nip05: '',
-          verification_status: null,
-          verification_date: '',
-        },
-        {
-          id: 'user2',
-          username: 'user2',
-          name: 'User Two',
-          bio: '',
-          image: '',
-          bio_link: '',
-          x_handle: '',
-          instagram_handle: '',
-          ln_address: '',
-          nip05: '',
-          verification_status: null,
-          verification_date: '',
-        },
-      ];
-
-      mockApiClientTyped.get.mockResolvedValue(mockUsers);
-
-      const { result } = renderHook(() => useSearchUsers(), {
-        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-      });
-
-      await act(async () => {
-        result.current.mutate('test');
-      });
-
-      await waitFor(() => {
-        expect(result.current.isSuccess).toBe(true);
-      });
-
-      expect(mockApiClientTyped.get).toHaveBeenCalledWith('/v1/user/search?s=test');
-      expect(result.current.data).toEqual(mockUsers);
-    });
-
-    it('handles search errors gracefully', async () => {
-      const searchError = new Error('Search failed');
-      mockApiClientTyped.get.mockRejectedValue(searchError);
-
-      const { result } = renderHook(() => useSearchUsers(), {
-        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-      });
-
-      await act(async () => {
-        result.current.mutate('test');
-      });
-
-      await waitFor(() => {
-        expect(result.current.isError).toBe(true);
-      });
-
-      expect(result.current.error).toBe(searchError);
     });
   });
 

@@ -13,8 +13,7 @@ import { useHubData } from '@/lib/hooks/use-hub-data';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { GhostPost } from '@/lib/types/ghost';
-import { AlertTriangle, MessageCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { AlertTriangle } from 'lucide-react';
 import { useEffect } from 'react';
 
 function HubPageSkeleton() {
@@ -48,7 +47,6 @@ interface HubPageClientProps {
 }
 
 export default function HubPageClient({ posts }: HubPageClientProps) {
-  const router = useRouter();
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
   const { data: hubData, isLoading: isHubLoading, error: hubError, refetch } = useHubData();
@@ -71,21 +69,14 @@ export default function HubPageClient({ posts }: HubPageClientProps) {
       leftMode: 'menu',
       showAvatar: true,
       centerMode: 'title',
-      buttons: [
-        {
-          id: 'chat',
-          icon: MessageCircle,
-          onClick: () => router.push('/e/messages'),
-          label: 'Chat',
-        },
-      ],
+      buttons: [],
       badge: undefined,
     });
 
     return () => {
       clearRoute(pathname);
     };
-  }, [applyRouteConfig, setTopBarForRoute, clearRoute, router]);
+  }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
 
   if (isCheckingAuth || isCheckingOnboarding || isHubLoading) {
     return <HubPageSkeleton />;

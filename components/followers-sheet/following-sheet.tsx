@@ -6,8 +6,7 @@ import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserFollowing } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
-import { ArrowRight, MessageCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { ArrowRight } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 import { UserAvatar } from '../ui/user-avatar';
@@ -29,7 +28,6 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
   const [offset, setOffset] = useState(0);
   const [allFollowing, setAllFollowing] = useState<UserDetails[]>([]);
   const [hasMore, setHasMore] = useState(false);
-  const router = useRouter();
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
 
   const {
@@ -86,14 +84,6 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
       }
     },
     [filteredFollowing]
-  );
-
-  const handleMessageClick = useCallback(
-    (userId: string) => {
-      router.push(`/e/messages?user=${userId}`);
-      onClose();
-    },
-    [router, onClose]
   );
 
   return (
@@ -184,14 +174,6 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
                               </div>
                             </button>
                             <div className='flex gap-2'>
-                              <Button
-                                variant='ghost'
-                                size='icon'
-                                className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
-                                onClick={() => handleMessageClick(user.id)}
-                              >
-                                <MessageCircle className='h-4 w-4 text-gray-500' />
-                              </Button>
                               <Button
                                 variant='ghost'
                                 size='icon'

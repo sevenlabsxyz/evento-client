@@ -64,8 +64,7 @@ const apiHostname = getApiHostname();
 //   api.evento.so storage URLs), Supabase (auth + realtime, browser client),
 //   mempool.space (speed-up fees) / api.coingecko.com (btc-price) /
 //   api.giphy.com (giphy-picker) / api.openweathermap.org (weather) — all
-//   fetched from the browser; stream-chat (chat.stream-io-api.com REST + WSS);
-//   Breez spark SDK defaults (defaultConfig('mainnet'): datasync:442,
+//   fetched from the browser; Breez spark SDK defaults (defaultConfig('mainnet'): datasync:442,
 //   spark-operator.breez.technology, 0.spark.lightspark.com,
 //   2.spark.flashnet.xyz, api.lightspark.com, blockstream.info chain service,
 //   bsw1/nd1.breez.technology, lnurlDomain evento.cash); api.zebedee.io /
@@ -84,7 +83,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self' https://evento.so https://api.evento.so https://*.supabase.co wss://*.supabase.co https://mempool.space https://api.zebedee.io https://api.zbdpay.com https://*.breez.technology https://datasync.breez.technology:442 wss://*.breez.technology https://0.spark.lightspark.com https://2.spark.flashnet.xyz https://api.lightspark.com https://blockstream.info https://evento.cash https://demo.evento.cash https://api.coingecko.com https://chat.stream-io-api.com wss://chat.stream-io-api.com https://api.giphy.com https://api.openweathermap.org https://maps.googleapis.com${ghostHostname ? ` https://${ghostHostname}` : ''}${apiHostname ? ` https://${apiHostname}` : ''}`,
+  `connect-src 'self' https://evento.so https://api.evento.so https://*.supabase.co wss://*.supabase.co https://mempool.space https://api.zebedee.io https://api.zbdpay.com https://*.breez.technology https://datasync.breez.technology:442 wss://*.breez.technology https://0.spark.lightspark.com https://2.spark.flashnet.xyz https://api.lightspark.com https://blockstream.info https://evento.cash https://demo.evento.cash https://api.coingecko.com https://api.giphy.com https://api.openweathermap.org https://maps.googleapis.com${ghostHostname ? ` https://${ghostHostname}` : ''}${apiHostname ? ` https://${apiHostname}` : ''}`,
   "frame-src 'self' https://www.google.com https://wavlake.evento.so https://embed.bitrefill.com https://telegram.org https://oauth.telegram.org https://open.spotify.com",
   "object-src 'none'",
   "base-uri 'self'",

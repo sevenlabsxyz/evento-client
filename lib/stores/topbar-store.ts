@@ -1,9 +1,8 @@
 import { LucideIcon } from 'lucide-react';
 import { create } from 'zustand';
-import { VerificationStatus } from '../types/api';
 
 export type LeftMode = 'menu' | 'back' | 'logo';
-export type CenterMode = 'title' | 'empty' | 'logo' | 'chat-partner';
+export type CenterMode = 'title' | 'empty' | 'logo';
 
 export interface TopBarButton {
   id: string;
@@ -36,12 +35,6 @@ interface TopBarConfig {
   showAvatar: boolean;
   isOverlaid: boolean;
   hideMobileBreadcrumb: boolean;
-  chatPartner?: {
-    name: string;
-    image?: string;
-    username?: string;
-    verification_status?: VerificationStatus;
-  };
 }
 
 interface TopBarState extends TopBarConfig {
@@ -61,9 +54,6 @@ interface TopBarState extends TopBarConfig {
   setTextButtons: (textButtons: TopBarTextButton[]) => void;
   setShowAvatar: (show: boolean) => void;
   setOverlaid: (isOverlaid: boolean) => void;
-  setChatPartner: (
-    partner: { name: string; image?: string; username?: string } | undefined
-  ) => void;
   reset: () => void;
   resetForRoute: (route: string) => void;
   clearRoute: (route: string) => void;
@@ -168,7 +158,6 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
   setTextButtons: (textButtons) => set({ textButtons }),
   setShowAvatar: (showAvatar) => set({ showAvatar }),
   setOverlaid: (isOverlaid) => set({ isOverlaid }),
-  setChatPartner: (chatPartner) => set({ chatPartner }),
 
   reset: () => set({ ...initialState, currentRoute: null, routeConfigs: new Map() }),
 
@@ -198,7 +187,6 @@ export const useTopBar = () => {
   const textButtons = useTopBarStore((state) => state.textButtons);
   const showAvatar = useTopBarStore((state) => state.showAvatar);
   const isOverlaid = useTopBarStore((state) => state.isOverlaid);
-  const chatPartner = useTopBarStore((state) => state.chatPartner);
   const hideMobileBreadcrumb = useTopBarStore((state) => state.hideMobileBreadcrumb);
   const currentRoute = useTopBarStore((state) => state.currentRoute);
   const setTopBar = useTopBarStore((state) => state.setTopBar);
@@ -212,7 +200,6 @@ export const useTopBar = () => {
   const setTextButtons = useTopBarStore((state) => state.setTextButtons);
   const setShowAvatar = useTopBarStore((state) => state.setShowAvatar);
   const setOverlaid = useTopBarStore((state) => state.setOverlaid);
-  const setChatPartner = useTopBarStore((state) => state.setChatPartner);
   const reset = useTopBarStore((state) => state.reset);
   const resetForRoute = useTopBarStore((state) => state.resetForRoute);
   const clearRoute = useTopBarStore((state) => state.clearRoute);
@@ -231,7 +218,6 @@ export const useTopBar = () => {
     textButtons,
     showAvatar,
     isOverlaid,
-    chatPartner,
     hideMobileBreadcrumb,
     currentRoute,
     setTopBar,
@@ -245,7 +231,6 @@ export const useTopBar = () => {
     setTextButtons,
     setShowAvatar,
     setOverlaid,
-    setChatPartner,
     reset,
     resetForRoute,
     clearRoute,

@@ -396,10 +396,6 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   ];
   void interestTags;
 
-  const handleMessage = () => {
-    toast.success('Message feature coming soon!');
-  };
-
   // Handle profile photo click for lightbox
   const handleProfilePhotoClick = (index: number) => {
     toast.info(`Viewing photo ${index + 1}`);
@@ -719,14 +715,6 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                         {followActionMutation.isPending ? 'Following...' : 'Follow'}
                       </>
                     )}
-                  </Button>
-                  <Button
-                    variant='outline'
-                    onClick={handleMessage}
-                    className='h-12 flex-1 rounded-full bg-gray-50 px-6 text-base text-gray-900 hover:bg-gray-200'
-                  >
-                    <MessageCircle className='h-4 w-4' />
-                    Message
                   </Button>
                 </div>
               </div>

@@ -25,7 +25,6 @@ This README is kept intentionally high-level and focused on local development ba
 - 📍 **Location Services** - Google Maps integration with dynamic location display
 - 🎵 **Music Integration** - Embed playlists from Spotify and Wavlake
 - 📸 **Event Gallery** - Share and react to event photos
-- 💬 **Live Chat** - Real-time messaging for DMs and group chats\*
 
 ## Quick Start
 
@@ -62,7 +61,6 @@ This README is kept intentionally high-level and focused on local development ba
     - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase project credentials
     - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` - Google Maps API key
     - `NEXT_PUBLIC_GIPHY_API_KEY` - GIPHY API key
-    - `NEXT_PUBLIC_STREAM_CHAT_API_KEY` - Stream Chat API key
     - `NEXT_PUBLIC_BREEZ_API_KEY` - Breez SDK API key (request from [breez.technology](https://breez.technology/request-api-key))
 
     See `.env.example` for the full list of available variables.
