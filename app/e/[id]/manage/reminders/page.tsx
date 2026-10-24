@@ -48,6 +48,7 @@ export default function EventRemindersPage() {
     setTopBarForRoute(pathname, {
       title: 'Reminders',
       leftMode: 'back',
+      onBackPress: () => router.push(`/e/${eventId}/manage`),
       centerMode: 'title',
       showAvatar: false,
     });
@@ -55,7 +56,7 @@ export default function EventRemindersPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute]);
+  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute, router, eventId]);
 
   // Only seed local state on first load. Background refetches must not
   // overwrite toggles the host has not saved yet.
@@ -121,11 +122,14 @@ export default function EventRemindersPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-md'>
-        <div className='space-y-4 p-4'>
+      <div className='max-w-2xl py-4 md:py-6'>
+        <div className='space-y-4'>
           <Skeleton className='h-20 w-full rounded-2xl' />
           {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className='rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'>
+            <div
+              key={index}
+              className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'
+            >
               <div className='flex items-center justify-between'>
                 <Skeleton className='h-4 w-36' />
                 <Skeleton className='h-6 w-11 rounded-full' />
@@ -143,7 +147,7 @@ export default function EventRemindersPage() {
 
   if (error) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
+      <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
             Reminders unavailable
@@ -164,10 +168,7 @@ export default function EventRemindersPage() {
 
   if (data?.available === false) {
     return (
-      <div
-        data-testid='reminders-unavailable'
-        className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'
-      >
+      <div data-testid='reminders-unavailable' className='flex items-center justify-center py-16'>
         <div className='max-w-sm text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
             Reminders coming soon
@@ -187,17 +188,24 @@ export default function EventRemindersPage() {
   }
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-md'>
-      <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4 dark:bg-neutral-950'>
-        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+    <div className='space-y-4 py-4 md:py-6'>
+      <div>
+        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Reminders</h2>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>
+          Choose when guests get automatic email reminders before the event.
+        </p>
+      </div>
+
+      <div className='max-w-2xl space-y-4'>
+        <div className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
           <div className='mb-3 flex items-start gap-3'>
             <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-950/60'>
               <Bell className='h-5 w-5 text-amber-600 dark:text-amber-400' />
             </div>
             <div>
-              <h2 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
+              <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
                 Guest reminders
-              </h2>
+              </h3>
               <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
                 Automatically email guests who RSVP&apos;d Yes before the event starts. Choose up to{' '}
                 {MAX_EVENT_REMINDERS} times. Times are relative to the event start.
@@ -223,7 +231,7 @@ export default function EventRemindersPage() {
           </div>
         ) : null}
 
-        <div className='overflow-hidden rounded-2xl bg-white dark:bg-neutral-900'>
+        <div className='overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
           {EVENT_REMINDER_OFFSETS.map((offset, index) => {
             const checked = selectedOffsets.includes(offset);
 
@@ -250,8 +258,8 @@ export default function EventRemindersPage() {
         <p className='px-1 text-xs text-gray-400 dark:text-neutral-400'>{FOURTH_REMINDER_ERROR}.</p>
       </div>
 
-      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900 md:left-1/2 md:w-full md:max-w-md md:-translate-x-1/2 md:rounded-t-2xl md:border md:shadow-sm'>
-        <div className='mx-auto max-w-full'>
+      <div className='sticky bottom-0 z-30 -mx-4 border-t border-gray-200 bg-white px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4 dark:border-neutral-800 dark:bg-neutral-950 md:mx-0 md:px-0'>
+        <div className='max-w-2xl'>
           <SubmitButton
             onClick={handleSave}
             disabled={!hasChanges || updateReminders.isPending}

@@ -110,6 +110,7 @@ export default function SecurityPrivacyPage() {
     setTopBarForRoute(pathname, {
       title: 'Security & Privacy',
       leftMode: 'back',
+      onBackPress: () => router.push(`/e/${eventId}/manage`),
       centerMode: 'title',
       showAvatar: false,
     });
@@ -117,7 +118,7 @@ export default function SecurityPrivacyPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute]);
+  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute, router, eventId]);
 
   useEffect(() => {
     if (eventData) {
@@ -172,10 +173,13 @@ export default function SecurityPrivacyPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-md'>
-        <div className='space-y-4 p-4'>
+      <div className='max-w-2xl py-4 md:py-6'>
+        <div className='space-y-4'>
           {Array.from({ length: 2 }).map((_, index) => (
-            <div key={index} className='rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'>
+            <div
+              key={index}
+              className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'
+            >
               <div className='flex items-center gap-4'>
                 <Skeleton className='h-8 w-8 rounded-lg' />
                 <div className='flex-1'>
@@ -193,7 +197,7 @@ export default function SecurityPrivacyPage() {
 
   if (error || !eventData) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
+      <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
             Event Not Found
@@ -214,14 +218,28 @@ export default function SecurityPrivacyPage() {
   }
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-md'>
-      <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4 dark:bg-neutral-950'>
-        {/* Event details */}
-        <div>
-          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-400'>
-            Event details
-          </h2>
-          <div className='overflow-hidden rounded-2xl bg-white dark:bg-neutral-900'>
+    <div className='space-y-4 py-4 md:py-6'>
+      <div>
+        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+          Security &amp; privacy
+        </h2>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>
+          Control who can see your event, password protection and guest list visibility.
+        </p>
+      </div>
+
+      <div className='max-w-2xl space-y-4'>
+        {/* Visibility */}
+        <section className='overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
+          <div className='px-4 pt-4'>
+            <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+              Visibility
+            </h3>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>
+              Who can find the event and what unapproved guests see.
+            </p>
+          </div>
+          <div>
             <button
               onClick={() => setShowVisibilitySheet(true)}
               className='flex w-full items-center gap-4 p-4 text-left'
@@ -264,7 +282,7 @@ export default function SecurityPrivacyPage() {
                     </div>
                   </div>
 
-                  <div className='overflow-hidden rounded-xl bg-gray-50 dark:bg-neutral-950'>
+                  <div className='overflow-hidden rounded-xl bg-gray-50 dark:bg-neutral-800'>
                     <label className='flex items-center justify-between px-4 py-3'>
                       <span className='text-sm text-gray-700 dark:text-neutral-300'>
                         Hide location until approved
@@ -299,14 +317,17 @@ export default function SecurityPrivacyPage() {
               </>
             )}
           </div>
-        </div>
+        </section>
 
-        {/* Event security */}
-        <div>
-          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-400'>
-            Event security
-          </h2>
-          <div className='overflow-hidden rounded-2xl bg-white dark:bg-neutral-900'>
+        {/* Password */}
+        <section className='overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
+          <div className='px-4 pt-4'>
+            <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Password</h3>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>
+              Require a password before guests can view the event.
+            </p>
+          </div>
+          <div>
             <button
               onClick={() => setShowPasswordSheet(true)}
               className='flex w-full items-center gap-4 p-4 text-left'
@@ -334,29 +355,36 @@ export default function SecurityPrivacyPage() {
                 </div>
               </div>
             </button>
-
-            <div className='mx-4 border-t border-gray-100 dark:border-neutral-800' />
-            <div className='flex items-center justify-between p-4'>
-              <div className='flex items-center gap-3'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
-                  <EyeOff className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
-                </div>
-                <div>
-                  <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-                    Guest List Visibility
-                  </p>
-                  <p className='mt-0.5 text-xs text-gray-500 dark:text-neutral-400'>
-                    Hidden from non-hosts
-                  </p>
-                </div>
-              </div>
-              <Switch
-                checked={hideGuestListEntirely}
-                onCheckedChange={(checked) => setHideGuestListEntirely(checked)}
-              />
-            </div>
           </div>
-        </div>
+        </section>
+
+        {/* Guest list */}
+        <section className='rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
+          <div className='px-4 pt-4'>
+            <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+              Guest list
+            </h3>
+          </div>
+          <div className='flex items-center justify-between p-4'>
+            <div className='flex items-center gap-3'>
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
+                <EyeOff className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
+              </div>
+              <div>
+                <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
+                  Guest List Visibility
+                </p>
+                <p className='mt-0.5 text-xs text-gray-500 dark:text-neutral-400'>
+                  Hidden from non-hosts
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={hideGuestListEntirely}
+              onCheckedChange={(checked) => setHideGuestListEntirely(checked)}
+            />
+          </div>
+        </section>
       </div>
 
       <EventVisibilitySheet
@@ -374,8 +402,8 @@ export default function SecurityPrivacyPage() {
         currentPassword={password}
       />
 
-      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900 md:left-1/2 md:w-full md:max-w-md md:-translate-x-1/2 md:rounded-t-2xl md:border md:shadow-sm'>
-        <div className='mx-auto max-w-full'>
+      <div className='sticky bottom-0 z-30 -mx-4 border-t border-gray-200 bg-white px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4 dark:border-neutral-800 dark:bg-neutral-950 md:mx-0 md:px-0'>
+        <div className='max-w-2xl'>
           <SubmitButton
             onClick={handleSaveChanges}
             disabled={

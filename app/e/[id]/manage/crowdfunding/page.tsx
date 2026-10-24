@@ -194,6 +194,7 @@ export default function CrowdfundingManagementPage() {
       title: 'Crowdfunding',
       leftMode: 'back',
       centerMode: 'title',
+      onBackPress: () => router.push(`/e/${eventId}/manage`),
       showAvatar: false,
       buttons: [
         {
@@ -211,14 +212,16 @@ export default function CrowdfundingManagementPage() {
     isMutating,
     isWalletAddressSyncPending,
     pathname,
+    router,
+    eventId,
   ]);
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-        <div className='space-y-6 p-4'>
+      <div className='space-y-4 py-4 md:py-6'>
+        <div className='max-w-2xl space-y-4'>
           <Skeleton className='h-4 w-3/4' />
-          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+          <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='mb-4 flex items-center gap-3'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='space-y-2'>
@@ -245,7 +248,7 @@ export default function CrowdfundingManagementPage() {
 
   if (error && !isMissingCampaign) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
+      <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <MessageCircle className='mx-auto mb-4 h-8 w-8 text-red-500 dark:text-red-400' />
           <p className='text-gray-600 dark:text-neutral-400'>Could not load campaign settings</p>
@@ -255,27 +258,74 @@ export default function CrowdfundingManagementPage() {
   }
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-      <div className='space-y-6 p-4'>
-        <div className='text-sm text-gray-500 dark:text-neutral-400'>
-          {isUpdate
-            ? 'Update your crowdfunding campaign settings below.'
-            : 'Set up a Lightning crowdfunding campaign for your event.'}
+    <div className='space-y-4 py-4 md:py-6'>
+      <div className='max-w-2xl space-y-4'>
+        <div>
+          <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+            Crowdfunding
+          </h2>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>
+            {isUpdate
+              ? 'Update your crowdfunding campaign settings below.'
+              : 'Set up a Lightning crowdfunding campaign for your event.'}
+          </p>
         </div>
 
+        {/* Progress (only when campaign exists) */}
+        {isUpdate && campaign && (
+          <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
+            <h3 className='mb-3 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+              Campaign Progress
+            </h3>
+            <div className='space-y-2'>
+              <div className='flex justify-between text-sm'>
+                <span className='text-gray-600 dark:text-neutral-400'>Raised</span>
+                <span className='font-medium text-gray-900 dark:text-neutral-100'>
+                  {campaign.raised_sats.toLocaleString()} sats
+                </span>
+              </div>
+              {campaign.goal_sats && (
+                <>
+                  <div className='flex justify-between text-sm'>
+                    <span className='text-gray-600 dark:text-neutral-400'>Goal</span>
+                    <span className='font-medium text-gray-900 dark:text-neutral-100'>
+                      {campaign.goal_sats.toLocaleString()} sats
+                    </span>
+                  </div>
+                  <div className='h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-neutral-700'>
+                    <div
+                      className='h-full rounded-full bg-amber-500 transition-all'
+                      style={{ width: `${Math.min(campaign.progressPercent, 100)}%` }}
+                    />
+                  </div>
+                  <p className='text-xs text-gray-500 dark:text-neutral-400'>
+                    {campaign.progressPercent.toFixed(1)}% of goal reached
+                  </p>
+                </>
+              )}
+              <div className='flex justify-between text-sm'>
+                <span className='text-gray-600 dark:text-neutral-400'>Pledges</span>
+                <span className='font-medium text-gray-900 dark:text-neutral-100'>
+                  {campaign.pledge_count}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Campaign Settings */}
-        <form onSubmit={form.handleSubmit(handleSave)} className='space-y-6'>
+        <form onSubmit={form.handleSubmit(handleSave)} className='space-y-4'>
           {/* Title */}
-          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+          <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='mb-4 flex items-center gap-3'>
               <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-950/60'>
                 <Zap className='h-5 w-5 text-amber-600 dark:text-amber-400' />
               </div>
               <div>
-                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
                   Campaign Details
                 </h3>
-                <p className='text-sm text-gray-600 dark:text-neutral-400'>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>
                   Name and describe your campaign
                 </p>
               </div>
@@ -325,7 +375,7 @@ export default function CrowdfundingManagementPage() {
           </div>
 
           {/* Goal */}
-          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+          <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='space-y-2'>
               <label
                 htmlFor='campaign-goal'
@@ -359,7 +409,7 @@ export default function CrowdfundingManagementPage() {
           </div>
 
           {/* Visibility */}
-          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+          <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='space-y-2'>
               <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
                 Visibility
@@ -389,7 +439,7 @@ export default function CrowdfundingManagementPage() {
           </div>
 
           {/* Status */}
-          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+          <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='space-y-2'>
               <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
                 Status
@@ -441,48 +491,6 @@ export default function CrowdfundingManagementPage() {
               </div>
             )}
           </div>
-
-          {/* Progress (only when campaign exists) */}
-          {isUpdate && campaign && (
-            <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
-              <h4 className='mb-3 font-semibold text-gray-900 dark:text-neutral-100'>
-                Campaign Progress
-              </h4>
-              <div className='space-y-2'>
-                <div className='flex justify-between text-sm'>
-                  <span className='text-gray-600 dark:text-neutral-400'>Raised</span>
-                  <span className='font-medium text-gray-900 dark:text-neutral-100'>
-                    {campaign.raised_sats.toLocaleString()} sats
-                  </span>
-                </div>
-                {campaign.goal_sats && (
-                  <>
-                    <div className='flex justify-between text-sm'>
-                      <span className='text-gray-600 dark:text-neutral-400'>Goal</span>
-                      <span className='font-medium text-gray-900 dark:text-neutral-100'>
-                        {campaign.goal_sats.toLocaleString()} sats
-                      </span>
-                    </div>
-                    <div className='h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-neutral-700'>
-                      <div
-                        className='h-full rounded-full bg-amber-500 transition-all'
-                        style={{ width: `${Math.min(campaign.progressPercent, 100)}%` }}
-                      />
-                    </div>
-                    <p className='text-xs text-gray-500 dark:text-neutral-400'>
-                      {campaign.progressPercent.toFixed(1)}% of goal reached
-                    </p>
-                  </>
-                )}
-                <div className='flex justify-between text-sm'>
-                  <span className='text-gray-600 dark:text-neutral-400'>Pledges</span>
-                  <span className='font-medium text-gray-900 dark:text-neutral-100'>
-                    {campaign.pledge_count}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Save Button */}
           <Button
