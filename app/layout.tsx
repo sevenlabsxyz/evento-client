@@ -1,6 +1,9 @@
+import { ActiveLocaleSync } from '@/components/i18n/active-locale-sync';
 import { Toaster } from '@/components/ui/sonner';
 import { getAppUrl } from '@/lib/utils/app-url';
 import type { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import type React from 'react';
@@ -61,9 +64,12 @@ export const viewport = {
   interactiveWidget: 'resizes-content',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <meta name='mobile-web-app-capable' content='yes' />
         <meta name='apple-mobile-web-app-capable' content='yes' />
@@ -81,10 +87,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           data-website-id='b0fc246c-0945-4a4f-b6e2-3b77992a9da7'
           strategy='afterInteractive'
         />
-        <Providers>
-          {children}
-          <Toaster />
-        </Providers>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <Providers>
+            <ActiveLocaleSync />
+            {children}
+            <Toaster />
+          </Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

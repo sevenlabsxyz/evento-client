@@ -518,3 +518,38 @@ jest.mock('react-spotify-embed', () => ({
   Spotify: () =>
     React.createElement('div', { 'data-testid': 'spotify-embed' }, 'Spotify Embed Mock'),
 }));
+
+// next-intl: render real English messages without a provider so tests assert
+// on the same copy users see. Components calling useTranslations need no wrapper.
+jest.mock('next-intl', () => {
+  const actual = jest.requireActual('next-intl');
+  const enMessages = jest.requireActual('@/messages/en').default;
+  const locale = 'en';
+  return {
+    ...actual,
+    useLocale: () => locale,
+    useMessages: () => enMessages,
+    useTimeZone: () => 'UTC',
+    useNow: () => new Date(),
+    useTranslations: (namespace?: string) =>
+      actual.createTranslator({ locale, messages: enMessages, namespace }),
+    useFormatter: () => actual.createFormatter({ locale }),
+    NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
+  };
+});
+
+jest.mock('next-intl/server', () => {
+  const actual = jest.requireActual('next-intl');
+  const enMessages = jest.requireActual('@/messages/en').default;
+  return {
+    getLocale: async () => 'en',
+    getMessages: async () => enMessages,
+    getTranslations: async (arg?: string | { namespace?: string }) =>
+      actual.createTranslator({
+        locale: 'en',
+        messages: enMessages,
+        namespace: typeof arg === 'string' ? arg : arg?.namespace,
+      }),
+    getFormatter: async () => actual.createFormatter({ locale: 'en' }),
+  };
+});
