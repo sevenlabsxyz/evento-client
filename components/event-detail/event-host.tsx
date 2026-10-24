@@ -1,6 +1,7 @@
 'use client';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
+import { EventSection } from '@/components/event-detail/event-section';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
@@ -36,19 +37,14 @@ export default function EventHost({ event }: EventHostProps) {
 
   return (
     <>
-      <div className='py-6'>
-        <div className='mb-4 flex items-center justify-between'>
-          <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-            {event.hosts.length === 1 ? 'Host' : 'Hosts'}
-          </h2>
-        </div>
-
-        <div className='space-y-4'>
+      <EventSection title='Hosted by'>
+        <ul className='-my-1 divide-y divide-gray-100 dark:divide-neutral-800'>
           {event.hosts.map((host) => (
-            <div key={host.id} className='flex items-center justify-between'>
+            <li key={host.id} className='flex items-center justify-between gap-3 py-2'>
               <button
+                type='button'
                 onClick={() => handleHostClick(host)}
-                className='-m-2 flex min-w-0 flex-1 items-center gap-3 rounded-lg p-2'
+                className='-mx-2 flex min-w-0 flex-1 items-center gap-3 rounded-xl px-2 py-1 transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800'
               >
                 <UserAvatar
                   user={{
@@ -59,18 +55,18 @@ export default function EventHost({ event }: EventHostProps) {
                       host.verification_status as UserDetails['verification_status'],
                   }}
                   size='base'
-                  height={48}
-                  width={48}
+                  height={44}
+                  width={44}
                 />
 
-                <div className='min-w-0 text-left'>
-                  <p className='truncate text-sm text-gray-500 dark:text-neutral-400'>
-                    @{host.username}
-                  </p>
-                  <h3 className='truncate font-semibold text-gray-900 dark:text-neutral-100'>
+                <span className='min-w-0 text-left'>
+                  <span className='block truncate text-sm font-semibold text-gray-900 dark:text-neutral-100'>
                     {host.name}
-                  </h3>
-                </div>
+                  </span>
+                  <span className='block truncate text-sm text-gray-500 dark:text-neutral-500'>
+                    @{host.username}
+                  </span>
+                </span>
               </button>
 
               <div className='flex shrink-0 items-center gap-2'>
@@ -84,10 +80,10 @@ export default function EventHost({ event }: EventHostProps) {
                   <CircledIconButton icon={Zap} />
                 </ZapSheet>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
-      </div>
+        </ul>
+      </EventSection>
 
       {selectedHost && (
         <QuickProfileSheet

@@ -1,14 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty';
 import { GalleryItem as GalleryItemType } from '@/lib/hooks/use-event-gallery';
 import { EventDetail } from '@/lib/types/event';
 import { logger } from '@/lib/utils/logger';
@@ -60,33 +52,40 @@ export default function EventGallery({
   };
 
   return (
-    <div className='py-6'>
-      {/* Action Buttons */}
-      {galleryItems.length > 0 && (
-        <div className='mb-6 flex items-center justify-between gap-3'>
+    <div>
+      {/* Header actions */}
+      <div className='mb-3 flex items-center justify-between gap-3'>
+        <p className='text-sm text-gray-500 dark:text-neutral-500'>
+          {galleryItems.length > 0
+            ? `${galleryItems.length} ${galleryItems.length === 1 ? 'photo' : 'photos'}`
+            : 'Shared by guests'}
+        </p>
+        <div className='flex items-center gap-2'>
+          {galleryItems.length > 0 && (
+            <Button
+              onClick={handleShareAlbum}
+              variant='outline'
+              size='sm'
+              className='h-8 gap-1.5 rounded-full border-gray-200 bg-white px-3 text-gray-700 hover:bg-gray-50 hover:text-gray-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-100'
+            >
+              <Share2 className='h-3.5 w-3.5' />
+              Share Album
+            </Button>
+          )}
           <Button
             onClick={handleAddPhoto}
-            variant='outline'
-            className='flex-1 gap-2 rounded-full border-gray-200 bg-white py-5 text-gray-700 hover:bg-gray-50 hover:text-black dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-950 dark:hover:text-white'
+            size='sm'
+            className='h-8 gap-1.5 rounded-full bg-red-600 px-3 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600'
           >
-            <Camera className='h-4 w-4' />
+            <Camera className='h-3.5 w-3.5' />
             Add Photos
           </Button>
-
-          <Button
-            onClick={handleShareAlbum}
-            variant='outline'
-            className='flex-1 gap-2 rounded-full border-gray-200 bg-white py-5 text-gray-700 hover:bg-gray-50 hover:text-black dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-950 dark:hover:text-white'
-          >
-            <Share2 className='h-4 w-4' />
-            Share Album
-          </Button>
         </div>
-      )}
+      </div>
 
       {/* Gallery Grid */}
       {galleryItems.length > 0 ? (
-        <div className='grid grid-cols-3 gap-1 md:gap-2'>
+        <div className='grid grid-cols-2 gap-2 sm:grid-cols-3'>
           {galleryItems.map((item, index) => (
             <GalleryItem
               key={item.id}
@@ -99,28 +98,23 @@ export default function EventGallery({
           ))}
         </div>
       ) : (
-        <Empty className='py-12'>
-          <EmptyHeader>
-            <EmptyMedia variant='soft-squircle'>
-              <Camera className='h-8 w-8' />
-            </EmptyMedia>
-            <EmptyTitle>No Photos Yet</EmptyTitle>
-            <EmptyDescription>
-              Be the first to add photos to this event. Photos added here will be visible to all
-              event guests.
-            </EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button
-              onClick={handleAddPhoto}
-              variant='default'
-              className='gap-2 rounded-full px-5 py-2.5'
-            >
-              <Camera className='h-4 w-4' />
-              Add Photos
-            </Button>
-          </EmptyContent>
-        </Empty>
+        <button
+          type='button'
+          onClick={handleAddPhoto}
+          className='flex w-full items-center gap-3 rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-4 text-left transition-colors hover:border-gray-400 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 dark:border-neutral-700 dark:bg-neutral-800/60 dark:hover:border-neutral-600 dark:hover:bg-neutral-800'
+        >
+          <span className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-gray-500 ring-1 ring-gray-200 dark:bg-neutral-900 dark:text-neutral-400 dark:ring-neutral-700'>
+            <Camera className='h-5 w-5' />
+          </span>
+          <span className='min-w-0'>
+            <span className='block text-sm font-medium text-gray-900 dark:text-neutral-100'>
+              No photos yet
+            </span>
+            <span className='block text-sm text-gray-500 dark:text-neutral-500'>
+              Be the first to add photos — they&apos;re visible to all guests.
+            </span>
+          </span>
+        </button>
       )}
 
       {/* Photo Upload Sheet */}

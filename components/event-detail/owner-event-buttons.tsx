@@ -50,41 +50,40 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
     }
   };
 
+  const secondaryTileClassName =
+    'flex h-16 flex-col items-center justify-center gap-1 rounded-xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700';
+
   return (
     <div className='grid grid-cols-4 gap-2'>
       {/* Invite Button */}
       <button
+        type='button'
         onClick={handleInvite}
-        className='flex h-16 flex-col items-center justify-center rounded-2xl bg-red-500 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
+        className='flex h-16 flex-col items-center justify-center gap-1 rounded-xl bg-red-500 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
       >
-        <UserPlus className='mb-1 h-5 w-5' />
-        <span className='text-xs font-medium'>Invite</span>
+        <UserPlus className='h-5 w-5' aria-hidden='true' />
+        <span className='text-xs font-semibold'>Invite</span>
       </button>
 
       {/* Manage Button */}
-      <button
-        onClick={handleManage}
-        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
-      >
-        <Settings className='mb-1 h-5 w-5' />
+      <button type='button' onClick={handleManage} className={secondaryTileClassName}>
+        <Settings className='h-5 w-5' aria-hidden='true' />
         <span className='text-xs font-medium'>Manage</span>
       </button>
 
       {/* Blasts Button */}
-      <button
-        onClick={handleEmailBlasts}
-        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
-      >
-        <Mail className='mb-1 h-5 w-5' />
+      <button type='button' onClick={handleEmailBlasts} className={secondaryTileClassName}>
+        <Mail className='h-5 w-5' aria-hidden='true' />
         <span className='text-xs font-medium'>Blasts</span>
       </button>
 
       {/* More Button */}
       <button
+        type='button'
         onClick={() => setMoreOptionsOpen(true)}
-        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
+        className={secondaryTileClassName}
       >
-        <MoreHorizontal className='mb-1 h-5 w-5' />
+        <MoreHorizontal className='h-5 w-5' aria-hidden='true' />
         <span className='text-xs font-medium'>More</span>
       </button>
 

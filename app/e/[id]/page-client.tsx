@@ -10,6 +10,7 @@ import EventHost from '@/components/event-detail/event-host';
 import EventInfo from '@/components/event-detail/event-info';
 import EventLocation from '@/components/event-detail/event-location';
 import { EventPasswordGate } from '@/components/event-detail/event-password-gate';
+import { EventSection } from '@/components/event-detail/event-section';
 import { EventSpotifyEmbed } from '@/components/event-detail/event-spotify-embed';
 import EventSubEvents from '@/components/event-detail/event-sub-events';
 import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
@@ -17,12 +18,14 @@ import SaveEventSheet from '@/components/event-detail/save-event-sheet';
 import SwipeableHeader from '@/components/event-detail/swipeable-header';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useDeleteGalleryItem } from '@/lib/hooks/use-delete-gallery-item';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
 import { useEventHosts } from '@/lib/hooks/use-event-hosts';
+import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useEventWeather } from '@/lib/hooks/use-event-weather';
 import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
@@ -31,17 +34,40 @@ import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { useTopBarStore } from '@/lib/stores/topbar-store';
 import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
+import { EventDetail } from '@/lib/types/event';
+import { cn } from '@/lib/utils';
 import { getInitialAppPath, hasAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
 import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { getOptimizedImageUrlPreservingGif } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Bookmark, Image, Info, MessageSquare, Share } from 'lucide-react';
+import {
+  Bookmark,
+  CalendarX,
+  EyeOff,
+  Image,
+  Info,
+  MessageSquare,
+  Share,
+  Users,
+} from 'lucide-react';
+import Link from 'next/link';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Loading from './loading';
 
 const EVENT_DETAIL_SECTION_IDS = ['details', 'comments', 'gallery'] as const;
+
+const QUICK_ACTION_CLASS =
+  'inline-flex h-10 items-center justify-center gap-2 rounded-full border border-gray-200 bg-white text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800';
+
+function formatHostNames(hosts: EventDetail['hosts']): string {
+  const names = hosts.map((host) => host.name || `@${host.username}`);
+  if (names.length <= 1) return names[0] ?? '';
+  if (names.length === 2) return `${names[0]} & ${names[1]}`;
+  return `${names[0]} & ${names.length - 1} others`;
+}
 
 export default function EventDetailPageClient() {
   const params = useParams();
@@ -262,6 +288,12 @@ export default function EventDetailPageClient() {
     isLoading: subEventsLoading,
     error: subEventsError,
   } = useSubEvents(eventId);
+  // Same query EventInfo/EventGuestsSection already run; react-query dedupes it.
+  const { data: eventRsvps } = useEventRSVPs(eventId);
+  const goingGuests = useMemo(
+    () => (eventRsvps ?? []).filter((rsvp) => rsvp.status === 'yes'),
+    [eventRsvps]
+  );
 
   // Transform API data to display format
   const event = useMemo(() => {
@@ -318,28 +350,33 @@ export default function EventDetailPageClient() {
   const { data: registrationSettings } = useRegistrationSettings(eventId);
   const { data: myRegistration } = useMyRegistration(eventId);
 
+  const registrationRequired =
+    eventData?.type !== undefined
+      ? eventData.type !== 'rsvp'
+      : (registrationSettings?.registration_required ?? false);
+
   // Approved attendee = RSVP 'yes' + approval (when registration is required).
   // Password access alone does NOT make someone approved.
   const isApprovedAttendee = useMemo(() => {
     if (isOwnerOrCohost) return true;
     if (userRsvpData?.status !== 'yes') return false;
-    const registrationRequired =
-      eventData?.type !== undefined
-        ? eventData.type !== 'rsvp'
-        : (registrationSettings?.registration_required ?? false);
     if (registrationRequired) {
       return myRegistration?.registration?.approval_status === 'approved';
     }
     return true;
-  }, [
-    isOwnerOrCohost,
-    userRsvpData?.status,
-    eventData?.type,
-    registrationSettings,
-    myRegistration,
-  ]);
+  }, [isOwnerOrCohost, userRsvpData?.status, registrationRequired, myRegistration]);
 
   const visibilitySettings = eventData?.visibility_settings;
+  const isGuestListHidden =
+    Boolean(visibilitySettings?.hide_guest_list_for_unapproved) && !isApprovedAttendee;
+  const hasHiddenDetails =
+    !isApprovedAttendee &&
+    Boolean(
+      visibilitySettings &&
+      (visibilitySettings.hide_location_for_unapproved ||
+        visibilitySettings.hide_description_for_unapproved ||
+        visibilitySettings.hide_guest_list_for_unapproved)
+    );
 
   // Precompute topbar-relevant values as stable primitives to avoid
   // object/array deps in the effect that trigger infinite re-renders.
@@ -371,29 +408,29 @@ export default function EventDetailPageClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
+  const handleShare = useCallback(async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: document.title,
+          url: window.location.href,
+        });
+      } catch (error) {
+        logger.error('Error sharing', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+    }
+  }, []);
+
   // Effect 2: TopBar config updates — reacts to data changes.
   // No cleanup (clearRoute is handled above). Only primitive deps.
   useEffect(() => {
     const initialPath = getInitialAppPath();
     const resolvedInitialPath = initialPath ?? pathname;
     const isDirectLanding = resolvedInitialPath === pathname && !hasAppNavigated();
-
-    const handleShare = async () => {
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: document.title,
-            url: window.location.href,
-          });
-        } catch (error) {
-          logger.error('Error sharing', {
-            error: error instanceof Error ? error.message : String(error),
-          });
-        }
-      } else {
-        navigator.clipboard.writeText(window.location.href);
-      }
-    };
 
     setTopBarForRoute(pathname, {
       leftMode: isDirectLanding ? 'logo' : 'back',
@@ -431,6 +468,7 @@ export default function EventDetailPageClient() {
     cameFromManage,
     router,
     isAuthenticated,
+    handleShare,
   ]);
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
@@ -496,54 +534,57 @@ export default function EventDetailPageClient() {
   }
 
   if (isLoading) {
-    return (
-      <div className='min-h-screen bg-gray-50 dark:bg-neutral-950'>
-        <div className='mx-auto max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-          <Skeleton variant='event-details' />
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (eventError || !event) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
-        <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-            Event Not Found
+      <div className='flex min-h-full w-full items-center justify-center bg-white px-4 py-16 dark:bg-neutral-900'>
+        <div className='w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 text-center dark:border-neutral-800 dark:bg-neutral-900'>
+          <div className='mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-50 dark:bg-neutral-800'>
+            <CalendarX className='h-6 w-6 text-gray-500 dark:text-neutral-400' aria-hidden='true' />
+          </div>
+          <h1 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+            Event not found
           </h1>
-          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            The event you&apos;re looking for doesn&apos;t exist.
+          <p className='mt-1 text-sm text-gray-600 dark:text-neutral-400'>
+            The event you&apos;re looking for doesn&apos;t exist or is no longer available.
           </p>
-          <button
-            type='button'
-            onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
-          >
-            Go Back
-          </button>
+          <div className='mt-6 flex flex-col gap-2 sm:flex-row'>
+            <Button
+              type='button'
+              variant='outline'
+              className='flex-1 rounded-full dark:bg-neutral-900 dark:hover:bg-neutral-800'
+              onClick={() => router.back()}
+            >
+              Go back
+            </Button>
+            <Button asChild className='flex-1 rounded-full'>
+              <Link href={isAuthenticated ? '/e/hub' : '/'}>Explore events</Link>
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
 
   const renderDetailsTab = () => (
-    <div className='space-y-6'>
+    <>
       <EventHost event={event} />
       {/* Campaign card */}
       <EventCampaignCard eventId={eventId} hasCampaign={event.has_campaign} />
       {eventData && <EventContributions eventData={eventData} eventId={eventId} />}
-      {!isApprovedAttendee &&
-      registrationSettings?.registration_required &&
-      visibilitySettings &&
-      (visibilitySettings.hide_location_for_unapproved ||
-        visibilitySettings.hide_description_for_unapproved ||
-        visibilitySettings.hide_guest_list_for_unapproved) ? (
-        <div className='rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400'>
-          Some event details are hidden until your registration is approved.
+      {hasHiddenDetails && (
+        <div className='flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400'>
+          <EyeOff className='mt-0.5 h-4 w-4 shrink-0' aria-hidden='true' />
+          <p>
+            {registrationRequired
+              ? 'Some event details are hidden until your registration is approved.'
+              : 'Some event details are hidden until you RSVP.'}
+          </p>
         </div>
-      ) : null}
-      {!(visibilitySettings?.hide_guest_list_for_unapproved && !isApprovedAttendee) && (
+      )}
+      {!isGuestListHidden && (
         <EventGuestsSection
           eventId={eventId}
           eventCreatorUserId={eventData?.creator_user_id || ''}
@@ -570,47 +611,24 @@ export default function EventDetailPageClient() {
 
       {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
       {(eventData?.spotify_url || eventData?.wavlake_url) && (
-        <div className='space-y-4'>
-          <h3 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Music</h3>
+        <EventSection title='Music' variant='plain' bodyClassName='space-y-4'>
           {eventData.spotify_url && <EventSpotifyEmbed link={eventData.spotify_url} />}
           {eventData.wavlake_url && <WavlakeEmbed link={eventData.wavlake_url} />}
-        </div>
+        </EventSection>
       )}
-    </div>
+    </>
   );
 
-  const renderCommentsTab = () => (
-    <div className='border-t border-gray-100 py-6 dark:border-neutral-800'>
-      <h2 className='mb-4 text-lg font-semibold text-gray-900 dark:text-neutral-100'>Comments</h2>
-      <EventComments eventId={event.id} isEventHost={isOwnerOrCohost} />
-    </div>
-  );
-
-  const renderGalleryTab = () => {
-    return (
-      <div className='border-t border-gray-100 py-6 dark:border-neutral-800'>
-        <h2 className='mb-4 text-lg font-semibold text-gray-900 dark:text-neutral-100'>Gallery</h2>
-        <EventGallery
-          event={event}
-          galleryItems={galleryData}
-          currentUserId={user?.id || ''}
-          isEventHost={isOwnerOrCohost}
-          onImageClick={(index) => {
-            setLightboxSource('gallery');
-            setSelectedImageIndex(index);
-          }}
-        />
-      </div>
-    );
-  };
+  const summaryHosts = event.hosts ?? [];
+  const summaryGuests = goingGuests.slice(0, 3);
+  const showGuestSummary = !isGuestListHidden && goingGuests.length > 0;
 
   return (
-    <div className='min-h-screen bg-white dark:bg-neutral-900'>
-      {/* Main content */}
-      <div className='mx-auto max-w-full bg-white dark:bg-neutral-900 md:pt-4 lg:max-w-4xl'>
-        <div className='pt-4 md:pt-0 lg:flex lg:gap-8'>
-          {/* Left Column - Image & Quick Actions */}
-          <div className='lg:w-1/2 lg:self-start'>
+    <div className='min-h-full w-full bg-white dark:bg-neutral-900'>
+      <div className='mx-auto w-full max-w-2xl px-4 pb-20 pt-4 md:px-8 md:pb-16 md:pt-8 lg:max-w-6xl'>
+        <div className='lg:grid lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:gap-10'>
+          {/* Left column — cover stays in view on desktop with host/guest summary + quick actions */}
+          <aside className='space-y-4 lg:sticky lg:top-6 lg:self-start'>
             <SwipeableHeader
               event={event}
               onImageClick={(index) => {
@@ -618,22 +636,104 @@ export default function EventDetailPageClient() {
                 setSelectedImageIndex(index);
               }}
             />
-            <div className='px-4'>
-              <EventInfo
-                event={event}
-                currentUserId={user?.id || ''}
-                eventData={eventData}
-                hosts={hostsData}
-              />
-            </div>
-          </div>
 
-          {/* Right Column - Section navigation */}
-          <div className='pb-20 lg:w-1/2'>
-            <div className='mb-4 w-full bg-white dark:bg-neutral-900'>
+            <div className='hidden space-y-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900 lg:block'>
+              {summaryHosts.length > 0 && (
+                <div className='flex items-center gap-3'>
+                  <div className='flex shrink-0 -space-x-2'>
+                    {summaryHosts.slice(0, 3).map((host) => (
+                      <UserAvatar
+                        key={host.id}
+                        user={{ name: host.name, username: host.username, image: host.avatar }}
+                        size='sm'
+                        className='rounded-full ring-2 ring-white dark:ring-neutral-900'
+                      />
+                    ))}
+                  </div>
+                  <div className='min-w-0'>
+                    <p className='text-xs font-medium text-gray-500 dark:text-neutral-500'>
+                      Hosted by
+                    </p>
+                    <p className='truncate text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+                      {formatHostNames(summaryHosts)}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {showGuestSummary && (
+                <div className='flex items-center gap-3'>
+                  {summaryGuests.some((guest) => guest.user_details) ? (
+                    <div className='flex shrink-0 -space-x-2'>
+                      {summaryGuests.map((guest) => (
+                        <UserAvatar
+                          key={guest.id}
+                          user={{
+                            name: guest.user_details?.name,
+                            username: guest.user_details?.username,
+                            image: guest.user_details?.image,
+                          }}
+                          size='sm'
+                          className='rounded-full ring-2 ring-white dark:ring-neutral-900'
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-50 dark:bg-neutral-800'>
+                      <Users className='h-4 w-4 text-gray-500 dark:text-neutral-400' />
+                    </div>
+                  )}
+                  <p className='text-sm text-gray-600 dark:text-neutral-400'>
+                    <span className='font-semibold text-gray-900 dark:text-neutral-100'>
+                      {goingGuests.length}
+                    </span>{' '}
+                    going
+                  </p>
+                </div>
+              )}
+
+              <div
+                className={cn(
+                  'grid gap-2',
+                  isOwnerOrCohost ? 'grid-cols-1' : 'grid-cols-2',
+                  (summaryHosts.length > 0 || showGuestSummary) &&
+                    'border-t border-gray-100 pt-4 dark:border-neutral-800'
+                )}
+              >
+                <button type='button' onClick={handleShare} className={QUICK_ACTION_CLASS}>
+                  <Share className='h-4 w-4' aria-hidden='true' />
+                  Share
+                </button>
+                {!isOwnerOrCohost && (
+                  <button
+                    type='button'
+                    onClick={() => setShowSaveSheet(true)}
+                    className={QUICK_ACTION_CLASS}
+                  >
+                    <Bookmark className='h-4 w-4' aria-hidden='true' />
+                    Save
+                  </button>
+                )}
+              </div>
+            </div>
+          </aside>
+
+          {/* Right column — hero, section nav, sections */}
+          <div className='min-w-0 pt-6 lg:pt-0'>
+            <EventInfo
+              event={event}
+              currentUserId={user?.id || ''}
+              eventData={eventData}
+              hosts={hostsData}
+            />
+
+            <nav
+              aria-label='Event sections'
+              className='sticky top-0 z-20 -mx-4 mb-6 mt-8 border-b border-gray-100 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900 md:-mx-8 md:px-8 lg:mx-0 lg:px-0'
+            >
               <AnimatedTabs
                 expanded
-                className='mx-auto'
+                className='mx-auto lg:mx-0'
                 tabs={[
                   { title: 'Details', icon: Info, onClick: () => handleTabChange('details') },
                   {
@@ -645,38 +745,48 @@ export default function EventDetailPageClient() {
                 ]}
                 selected={sectionIds.indexOf(activeTab as (typeof sectionIds)[number])}
               />
+            </nav>
 
-              <div className='space-y-6 px-4'>
-                <section
-                  id='event-section-details'
-                  ref={(element) => {
-                    detailsSectionRef.current = element;
-                  }}
-                  className='scroll-mt-24 space-y-6'
-                >
-                  {renderDetailsTab()}
-                </section>
+            <div className='space-y-10'>
+              <section
+                id='event-section-details'
+                ref={(element) => {
+                  detailsSectionRef.current = element;
+                }}
+                className='scroll-mt-24 space-y-8'
+              >
+                {renderDetailsTab()}
+              </section>
 
-                <section
-                  id='event-section-comments'
-                  ref={(element) => {
-                    commentsSectionRef.current = element;
-                  }}
-                  className='scroll-mt-24'
-                >
-                  {renderCommentsTab()}
-                </section>
+              <EventSection
+                id='event-section-comments'
+                ref={(element) => {
+                  commentsSectionRef.current = element;
+                }}
+                title='Comments'
+              >
+                <EventComments eventId={event.id} isEventHost={isOwnerOrCohost} />
+              </EventSection>
 
-                <section
-                  id='event-section-gallery'
-                  ref={(element) => {
-                    gallerySectionRef.current = element;
+              <EventSection
+                id='event-section-gallery'
+                ref={(element) => {
+                  gallerySectionRef.current = element;
+                }}
+                title='Photos'
+                variant='plain'
+              >
+                <EventGallery
+                  event={event}
+                  galleryItems={galleryData}
+                  currentUserId={user?.id || ''}
+                  isEventHost={isOwnerOrCohost}
+                  onImageClick={(index) => {
+                    setLightboxSource('gallery');
+                    setSelectedImageIndex(index);
                   }}
-                  className='scroll-mt-24'
-                >
-                  {renderGalleryTab()}
-                </section>
-              </div>
+                />
+              </EventSection>
             </div>
           </div>
         </div>

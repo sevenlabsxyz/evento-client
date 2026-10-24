@@ -78,7 +78,7 @@ export default function GalleryItem({
 
   return (
     <div
-      className='group relative aspect-square cursor-pointer overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-950'
+      className='group relative aspect-square cursor-pointer overflow-hidden rounded-xl bg-gray-100 ring-1 ring-inset ring-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:bg-neutral-800 dark:ring-white/5 dark:focus-visible:ring-offset-neutral-900'
       onClick={onImageClick}
       onKeyDown={handleKeyDown}
       onMouseEnter={() => setShowControls(true)}
@@ -94,7 +94,7 @@ export default function GalleryItem({
         <img
           src={displayUrl}
           alt={`Gallery image by ${item.user_details?.username || 'user'}`}
-          className={`h-full w-full object-cover transition-opacity ${
+          className={`h-full w-full object-cover transition-[opacity,transform] duration-300 motion-safe:group-hover:scale-[1.03] ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           onLoad={() => setIsLoaded(true)}
@@ -104,8 +104,8 @@ export default function GalleryItem({
           src={displayUrl}
           alt={`Gallery image by ${item.user_details?.username || 'user'}`}
           fill
-          sizes='(max-width: 768px) 33vw, 20vw'
-          className={`object-cover transition-opacity ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+          sizes='(max-width: 1024px) 50vw, 25vw'
+          className={`object-cover transition-[opacity,transform] duration-300 motion-safe:group-hover:scale-[1.03] ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => setIsLoaded(true)}
         />
       )}
@@ -113,23 +113,25 @@ export default function GalleryItem({
       {/* Loading state */}
       {!isLoaded && (
         <div className='absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-neutral-800'>
-          <div className='h-8 w-8 animate-spin rounded-full border-t-2 border-solid border-red-500'></div>
+          <div className='h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-red-500 dark:border-neutral-700 dark:border-t-red-400'></div>
         </div>
       )}
 
       {/* Controls overlay - show on hover/tap */}
-      <div
-        className={`absolute inset-0 bg-black bg-opacity-0 transition-opacity duration-200 ${
-          showControls ? 'bg-opacity-30' : 'group-hover:bg-opacity-30'
-        }`}
-      >
+      <div className='absolute inset-0'>
+        <div
+          aria-hidden='true'
+          className={`pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-black/0 transition-opacity motion-safe:duration-200 ${
+            showControls ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          }`}
+        />
         {/* Like button */}
         <button
           type='button'
           onClick={handleLikeToggle}
           disabled={likesLoading}
           aria-label={`${hasLiked ? 'Unlike' : 'Like'} photo`}
-          className={`absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-black bg-opacity-50 px-2.5 py-1.5 text-white transition-all ${
+          className={`absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1.5 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 ${
             showControls || hasLiked ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
           }`}
         >
@@ -151,7 +153,7 @@ export default function GalleryItem({
                 <button
                   type='button'
                   aria-label='Photo actions'
-                  className='rounded-full bg-black bg-opacity-50 p-1.5 text-white dark:bg-neutral-100 dark:text-neutral-900'
+                  className='rounded-full bg-black/50 p-1.5 text-white backdrop-blur-sm hover:bg-black/70'
                   onClick={(event) => event.stopPropagation()}
                 >
                   <MoreHorizontal className='h-4 w-4' />

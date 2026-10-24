@@ -64,4 +64,15 @@ describe('EventGallery', () => {
     fireEvent.click(renderedItem);
     expect(onImageClick).toHaveBeenCalledWith(0);
   });
+
+  it('shows the Add Photos header action and a compact empty state when there are no photos', () => {
+    const event = { id: 'event-1', title: 'Event' } as unknown as Parameters<
+      typeof EventGallery
+    >[0]['event'];
+    render(<EventGallery event={event} galleryItems={[]} />);
+
+    expect(screen.getByRole('button', { name: /Add Photos/ })).toBeInTheDocument();
+    expect(screen.getByText('No photos yet')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Share Album/ })).not.toBeInTheDocument();
+  });
 });

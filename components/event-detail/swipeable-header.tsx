@@ -60,7 +60,7 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
   };
 
   return (
-    <div className='relative mx-auto aspect-square w-[94%] overflow-hidden rounded-3xl shadow-md'>
+    <div className='relative aspect-square w-full overflow-hidden rounded-3xl border border-gray-200 bg-gray-100 shadow-sm dark:border-neutral-800 dark:bg-neutral-800 dark:shadow-none'>
       {/* Image Container */}
       <div
         ref={containerRef}
@@ -74,17 +74,21 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
           src={images[currentIndex]}
           alt={`${event.title} - Image ${currentIndex + 1}`}
           fill
-          className='rounded-3xl border border-gray-200 object-cover transition-transform duration-300 ease-out dark:border-neutral-800'
+          sizes='(min-width: 1024px) 400px, (min-width: 768px) 672px, 100vw'
+          className='object-cover transition-transform duration-300 ease-out'
           priority
           unoptimized={images[currentIndex]?.endsWith('.gif')} // Optimizing GIFs may impact performance
         />
 
         {/* Dot Indicators */}
         {hasMultipleImages && (
-          <div className='absolute bottom-16 left-1/2 flex -translate-x-1/2 transform gap-2'>
+          <div className='absolute bottom-4 left-1/2 flex -translate-x-1/2 transform gap-2 rounded-full bg-black/30 px-2.5 py-1.5 backdrop-blur-sm'>
             {images.map((_, index) => (
               <button
                 key={index}
+                type='button'
+                aria-label={`Show image ${index + 1}`}
+                aria-current={index === currentIndex ? 'true' : undefined}
                 onClick={(e) => {
                   e.stopPropagation();
                   setCurrentIndex(index);

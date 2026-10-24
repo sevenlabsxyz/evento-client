@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { EventCompactItem } from '../event-compact-item';
 import { Button } from '../ui/button';
+import { EventSection } from './event-section';
 import { SubEventCalendarModal } from './sub-event-calendar-modal';
 
 const COLLAPSED_SUB_EVENT_COUNT = 4;
@@ -48,12 +49,11 @@ export default function EventSubEvents({
   if (subEventsError) return null;
 
   return (
-    <div className='space-y-4 border-t border-gray-100 pt-6 dark:border-neutral-800'>
-      <div className='mb-4 flex items-center justify-between gap-2'>
-        <h3 className='min-w-0 text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-          Sub Events
-        </h3>
-        <div className='flex shrink-0 items-center gap-2'>
+    <EventSection
+      title='Sub-events'
+      variant='plain'
+      action={
+        <>
           {hasCalendar && !subEventsLoading && (
             <Button type='button' variant='outline' size='sm' onClick={() => setCalendarOpen(true)}>
               <CalendarDays className='h-4 w-4' />
@@ -71,13 +71,17 @@ export default function EventSubEvents({
               <PlusIcon className='h-4 w-4' />
             </Button>
           )}
-        </div>
-      </div>
+        </>
+      }
+    >
       <div className='space-y-4'>
         {subEventsLoading ? (
           <div className='space-y-3'>
             {Array.from({ length: 2 }).map((_, idx) => (
-              <div key={idx} className='rounded-lg border p-4'>
+              <div
+                key={idx}
+                className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'
+              >
                 <div className='flex items-start gap-3'>
                   <div className='h-12 w-12 animate-pulse rounded-lg bg-gray-200 dark:bg-neutral-700' />
                   <div className='flex-1'>
@@ -108,7 +112,7 @@ export default function EventSubEvents({
               <Button
                 type='button'
                 variant='outline'
-                className='h-12 w-full bg-gray-50 dark:bg-neutral-950'
+                className='h-10 w-full rounded-xl bg-gray-50 dark:bg-neutral-800'
                 onClick={() => setIsExpanded((expanded) => !expanded)}
               >
                 {isExpanded ? 'Show less' : 'View all'}
@@ -116,8 +120,8 @@ export default function EventSubEvents({
             )}
           </div>
         ) : (
-          <div className='rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center dark:border-neutral-700 dark:bg-neutral-950'>
-            <p className='text-sm text-gray-500 dark:text-neutral-400'>No sub events found.</p>
+          <div className='rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-6 text-center dark:border-neutral-800 dark:bg-neutral-800/40'>
+            <p className='text-sm text-gray-500 dark:text-neutral-500'>No sub-events yet.</p>
           </div>
         )}
       </div>
@@ -129,6 +133,6 @@ export default function EventSubEvents({
           onSelectEvent={handleCalendarEventSelect}
         />
       )}
-    </div>
+    </EventSection>
   );
 }

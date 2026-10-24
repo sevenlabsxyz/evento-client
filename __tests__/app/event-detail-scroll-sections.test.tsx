@@ -1,3 +1,4 @@
+import type { EventRSVP } from '@/lib/types/api';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import EventDetailPageClient from '@/app/e/[id]/page-client';
@@ -11,6 +12,9 @@ const mockClearRoute = jest.fn();
 const mockDeleteGalleryItem = jest.fn();
 let mockGalleryData: any[] = [];
 let mockHostsData: any[] = [];
+let mockVisibilitySettings: Record<string, boolean> | null = null;
+let mockUserRsvpStatus: EventRSVP['status'] | null = 'yes';
+let mockEventRsvps: Array<Pick<EventRSVP, 'id' | 'status' | 'user_details'>> = [];
 
 const detailsScrollIntoView = jest.fn();
 const commentsScrollIntoView = jest.fn();
@@ -34,7 +38,7 @@ jest.mock('@/lib/hooks/use-event-details', () => ({
       id: 'event-123',
       creator_user_id: 'creator-1',
       password_protected: false,
-      visibility_settings: null,
+      visibility_settings: mockVisibilitySettings,
       spotify_url: null,
       wavlake_url: null,
       type: 'rsvp',
@@ -51,6 +55,10 @@ jest.mock('@/lib/hooks/use-event-gallery', () => ({
 
 jest.mock('@/lib/hooks/use-event-hosts', () => ({
   useEventHosts: () => ({ data: mockHostsData, isLoading: false }),
+}));
+
+jest.mock('@/lib/hooks/use-event-rsvps', () => ({
+  useEventRSVPs: () => ({ data: mockEventRsvps }),
 }));
 
 jest.mock('@/lib/hooks/use-delete-gallery-item', () => ({
@@ -79,7 +87,9 @@ jest.mock('@/lib/hooks/use-upsert-rsvp', () => ({
 
 jest.mock('@/lib/hooks/use-user-rsvp', () => ({
   useUserRSVP: () => ({
-    data: { status: 'yes', rsvp: { id: 'rsvp-1' } },
+    data: mockUserRsvpStatus
+      ? { status: mockUserRsvpStatus, rsvp: { id: 'rsvp-1' } }
+      : { status: null, rsvp: null },
     isLoading: false,
     isFetching: false,
   }),
@@ -275,6 +285,9 @@ describe('EventDetailPageClient section scrolling tabs', () => {
     mockSearchParams.delete('tab');
     mockGalleryData = [];
     mockHostsData = [];
+    mockVisibilitySettings = null;
+    mockUserRsvpStatus = 'yes';
+    mockEventRsvps = [];
     mockDeleteGalleryItem.mockResolvedValue({
       galleryItemId: 'photo-1',
       eventId: 'event-123',
@@ -296,7 +309,39 @@ describe('EventDetailPageClient section scrolling tabs', () => {
     expect(screen.getByTestId('comments-section-content')).toBeInTheDocument();
     expect(screen.getByTestId('gallery-section-content')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Comments' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Gallery' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Photos' })).toBeInTheDocument();
+  });
+
+  it('tells RSVP-event viewers that some details are hidden until they RSVP', () => {
+    mockUserRsvpStatus = null;
+    mockVisibilitySettings = { hide_location_for_unapproved: true };
+
+    render(<EventDetailPageClient />);
+
+    expect(screen.getByText('Some event details are hidden until you RSVP.')).toBeInTheDocument();
+  });
+
+  it('hides the guest summary when the guest list is hidden for unapproved viewers', () => {
+    mockUserRsvpStatus = null;
+    mockVisibilitySettings = { hide_guest_list_for_unapproved: true };
+    mockEventRsvps = [{ id: 'rsvp-2', status: 'yes', user_details: undefined }];
+
+    render(<EventDetailPageClient />);
+
+    expect(screen.queryByText('going')).not.toBeInTheDocument();
+  });
+
+  it('shows the going count and quick actions in the desktop summary card', () => {
+    mockEventRsvps = [
+      { id: 'rsvp-2', status: 'yes', user_details: undefined },
+      { id: 'rsvp-3', status: 'no', user_details: undefined },
+    ];
+
+    render(<EventDetailPageClient />);
+
+    expect(screen.getByText('going')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
   });
 
   it('passes cohost moderation through the main comment, gallery grid, and lightbox paths', () => {

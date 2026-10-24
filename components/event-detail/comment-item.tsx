@@ -173,7 +173,7 @@ export default function CommentItem({
       <div
         className={cn(
           'group',
-          isReply ? 'ml-8' : '',
+          isReply ? 'border-l border-gray-200 pl-4 dark:border-neutral-800' : '',
           comment.optimistic ? 'pointer-events-none cursor-not-allowed opacity-70' : ''
         )}
       >
@@ -181,7 +181,7 @@ export default function CommentItem({
           <div className='flex-shrink-0'>
             <UserAvatar
               user={comment.user_details}
-              size='base'
+              size={isReply ? 'sm' : 'base'}
               onAvatarClick={useCallback(
                 () => setSelectedUser(comment.user_details),
                 [comment.user_details]
@@ -189,16 +189,27 @@ export default function CommentItem({
             />
           </div>
 
-          <div className='flex-grow space-y-1'>
+          <div className='min-w-0 flex-grow space-y-1'>
             {/* Comment header */}
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center'>
-                <span className='text-sm font-semibold'>@{comment.user_details.username}</span>
+            <div className='flex items-start justify-between gap-2'>
+              <div className='flex min-w-0 flex-wrap items-baseline gap-x-1.5'>
+                {comment.user_details.name && (
+                  <span className='truncate text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+                    {comment.user_details.name}
+                  </span>
+                )}
                 <span
-                  className='ml-2 text-xs text-gray-500 dark:text-neutral-400'
-                  title={formattedDate}
+                  className={cn(
+                    'truncate text-sm',
+                    comment.user_details.name
+                      ? 'text-gray-500 dark:text-neutral-500'
+                      : 'font-semibold text-gray-900 dark:text-neutral-100'
+                  )}
                 >
-                  {timeAgo}
+                  @{comment.user_details.username}
+                </span>
+                <span className='text-xs text-gray-500 dark:text-neutral-500' title={formattedDate}>
+                  · {timeAgo}
                 </span>
               </div>
 
@@ -217,7 +228,7 @@ export default function CommentItem({
                   ref={textareaRef}
                   value={editText}
                   onChange={(e) => setEditText(e.target.value)}
-                  className='min-h-[60px] w-full resize-none rounded-md border border-gray-200 p-2 text-sm dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500'
+                  className='min-h-[60px] w-full resize-none rounded-xl border border-gray-200 bg-white p-3 text-sm text-gray-900 outline-none focus:border-gray-300 focus:ring-2 focus:ring-red-500/20 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-700'
                 />
                 <div className='flex justify-end gap-2'>
                   <Button
@@ -236,12 +247,14 @@ export default function CommentItem({
                 </div>
               </div>
             ) : (
-              <p className='text-base text-gray-800 dark:text-neutral-200'>{comment.message}</p>
+              <p className='whitespace-pre-wrap break-words text-sm leading-relaxed text-gray-700 dark:text-neutral-300'>
+                {comment.message}
+              </p>
             )}
 
             {/* Comment actions */}
             {!isEditing && (
-              <div className='flex items-center space-x-2 pt-2'>
+              <div className='flex items-center gap-1.5 pt-1.5'>
                 <CommentReactionButton
                   icon={Heart}
                   count={reactions.like}
@@ -268,26 +281,28 @@ export default function CommentItem({
 
             {/* Inline Reply UI */}
             {isReplying && !isEditing && (
-              <div className='!mt-5 space-y-2'>
-                <div className='flex gap-3'>
-                  <div className='flex-shrink-0'>
+              <div className='!mt-4 space-y-2'>
+                <div className='flex items-start gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-2 pl-3 transition-colors focus-within:border-gray-300 focus-within:bg-white dark:border-neutral-800 dark:bg-neutral-800 dark:focus-within:border-neutral-700 dark:focus-within:bg-neutral-900'>
+                  <div className='flex-shrink-0 pt-0.5'>
                     <ReplyAvatar currentUser={currentUser} onAvatarClick={setSelectedUser} />
                   </div>
-                  <div className='relative flex flex-grow'>
+                  <div className='relative flex min-w-0 flex-grow items-center'>
                     <textarea
                       ref={replyTextareaRef}
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
                       onKeyDown={handleReplyKeyDown}
                       placeholder={`Reply to @${comment.user_details.username}`}
-                      className='w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500'
+                      className='min-h-[36px] w-full resize-none bg-transparent px-1 py-2 pr-10 text-sm text-gray-900 outline-none placeholder:text-gray-400 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                       rows={1}
                     />
                     <button
+                      type='button'
+                      aria-label='Post reply'
                       className={cn(
-                        'absolute bottom-0 right-2 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors dark:text-neutral-500',
+                        'absolute bottom-0 right-0 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full transition-colors',
                         replyText.trim()
-                          ? 'text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-400'
+                          ? 'bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600'
                           : 'cursor-default text-gray-300 dark:text-neutral-600'
                       )}
                       onClick={handleSubmitReply}
@@ -302,7 +317,7 @@ export default function CommentItem({
                     variant='ghost'
                     size='sm'
                     onClick={() => setActiveReplyId(null)}
-                    className='h-7 px-3 py-1 text-xs'
+                    className='h-7 rounded-full px-3 py-1 text-xs text-gray-600 dark:text-neutral-400'
                   >
                     Cancel
                   </Button>
@@ -314,10 +329,11 @@ export default function CommentItem({
 
         {/* Replies */}
         {comment.replies && comment.replies.length > 0 && (
-          <div className='mt-3'>
+          <div className={cn('mt-3', isReply ? '' : 'ml-[52px]')}>
             {comment.replies.length > 0 && (
               <button
-                className='mb-2 ml-11 text-xs font-medium text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
+                type='button'
+                className='mb-2 text-xs font-medium text-gray-500 hover:text-gray-900 dark:text-neutral-500 dark:hover:text-neutral-200'
                 onClick={() => setShowReplies(!showReplies)}
               >
                 {showReplies

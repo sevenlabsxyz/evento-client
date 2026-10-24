@@ -8,6 +8,7 @@ import { getContributionMethods } from '@/lib/utils/event-transform';
 import { ChevronRight } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 import ContributionPaymentSheet from './contribution-payment-sheet';
+import { EventSection } from './event-section';
 
 interface EventContributionsProps {
   eventData: ApiEvent;
@@ -55,18 +56,13 @@ export default function EventContributions({ eventData, eventId }: EventContribu
 
   return (
     <>
-      <div className=''>
-        <div className='mb-3 flex items-center gap-2'>
-          <span className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-            Contributions
-          </span>
-        </div>
-
+      <EventSection title='Contributions' variant='plain'>
         <button
+          type='button'
           onClick={() => setShowPaymentSheet(true)}
-          className='flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
+          className='flex w-full items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-white p-4 transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800'
         >
-          <div className='flex items-center gap-3'>
+          <div className='flex min-w-0 items-center gap-3'>
             <div className='flex -space-x-2'>
               {contributionMethods.slice(0, 3).map((method) => {
                 const config = PAYMENT_METHOD_CONFIG[method.type];
@@ -74,26 +70,26 @@ export default function EventContributions({ eventData, eventId }: EventContribu
                 return (
                   <div
                     key={method.type}
-                    className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-white dark:border-neutral-950 ${config.bgColor}`}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-white dark:border-neutral-900 ${config.bgColor}`}
                   >
                     {config.icon}
                   </div>
                 );
               })}
             </div>
-            <div className='text-left'>
-              <p className='font-medium text-gray-900 dark:text-neutral-100'>
+            <div className='min-w-0 text-left'>
+              <p className='truncate text-sm font-semibold text-gray-900 dark:text-neutral-100'>
                 {cost > 0 ? `Suggested: ${formatUSD(cost)}` : 'Contributions welcome'}
               </p>
-              <p className='text-sm text-gray-500 dark:text-neutral-400'>
+              <p className='text-sm text-gray-500 dark:text-neutral-500'>
                 {contributionMethods.length} payment method
                 {contributionMethods.length > 1 ? 's' : ''} available
               </p>
             </div>
           </div>
-          <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
+          <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 dark:text-neutral-500' />
         </button>
-      </div>
+      </EventSection>
 
       <ContributionPaymentSheet
         isOpen={showPaymentSheet}

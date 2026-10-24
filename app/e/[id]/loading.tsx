@@ -1,69 +1,71 @@
+import { Skeleton } from '@/components/ui/skeleton';
+
+const CARD_CLASS =
+  'rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900';
+
 export default function Loading() {
   return (
-    <div className='min-h-screen bg-gray-50 dark:bg-neutral-950'>
-      {/* Header skeleton */}
-      <div className='sticky top-0 z-50 border-b border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
-        <div className='flex items-center justify-between p-4'>
-          <div className='h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-neutral-700' />
-          <div className='flex items-center gap-2'>
-            <div className='h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-neutral-700' />
-            <div className='h-10 w-10 animate-pulse rounded-full bg-gray-200 dark:bg-neutral-700' />
-          </div>
-        </div>
-      </div>
-
-      <div className='mx-auto max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-        {/* Cover image skeleton */}
-        <div className='h-64 w-full animate-pulse bg-gray-200 dark:bg-neutral-700' />
-
-        <div className='space-y-6 px-4 pb-20'>
-          {/* Title skeleton */}
-          <div className='space-y-2 pt-4'>
-            <div className='h-8 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
-            <div className='h-6 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
-          </div>
-
-          {/* Date and location skeleton */}
-          <div className='space-y-3'>
-            <div className='h-6 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
-            <div className='h-6 w-2/3 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
-            <div className='h-6 w-1/3 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
-          </div>
-
-          {/* Action buttons skeleton */}
-          <div className='grid grid-cols-4 gap-2'>
-            <div className='h-16 animate-pulse rounded-xl bg-gray-200 dark:bg-neutral-700' />
-            <div className='h-16 animate-pulse rounded-xl bg-gray-200 dark:bg-neutral-700' />
-            <div className='h-16 animate-pulse rounded-xl bg-gray-200 dark:bg-neutral-700' />
-            <div className='h-16 animate-pulse rounded-xl bg-gray-200 dark:bg-neutral-700' />
-          </div>
-
-          {/* Location section skeleton */}
-          <div className='space-y-3'>
-            <div className='h-6 w-1/4 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
-            <div className='h-32 animate-pulse rounded-xl bg-gray-200 dark:bg-neutral-700' />
-          </div>
-
-          {/* Host section skeleton */}
-          <div className='space-y-3'>
-            <div className='h-6 w-1/4 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
-            <div className='flex items-center gap-3'>
-              <div className='h-12 w-12 animate-pulse rounded-full bg-gray-200 dark:bg-neutral-700' />
-              <div className='flex-1 space-y-1'>
-                <div className='h-5 w-1/3 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
-                <div className='h-4 w-1/2 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
+    <div className='min-h-full w-full bg-white dark:bg-neutral-900'>
+      <div className='mx-auto w-full max-w-2xl px-4 pb-24 pt-4 md:px-8 md:pt-8 lg:max-w-6xl'>
+        <div className='lg:grid lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:gap-10'>
+          {/* Left column: cover + summary */}
+          <div className='space-y-4 lg:sticky lg:top-6 lg:self-start'>
+            <Skeleton className='aspect-square w-full rounded-3xl' />
+            <div className={`${CARD_CLASS} hidden space-y-4 lg:block`}>
+              <div className='flex items-center gap-3'>
+                <Skeleton className='h-8 w-8 rounded-full' />
+                <div className='flex-1 space-y-1.5'>
+                  <Skeleton className='h-3 w-16' />
+                  <Skeleton className='h-4 w-32' />
+                </div>
+              </div>
+              <Skeleton className='h-4 w-24' />
+              <div className='grid grid-cols-2 gap-2'>
+                <Skeleton className='h-10 rounded-full' />
+                <Skeleton className='h-10 rounded-full' />
               </div>
             </div>
           </div>
 
-          {/* Content skeleton */}
-          <div className='space-y-3'>
-            <div className='h-6 w-1/3 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
-            <div className='space-y-2'>
-              <div className='h-4 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
-              <div className='h-4 w-5/6 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
-              <div className='h-4 w-4/5 animate-pulse rounded bg-gray-200 dark:bg-neutral-700' />
+          {/* Right column: hero, nav, sections */}
+          <div className='min-w-0 space-y-6 pt-6 lg:pt-0'>
+            <div className='space-y-4'>
+              <div className='flex gap-1.5'>
+                <Skeleton className='h-5 w-16 rounded-full' />
+                <Skeleton className='h-5 w-12 rounded-full' />
+              </div>
+              <Skeleton className='h-9 w-4/5 md:h-10' />
             </div>
+
+            <div className='space-y-3'>
+              {Array.from({ length: 2 }, (_, index) => (
+                <div key={index} className='flex items-center gap-3'>
+                  <Skeleton className='h-12 w-12 shrink-0 rounded-xl' />
+                  <div className='flex-1 space-y-1.5'>
+                    <Skeleton className='h-4 w-1/2' />
+                    <Skeleton className='h-3 w-1/3' />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className={`${CARD_CLASS} space-y-3`}>
+              <Skeleton className='h-4 w-32' />
+              <Skeleton className='h-12 w-full rounded-full' />
+            </div>
+
+            <Skeleton className='mx-auto h-11 w-72 rounded-full lg:mx-0' />
+
+            {Array.from({ length: 2 }, (_, index) => (
+              <div key={index} className='space-y-3'>
+                <Skeleton className='h-5 w-28' />
+                <div className={`${CARD_CLASS} space-y-2`}>
+                  <Skeleton className='h-4 w-full' />
+                  <Skeleton className='h-4 w-5/6' />
+                  <Skeleton className='h-4 w-2/3' />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

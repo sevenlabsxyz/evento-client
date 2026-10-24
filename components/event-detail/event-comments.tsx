@@ -1,13 +1,6 @@
 'use client';
 
 import CommentItem from '@/components/event-detail/comment-item';
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAddComment } from '@/lib/hooks/use-add-comment';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -87,25 +80,27 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
 
   if (error) {
     return (
-      <div className='flex flex-col items-center justify-center py-12'>
-        <MessageCircle className='mb-4 h-12 w-12 text-gray-300 dark:text-neutral-600' />
-        <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
-          Could not load comments
-        </h3>
-        <p className='text-center text-sm text-gray-500 dark:text-neutral-400'>
-          There was a problem loading comments. Please try again later.
-        </p>
+      <div className='flex items-center gap-3 rounded-xl bg-gray-50 px-4 py-3 dark:bg-neutral-800'>
+        <MessageCircle className='h-5 w-5 shrink-0 text-gray-400 dark:text-neutral-500' />
+        <div className='min-w-0'>
+          <h3 className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
+            Could not load comments
+          </h3>
+          <p className='text-sm text-gray-500 dark:text-neutral-500'>
+            There was a problem loading comments. Please try again later.
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
     <>
-      <div className='py-4'>
+      <div>
         {/* Comment input */}
-        <div className='mb-8'>
-          <div className='flex gap-3'>
-            <div className='flex-shrink-0'>
+        <div className='mb-5'>
+          <div className='flex items-start gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-2 pl-3 transition-colors focus-within:border-gray-300 focus-within:bg-white dark:border-neutral-800 dark:bg-neutral-800 dark:focus-within:border-neutral-700 dark:focus-within:bg-neutral-900'>
+            <div className='flex-shrink-0 pt-0.5'>
               <UserAvatar
                 user={{
                   name: user?.name,
@@ -117,7 +112,7 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
                 onAvatarClick={() => setSelectedUser(user)}
               />
             </div>
-            <div className='relative flex flex-grow'>
+            <div className='relative flex min-w-0 flex-grow items-center'>
               <textarea
                 name='comment'
                 ref={textareaRef}
@@ -125,26 +120,28 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
                 onChange={(e) => setCommentText(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder='Add a comment'
-                className='min-h-[40px] w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500'
+                className='min-h-[36px] w-full resize-none bg-transparent px-1 py-2 pr-10 text-sm text-gray-900 outline-none placeholder:text-gray-400 disabled:cursor-not-allowed dark:text-neutral-100 dark:placeholder:text-neutral-500'
                 disabled={!user}
                 rows={1}
               />
               <button
+                type='button'
+                aria-label='Post comment'
                 className={cn(
-                  'absolute bottom-0 right-2 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors dark:text-neutral-500',
+                  'absolute bottom-0 right-0 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full transition-colors',
                   commentText.trim()
-                    ? 'text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-400'
+                    ? 'bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600'
                     : 'cursor-default text-gray-300 dark:text-neutral-600'
                 )}
                 onClick={handleAddComment}
                 disabled={!commentText.trim() || !user}
               >
-                <SendHorizontal className='h-5 w-5' />
+                <SendHorizontal className='h-4 w-4' />
               </button>
             </div>
           </div>
           {!user && (
-            <p className='mt-2 text-xs text-gray-500 dark:text-neutral-400'>
+            <p className='mt-2 pl-1 text-xs text-gray-500 dark:text-neutral-500'>
               Please sign in to leave a comment.
             </p>
           )}
@@ -152,7 +149,7 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
 
         {/* Comments list */}
         {comments.length > 0 ? (
-          <div className='mt-6 space-y-4'>
+          <div className='space-y-5'>
             {comments.map((comment) => (
               <CommentItem
                 key={comment.id}
@@ -166,15 +163,15 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
             ))}
           </div>
         ) : (
-          <Empty className='py-8'>
-            <EmptyHeader>
-              <EmptyMedia variant='default' className='text-gray-300 dark:text-neutral-600'>
-                <MessageCircle className='h-12 w-12' />
-              </EmptyMedia>
-              <EmptyTitle className='text-lg sm:text-lg'>No Comments Yet</EmptyTitle>
-              <EmptyDescription>Be the first to leave a comment about this event.</EmptyDescription>
-            </EmptyHeader>
-          </Empty>
+          <div className='flex items-center gap-3 rounded-xl bg-gray-50 px-4 py-3 dark:bg-neutral-800'>
+            <MessageCircle className='h-5 w-5 shrink-0 text-gray-400 dark:text-neutral-500' />
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>
+              <span className='font-medium text-gray-900 dark:text-neutral-100'>
+                No comments yet.
+              </span>{' '}
+              Be the first to leave a comment about this event.
+            </p>
+          </div>
         )}
       </div>
 

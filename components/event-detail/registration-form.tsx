@@ -336,10 +336,10 @@ export function RegistrationForm({
                 <label
                   key={option}
                   htmlFor={optionId}
-                  className='flex cursor-pointer items-center gap-3 rounded-lg border p-3 hover:bg-gray-50 dark:hover:bg-neutral-950'
+                  className='flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800'
                 >
                   <RadioGroupItem id={optionId} value={option} />
-                  <span className='text-sm'>{option}</span>
+                  <span className='text-sm text-gray-900 dark:text-neutral-100'>{option}</span>
                 </label>
               );
             })}
@@ -356,14 +356,14 @@ export function RegistrationForm({
                 <label
                   key={option}
                   htmlFor={optionId}
-                  className='flex cursor-pointer items-center gap-3 rounded-lg border p-3 hover:bg-gray-50 dark:hover:bg-neutral-950'
+                  className='flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-white p-3 transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800'
                 >
                   <Checkbox
                     id={optionId}
                     checked={selectedOptions.includes(option)}
                     onCheckedChange={() => toggleMultiSelectOption(question.id, option)}
                   />
-                  <span className='text-sm'>{option}</span>
+                  <span className='text-sm text-gray-900 dark:text-neutral-100'>{option}</span>
                 </label>
               );
             })}
@@ -375,7 +375,7 @@ export function RegistrationForm({
         return (
           <label
             htmlFor={`${question.id}-checkbox`}
-            className='flex cursor-pointer items-center gap-3'
+            className='flex cursor-pointer items-center gap-3 rounded-xl bg-gray-50 p-3 dark:bg-neutral-800'
           >
             <Checkbox
               id={`${question.id}-checkbox`}
@@ -477,7 +477,10 @@ export function RegistrationForm({
       <div className='space-y-4'>
         {/* Name field */}
         <div>
-          <label htmlFor='registration-name' className='mb-2 block text-sm font-medium'>
+          <label
+            htmlFor='registration-name'
+            className='mb-2 block text-sm font-medium text-gray-900 dark:text-neutral-100'
+          >
             Name <span className='text-red-500 dark:text-red-400'>*</span>
           </label>
           <Input
@@ -503,7 +506,10 @@ export function RegistrationForm({
 
         {/* Email field */}
         <div>
-          <label htmlFor='registration-email' className='mb-2 block text-sm font-medium'>
+          <label
+            htmlFor='registration-email'
+            className='mb-2 block text-sm font-medium text-gray-900 dark:text-neutral-100'
+          >
             Email <span className='text-red-500 dark:text-red-400'>*</span>
           </label>
           <Input
@@ -528,12 +534,12 @@ export function RegistrationForm({
             <p className='mt-1 text-sm text-red-500 dark:text-red-400'>{errors.email}</p>
           )}
           {user?.email && (
-            <p className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
+            <p className='mt-1 text-xs text-gray-500 dark:text-neutral-500'>
               Using your account email
             </p>
           )}
           {!isAuthenticated && (
-            <p className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
+            <p className='mt-1 text-xs text-gray-500 dark:text-neutral-500'>
               We&apos;ll send a verification code to this email
             </p>
           )}
@@ -542,7 +548,7 @@ export function RegistrationForm({
         {/* Custom questions */}
         {questions.map((question) => (
           <div key={question.id}>
-            <p className='mb-2 block text-sm font-medium'>
+            <p className='mb-2 block text-sm font-medium text-gray-900 dark:text-neutral-100'>
               {question.label}
               {question.is_required && <span className='text-red-500 dark:text-red-400'> *</span>}
             </p>
@@ -555,13 +561,18 @@ export function RegistrationForm({
       </div>
 
       {/* Action buttons */}
-      <div className='flex gap-3'>
-        <Button variant='outline' onClick={onCancel} className='flex-1' disabled={isSubmitting}>
+      <div className='flex gap-3 border-t border-gray-200 pt-4 dark:border-neutral-800'>
+        <Button
+          variant='outline'
+          onClick={onCancel}
+          className='h-11 flex-1 rounded-xl border-gray-200 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800'
+          disabled={isSubmitting}
+        >
           Cancel
         </Button>
         <Button
           onClick={handleSubmit}
-          className='flex-1 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:text-white dark:hover:bg-red-700'
+          className='h-11 flex-1 rounded-xl bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:text-white dark:hover:bg-red-600'
           disabled={isSubmitting}
         >
           {isSubmitting ? (

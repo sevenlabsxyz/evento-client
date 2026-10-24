@@ -4,6 +4,7 @@ import { EventDetail } from '@/lib/types/event';
 import { sanitizeRichText } from '@/lib/utils/sanitize';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
+import { EventSection } from './event-section';
 
 interface EventDescriptionProps {
   event: EventDetail;
@@ -45,18 +46,14 @@ export default function EventDescription({ event }: EventDescriptionProps) {
   if (!event.description || event.description === '<p></p>') return null;
 
   return (
-    <div className='border-t border-gray-100 py-6 dark:border-neutral-800'>
-      <h2 className='mb-4 text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-        About Event
-      </h2>
-
+    <EventSection title='About'>
       {/* Description with collapsible behavior */}
-      <div className='space-y-4 leading-relaxed text-gray-700 dark:text-neutral-300'>
+      <div className='space-y-4'>
         <div className='relative'>
           <div
             ref={contentRef}
             className={
-              'prose prose-gray max-w-none overflow-hidden break-words transition-[max-height] duration-300 ease-in-out' +
+              'prose prose-gray max-w-none overflow-hidden break-words text-[15px] leading-7 text-gray-700 transition-[max-height] duration-300 ease-in-out prose-headings:font-semibold prose-headings:text-gray-900 prose-p:my-3 prose-p:leading-7 prose-a:text-red-600 prose-strong:font-semibold dark:text-neutral-300 dark:prose-headings:text-neutral-100 dark:prose-a:text-red-400 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0' +
               (expanded ? '' : ' max-h-56')
             }
             style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
@@ -76,7 +73,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
               type='button'
               variant={'outline'}
               onClick={() => setExpanded(true)}
-              className='h-12 w-full bg-gray-50 dark:bg-neutral-950'
+              className='h-10 w-full rounded-xl bg-gray-50 dark:bg-neutral-800'
             >
               Read more
             </Button>
@@ -90,13 +87,13 @@ export default function EventDescription({ event }: EventDescriptionProps) {
               type='button'
               variant={'outline'}
               onClick={() => setExpanded(false)}
-              className='h-12 w-full bg-gray-50 dark:bg-neutral-950'
+              className='h-10 w-full rounded-xl bg-gray-50 dark:bg-neutral-800'
             >
               Show less
             </Button>
           </div>
         )}
       </div>
-    </div>
+    </EventSection>
   );
 }

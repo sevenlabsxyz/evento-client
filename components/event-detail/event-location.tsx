@@ -6,6 +6,7 @@ import { WeatherData } from '@/lib/types/weather';
 import { formatEventLocationAddress } from '@/lib/utils/location';
 import { ExternalLink, MapPin, Sun } from 'lucide-react';
 import { useState } from 'react';
+import { EventSection } from './event-section';
 import { LocationActionsSheet } from './location-actions-sheet';
 import WeatherDetailSheet from './weather-detail-sheet';
 
@@ -31,47 +32,50 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
 
   return (
     <>
-      <div className='border-t border-gray-100 py-6 dark:border-neutral-800'>
-        <h2 className='mb-4 text-lg font-semibold text-gray-900 dark:text-neutral-100'>Location</h2>
-
-        {/* Location Info */}
-        <div className='mb-4 flex items-start justify-between'>
-          <button
-            type='button'
-            className='flex-1 text-left'
-            onClick={() => !isTBDLocation && setShowMapOptions(true)}
-          >
-            <h3
-              className={`mb-1 font-semibold ${isTBDLocation ? 'text-gray-500 dark:text-neutral-400' : 'text-gray-900 dark:text-neutral-100'}`}
-            >
-              {event.location.name}
-            </h3>
-            {!isTBDLocation && (event.location.city || event.location.country) && (
-              <p className={`text-sm text-gray-600 dark:text-neutral-400`}>
-                {event.location.city}
-                {event.location.city && event.location.country && `, ${event.location.country}`}
-              </p>
-            )}
-          </button>
-
-          {/* Weather */}
-          {weather && (
+      <EventSection
+        title='Location'
+        action={
+          weather ? (
             <button
               onClick={() => setShowWeatherDetail(true)}
-              className='flex cursor-pointer items-center gap-2 rounded-lg p-1 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200'
+              className='inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-gray-700 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
               type='button'
             >
-              <Sun className='h-5 w-5' />
+              <Sun className='h-4 w-4 text-amber-500' />
               <span className='text-sm font-medium'>
                 {weather.temperature}°{weather.unit}
               </span>
             </button>
-          )}
-        </div>
+          ) : undefined
+        }
+      >
+        {/* Location Info */}
+        <button
+          type='button'
+          className='flex w-full items-start gap-3 text-left'
+          onClick={() => !isTBDLocation && setShowMapOptions(true)}
+        >
+          <span className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-50 dark:bg-neutral-800'>
+            <MapPin className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
+          </span>
+          <span className='min-w-0 flex-1'>
+            <span
+              className={`block truncate text-sm font-semibold ${isTBDLocation ? 'text-gray-500 dark:text-neutral-500' : 'text-gray-900 dark:text-neutral-100'}`}
+            >
+              {event.location.name}
+            </span>
+            {!isTBDLocation && (event.location.city || event.location.country) && (
+              <span className='block truncate text-sm text-gray-500 dark:text-neutral-500'>
+                {event.location.city}
+                {event.location.city && event.location.country && `, ${event.location.country}`}
+              </span>
+            )}
+          </span>
+        </button>
 
         {/* Google Maps Embed - Only show if not TBD */}
         {!isTBDLocation && (
-          <div className='relative h-48 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800'>
+          <div className='relative mt-4 h-48 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800'>
             <iframe
               width='100%'
               height='100%'
@@ -114,7 +118,7 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
             </button>
           </div>
         )}
-      </div>
+      </EventSection>
 
       {!isTBDLocation && (
         <LocationActionsSheet

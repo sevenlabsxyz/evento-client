@@ -1,24 +1,54 @@
 'use client';
 
-import { StatusBadge } from '@/components/ui/status-badge';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
-import { Event as ApiEvent } from '@/lib/types/api';
+import { Event as ApiEvent, EventBehaviorType } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
+import { cn } from '@/lib/utils';
 import { formatEventDateRangeFromParts } from '@/lib/utils/date';
 import { formatICSDate, formatICSDateFromParts } from '@/lib/utils/ics';
 import { formatEventLocationAddress, getEventLocationDisplayLines } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
 import { ChevronRight, Clock, Globe, Lock, MapPin, Star, XCircle } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { DateTimeActionsSheet } from './date-time-actions-sheet';
 import RsvpSheet from './event-rsvp-sheet';
 import { LocationActionsSheet } from './location-actions-sheet';
 import OwnerEventButtons from './owner-event-buttons';
 import { RegistrationStatus } from './registration-status';
+
+const EVENT_TYPE_LABELS: Record<EventBehaviorType, string> = {
+  rsvp: 'RSVP',
+  registration: 'Registration',
+  ticketed: 'Ticketed',
+};
+
+const NEUTRAL_CHIP_CLASS = 'bg-gray-100 text-gray-700 dark:bg-neutral-800 dark:text-neutral-300';
+
+type ActionStatusTone = 'positive' | 'pending' | 'negative' | 'neutral';
+
+const ACTION_STATUS_DOT_CLASS: Record<ActionStatusTone, string> = {
+  positive: 'bg-emerald-500 dark:bg-emerald-400',
+  pending: 'bg-amber-500 dark:bg-amber-400',
+  negative: 'bg-red-500 dark:bg-red-400',
+  neutral: 'bg-gray-400 dark:bg-neutral-500',
+};
+
+function HeroChip({ className, children }: { className: string; children: ReactNode }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium',
+        className
+      )}
+    >
+      {children}
+    </span>
+  );
+}
 
 interface EventInfoProps {
   event: EventDetail;
@@ -309,49 +339,123 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   const dateTimeSubtitle = `${startTime} - ${endTime}${event.timezone ? ` ${event.timezone}` : ''}`;
   const dateTimeText = [startDate?.fullDate, dateTimeSubtitle].filter(Boolean).join('\n');
 
-  const detailModuleBaseClassName =
-    'flex h-[2.7rem] w-[2.7rem] shrink-0 items-center justify-center rounded-full border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-950';
+  const isDraft = eventData?.status === 'draft';
+  const isCancelled = eventData?.status === 'cancelled' || eventData?.status === 'archived';
+  const typeLabel = eventData?.type ? EVENT_TYPE_LABELS[eventData.type] : null;
+
+  const viewerChip = isOwnerOrCohost
+    ? { label: 'Hosting', className: 'bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-400' }
+    : hasPendingRegistration
+      ? {
+          label: 'Pending approval',
+          className: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400',
+        }
+      : currentStatus === 'yes'
+        ? {
+            label: 'Going',
+            className:
+              'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400',
+          }
+        : null;
+
+  // One-line status above the action buttons. RSVP states are already spelled out by the
+  // RSVP button label, so only states the buttons don't convey get a line here.
+  const actionStatus: { text: string; tone: ActionStatusTone } | null = isOwnerOrCohost
+    ? { text: "You're hosting this event", tone: 'positive' }
+    : hasPendingRegistration
+      ? { text: 'Waiting for host approval', tone: 'pending' }
+      : hasDeniedRegistration
+        ? { text: 'Registration not approved', tone: 'negative' }
+        : !currentStatus && eventData?.type === 'registration'
+          ? { text: 'Registration required', tone: 'neutral' }
+          : !currentStatus && eventData?.type === 'ticketed'
+            ? { text: 'Ticketed event', tone: 'neutral' }
+            : null;
+
+  const capacityText =
+    !isOwnerOrCohost && shouldShowCapacityInfo && spotsRemaining !== null
+      ? isEventFull && isYesRsvp
+        ? 'No more spots left'
+        : `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`
+      : null;
+
+  const detailRowClassName =
+    'group -mx-2 flex w-[calc(100%+1rem)] items-center gap-3 rounded-2xl px-2 py-2 text-left transition-colors';
+  const detailRowInteractiveClassName =
+    'hover:bg-gray-50 focus-visible:bg-gray-50 focus-visible:outline-none dark:hover:bg-neutral-800/70 dark:focus-visible:bg-neutral-800/70';
+  const detailTileClassName =
+    'flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 dark:border-neutral-700 dark:bg-neutral-800';
+  const detailChevron = (
+    <ChevronRight
+      className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600 motion-safe:transition motion-safe:group-hover:translate-x-0.5 dark:text-neutral-500 dark:group-hover:text-neutral-300'
+      aria-hidden='true'
+    />
+  );
+  const primaryActionClassName =
+    'flex h-12 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold transition-colors';
 
   return (
     <>
-      <div className='space-y-6 py-6'>
+      <div className='space-y-6'>
         <div className='space-y-4'>
-          {eventData?.visibility && (
-            <div className='mb-2 flex items-center gap-2'>
-              <StatusBadge
-                status={eventData.visibility === 'public' ? 'success' : 'default'}
-                leftIcon={eventData.visibility === 'public' ? Globe : Lock}
-                leftLabel={eventData.visibility === 'public' ? 'Public' : 'Private'}
-              />
+          {(eventData?.visibility || typeLabel || viewerChip || isDraft || isCancelled) && (
+            <div className='flex flex-wrap items-center gap-1.5'>
+              {isCancelled && (
+                <HeroChip className='bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400'>
+                  Cancelled
+                </HeroChip>
+              )}
+              {isDraft && (
+                <HeroChip className='bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400'>
+                  Draft
+                </HeroChip>
+              )}
+              {eventData?.visibility && (
+                <HeroChip className={NEUTRAL_CHIP_CLASS}>
+                  {eventData.visibility === 'public' ? (
+                    <Globe className='h-3 w-3' aria-hidden='true' />
+                  ) : (
+                    <Lock className='h-3 w-3' aria-hidden='true' />
+                  )}
+                  {eventData.visibility === 'public' ? 'Public' : 'Private'}
+                </HeroChip>
+              )}
+              {typeLabel && <HeroChip className={NEUTRAL_CHIP_CLASS}>{typeLabel}</HeroChip>}
+              {viewerChip && (
+                <HeroChip className={viewerChip.className}>{viewerChip.label}</HeroChip>
+              )}
             </div>
           )}
-          <span className='text-2xl font-bold text-black dark:text-neutral-100'>{event.title}</span>
 
+          <h1 className='break-words text-3xl font-bold tracking-tight text-gray-900 dark:text-neutral-100 md:text-4xl'>
+            {event.title}
+          </h1>
+        </div>
+
+        <div className='space-y-1'>
           {/* Date + Time */}
           <button
             type='button'
             onClick={() => setShowDateTimeSheet(true)}
-            className='group flex w-full items-center gap-4 text-left'
+            className={cn(detailRowClassName, detailRowInteractiveClassName)}
           >
-            <div className={`${detailModuleBaseClassName} flex-col`}>
-              <span className='text-[9px] font-semibold uppercase leading-none text-gray-500 dark:text-neutral-400'>
+            <div className={cn(detailTileClassName, 'flex-col gap-0.5')}>
+              <span className='text-[10px] font-semibold uppercase leading-none tracking-wide text-red-500 dark:text-red-400'>
                 {startDate?.monthShort}
               </span>
-              <span className='text-[15px] font-bold leading-none text-gray-900 dark:text-neutral-100'>
+              <span className='text-lg font-bold leading-none text-gray-900 dark:text-neutral-100'>
                 {startDate?.day}
               </span>
             </div>
-            <div className='min-w-0 flex-1'>
-              <div className='flex flex-col'>
-                <span className='font-semibold text-gray-900 group-hover:underline dark:text-neutral-100'>
-                  {startDate?.fullDate}
-                </span>
-                <span className='text-sm text-gray-500 dark:text-neutral-400'>
-                  {dateTimeSubtitle}
-                </span>
-              </div>
+            <div className='flex min-w-0 flex-1 flex-col'>
+              <span className='truncate text-[15px] font-semibold text-gray-900 dark:text-neutral-100'>
+                {startDate?.fullDate}
+              </span>
+              <span className='truncate text-sm text-gray-500 dark:text-neutral-400'>
+                {dateTimeSubtitle}
+              </span>
             </div>
-            <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600 dark:text-neutral-500 dark:group-hover:text-neutral-400' />
+            {detailChevron}
           </button>
 
           {/* Location */}
@@ -359,83 +463,115 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
             <button
               type='button'
               onClick={() => !isTBDLocation && setShowLocationSheet(true)}
-              className='group flex w-full items-center gap-4 text-left'
-            >
-              <div className={detailModuleBaseClassName}>
-                <MapPin className='h-[18px] w-[18px] text-gray-600 dark:text-neutral-400' />
-              </div>
-              <div className='min-w-0 flex-1'>
-                <div className='flex flex-col'>
-                  <span
-                    className={`font-semibold ${isTBDLocation ? 'text-gray-500 dark:text-neutral-400' : 'text-gray-900 group-hover:underline dark:text-neutral-100'}`}
-                  >
-                    {locationDisplay.primary}
-                  </span>
-                  {locationDisplay.secondary && (
-                    <span className='text-sm text-gray-500 dark:text-neutral-400'>
-                      {locationDisplay.secondary}
-                    </span>
-                  )}
-                </div>
-              </div>
-              {!isTBDLocation && (
-                <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600 dark:text-neutral-500 dark:group-hover:text-neutral-400' />
+              className={cn(
+                detailRowClassName,
+                isTBDLocation ? 'cursor-default' : detailRowInteractiveClassName
               )}
+            >
+              <div className={detailTileClassName}>
+                <MapPin
+                  className='h-5 w-5 text-gray-600 dark:text-neutral-400'
+                  aria-hidden='true'
+                />
+              </div>
+              <div className='flex min-w-0 flex-1 flex-col'>
+                <span
+                  className={cn(
+                    'truncate text-[15px] font-semibold',
+                    isTBDLocation
+                      ? 'text-gray-500 dark:text-neutral-400'
+                      : 'text-gray-900 dark:text-neutral-100'
+                  )}
+                >
+                  {locationDisplay.primary}
+                </span>
+                {locationDisplay.secondary && (
+                  <span className='truncate text-sm text-gray-500 dark:text-neutral-400'>
+                    {locationDisplay.secondary}
+                  </span>
+                )}
+              </div>
+              {!isTBDLocation && detailChevron}
             </button>
           )}
         </div>
 
-        {isOwnerOrCohost ? (
-          <OwnerEventButtons eventId={event.id} />
-        ) : (
-          <>
-            <div className='grid grid-cols-1 gap-2'>
+        <div className='rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none'>
+          {(actionStatus || capacityText) && (
+            <div className='mb-3 flex items-center justify-between gap-3 text-sm'>
+              {actionStatus && (
+                <p className='flex min-w-0 items-center gap-2 font-medium text-gray-900 dark:text-neutral-100'>
+                  <span
+                    className={cn(
+                      'h-2 w-2 shrink-0 rounded-full',
+                      ACTION_STATUS_DOT_CLASS[actionStatus.tone]
+                    )}
+                    aria-hidden='true'
+                  />
+                  <span className='truncate'>{actionStatus.text}</span>
+                </p>
+              )}
+              {capacityText && (
+                <p className='ml-auto shrink-0 text-gray-500 dark:text-neutral-400'>
+                  {capacityText}
+                </p>
+              )}
+            </div>
+          )}
+
+          {isOwnerOrCohost ? (
+            <OwnerEventButtons eventId={event.id} />
+          ) : (
+            <>
               {hasPendingRegistration ? (
                 <button
                   type='button'
                   onClick={handlePendingClick}
-                  className='flex h-16 flex-col items-center justify-center rounded-full bg-yellow-100 text-yellow-700 transition-colors hover:bg-yellow-200 dark:bg-yellow-950/60 dark:text-yellow-400 dark:hover:bg-yellow-900/60'
+                  className={cn(
+                    primaryActionClassName,
+                    'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-950/60 dark:text-yellow-400 dark:hover:bg-yellow-900/60'
+                  )}
                 >
-                  <Clock className='mb-1 h-5 w-5' />
-                  <span className='text-xs font-medium'>Pending</span>
+                  <Clock className='h-5 w-5' aria-hidden='true' />
+                  <span>Pending</span>
                 </button>
               ) : hasDeniedRegistration ? (
                 <button
                   type='button'
                   onClick={handleDeniedClick}
-                  className='flex h-16 flex-col items-center justify-center rounded-full bg-red-100 text-red-700 transition-colors hover:bg-red-200 dark:bg-red-950/60 dark:text-red-400 dark:hover:bg-red-900/60'
+                  className={cn(
+                    primaryActionClassName,
+                    'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-950/60 dark:text-red-400 dark:hover:bg-red-900/60'
+                  )}
                 >
-                  <XCircle className='mb-1 h-5 w-5' />
-                  <span className='text-xs font-medium'>Denied</span>
+                  <XCircle className='h-5 w-5' aria-hidden='true' />
+                  <span>Denied</span>
                 </button>
               ) : (
                 <button
                   type='button'
                   onClick={handleRSVP}
                   disabled={shouldDisableRsvpButton}
-                  className={`flex h-16 flex-col items-center justify-center rounded-full transition-colors ${rsvpButton.className} ${shouldDisableRsvpButton ? 'cursor-not-allowed' : ''}`}
+                  className={cn(
+                    primaryActionClassName,
+                    rsvpButton.className,
+                    shouldDisableRsvpButton && 'cursor-not-allowed'
+                  )}
                 >
-                  <Star className='mb-1 h-5 w-5' />
-                  <span className='text-xs font-medium'>{rsvpButton.label}</span>
+                  <Star className='h-5 w-5' aria-hidden='true' />
+                  <span>{rsvpButton.label}</span>
                 </button>
               )}
-            </div>
 
-            {shouldShowCapacityInfo && spotsRemaining !== null && (
-              <p className='text-center text-sm text-gray-500 dark:text-neutral-400'>
-                {isEventFull && isYesRsvp
-                  ? 'No more spots left'
-                  : `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`}
-              </p>
-            )}
-
-            {(hasPendingRegistration || hasDeniedRegistration) && myRegistration?.registration && (
-              <div className='mt-4'>
-                <RegistrationStatus registration={myRegistration.registration} />
-              </div>
-            )}
-          </>
-        )}
+              {(hasPendingRegistration || hasDeniedRegistration) &&
+                myRegistration?.registration && (
+                  <div className='mt-4'>
+                    <RegistrationStatus registration={myRegistration.registration} />
+                  </div>
+                )}
+            </>
+          )}
+        </div>
       </div>
 
       <DateTimeActionsSheet
