@@ -1,6 +1,5 @@
 'use client';
 
-import { APISheet } from '@/components/settings/api-sheet';
 import { ContactSheet } from '@/components/settings/contact-sheet';
 import { DeveloperModeDialog } from '@/components/settings/developer-mode-dialog';
 import { TelegramConnectSheet } from '@/components/settings/telegram-connect-sheet';
@@ -73,8 +72,6 @@ export default function SettingsPage() {
 
   // Sheet states
   const [contactSheetOpen, setContactSheetOpen] = useState(false);
-  const [apiSheetOpen, setApiSheetOpen] = useState(false);
-  const [showApiContactForm, setShowApiContactForm] = useState(false);
 
   const handleExternalLink = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
@@ -104,13 +101,6 @@ export default function SettingsPage() {
         toast.error('Unable to share. Please copy the link manually: evento.so');
       }
     }
-  };
-
-  // Handle API access request
-  const handleApiAccess = () => {
-    setApiSheetOpen(false);
-    setShowApiContactForm(true);
-    setContactSheetOpen(true);
   };
 
   const handleDeveloperModeToggle = (checked: boolean) => {
@@ -466,24 +456,7 @@ export default function SettingsPage() {
         isConnected={isTelegramConnected}
         onConnectionChange={() => checkAuth()}
       />
-      <ContactSheet
-        open={contactSheetOpen}
-        onOpenChange={(open) => {
-          setContactSheetOpen(open);
-          if (!open) setShowApiContactForm(false);
-        }}
-        prefilledTitle={showApiContactForm ? 'Get Evento API access' : ''}
-        prefilledMessage={
-          showApiContactForm
-            ? 'I would like to request access to the Evento API.\n\nWhat I plan to use it for:\n\n[Please describe your use case and why you need API access]'
-            : ''
-        }
-      />
-      <APISheet
-        open={apiSheetOpen}
-        onOpenChange={setApiSheetOpen}
-        onContactRequest={handleApiAccess}
-      />
+      <ContactSheet open={contactSheetOpen} onOpenChange={setContactSheetOpen} />
 
       {/* Developer Mode Confirmation Dialog */}
       <DeveloperModeDialog

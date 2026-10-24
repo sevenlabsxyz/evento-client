@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, Bot, Code2, LogOut, MoreVertical, Settings } from 'lucide-react';
+import { BookOpen, LogOut, MoreVertical, Settings } from 'lucide-react';
 
 import Link from 'next/link';
 import { useState } from 'react';
@@ -99,21 +99,6 @@ export function NavUser() {
                   <Link href='/e/settings'>
                     <Settings className='mr-2 h-4 w-4' />
                     Settings
-                  </Link>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem asChild>
-                  <Link href='https://docs.evento.so' target='_blank' rel='noopener noreferrer'>
-                    <Code2 className='mr-2 h-4 w-4' />
-                    API & Docs
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href='https://docs.evento.so' target='_blank' rel='noopener noreferrer'>
-                    <Bot className='mr-2 h-4 w-4' />
-                    AI Agents
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>

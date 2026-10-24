@@ -35,6 +35,8 @@ interface TopBarConfig {
   showAvatar: boolean;
   isOverlaid: boolean;
   hideMobileBreadcrumb: boolean;
+  /** When true the top bar only renders below `md`; desktop gets no header bar. */
+  desktopHidden: boolean;
 }
 
 interface TopBarState extends TopBarConfig {
@@ -71,6 +73,7 @@ const initialState: TopBarConfig = {
   showAvatar: true,
   isOverlaid: false,
   hideMobileBreadcrumb: false,
+  desktopHidden: false,
 };
 
 export const useTopBarStore = create<TopBarState>((set, get) => ({
@@ -188,6 +191,7 @@ export const useTopBar = () => {
   const showAvatar = useTopBarStore((state) => state.showAvatar);
   const isOverlaid = useTopBarStore((state) => state.isOverlaid);
   const hideMobileBreadcrumb = useTopBarStore((state) => state.hideMobileBreadcrumb);
+  const desktopHidden = useTopBarStore((state) => state.desktopHidden);
   const currentRoute = useTopBarStore((state) => state.currentRoute);
   const setTopBar = useTopBarStore((state) => state.setTopBar);
   const setTopBarForRoute = useTopBarStore((state) => state.setTopBarForRoute);
@@ -219,6 +223,7 @@ export const useTopBar = () => {
     showAvatar,
     isOverlaid,
     hideMobileBreadcrumb,
+    desktopHidden,
     currentRoute,
     setTopBar,
     setTopBarForRoute,
