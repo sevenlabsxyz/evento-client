@@ -273,7 +273,10 @@ const termsOfService: LegalDocument = {
     `Mailing address for legal notices: ${legalProfile.legalNoticeAddress}`,
     'If any required legal wording for your jurisdiction differs, local mandatory law will control to that extent.',
   ],
-  relatedLinks: [{ label: 'Read Privacy Policy', href: '/privacy' }],
+  relatedLinks: [
+    { label: 'Read Privacy Policy', href: '/privacy' },
+    { label: 'Read Security overview', href: '/e/security' },
+  ],
 };
 
 const privacyPolicy: LegalDocument = {
@@ -459,7 +462,10 @@ const privacyPolicy: LegalDocument = {
     'If you are an organizer, you may have separate privacy obligations to attendees and must provide your own compliant notices where required by law.',
     'This Privacy Policy is intended to be transparent and practical, but it is not legal advice for your independent business obligations.',
   ],
-  relatedLinks: [{ label: 'Read Terms of Service', href: '/terms' }],
+  relatedLinks: [
+    { label: 'Read Terms of Service', href: '/terms' },
+    { label: 'Read Security overview', href: '/e/security' },
+  ],
 };
 
 export const legalDocuments = {

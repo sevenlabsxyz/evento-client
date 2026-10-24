@@ -50,7 +50,7 @@ export function QuickToolsSection({
   buySellLabel = 'Buy / Sell',
 }: QuickToolsSectionProps) {
   return (
-    <div className='space-y-3 pb-4 pt-2'>
+    <div className='space-y-3 pb-4 pt-2 md:pb-0'>
       <div className='grid grid-cols-4 gap-1'>
         {quickTools.map((tool) => {
           const Icon = tool.icon;
@@ -60,7 +60,7 @@ export function QuickToolsSection({
             <div
               key={tool.id}
               onClick={() => onToolClick(tool.id)}
-              className='font-lg flex flex-col items-center justify-center'
+              className='font-lg flex flex-col items-center justify-center md:cursor-pointer'
             >
               <motion.div
                 className={`flex h-14 w-14 items-center justify-center rounded-full border border-gray-200 shadow-sm hover:bg-gray-100 dark:border-neutral-800 dark:hover:bg-neutral-800 ${tool.iconBg} mb-2`}

@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
  * Hook to fetch all lists for the current user
  * Lists are ordered: default list first, then by creation date
  */
-export function useUserLists() {
+export function useUserLists(enabled: boolean = true) {
   return useQuery<UserList[], Error>({
     queryKey: queryKeys.userLists(),
     queryFn: async () => {
@@ -21,6 +21,7 @@ export function useUserLists() {
 
       throw new Error('Failed to fetch user lists');
     },
+    enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes cache
   });
 }

@@ -1,5 +1,5 @@
-import { DOCS_API_URL, DOCS_MCP_URL } from '@/lib/constants/external-links';
-import { Bot, Code2, ExternalLink } from 'lucide-react';
+import { Bot, Code2 } from 'lucide-react';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 
@@ -22,18 +22,16 @@ export function BuildWithEventoCard() {
 
       <div className='mt-3 grid grid-cols-2 gap-2'>
         <Button asChild variant='outline' size='sm' className='w-full gap-1.5 text-xs'>
-          <a href={DOCS_API_URL} target='_blank' rel='noopener noreferrer'>
+          <Link href='/e/api'>
             <Code2 className='h-3.5 w-3.5' />
-            API docs
-            <ExternalLink className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
-          </a>
+            API
+          </Link>
         </Button>
         <Button asChild variant='outline' size='sm' className='w-full gap-1.5 text-xs'>
-          <a href={DOCS_MCP_URL} target='_blank' rel='noopener noreferrer'>
+          <Link href='/e/mcp'>
             <Bot className='h-3.5 w-3.5' />
-            MCP setup
-            <ExternalLink className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
-          </a>
+            MCP
+          </Link>
         </Button>
       </div>
     </section>

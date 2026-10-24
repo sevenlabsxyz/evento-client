@@ -1,358 +1,449 @@
 'use client';
 
-import { MasterEventCard } from '@/components/master-event-card';
+import { DeleteListDialog } from '@/components/lists/delete-list-dialog';
+import { ListActionsMenu } from '@/components/lists/list-actions-menu';
+import { ListEmptyPanel } from '@/components/lists/list-empty-panel';
+import { ListEventCard } from '@/components/lists/list-event-card';
+import { ListFormDialog } from '@/components/lists/list-form-dialog';
+import { ListLoadError } from '@/components/lists/list-load-error';
+import { ListPageHeader } from '@/components/lists/list-page-header';
+import {
+  LIST_EVENT_GRID_CLASS,
+  LIST_PAGE_BACKGROUND_CLASS,
+  LIST_PAGE_CONTAINER_CLASS,
+} from '@/components/lists/list-page-layout';
+import {
+  ListEventFilter,
+  ListEventSort,
+  filterListEvents,
+  formatEventCount,
+  formatRelativeTime,
+  getListLastActivity,
+  isDefaultList,
+  isPastEvent,
+  sortListEvents,
+} from '@/components/lists/list-utils';
+import { ListDetailSkeleton } from '@/components/lists/lists-skeletons';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
-import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useAddEventToList } from '@/lib/hooks/use-add-event-to-list';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { useDeleteList } from '@/lib/hooks/use-delete-list';
 import { useListEvents } from '@/lib/hooks/use-list-events';
 import { useRemoveEventFromList } from '@/lib/hooks/use-remove-event-from-list';
-import { useUpdateList } from '@/lib/hooks/use-update-list';
 import { useUserLists } from '@/lib/hooks/use-user-lists';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { ListEvent, UserList } from '@/lib/types/api';
+import { getErrorMessage } from '@/lib/utils/error-message';
 import { toast } from '@/lib/utils/toast';
-import { Bookmark, Edit2, Loader2, Trash2 } from 'lucide-react';
+import {
+  ArrowUpDown,
+  Bookmark,
+  CalendarClock,
+  Compass,
+  History,
+  LayoutGrid,
+  LucideIcon,
+  SearchX,
+} from 'lucide-react';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
+const FILTERS: { id: ListEventFilter; title: string; icon: LucideIcon }[] = [
+  { id: 'upcoming', title: 'Upcoming', icon: CalendarClock },
+  { id: 'past', title: 'Past', icon: History },
+  { id: 'all', title: 'All', icon: LayoutGrid },
+];
+
+const SORT_LABELS: Record<ListEventSort, string> = {
+  added: 'Date added',
+  'event-date': 'Event date',
+};
+
+const SORT_OPTIONS: ListEventSort[] = ['added', 'event-date'];
+
+const UNDO_TOAST_DURATION_MS = 6000;
+
+/** API client rejections are plain `{ message, status }` objects, not `Error`s. */
+function isNotFoundError(error: unknown): boolean {
+  return Boolean(error && typeof error === 'object' && 'status' in error && error.status === 404);
+}
 
 export default function SavedListDetailPage() {
-  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
-  const params = useParams();
-  const listId = params.id as string;
-  const { setTopBar } = useTopBar();
+  const params = useParams<{ id: string }>();
+  const listId = params.id;
+  const pathname = `/e/lists/${listId}`;
+  const isMobile = useIsMobile();
+  const { isAuthenticated, isLoading: isCheckingAuth } = useRequireAuth();
+  const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
-  const [showRenameModal, setShowRenameModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
-  const [newListName, setNewListName] = useState('');
-  const [showRemoveConfirmModal, setShowRemoveConfirmModal] = useState(false);
-  const [eventToRemove, setEventToRemove] = useState<string | null>(null);
-  const [removingEventId, setRemovingEventId] = useState<string | null>(null);
+  // The list being deleted: its queries stop (no 404 refetch) and the page shows a
+  // skeleton until the deletion settles and navigates away.
+  const [leavingList, setLeavingList] = useState<UserList | null>(null);
+  const isLeaving = leavingList !== null;
+  const [filter, setFilter] = useState<ListEventFilter | null>(null);
+  const [sort, setSort] = useState<ListEventSort>('added');
+  const [isRenameOpen, setIsRenameOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [nowMs] = useState(() => Date.now());
+  const pendingRemovals = useRef(new Map<string, Promise<unknown>>());
 
-  const { data: lists = [] } = useUserLists();
-  const { data: listEvents = [], isLoading: eventsLoading } = useListEvents(listId);
-  const removeEventMutation = useRemoveEventFromList();
-  const updateListMutation = useUpdateList();
-  const deleteListMutation = useDeleteList();
+  const {
+    data: lists,
+    isLoading: listsLoading,
+    error: listsError,
+    refetch: refetchLists,
+  } = useUserLists(isAuthenticated);
+  const {
+    data: listEvents,
+    isLoading: eventsLoading,
+    error: eventsError,
+    refetch: refetchEvents,
+  } = useListEvents(listId, isAuthenticated && !isLeaving);
+  const removeEvent = useRemoveEventFromList();
+  const addEvent = useAddEventToList();
 
-  const currentList = lists.find((l) => l.id === listId);
+  const currentList = lists?.find((list) => list.id === listId);
+  const listName = currentList?.name ?? '';
+  const isDefault = currentList && lists ? isDefaultList(currentList, lists) : false;
 
-  // Configure TopBar
   useEffect(() => {
-    setTopBar({
-      title: currentList?.name || 'Loading...',
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: listName || 'List',
+      subtitle: '',
       leftMode: 'back',
       onBackPress: () => router.push('/e/lists'),
       centerMode: 'title',
       showAvatar: false,
-      buttons: [
-        {
-          id: 'edit',
-          icon: Edit2,
-          onClick: () => setShowMoreMenu(true),
-        },
-      ],
+      desktopHidden: true,
+      isOverlaid: false,
+      buttons: [],
+      textButtons: [],
+      badge: undefined,
     });
 
     return () => {
-      setTopBar({
-        title: '',
-        leftMode: 'menu',
-        showAvatar: true,
-        buttons: [],
-      });
+      clearRoute(pathname);
     };
-  }, [currentList?.name, setTopBar, router]);
+  }, [pathname, listName, router, applyRouteConfig, setTopBarForRoute, clearRoute]);
 
-  useEffect(() => {
-    if (currentList) {
-      setNewListName(currentList.name);
-    }
-  }, [currentList]);
+  const entries = useMemo(() => listEvents ?? [], [listEvents]);
+  const upcomingCount = useMemo(
+    () => entries.filter((entry) => !isPastEvent(entry.event, nowMs)).length,
+    [entries, nowMs]
+  );
+  const pastCount = entries.length - upcomingCount;
+  // Land on Upcoming unless everything saved has already happened.
+  const activeFilter: ListEventFilter =
+    filter ?? (upcomingCount === 0 && pastCount > 0 ? 'all' : 'upcoming');
+  const visibleEntries = useMemo(
+    () => sortListEvents(filterListEvents(entries, activeFilter, nowMs), sort, nowMs),
+    [entries, activeFilter, sort, nowMs]
+  );
 
-  const handleRemoveEventClick = (eventId: string) => {
-    setEventToRemove(eventId);
-    setShowRemoveConfirmModal(true);
-  };
+  const handleRemove = (entry: ListEvent) => {
+    const removal = removeEvent.mutateAsync({ listId, eventId: entry.event_id });
+    pendingRemovals.current.set(entry.event_id, removal);
 
-  const handleConfirmRemoveEvent = async () => {
-    if (!eventToRemove) return;
+    const toastId = toast.success(
+      `“${entry.event.title}” was removed from ${listName}.`,
+      'Removed from list',
+      UNDO_TOAST_DURATION_MS,
+      {
+        action: {
+          label: 'Undo',
+          onClick: () => void handleUndo(entry),
+        },
+      }
+    );
 
-    setRemovingEventId(eventToRemove);
-    try {
-      await removeEventMutation.mutateAsync({ listId, eventId: eventToRemove });
-      toast.success('Event removed from list');
-      setShowRemoveConfirmModal(false);
-      setEventToRemove(null);
-    } catch (error: any) {
-      toast.error(error?.message || 'Failed to remove event');
-    } finally {
-      setRemovingEventId(null);
-    }
-  };
-
-  const handleRenameList = async () => {
-    const trimmedName = newListName.trim();
-
-    if (!trimmedName) {
-      toast.error('List name is required');
-      return;
-    }
-
-    if (trimmedName === currentList?.name) {
-      setShowRenameModal(false);
-      return;
-    }
-
-    try {
-      await updateListMutation.mutateAsync({
-        listId,
-        data: { name: trimmedName },
+    removal
+      .catch((error: unknown) => {
+        toast.dismiss(toastId);
+        toast.error(getErrorMessage(error), 'Couldn’t remove event');
+      })
+      .finally(() => {
+        if (pendingRemovals.current.get(entry.event_id) === removal) {
+          pendingRemovals.current.delete(entry.event_id);
+        }
       });
-      toast.success('List renamed');
-      setShowRenameModal(false);
-    } catch (error: any) {
-      toast.error(error?.message || 'Failed to rename list');
-    }
   };
 
-  const handleDeleteList = async () => {
+  const handleUndo = async (entry: ListEvent) => {
     try {
-      await deleteListMutation.mutateAsync(listId);
-      toast.success('List deleted');
-      router.push('/e/lists');
-    } catch (error: any) {
-      const errorMsg = error?.message || 'Failed to delete list';
-      toast.error(errorMsg);
-      setShowDeleteModal(false);
+      // Re-adding before the delete lands would hit "already in list" and then vanish.
+      await pendingRemovals.current.get(entry.event_id);
+    } catch {
+      // The removal failed and was rolled back; nothing to undo.
+      return;
+    }
+
+    try {
+      await addEvent.mutateAsync({ listId, eventId: entry.event_id, restore: entry });
+    } catch (error) {
+      toast.error(getErrorMessage(error), 'Couldn’t restore event');
     }
   };
 
-  if (isCheckingAuth) {
-    return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-        </div>
-      </div>
-    );
-  }
+  const isNotFound =
+    !isLeaving && ((lists !== undefined && !currentList) || isNotFoundError(eventsError));
 
-  if (!currentList && !eventsLoading) {
-    return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white dark:bg-neutral-900 md:max-w-sm'>
-        <div className='text-center'>
-          <h2 className='mb-2 text-xl font-bold'>List not found</h2>
-          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            This list may have been deleted
-          </p>
-          <Button
-            onClick={() => router.push('/e/lists')}
-            className='bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
-          >
-            Back to Lists
+  const renderEvents = (list: UserList) => {
+    if (eventsError) {
+      return (
+        <ListLoadError
+          title='Couldn’t load saved events'
+          message={getErrorMessage(eventsError)}
+          onRetry={() => void refetchEvents()}
+        />
+      );
+    }
+
+    if (entries.length === 0) {
+      return (
+        <ListEmptyPanel
+          icon={Bookmark}
+          title='No events in this list yet'
+          description='Open any event and tap the bookmark at the top to save it here.'
+        >
+          <Button asChild>
+            <Link href='/e/hub#discover'>
+              <Compass aria-hidden='true' />
+              Explore Discover
+            </Link>
           </Button>
+          <Button
+            asChild
+            variant='outline'
+            className='dark:bg-neutral-900 dark:hover:bg-neutral-800'
+          >
+            <Link href='/e/search'>Search events</Link>
+          </Button>
+        </ListEmptyPanel>
+      );
+    }
+
+    if (visibleEntries.length === 0) {
+      const isUpcoming = activeFilter === 'upcoming';
+      return (
+        <ListEmptyPanel
+          icon={isUpcoming ? CalendarClock : History}
+          title={isUpcoming ? 'No upcoming events' : 'No past events'}
+          description={
+            isUpcoming
+              ? 'Everything saved in this list has already happened.'
+              : 'Events move here once they’ve ended.'
+          }
+        >
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => setFilter(isUpcoming ? 'past' : 'upcoming')}
+            className='dark:bg-neutral-900 dark:hover:bg-neutral-800'
+          >
+            {isUpcoming ? 'Show past events' : 'Show upcoming events'}
+          </Button>
+        </ListEmptyPanel>
+      );
+    }
+
+    return (
+      <ul className={LIST_EVENT_GRID_CLASS} aria-label={`Events in ${list.name}`}>
+        {visibleEntries.map((entry) => (
+          <li key={entry.list_event_id}>
+            <ListEventCard entry={entry} listName={list.name} onRemove={handleRemove} />
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  const renderBody = () => {
+    // Unauthenticated visitors are being redirected, and a list being deleted is
+    // about to navigate away; keep the skeleton up in both cases.
+    if (isLeaving || isCheckingAuth || !isAuthenticated || listsLoading || eventsLoading) {
+      return <ListDetailSkeleton />;
+    }
+
+    if (listsError || isNotFound || !currentList) {
+      return (
+        <div className={LIST_PAGE_BACKGROUND_CLASS}>
+          <div className={LIST_PAGE_CONTAINER_CLASS}>
+            {listsError ? (
+              <ListLoadError
+                title='Couldn’t load this list'
+                message={getErrorMessage(listsError)}
+                onRetry={() => void refetchLists()}
+              />
+            ) : (
+              <ListEmptyPanel
+                icon={SearchX}
+                title='List not found'
+                description='This list may have been deleted, or the link isn’t quite right.'
+              >
+                <Button asChild>
+                  <Link href='/e/lists'>Back to your lists</Link>
+                </Button>
+              </ListEmptyPanel>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    const updatedLabel = formatRelativeTime(getListLastActivity(currentList, listEvents));
+
+    return (
+      <div className={LIST_PAGE_BACKGROUND_CLASS}>
+        <div className={LIST_PAGE_CONTAINER_CLASS}>
+          <ListPageHeader
+            backLink={{ href: '/e/lists', label: 'All lists' }}
+            eyebrow={isDefault ? 'Default list' : 'List'}
+            title={currentList.name}
+            description={currentList.description ?? undefined}
+            meta={
+              <span className='flex flex-wrap items-center gap-x-1.5'>
+                <span className='font-medium text-gray-700 dark:text-neutral-300'>
+                  {formatEventCount(entries.length)}
+                </span>
+                {entries.length > 0 && (
+                  <>
+                    <span aria-hidden='true' className='text-gray-300 dark:text-neutral-600'>
+                      ·
+                    </span>
+                    <span>{upcomingCount} upcoming</span>
+                  </>
+                )}
+                {updatedLabel && (
+                  <>
+                    <span aria-hidden='true' className='text-gray-300 dark:text-neutral-600'>
+                      ·
+                    </span>
+                    <span>Updated {updatedLabel}</span>
+                  </>
+                )}
+              </span>
+            }
+            actions={
+              <>
+                <Button
+                  asChild
+                  variant='outline'
+                  className='flex-1 dark:bg-neutral-900 dark:hover:bg-neutral-800 md:flex-none'
+                >
+                  <Link href='/e/hub#discover'>
+                    <Compass aria-hidden='true' />
+                    Find events
+                  </Link>
+                </Button>
+                <ListActionsMenu
+                  appearance='outline'
+                  listName={currentList.name}
+                  onRename={() => setIsRenameOpen(true)}
+                  onDelete={isDefault ? undefined : () => setIsDeleteOpen(true)}
+                />
+              </>
+            }
+          />
+
+          {entries.length > 0 && !eventsError && (
+            <div className='mt-6 flex items-center justify-between gap-3'>
+              <div className='scrollbar-hide -mx-4 min-w-0 overflow-x-auto px-4 md:mx-0 md:px-0'>
+                <AnimatedTabs
+                  expanded={!isMobile}
+                  tabs={FILTERS.map((option) => ({
+                    title: option.title,
+                    icon: option.icon,
+                    onClick: () => setFilter(option.id),
+                  }))}
+                  selected={FILTERS.findIndex((option) => option.id === activeFilter)}
+                />
+              </div>
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    className='shrink-0 dark:bg-neutral-900 dark:hover:bg-neutral-800'
+                    aria-label={`Sort by ${SORT_LABELS[sort].toLowerCase()}`}
+                  >
+                    <ArrowUpDown aria-hidden='true' />
+                    <span className='hidden sm:inline'>{SORT_LABELS[sort]}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end' className='w-44 rounded-xl p-1'>
+                  <DropdownMenuLabel className='px-2.5 text-xs font-medium text-gray-500 dark:text-neutral-500'>
+                    Sort by
+                  </DropdownMenuLabel>
+                  <DropdownMenuRadioGroup
+                    value={sort}
+                    onValueChange={(value) => {
+                      if (value === 'added' || value === 'event-date') setSort(value);
+                    }}
+                  >
+                    {SORT_OPTIONS.map((option) => (
+                      <DropdownMenuRadioItem
+                        key={option}
+                        value={option}
+                        className='rounded-lg py-2'
+                      >
+                        {SORT_LABELS[option]}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
+
+          <div className='mt-6'>{renderEvents(currentList)}</div>
         </div>
       </div>
     );
-  }
+  };
+
+  // The delete dialog keeps the same tree position across states so its pending
+  // request survives the switch to the skeleton while the deletion settles.
+  const deleteDialogList = currentList ?? leavingList;
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
-      {/* Content */}
-      <div className='flex-1 overflow-y-auto bg-white pb-20 dark:bg-neutral-900'>
-        {eventsLoading ? (
-          <div className='space-y-4 px-4 py-4'>
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className='h-32 w-full rounded-2xl' />
-            ))}
-          </div>
-        ) : listEvents.length > 0 ? (
-          <div className='space-y-3 px-4 py-4'>
-            {listEvents.map((listEvent) => (
-              <MasterEventCard
-                key={listEvent.list_event_id}
-                event={listEvent.event}
-                onLongPress={() => handleRemoveEventClick(listEvent.event.id)}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className='flex flex-1 items-center justify-center px-4 py-12'>
-            <div className='text-center'>
-              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
-                <Bookmark className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
-              </div>
-              <h3 className='mb-2 text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-                No events in this list
-              </h3>
-              <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                Use the &quot;Save Event&quot; feature in any event to add it to this list.
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Edit Menu Sheet */}
-      <DetachedMenuSheet
-        isOpen={showMoreMenu}
-        onClose={() => setShowMoreMenu(false)}
-        options={[
-          {
-            id: 'rename',
-            label: 'Rename List',
-            icon: Edit2,
-            onClick: () => {
-              setShowMoreMenu(false);
-              setShowRenameModal(true);
-            },
-          },
-          ...(!currentList?.is_default
-            ? [
-                {
-                  id: 'delete',
-                  label: 'Delete List',
-                  icon: Trash2,
-                  onClick: () => {
-                    setShowMoreMenu(false);
-                    setShowDeleteModal(true);
-                  },
-                  variant: 'destructive' as const,
-                },
-              ]
-            : []),
-        ]}
-      />
-
-      {/* Rename Modal */}
-      {showRenameModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 dark:bg-black/70'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
-            <h3 className='mb-4 text-xl font-bold'>Rename List</h3>
-            <Input
-              type='text'
-              value={newListName}
-              onChange={(e) => setNewListName(e.target.value)}
-              placeholder='List name'
-              className='mb-2'
-              autoFocus
-              maxLength={50}
-              onKeyDown={(e) => e.key === 'Enter' && handleRenameList()}
-            />
-            <p className='mb-4 text-right text-xs text-gray-500 dark:text-neutral-400'>
-              {newListName.length}/50
-            </p>
-            <div className='flex gap-3'>
-              <Button
-                variant='outline'
-                onClick={() => {
-                  setShowRenameModal(false);
-                  setNewListName(currentList?.name || '');
-                }}
-                className='flex-1'
-                disabled={updateListMutation.isPending}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleRenameList}
-                className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
-                disabled={!newListName.trim() || updateListMutation.isPending}
-              >
-                {updateListMutation.isPending ? (
-                  <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Saving...
-                  </>
-                ) : (
-                  'Save'
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
+    <>
+      {renderBody()}
+      {currentList && (
+        <ListFormDialog
+          open={isRenameOpen}
+          onOpenChange={setIsRenameOpen}
+          lists={lists ?? []}
+          list={currentList}
+        />
       )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 dark:bg-black/70'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
-            <h3 className='mb-2 text-xl font-bold'>Delete List?</h3>
-            <p className='mb-6 text-sm text-gray-600 dark:text-neutral-400'>
-              This will remove all events from &quot;{currentList?.name}&quot;. This action cannot
-              be undone.
-            </p>
-            <div className='flex gap-3'>
-              <Button
-                variant='outline'
-                onClick={() => setShowDeleteModal(false)}
-                className='flex-1'
-                disabled={deleteListMutation.isPending}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleDeleteList}
-                className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
-                disabled={deleteListMutation.isPending}
-              >
-                {deleteListMutation.isPending ? (
-                  <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Deleting...
-                  </>
-                ) : (
-                  'Delete'
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
+      {deleteDialogList && (
+        <DeleteListDialog
+          list={deleteDialogList}
+          eventCount={entries.length}
+          open={isDeleteOpen}
+          onOpenChange={setIsDeleteOpen}
+          onDeleteStart={() => setLeavingList(deleteDialogList)}
+          onDeleteSettled={(deleted) => {
+            if (deleted) {
+              router.replace('/e/lists');
+            } else {
+              setLeavingList(null);
+            }
+          }}
+        />
       )}
-
-      {/* Remove Event Confirmation Modal */}
-      {showRemoveConfirmModal && eventToRemove && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 dark:bg-black/70'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
-            <h3 className='mb-2 text-xl font-bold'>Remove Event?</h3>
-            <p className='mb-6 text-sm text-gray-600 dark:text-neutral-400'>
-              This will remove the event from &quot;{currentList?.name}&quot;. You can always add it
-              back later.
-            </p>
-            <div className='flex gap-3'>
-              <Button
-                variant='outline'
-                onClick={() => {
-                  setShowRemoveConfirmModal(false);
-                  setEventToRemove(null);
-                }}
-                className='flex-1'
-                disabled={removingEventId === eventToRemove}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleConfirmRemoveEvent}
-                className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
-                disabled={removingEventId === eventToRemove}
-              >
-                {removingEventId === eventToRemove ? (
-                  <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Removing...
-                  </>
-                ) : (
-                  'Remove'
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 }

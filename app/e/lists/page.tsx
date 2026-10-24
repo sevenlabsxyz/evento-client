@@ -1,224 +1,207 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { DeleteListDialog } from '@/components/lists/delete-list-dialog';
+import { ListCard, ListCardSkeleton } from '@/components/lists/list-card';
+import { ListFormDialog } from '@/components/lists/list-form-dialog';
+import { ListLoadError } from '@/components/lists/list-load-error';
+import { ListPageHeader } from '@/components/lists/list-page-header';
 import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
+  LIST_GRID_CLASS,
+  LIST_PAGE_BACKGROUND_CLASS,
+  LIST_PAGE_CONTAINER_CLASS,
+} from '@/components/lists/list-page-layout';
+import { formatEventCount, isDefaultList, orderLists } from '@/components/lists/list-utils';
+import { ListsEmptyState } from '@/components/lists/lists-empty-state';
+import { Button } from '@/components/ui/button';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { useCreateList } from '@/lib/hooks/use-create-list';
 import { useEnsureDefaultList } from '@/lib/hooks/use-ensure-default-list';
+import { useListsEvents } from '@/lib/hooks/use-list-events';
 import { useUserLists } from '@/lib/hooks/use-user-lists';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { toast } from '@/lib/utils/toast';
-import { formatDistanceToNow } from 'date-fns';
-import { Bookmark, ChevronRight, Loader2, Plus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { UserList } from '@/lib/types/api';
+import { getErrorMessage } from '@/lib/utils/error-message';
+import { Plus } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+
+const LISTS_PATHNAME = '/e/lists';
 
 export default function SavedListsPage() {
-  const { isLoading: isCheckingAuth } = useRequireAuth();
-  const { setTopBar } = useTopBar();
-  const router = useRouter();
+  const { isAuthenticated } = useRequireAuth();
+  const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newListName, setNewListName] = useState('');
+  const {
+    data: lists,
+    isLoading: listsLoading,
+    error: listsError,
+    refetch: refetchLists,
+  } = useUserLists(isAuthenticated);
+  const { isCreatingDefaultList } = useEnsureDefaultList(isAuthenticated);
 
-  const { data: lists = [], isLoading: listsLoading } = useUserLists();
-  const createListMutation = useCreateList();
+  const orderedLists = useMemo(() => orderLists(lists ?? []), [lists]);
+  const listIds = useMemo(() => orderedLists.map((list) => list.id), [orderedLists]);
+  const eventsByList = useListsEvents(listIds);
 
-  // Ensure default list exists
-  useEnsureDefaultList();
+  // Targets outlive `open` so dialog copy doesn't change during the close animation.
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [renameTarget, setRenameTarget] = useState<UserList | null>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<UserList | null>(null);
 
-  const openCreateModal = useCallback(() => {
-    setShowCreateModal(true);
-  }, []);
-
-  // Set TopBar content
   useEffect(() => {
-    setTopBar({
+    applyRouteConfig(LISTS_PATHNAME);
+    setTopBarForRoute(LISTS_PATHNAME, {
       title: 'Lists',
-      textButtons: [
-        {
-          id: 'add-list',
-          label: 'Add New',
-          icon: Plus,
-          onClick: openCreateModal,
-        },
-      ],
+      subtitle: '',
+      leftMode: 'menu',
+      centerMode: 'title',
+      showAvatar: true,
+      desktopHidden: true,
+      isOverlaid: false,
+      buttons: [],
+      textButtons: [],
+      badge: undefined,
     });
 
     return () => {
-      setTopBar({
-        title: '',
-        subtitle: '',
-        textButtons: [],
-      });
+      clearRoute(LISTS_PATHNAME);
     };
-  }, [setTopBar, openCreateModal]);
+  }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
 
-  const handleCreateList = async () => {
-    const trimmedName = newListName.trim();
+  const summaries = listIds.map((id) => eventsByList[id]);
+  const allEventsLoaded = summaries.every((summary) => summary && !summary.isLoading);
+  // Unauthenticated visitors are being redirected; keep skeletons up meanwhile.
+  const isLoadingLists =
+    !isAuthenticated || listsLoading || (orderedLists.length === 0 && isCreatingDefaultList);
+  const isReady = !isLoadingLists && !listsError && allEventsLoaded;
+  // An event saved to several lists counts once.
+  const totalSaved = new Set(
+    summaries.flatMap((summary) => summary?.events?.map((listEvent) => listEvent.event_id) ?? [])
+  ).size;
+  const showSaveGuide = isReady && totalSaved === 0;
 
-    if (!trimmedName) {
-      toast.error('Please enter a list name');
-      return;
-    }
-
-    if (trimmedName.length > 50) {
-      toast.error('List name must be less than 50 characters');
-      return;
-    }
-
-    try {
-      await createListMutation.mutateAsync({ name: trimmedName });
-      toast.success(`"${trimmedName}" list created!`);
-      setNewListName('');
-      setShowCreateModal(false);
-    } catch (error: any) {
-      const errorMsg = error?.message || 'Failed to create list';
-      toast.error(errorMsg);
-    }
+  const openCreate = () => {
+    setRenameTarget(null);
+    setIsFormOpen(true);
   };
 
-  const handleListClick = (listId: string) => {
-    router.push(`/e/lists/${listId}`);
-  };
-
-  const formatLastUpdated = (dateString: string) => {
-    try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
-    } catch {
-      return 'recently';
-    }
-  };
-
-  if (isCheckingAuth) {
-    return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+  const renderLists = () => {
+    if (isLoadingLists) {
+      return (
+        <div className={LIST_GRID_CLASS}>
+          {Array.from({ length: 4 }, (_, index) => (
+            <ListCardSkeleton key={index} />
+          ))}
         </div>
-      </div>
+      );
+    }
+
+    if (listsError) {
+      return (
+        <ListLoadError
+          title='Couldn’t load your lists'
+          message={getErrorMessage(listsError)}
+          onRetry={() => void refetchLists()}
+        />
+      );
+    }
+
+    if (orderedLists.length === 0) return null;
+
+    return (
+      <section aria-labelledby='lists-grid-heading'>
+        <h2
+          id='lists-grid-heading'
+          className='mb-4 text-xl font-semibold text-gray-900 dark:text-neutral-100'
+        >
+          Your lists
+        </h2>
+        <div className={LIST_GRID_CLASS}>
+          {orderedLists.map((list) => {
+            const summary = eventsByList[list.id];
+            const isDefault = isDefaultList(list, orderedLists);
+            return (
+              <ListCard
+                key={list.id}
+                list={list}
+                events={summary?.events}
+                isLoadingEvents={summary?.isLoading ?? true}
+                isDefault={isDefault}
+                onRename={() => {
+                  setRenameTarget(list);
+                  setIsFormOpen(true);
+                }}
+                onDelete={
+                  isDefault
+                    ? undefined
+                    : () => {
+                        setDeleteTarget(list);
+                        setIsDeleteOpen(true);
+                      }
+                }
+              />
+            );
+          })}
+          <button
+            type='button'
+            onClick={openCreate}
+            className='group flex min-h-[200px] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-gray-300 bg-gray-50/60 p-6 text-gray-600 transition-colors hover:border-gray-400 hover:bg-gray-50 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:bg-neutral-800/60 dark:hover:text-neutral-100 dark:focus-visible:ring-offset-neutral-900'
+          >
+            <span className='flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm transition-transform duration-200 motion-safe:group-hover:scale-105 dark:bg-neutral-800 dark:shadow-none'>
+              <Plus className='h-5 w-5' aria-hidden='true' />
+            </span>
+            <span className='text-sm font-medium'>New list</span>
+          </button>
+        </div>
+      </section>
     );
-  }
+  };
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-2xl'>
-      {/* Content */}
-      <div className='flex-1 overflow-y-auto pb-20 pt-4'>
-        {/* Loading State */}
-        {listsLoading ? (
-          <div className='space-y-3 px-4 pb-6'>
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className='h-24 w-full rounded-2xl' />
-            ))}
-          </div>
-        ) : lists.length === 0 ? (
-          /* Empty State */
-          <Empty className='min-h-[60vh]'>
-            <EmptyHeader>
-              <EmptyMedia variant='icon'>
-                <Bookmark className='h-6 w-6' />
-              </EmptyMedia>
-              <EmptyTitle>No saved lists</EmptyTitle>
-              <EmptyDescription>Create your first list to start saving events.</EmptyDescription>
-            </EmptyHeader>
-            <EmptyContent>
-              <Button
-                onClick={openCreateModal}
-                className='bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
-              >
-                Create List
-              </Button>
-            </EmptyContent>
-          </Empty>
-        ) : (
-          /* Lists */
-          <div className='space-y-3 px-4 pb-6'>
-            {lists.map((list) => (
-              <div
-                key={list.id}
-                onClick={() => handleListClick(list.id)}
-                className='cursor-pointer rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'
-              >
-                <div className='flex items-center justify-between'>
-                  <div className='flex-1'>
-                    <div className='mb-1 flex items-center gap-2'>
-                      <h3 className='text-lg font-bold'>{list.name}</h3>
-                      {list.is_default && (
-                        <span className='rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:bg-red-950/60 dark:text-red-400'>
-                          Default
-                        </span>
-                      )}
-                    </div>
-                    <p className='text-sm text-gray-600 dark:text-neutral-400'>
-                      {list.event_count} {list.event_count === 1 ? 'event' : 'events'} • Updated{' '}
-                      {formatLastUpdated(list.updated_at)}
-                    </p>
-                  </div>
-                  <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+    <div className={LIST_PAGE_BACKGROUND_CLASS}>
+      <div className={LIST_PAGE_CONTAINER_CLASS}>
+        <ListPageHeader
+          eyebrow='Lists'
+          title='Your saved events'
+          description='Save events you don’t want to miss and organize them into lists.'
+          meta={
+            isReady && orderedLists.length > 0
+              ? `${formatEventCount(totalSaved)} saved across ${orderedLists.length} ${
+                  orderedLists.length === 1 ? 'list' : 'lists'
+                }`
+              : undefined
+          }
+          actions={
+            <Button
+              type='button'
+              onClick={openCreate}
+              disabled={!isAuthenticated}
+              className='w-full md:w-auto'
+            >
+              <Plus aria-hidden='true' />
+              New list
+            </Button>
+          }
+        />
+
+        <div className='mt-8 space-y-10'>
+          {showSaveGuide && <ListsEmptyState />}
+          {renderLists()}
+        </div>
       </div>
 
-      {/* Create List Modal */}
-      {showCreateModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 dark:bg-black/70'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
-            <h3 className='mb-4 text-xl font-bold'>Create New List</h3>
-            <Input
-              type='text'
-              value={newListName}
-              onChange={(e) => setNewListName(e.target.value)}
-              placeholder='Enter list name...'
-              className='mb-2'
-              autoFocus
-              maxLength={50}
-              onKeyDown={(e) => e.key === 'Enter' && handleCreateList()}
-            />
-            <p className='mb-4 text-right text-xs text-gray-500 dark:text-neutral-400'>
-              {newListName.length}/50
-            </p>
-            <div className='flex gap-3'>
-              <Button
-                variant='outline'
-                onClick={() => {
-                  setShowCreateModal(false);
-                  setNewListName('');
-                }}
-                className='flex-1'
-                disabled={createListMutation.isPending}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleCreateList}
-                className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
-                disabled={!newListName.trim() || createListMutation.isPending}
-              >
-                {createListMutation.isPending ? (
-                  <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Creating...
-                  </>
-                ) : (
-                  'Create'
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ListFormDialog
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        lists={orderedLists}
+        list={renameTarget}
+      />
+
+      <DeleteListDialog
+        list={deleteTarget}
+        eventCount={deleteTarget ? (eventsByList[deleteTarget.id]?.events?.length ?? null) : null}
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+      />
     </div>
   );
 }

@@ -1137,7 +1137,7 @@ export function SendLightningSheet({
         <SheetWithDetentFull.Portal>
           <SheetWithDetentFull.View>
             <SheetWithDetentFull.Backdrop />
-            <SheetWithDetentFull.Content>
+            <SheetWithDetentFull.Content className='md:!max-w-md'>
               <div className='my-4 flex items-center'>
                 <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
               </div>

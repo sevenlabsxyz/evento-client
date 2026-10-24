@@ -178,7 +178,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
         <SheetWithDetent.Portal>
           <SheetWithDetent.View>
             <SheetWithDetent.Backdrop />
-            <SheetWithDetent.Content className='min-h-max'>
+            <SheetWithDetent.Content className='min-h-max md:!max-w-md'>
               <div className='my-4 flex items-center'>
                 <SheetWithDetent.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
               </div>

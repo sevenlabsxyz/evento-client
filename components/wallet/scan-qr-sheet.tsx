@@ -42,7 +42,7 @@ export function ScanQrSheet({ open, onOpenChange, onScanSuccess }: ScanQrSheetPr
       <SheetWithDetent.Portal>
         <SheetWithDetent.View detents={undefined}>
           <SheetWithDetent.Backdrop />
-          <SheetWithDetent.Content className='min-h-max p-0'>
+          <SheetWithDetent.Content className='min-h-max p-0 md:!max-w-md'>
             <VisuallyHidden.Root asChild>
               <SheetWithDetent.Title>Scan QR Code</SheetWithDetent.Title>
             </VisuallyHidden.Root>

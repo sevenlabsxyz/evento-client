@@ -22,10 +22,12 @@ import {
   Send,
   Share,
   Shield,
+  ShieldCheck,
   Sun,
   Terminal,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -180,10 +182,10 @@ export default function SettingsPage() {
               <Skeleton className='h-3 w-16' />
             </div>
             <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950'>
-              {Array.from({ length: 4 }).map((_, i) => (
+              {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
-                  className={`p-4 ${i < 3 ? 'border-b border-gray-100 dark:border-neutral-800' : ''}`}
+                  className={`p-4 ${i < 4 ? 'border-b border-gray-100 dark:border-neutral-800' : ''}`}
                 >
                   <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-3'>
@@ -382,6 +384,21 @@ export default function SettingsPage() {
                 </div>
                 <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
               </button>
+            </div>
+
+            <div className='border-b border-gray-100 dark:border-neutral-800'>
+              <Link
+                href='/e/security'
+                className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
+              >
+                <div className='flex items-center gap-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 dark:bg-red-950/60'>
+                    <ShieldCheck className='h-4 w-4 text-red-600 dark:text-red-400' />
+                  </div>
+                  <span className='font-medium'>Security</span>
+                </div>
+                <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
+              </Link>
             </div>
 
             <div>

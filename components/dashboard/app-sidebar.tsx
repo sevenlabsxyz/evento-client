@@ -10,6 +10,7 @@ import {
   PanelRightOpen,
   Plus,
   Search,
+  Shield,
   Shirt,
   Star,
   Zap,
@@ -34,7 +35,6 @@ import {
   SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { DOCS_API_URL, DOCS_MCP_URL } from '@/lib/constants/external-links';
 import { useDeveloperSettingsStore } from '@/lib/stores/developer-settings-store';
 // import { useRightSidebar } from '@/lib/stores/right-sidebar-store';
 
@@ -64,15 +64,13 @@ const navMain: NavMainItem[] = [
 const developerLinks: NavMainItem[] = [
   {
     title: 'API',
-    url: DOCS_API_URL,
+    url: '/e/api',
     icon: Code2,
-    external: true,
   },
   {
     title: 'MCP for AI agents',
-    url: DOCS_MCP_URL,
+    url: '/e/mcp',
     icon: Bot,
-    external: true,
   },
 ];
 
@@ -156,6 +154,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <Link href='/e/blog' onClick={() => setOpenMobile(false)}>
                 <BookOpen />
                 <span>Blog</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip='Security' asChild>
+              <Link href='/e/security' onClick={() => setOpenMobile(false)}>
+                <Shield />
+                <span>Security</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

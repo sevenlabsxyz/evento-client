@@ -11,11 +11,17 @@ interface WalletWelcomeProps {
 
 export function WalletWelcome({ onSetup, onRestore }: WalletWelcomeProps) {
   return (
-    <div className='relative flex min-h-[calc(100vh-8rem)] flex-col'>
-      <div className='mx-auto flex w-full max-w-sm flex-1 flex-col items-center justify-center px-6'>
+    <div className='relative flex min-h-[calc(100vh-8rem)] flex-col md:min-h-0'>
+      <div className='mx-auto flex w-full max-w-sm flex-1 flex-col items-center justify-center px-6 md:px-0'>
         <div className='flex w-full flex-col items-center gap-8'>
           {/* Mascot Image */}
-          <Image src='/assets/illo/mascot-duo.png' alt='Evento Mascot' width={330} height={330} />
+          <Image
+            src='/assets/illo/mascot-duo.png'
+            alt='Evento Mascot'
+            width={330}
+            height={330}
+            className='md:h-auto md:w-60'
+          />
 
           {/* Title & Description */}
           <div className='text-center'>

@@ -3,7 +3,7 @@
 import apiClient from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
 import { ApiResponse, SavedEventStatus } from '@/lib/types/api';
-import { useQuery } from '@tanstack/react-query';
+import { QueryClient, useQuery } from '@tanstack/react-query';
 
 export function useEventSavedStatus(eventId: string, enabled: boolean = true) {
   return useQuery<SavedEventStatus, Error>({
@@ -21,5 +21,18 @@ export function useEventSavedStatus(eventId: string, enabled: boolean = true) {
     },
     enabled: enabled && !!eventId,
     staleTime: 1 * 60 * 1000,
+  });
+}
+
+/**
+ * Saved-status entries embed list names and membership, so renaming or deleting a
+ * list makes every cached entry stale. Keys look like `['events', eventId, 'saved']`.
+ */
+export function invalidateAllEventSavedStatuses(queryClient: QueryClient) {
+  return queryClient.invalidateQueries({
+    predicate: (query) => {
+      const [scope, , kind] = query.queryKey;
+      return scope === queryKeys.events[0] && kind === 'saved';
+    },
   });
 }

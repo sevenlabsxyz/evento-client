@@ -1,8 +1,9 @@
 'use client';
 
 import apiClient from '@/lib/api/client';
+import { invalidateAllEventSavedStatuses } from '@/lib/hooks/use-event-saved-status';
 import { queryKeys } from '@/lib/query-client';
-import { ApiResponse } from '@/lib/types/api';
+import { ApiResponse, UserList } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface DeleteListResponse {
@@ -27,9 +28,14 @@ export function useDeleteList() {
 
       throw new Error('Failed to delete list');
     },
-    onSuccess: () => {
-      // Invalidate user lists to refetch
+    onSuccess: ({ deleted_list_id }) => {
+      queryClient.setQueryData<UserList[]>(queryKeys.userLists(), (lists) =>
+        lists?.filter((list) => list.id !== deleted_list_id)
+      );
+      // Drop the list's cached events so nothing refetches a list that no longer exists.
+      queryClient.removeQueries({ queryKey: queryKeys.list(deleted_list_id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.userLists() });
+      invalidateAllEventSavedStatuses(queryClient);
     },
   });
 }

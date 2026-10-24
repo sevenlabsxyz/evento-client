@@ -196,8 +196,8 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
           </button>
 
           {/* Action Buttons */}
-          <div className='space-y-3'>
-            <div className='grid grid-cols-2 gap-3'>
+          <div className='space-y-3 md:grid md:grid-cols-3 md:gap-3 md:space-y-0'>
+            <div className='grid grid-cols-2 gap-3 md:contents'>
               <Button
                 onClick={onReceive}
                 variant='outline'

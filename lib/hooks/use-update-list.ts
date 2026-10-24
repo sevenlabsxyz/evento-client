@@ -1,6 +1,7 @@
 'use client';
 
 import apiClient from '@/lib/api/client';
+import { invalidateAllEventSavedStatuses } from '@/lib/hooks/use-event-saved-status';
 import { queryKeys } from '@/lib/query-client';
 import { ApiResponse, UpdateListForm, UserList } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -24,10 +25,14 @@ export function useUpdateList() {
 
       throw new Error('Failed to update list');
     },
-    onSuccess: (data) => {
-      // Invalidate user lists and specific list
+    onSuccess: (updatedList) => {
+      // PATCH returns the row without `event_count`; keep the cached count.
+      queryClient.setQueryData<UserList[]>(queryKeys.userLists(), (lists) =>
+        lists?.map((list) => (list.id === updatedList.id ? { ...list, ...updatedList } : list))
+      );
       queryClient.invalidateQueries({ queryKey: queryKeys.userLists() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.list(data.id) });
+      // Saved-status entries embed list names.
+      invalidateAllEventSavedStatuses(queryClient);
     },
   });
 }

@@ -1,3 +1,9 @@
 export const DOCS_URL = 'https://docs.evento.so';
 export const DOCS_API_URL = 'https://docs.evento.so/api/overview';
 export const DOCS_MCP_URL = 'https://docs.evento.so/ai/setup';
+export const DOCS_MCP_CLIENT_CONFIG_URL = 'https://docs.evento.so/ai/client-configuration';
+export const DOCS_MCP_TOOLS_URL = 'https://docs.evento.so/ai/tools';
+export const DOCS_MCP_ARCHITECTURE_URL = 'https://docs.evento.so/ai/architecture';
+export const DOCS_MCP_TROUBLESHOOTING_URL = 'https://docs.evento.so/ai/testing-and-troubleshooting';
+export const DOCS_MCP_SKILL_URL = 'https://docs.evento.so/ai/skill';
+export const DOCS_MCP_OPENCLAW_URL = 'https://docs.evento.so/ai/add-to-openclaw';
