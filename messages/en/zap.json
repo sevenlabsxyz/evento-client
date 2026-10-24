@@ -1,0 +1,178 @@
+{
+  "batch": {
+    "recipientContext": "This batch will go to {eligible} guest(s). A total of {excluded} guest(s) without an Evento wallet can't receive this batch zap but will be notified over email of the attempt.",
+    "notifyFailed": "Failed to notify guests without wallets",
+    "completedToast": "Batch Zap completed",
+    "startFailed": "Failed to start batch zap",
+    "titles": {
+      "complete": "Batch Zap Complete",
+      "review": "Review Batch Zap",
+      "comment": "Add a Message",
+      "setup": "Zap All"
+    },
+    "confirmAndSend": "Confirm and send",
+    "sats": "{amount} sats",
+    "completed": {
+      "allSent": "All payments were sent",
+      "someIssues": "Batch finished with some issues",
+      "paymentsSent": "{count, plural, one {# payment sent for {sats} sats.} other {# payments sent for {sats} sats.}}",
+      "walletReminders": "Wallet reminder emails",
+      "notifySummary": "{sent, plural, one {# guest emailed} other {# guests emailed}}, {already} already notified, {errors} could not be notified.",
+      "noUsernames": "We could not identify any usernames for the guests without wallets.",
+      "notifyPending": "Wallet reminder email results are not available yet.",
+      "needsAttention": "Needs attention",
+      "paymentFailed": "Payment failed",
+      "paymentSkipped": "Payment skipped"
+    },
+    "stats": {
+      "sent": "Sent",
+      "failed": "Failed",
+      "skipped": "Skipped",
+      "remaining": "Remaining"
+    },
+    "setup": {
+      "amount": "Amount",
+      "amountHint": "Choose how to calculate the batch.",
+      "available": "{amount} available",
+      "perPerson": "Per person",
+      "perPersonHint": "Each guest gets the entered amount.",
+      "totalSplit": "Total split",
+      "totalSplitHint": "Divide the total across all recipients.",
+      "amountInSats": "Amount in sats",
+      "enterSats": "Enter sats",
+      "minimumHint": "Minimum 5 sats per guest. Total-split keeps any remainder in your wallet."
+    },
+    "comment": {
+      "title": "Shared comment",
+      "description": "This optional note will be attached to every payment in the batch.",
+      "label": "Add a message (optional)",
+      "placeholder": "Say something nice...",
+      "hint": "This message is sent when possible. If a recipient wallet rejects comments, that payment may fail."
+    },
+    "review": {
+      "summary": "Send summary",
+      "recipients": "Recipients",
+      "perRecipient": "Per recipient",
+      "total": "Total to send",
+      "remainder": "Remainder kept in wallet",
+      "noComment": "No shared comment will be included."
+    },
+    "sending": {
+      "dontLeave": "Don't leave this screen",
+      "keepOpen": "Keep Evento open and avoid switching tabs or apps while these self-custody wallet payments are being sent.",
+      "label": "Batch Zap",
+      "progress": "Sending payment {current} of {total}",
+      "currentRecipient": "Current recipient",
+      "preparingNext": "Preparing next payment",
+      "processing": "Processing Lightning payment"
+    }
+  },
+  "sheet": {
+    "title": "Send Zap",
+    "loadDetailsFailed": "Failed to load payment details. Please try again.",
+    "invalidAddress": "Invalid lightning address",
+    "prepareFailed": "Failed to prepare payment",
+    "sendFailed": "Failed to send payment",
+    "selfZap": "You cannot zap yourself!"
+  },
+  "steps": {
+    "sendZap": "Send Zap",
+    "confirmZap": "Confirm Zap",
+    "customAmount": "Custom Amount",
+    "selectAmount": "Select amount",
+    "custom": "Custom",
+    "sats": "{amount} sats",
+    "usdApprox": "≈ ${amount} USD",
+    "messageLabel": "Add a message (optional)",
+    "messagePlaceholder": "Say something nice...",
+    "preparing": "Preparing...",
+    "sendingTo": "Sending to",
+    "networkFee": "Network Fee",
+    "message": "Message",
+    "confirmAndSend": "Confirm & Send",
+    "convert": "Convert",
+    "sendingZap": "Sending Zap...",
+    "pleaseWait": "Please wait",
+    "zapSent": "Zap Sent!",
+    "sentTo": "{amount} sats to {name}"
+  },
+  "noWallet": {
+    "heading": "Wallet Not Set Up",
+    "headingNamed": "{name} hasn’t set up their wallet",
+    "sending": "Sending...",
+    "notified": "Notified",
+    "alreadyNotified": "Already Notified",
+    "letThemKnow": "Let them know",
+    "description": "This user hasn't set up their Evento Wallet yet. Let them know so they can start receiving Lightning payments!"
+  },
+  "lightbox": {
+    "deleteFailed": "Failed to delete photo. Please try again.",
+    "openMenu": "Open menu",
+    "deletePhoto": "Delete photo",
+    "saveImage": "Save Image",
+    "shared": "Image shared successfully!",
+    "openedInNewTab": "Image opened in new tab",
+    "downloaded": "Photo downloaded successfully!",
+    "handleFailed": "Failed to handle image. Please try again.",
+    "deleted": "Photo deleted.",
+    "downloadImage": "Download image",
+    "closeFullscreen": "Close fullscreen view",
+    "loadFailed": "Failed to load image",
+    "fullscreenAlt": "Fullscreen view of image {index}",
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "usernameAlt": "Username",
+    "postedOn": "posted on {date}",
+    "deleteTitle": "Delete Photo",
+    "deleteDescription": "Are you sure you want to delete this photo? This action cannot be undone.",
+    "deleting": "Deleting..."
+  },
+  "giphy": {
+    "searchPlaceholder": "Search GIFs...",
+    "noResults": "No GIFs found",
+    "tryDifferent": "Try a different search term"
+  },
+  "errorBoundary": {
+    "description": "We're sorry, but there was an error loading this content."
+  },
+  "quickProfile": {
+    "thisUser": "this user",
+    "followed": "You followed {name}!",
+    "unfollowed": "You unfollowed {name}",
+    "followFailed": "Failed to follow. Please try again.",
+    "unfollowFailed": "Failed to unfollow. Please try again.",
+    "invalidUsername": "Invalid username format",
+    "sheetTitle": "Quick profile for {name} (@{username})",
+    "openingProfile": "Opening Profile...",
+    "viewFullProfile": "View Full Profile",
+    "unfollowing": "Unfollowing...",
+    "following": "Following",
+    "followingPending": "Following...",
+    "follow": "Follow",
+    "unknownUser": "Unknown User",
+    "bio": "Bio",
+    "followers": "Followers"
+  },
+  "ui": {
+    "searchEmojis": "Search emojis...",
+    "noEmoji": "No emoji found.",
+    "previousSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "carousel": "carousel",
+    "slide": "slide",
+    "failedToLoad": "Failed to load",
+    "profileAlt": "Profile",
+    "defaultProfileAlt": "Default profile",
+    "verificationBadge": "Verification badge",
+    "selectInterests": "Select your interests.",
+    "breadcrumb": "breadcrumb",
+    "pagination": "pagination",
+    "previousPage": "Go to previous page",
+    "nextPage": "Go to next page",
+    "morePages": "More pages",
+    "sidebar": "Sidebar",
+    "sidebarDescription": "Displays the mobile sidebar.",
+    "toggleSidebar": "Toggle Sidebar",
+    "loading": "Loading..."
+  }
+}

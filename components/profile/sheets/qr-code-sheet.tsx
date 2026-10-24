@@ -2,6 +2,7 @@
 
 import { toPng } from 'html-to-image';
 import { Check, Copy, Download } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { QRCodeSVG } from 'qrcode.react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
@@ -18,6 +19,7 @@ interface QRCodeSheetProps {
 }
 
 export default function QRCodeSheet({ isOpen, onClose, username, userImage }: QRCodeSheetProps) {
+  const t = useTranslations('profile');
   const [isCopied, setIsCopied] = useState(false);
   const qrCodeRef = useRef<HTMLDivElement>(null);
   const profileUrl = `https://evento.so/${username}`;
@@ -41,15 +43,15 @@ export default function QRCodeSheet({ isOpen, onClose, username, userImage }: QR
         link.download = `evento-${username}.png`;
         link.href = dataUrl;
         link.click();
-        toast.success('QR Code downloaded!');
+        toast.success(t('sheets.qr.downloaded'));
       })
       .catch((err) => {
         logger.error('Error downloading QR code', {
           error: err instanceof Error ? err.message : String(err),
         });
-        toast.error('Failed to download QR code');
+        toast.error(t('sheets.qr.downloadFailed'));
       });
-  }, [username]);
+  }, [username, t]);
 
   const handleCopyLink = useCallback(async () => {
     try {
@@ -68,12 +70,12 @@ export default function QRCodeSheet({ isOpen, onClose, username, userImage }: QR
         textArea.remove();
       }
       setIsCopied(true);
-      toast.success('Link copied!');
+      toast.success(t('sheets.qr.linkCopied'));
       setTimeout(() => setIsCopied(false), 3000);
     } catch {
-      toast.error('Failed to copy link');
+      toast.error(t('sheets.qr.copyFailed'));
     }
-  }, [profileUrl]);
+  }, [profileUrl, t]);
 
   return (
     <DetachedSheet.Root
@@ -89,7 +91,7 @@ export default function QRCodeSheet({ isOpen, onClose, username, userImage }: QR
                 <DetachedSheet.Handle />
               </div>
 
-              <h2 className='mb-2 text-center text-lg font-semibold'>Profile QR Code</h2>
+              <h2 className='mb-2 text-center text-lg font-semibold'>{t('sheets.qr.title')}</h2>
               <p className='mb-6 text-center text-sm text-gray-500 dark:text-neutral-400'>
                 @{username}
               </p>
@@ -132,18 +134,18 @@ export default function QRCodeSheet({ isOpen, onClose, username, userImage }: QR
                   className='w-full bg-red-600 text-white hover:bg-red-700'
                 >
                   <Download className='mr-2 h-4 w-4' />
-                  Download QR Code
+                  {t('sheets.qr.download')}
                 </Button>
                 <Button variant='outline' onClick={handleCopyLink} className='w-full'>
                   {isCopied ? (
                     <>
                       <Check className='mr-2 h-4 w-4' />
-                      Copied!
+                      {t('copiedBang')}
                     </>
                   ) : (
                     <>
                       <Copy className='mr-2 h-4 w-4' />
-                      Copy Link
+                      {t('sheets.qr.copyLink')}
                     </>
                   )}
                 </Button>

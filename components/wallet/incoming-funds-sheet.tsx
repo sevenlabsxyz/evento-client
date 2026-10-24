@@ -21,6 +21,7 @@ import {
   X,
   XCircle,
 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { SpeedUpSheet } from './sheets/speed-up-sheet';
 
@@ -57,6 +58,9 @@ interface IncomingFundsSheetProps {
 }
 
 export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFundsSheetProps) {
+  const t = useTranslations('wallet');
+  const tCommon = useTranslations('common');
+  const locale = useLocale();
   const [deposits, setDeposits] = useState<DepositInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingTxid, setProcessingTxid] = useState<string | null>(null);
@@ -120,31 +124,41 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
       const outcome = claimResult.outcome;
 
       if (outcome?.type === 'settled' || outcome === undefined) {
-        toast.success('Swap completed successfully!');
+        toast.success(t('incomingFunds.swapCompleted'));
       } else if (outcome.type === 'submitted') {
-        toast.info('Claim submitted — it will complete automatically.');
+        toast.info(t('incomingFunds.claimSubmitted'));
       } else if (outcome.type === 'deferred') {
         const reason = outcome.reason;
         if (reason.type === 'maxFeeExceeded') {
           const feeParts: string[] = [];
           const { requiredFeeSats, maxFeeSats } = reason;
           if (typeof requiredFeeSats === 'number' || typeof requiredFeeSats === 'bigint') {
-            feeParts.push(`required: ${requiredFeeSats.toLocaleString()} sats`);
+            feeParts.push(
+              t('incomingFunds.requiredFee', { amount: requiredFeeSats.toLocaleString(locale) })
+            );
           }
           if (typeof maxFeeSats === 'number' || typeof maxFeeSats === 'bigint') {
-            feeParts.push(`limit: ${maxFeeSats.toLocaleString()} sats`);
+            feeParts.push(
+              t('incomingFunds.feeLimit', { amount: maxFeeSats.toLocaleString(locale) })
+            );
           }
-          const feeDetail = feeParts.length > 0 ? ` (${feeParts.join(', ')})` : '';
           toast.error(
-            `Claim fee would exceed the selected max fee. It will be retried automatically within your fee limit.${feeDetail}`
+            feeParts.length > 0
+              ? t('incomingFunds.feeExceededWithDetail', { detail: feeParts.join(', ') })
+              : t('incomingFunds.feeExceeded')
           );
         } else if (reason.type === 'providerDeclined' && reason.message) {
-          toast.warning(`Claim deferred: ${reason.type} (${reason.message})`);
+          toast.warning(
+            t('incomingFunds.deferredWithMessage', {
+              reason: reason.type,
+              message: reason.message,
+            })
+          );
         } else {
-          toast.warning(`Claim deferred: ${reason.type}`);
+          toast.warning(t('incomingFunds.deferred', { reason: reason.type }));
         }
       } else {
-        toast.success('Swap completed successfully!');
+        toast.success(t('incomingFunds.swapCompleted'));
       }
       await loadDeposits();
       onRefresh?.();
@@ -160,7 +174,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
   };
 
   const formatAmount = (sats: number) => {
-    return sats.toLocaleString();
+    return sats.toLocaleString(locale);
   };
 
   const truncateTxid = (txid: string) => {
@@ -183,15 +197,16 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                 <SheetWithDetent.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
               </div>
               <VisuallyHidden.Root asChild>
-                <SheetWithDetent.Title>Incoming Funds</SheetWithDetent.Title>
+                <SheetWithDetent.Title>{t('incomingFunds.title')}</SheetWithDetent.Title>
               </VisuallyHidden.Root>
 
               <div className='flex flex-col'>
                 {/* Header */}
                 <div className='flex items-center justify-between p-4'>
-                  <h2 className='text-xl font-semibold'>Incoming Funds</h2>
+                  <h2 className='text-xl font-semibold'>{t('incomingFunds.title')}</h2>
                   <button
                     onClick={() => onOpenChange(false)}
+                    aria-label={tCommon('actions.close')}
                     className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
                   >
                     <X className='h-5 w-5' />
@@ -206,7 +221,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                       <div className='text-center'>
                         <Loader2 className='mx-auto h-8 w-8 animate-spin text-gray-400 dark:text-neutral-500' />
                         <p className='mt-4 text-sm text-gray-600 dark:text-neutral-400'>
-                          Loading...
+                          {tCommon('states.loading')}
                         </p>
                       </div>
                     </div>
@@ -217,11 +232,10 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                         <CheckCircle2 className='h-12 w-12 text-green-600 dark:text-green-400' />
                       </div>
                       <h3 className='mt-4 text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-                        All Set!
+                        {t('incomingFunds.allSet')}
                       </h3>
                       <p className='mt-2 max-w-sm text-center text-sm text-gray-600 dark:text-neutral-400'>
-                        No pending funds. We automatically swap Bitcoin to Lightning when fees are
-                        low.
+                        {t('incomingFunds.noPending')}
                       </p>
                     </div>
                   ) : (
@@ -232,9 +246,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                         <div className='flex items-start gap-3'>
                           <ChevronsRight className='mt-0.5 h-7 w-7 flex-shrink-0 text-muted-foreground/80' />
                           <p className='text-sm text-muted-foreground'>
-                            Your Bitcoin is on its way! It will be added to your balance
-                            automatically when the network clears up. Want it faster? Pay a small
-                            fee to get it now.
+                            {t('incomingFunds.onItsWay')}
                           </p>
                         </div>
                       </div>
@@ -255,12 +267,12 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                                 {deposit.claimError ? (
                                   <span className='inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange-700 dark:border-orange-900 dark:bg-orange-950/40 dark:text-orange-400'>
                                     <XCircle className='h-3 w-3' />
-                                    Needs action
+                                    {t('incomingFunds.needsAction')}
                                   </span>
                                 ) : (
                                   <span className='inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2 py-0.5 text-xs font-medium text-gray-700 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300'>
                                     <Loader2 className='h-3 w-3 animate-spin' />
-                                    Pending
+                                    {t('incomingFunds.pending')}
                                   </span>
                                 )}
                               </div>
@@ -290,11 +302,11 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                               {processingTxid === deposit.txid ? (
                                 <>
                                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                                  Swapping...
+                                  {t('incomingFunds.swapping')}
                                 </>
                               ) : (
                                 <>
-                                  <span>Get It Now</span>
+                                  <span>{t('incomingFunds.getItNow')}</span>
                                   <ArrowRight className='h-4 w-4' />
                                 </>
                               )}
@@ -308,16 +320,19 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                                 <XCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-orange-600 dark:text-orange-400' />
                                 <div className='flex-1'>
                                   <p className='text-xs font-medium text-orange-900 dark:text-orange-400'>
-                                    Auto-swap delayed
+                                    {t('incomingFunds.autoSwapDelayed')}
                                   </p>
                                   <p className='mt-0.5 text-xs text-orange-700 dark:text-orange-400'>
                                     {deposit.claimError.type === 'maxDepositClaimFeeExceeded'
-                                      ? `Network fee of ${deposit.claimError.requiredFeeSats} sats exceeds auto-claim limit — claim manually or wait for lower fees`
+                                      ? t('incomingFunds.feeExceedsLimit', {
+                                          amount: deposit.claimError.requiredFeeSats,
+                                        })
                                       : deposit.claimError.type === 'missingUtxo'
-                                        ? 'Transaction output not found'
+                                        ? t('incomingFunds.outputNotFound')
                                         : deposit.claimError.type === 'generic'
-                                          ? deposit.claimError.message || 'Unknown error'
-                                          : 'Unknown error'}
+                                          ? deposit.claimError.message ||
+                                            t('incomingFunds.unknownError')
+                                          : t('incomingFunds.unknownError')}
                                   </p>
                                 </div>
                               </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronRight, Shield } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { CircledIconButton } from '../circled-icon-button';
 
 interface BackupCalloutProps {
@@ -8,6 +9,7 @@ interface BackupCalloutProps {
 }
 
 export function BackupCallout({ onBackup }: BackupCalloutProps) {
+  const t = useTranslations('wallet');
   return (
     <button
       onClick={onBackup}
@@ -19,8 +21,8 @@ export function BackupCallout({ onBackup }: BackupCalloutProps) {
         className='border-red-200 text-red-600 dark:border-red-900 dark:text-red-400'
       />
       <div className='min-w-0 flex-1'>
-        <p className='font-medium text-red-900 dark:text-red-400'>Secure your wallet</p>
-        <p className='text-sm text-red-600 dark:text-red-400'>Back up to protect your funds</p>
+        <p className='font-medium text-red-900 dark:text-red-400'>{t('backupCallout.title')}</p>
+        <p className='text-sm text-red-600 dark:text-red-400'>{t('backupCallout.description')}</p>
       </div>
       <ChevronRight className='h-5 w-5 flex-shrink-0 text-red-400' />
     </button>

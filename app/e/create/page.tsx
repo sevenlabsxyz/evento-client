@@ -45,6 +45,7 @@ import {
   Music,
   Users,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 
@@ -92,6 +93,8 @@ export default function CreatePage() {
 }
 
 function CreatePageContent() {
+  const t = useTranslations('createEvent');
+  const tCommon = useTranslations('common');
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const pathname = usePathname();
@@ -107,7 +110,7 @@ function CreatePageContent() {
 
     setTopBarForRoute(pathname, {
       leftMode: 'back',
-      title: parentEventId ? 'Create Sub Event' : 'Create Event',
+      title: parentEventId ? t('page.createSubEvent') : t('page.createEvent'),
       hideMobileBreadcrumb: true,
       subtitle: undefined,
       showAvatar: true,
@@ -119,7 +122,7 @@ function CreatePageContent() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, parentEventId, applyRouteConfig, setTopBarForRoute, clearRoute]);
+  }, [pathname, parentEventId, applyRouteConfig, setTopBarForRoute, clearRoute, t]);
 
   const createEventMutation = useCreateEventWithCallbacks();
 
@@ -289,9 +292,9 @@ function CreatePageContent() {
       const ctaLabel =
         createdStatus === 'draft'
           ? createdType === 'ticketed'
-            ? 'Go to Ticket Setup'
-            : 'Go to Registration Setup'
-          : 'View Event Page';
+            ? t('page.goToTicketSetup')
+            : t('page.goToRegistrationSetup')
+          : t('created.viewEventPage');
 
       // Prepare data for success modal
       setCreatedEventData({
@@ -308,14 +311,14 @@ function CreatePageContent() {
       // Show success modal
       setShowCreatedModal(true);
       toast.success(
-        createdStatus === 'draft' ? 'Draft created successfully!' : 'Event created successfully!'
+        createdStatus === 'draft' ? t('page.draftCreatedToast') : t('page.eventCreatedToast')
       );
     } catch (error: any) {
       // Error handling
       logger.error('Failed to create event', {
         error: error instanceof Error ? error.message : String(error),
       });
-      toast.error(error.message || 'Failed to create event');
+      toast.error(error.message || t('page.createFailed'));
     }
   };
 
@@ -446,14 +449,12 @@ function CreatePageContent() {
             <Layers className='h-4 w-4 text-teal-600 dark:text-teal-400' />
           </div>
           <p className='text-sm text-teal-900 dark:text-teal-400'>
-            This event will be created as a sub event
-            {parentEvent?.title ? (
-              <>
-                {' '}
-                of <span className='font-semibold'>{parentEvent.title}</span>
-              </>
-            ) : null}
-            .
+            {parentEvent?.title
+              ? t.rich('page.subEventBannerWithParent', {
+                  title: parentEvent.title,
+                  strong: (chunks) => <span className='font-semibold'>{chunks}</span>,
+                })
+              : t('page.subEventBanner')}
           </p>
         </div>
       )}
@@ -472,13 +473,13 @@ function CreatePageContent() {
         <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
           <div className='space-y-2'>
             <label className='text-sm font-medium text-gray-500 dark:text-neutral-400'>
-              Event Title
+              {t('page.eventTitle')}
             </label>
             <div className='flex items-center gap-3'>
               <EmojiSelector selectedEmoji={emoji} onEmojiSelect={setEmoji} />
               <input
                 type='text'
-                placeholder='Enter event name'
+                placeholder={t('page.eventTitlePlaceholder')}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className='flex-1 border-none bg-transparent text-lg font-medium text-gray-900 outline-none dark:text-neutral-100 dark:placeholder:text-neutral-400'
@@ -494,7 +495,7 @@ function CreatePageContent() {
               <Calendar className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
             <span className='w-12 min-w-10 font-medium text-gray-700 dark:text-neutral-300'>
-              Starts
+              {t('page.starts')}
             </span>
             <div className='flex flex-1 gap-2'>
               <button
@@ -517,7 +518,7 @@ function CreatePageContent() {
               <Calendar className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
             <span className='w-12 min-w-10 font-medium text-gray-700 dark:text-neutral-300'>
-              Ends
+              {t('page.ends')}
             </span>
             <div className='flex flex-1 gap-2'>
               <button
@@ -547,13 +548,13 @@ function CreatePageContent() {
             </div>
             <div className='flex-1'>
               <label className='mb-1 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
-                Address
+                {t('page.address')}
               </label>
               <div className='flex items-center justify-between'>
                 <span
                   className={`font-medium ${location ? 'text-gray-900 dark:text-neutral-100' : 'text-gray-400 dark:text-neutral-400'}`}
                 >
-                  {location ? getLocationDisplayName(location) : 'Choose address'}
+                  {location ? getLocationDisplayName(location) : t('page.chooseAddress')}
                 </span>
                 <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
               </div>
@@ -571,15 +572,15 @@ function CreatePageContent() {
             </div>
             <div className='flex-1'>
               <label className='mb-1 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
-                Event Type
+                {t('eventType.title')}
               </label>
               <div className='flex items-center justify-between'>
                 <span className='font-medium text-gray-900 dark:text-neutral-100'>
                   {type === 'registration'
-                    ? 'Registration'
+                    ? t('eventType.registration')
                     : type === 'ticketed'
-                      ? 'Ticketed'
-                      : 'RSVP'}
+                      ? t('page.ticketed')
+                      : t('eventType.rsvp')}
                 </span>
                 <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
               </div>
@@ -602,11 +603,11 @@ function CreatePageContent() {
             </div>
             <div className='flex-1'>
               <label className='mb-1 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
-                Event Visibility
+                {t('visibility.title')}
               </label>
               <div className='flex items-center justify-between'>
                 <span className='font-medium text-gray-900 dark:text-neutral-100'>
-                  {visibility === 'public' ? 'Public' : 'Private'}
+                  {visibility === 'public' ? tCommon('labels.public') : tCommon('labels.private')}
                 </span>
                 <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
               </div>
@@ -625,11 +626,13 @@ function CreatePageContent() {
                 <div className='flex items-center justify-between'>
                   <div className='flex flex-col'>
                     <label className='mb-1 text-sm font-medium text-gray-500 dark:text-neutral-400'>
-                      {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
+                      {hasCapacity && capacity
+                        ? t('page.capacityValue', { capacity })
+                        : t('page.setCapacity')}
                     </label>
                     {hasCapacity && capacity && (
                       <span className='text-xs text-gray-400 dark:text-neutral-400'>
-                        Maximum attendees: {capacity}
+                        {t('page.maxAttendees', { capacity })}
                       </span>
                     )}
                   </div>
@@ -661,10 +664,10 @@ function CreatePageContent() {
               <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-neutral-900'>
                 <div>
                   <p className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                    Show capacity count
+                    {t('page.showCapacityCount')}
                   </p>
                   <p className='text-xs text-gray-500 dark:text-neutral-400'>
-                    Display spots remaining to guests
+                    {t('page.showCapacityCountDescription')}
                   </p>
                 </div>
                 <button
@@ -695,14 +698,14 @@ function CreatePageContent() {
             </div>
             <div className='flex-1'>
               <label className='mb-2 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
-                Description
+                {t('page.description')}
               </label>
               <div className='flex items-center justify-between'>
                 <span
                   className={`${isContentEmpty(description) ? 'text-gray-400 dark:text-neutral-400' : 'text-gray-900 dark:text-neutral-100'}`}
                 >
                   {isContentEmpty(description)
-                    ? 'Add description about this event...'
+                    ? t('page.descriptionPlaceholder')
                     : getContentPreview(description, 80)}
                 </span>
                 <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
@@ -722,7 +725,7 @@ function CreatePageContent() {
                 onClick={() => setShowAttachmentModal(true)}
                 className='text-left font-medium text-gray-500 dark:text-neutral-400'
               >
-                Add Music
+                {t('attachment.title')}
               </button>
             </div>
           </div>
@@ -737,7 +740,7 @@ function CreatePageContent() {
             disabled={!isFormValid || createEventMutation.isPending}
             loading={createEventMutation.isPending}
           >
-            Create Event
+            {t('page.submit')}
           </SubmitButton>
         </div>
       </div>
@@ -750,7 +753,7 @@ function CreatePageContent() {
           onClose={() => setShowStartDateModal(false)}
           onDateSelect={setStartDate}
           selectedDate={startDate}
-          title='Start Date'
+          title={t('page.startDate')}
         />
 
         <DatePickerSheet
@@ -758,7 +761,7 @@ function CreatePageContent() {
           onClose={() => setShowEndDateModal(false)}
           onDateSelect={setEndDate}
           selectedDate={endDate}
-          title='End Date'
+          title={t('page.endDate')}
           referenceDate={startDate}
         />
 
@@ -770,7 +773,7 @@ function CreatePageContent() {
           onTimezoneSelect={setTimezone}
           selectedTime={startTime}
           timezone={timezone}
-          title='Start Time'
+          title={t('page.startTime')}
         />
 
         <TimePickerSheet
@@ -780,7 +783,7 @@ function CreatePageContent() {
           onTimezoneSelect={setTimezone}
           selectedTime={endTime}
           timezone={timezone}
-          title='End Time'
+          title={t('page.endTime')}
         />
 
         {/* Attachment Sheet */}

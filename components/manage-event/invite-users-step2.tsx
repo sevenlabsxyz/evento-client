@@ -3,6 +3,7 @@
 import { useSendEventInvites } from '@/lib/hooks/use-event-invites';
 import { UserDetails } from '@/lib/types/api';
 import { Loader2, MailIcon, Send, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { UserAvatar } from '../ui/user-avatar';
 
 interface Step2SendInvitesProps {
@@ -30,6 +31,7 @@ export default function Step2SendInvites({
   onRemoveEmail,
   onRemoveUser,
 }: Step2SendInvitesProps) {
+  const t = useTranslations('manageLegacy');
   const sendInvitesMutation = useSendEventInvites();
   const selectedCount = selectedEmails.size + selectedUsers.length;
 
@@ -71,7 +73,7 @@ export default function Step2SendInvites({
     <div className='flex flex-col px-4 pb-8'>
       {/* Subtitle */}
       <p className='mb-4 text-center text-sm text-gray-500 dark:text-neutral-400'>
-        Make it special for your guests!
+        {t('inviteUsers.step2.subtitle')}
       </p>
 
       {/* Message textarea */}
@@ -79,25 +81,25 @@ export default function Step2SendInvites({
         name='message'
         className='w-full rounded-2xl border border-gray-200 bg-gray-50 p-4 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-400'
         rows={4}
-        placeholder='Write a note to include with your invite (optional)'
+        placeholder={t('inviteUsers.step2.messagePlaceholder')}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
       />
       <p className='mt-2 text-xs italic text-gray-500 dark:text-neutral-400'>
-        This message is sent along with the details of your Event.
+        {t('inviteUsers.step2.messageHint')}
       </p>
 
       {/* Selected users list */}
       <div className='mt-6'>
         <h3 className='mb-3 font-semibold text-gray-900 dark:text-neutral-100'>
           {selectedCount > 0
-            ? `Inviting ${selectedCount} user${selectedCount === 1 ? '' : 's'}:`
-            : 'No users selected'}
+            ? t('inviteUsers.step2.inviting', { count: selectedCount })
+            : t('inviteUsers.step2.noneSelected')}
         </h3>
 
         {selectedCount === 0 ? (
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            Go back to add users to invite.
+            {t('inviteUsers.step2.goBackHint')}
           </p>
         ) : (
           <div className='flex flex-col gap-2'>
@@ -114,13 +116,13 @@ export default function Step2SendInvites({
                     {email}
                   </div>
                   <div className='truncate text-xs text-gray-500 dark:text-neutral-400'>
-                    Email invitation
+                    {t('inviteUsers.step2.emailInvitation')}
                   </div>
                 </div>
                 <button
                   onClick={() => onRemoveEmail(email)}
                   className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-neutral-700'
-                  aria-label={`Remove ${email}`}
+                  aria-label={t('inviteUsers.step2.removeAria', { name: email })}
                 >
                   <X className='h-4 w-4 text-gray-500 dark:text-neutral-400' />
                 </button>
@@ -151,7 +153,7 @@ export default function Step2SendInvites({
                 <button
                   onClick={() => onRemoveUser(user.id)}
                   className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-neutral-700'
-                  aria-label={`Remove ${user.username}`}
+                  aria-label={t('inviteUsers.step2.removeAria', { name: user.username })}
                 >
                   <X className='h-4 w-4 text-gray-500 dark:text-neutral-400' />
                 </button>
@@ -171,11 +173,11 @@ export default function Step2SendInvites({
           {sendInvitesMutation.isPending ? (
             <>
               <Loader2 className='h-4 w-4 animate-spin' />
-              Sending...
+              {t('inviteUsers.step2.sending')}
             </>
           ) : (
             <>
-              <Send className='h-4 w-4' /> SEND INVITES
+              <Send className='h-4 w-4' /> {t('inviteUsers.step2.send')}
             </>
           )}
         </button>

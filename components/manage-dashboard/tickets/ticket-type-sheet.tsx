@@ -5,39 +5,45 @@ import { Input } from '@/components/ui/input';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Textarea } from '@/components/ui/textarea';
 import { useCreateTicketType, useUpdateTicketType } from '@/lib/hooks/use-ticket-types';
+import type { Translator } from '@/lib/i18n/types';
 import type { TicketCurrency, TicketType } from '@/lib/types/manage';
 import { cn } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { toast } from '@/lib/utils/toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Lock } from 'lucide-react';
-import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const TICKET_CURRENCIES: readonly TicketCurrency[] = ['USD', 'EUR', 'GBP', 'BRL', 'NGN'];
 
-const ticketTypeFormSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, 'Name is required')
-    .max(100, 'Name must be 100 characters or fewer'),
-  description: z.string(),
-  price_amount: z
-    .number({ error: 'Enter a price (use 0 for free tickets)' })
-    .min(0, 'Price must be 0 or more')
-    .refine((value) => Math.abs(value * 100 - Math.round(value * 100)) < 1e-6, {
-      message: 'Use at most 2 decimal places',
-    }),
-  price_currency: z.enum(['USD', 'EUR', 'GBP', 'BRL', 'NGN']),
-  quantity_total: z
-    .number({ error: 'Enter how many tickets are available' })
-    .int('Quantity must be a whole number')
-    .min(1, 'Must have at least 1 ticket'),
-});
+type ManageTranslator = Translator<'manage'>;
 
-type TicketTypeFormData = z.infer<typeof ticketTypeFormSchema>;
+function buildTicketTypeFormSchema(t: ManageTranslator) {
+  return z.object({
+    name: z
+      .string()
+      .trim()
+      .min(1, t('ticketTypeSheet.validation.nameRequired'))
+      .max(100, t('ticketTypeSheet.validation.nameMax')),
+    description: z.string(),
+    price_amount: z
+      .number({ error: t('ticketTypeSheet.validation.priceRequired') })
+      .min(0, t('ticketTypeSheet.validation.priceMin'))
+      .refine((value) => Math.abs(value * 100 - Math.round(value * 100)) < 1e-6, {
+        message: t('ticketTypeSheet.validation.priceDecimals'),
+      }),
+    price_currency: z.enum(['USD', 'EUR', 'GBP', 'BRL', 'NGN']),
+    quantity_total: z
+      .number({ error: t('ticketTypeSheet.validation.quantityRequired') })
+      .int(t('ticketTypeSheet.validation.quantityInteger'))
+      .min(1, t('ticketTypeSheet.validation.quantityMin')),
+  });
+}
+
+type TicketTypeFormData = z.infer<ReturnType<typeof buildTicketTypeFormSchema>>;
 
 const EMPTY_FORM: TicketTypeFormData = {
   name: '',
@@ -79,6 +85,9 @@ export function TicketTypeSheet({
   ticketType,
   nextSortOrder,
 }: TicketTypeSheetProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
+  const ticketTypeFormSchema = useMemo(() => buildTicketTypeFormSchema(t), [t]);
   const createTicketType = useCreateTicketType(eventId);
   const updateTicketType = useUpdateTicketType(eventId);
   const isEdit = Boolean(ticketType);
@@ -116,7 +125,7 @@ export function TicketTypeSheet({
           price_currency: data.price_currency,
           quantity_total: data.quantity_total,
         });
-        toast.success('Ticket type updated');
+        toast.success(t('ticketTypeSheet.updatedToast'));
       } else {
         await createTicketType.mutateAsync({
           name: data.name,
@@ -126,11 +135,11 @@ export function TicketTypeSheet({
           quantity_total: data.quantity_total,
           sort_order: nextSortOrder,
         });
-        toast.success('Ticket type created');
+        toast.success(t('ticketTypeSheet.createdToast'));
       }
       onOpenChange(false);
     } catch (error) {
-      const fallback = isEdit ? 'Failed to update ticket type' : 'Failed to create ticket type';
+      const fallback = isEdit ? t('ticketTypeSheet.updateError') : t('ticketTypeSheet.createError');
       toast.error(getErrorMessage(error) || fallback);
     }
   };
@@ -139,7 +148,7 @@ export function TicketTypeSheet({
 
   return (
     <MasterScrollableSheet
-      title={isEdit ? 'Edit ticket type' : 'New ticket type'}
+      title={isEdit ? t('ticketTypeSheet.editTitle') : t('ticketTypeSheet.newTitle')}
       open={open}
       onOpenChange={onOpenChange}
     >
@@ -147,22 +156,19 @@ export function TicketTypeSheet({
         {isLocked ? (
           <div className='mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300'>
             <Lock className='mt-0.5 h-4 w-4 shrink-0' />
-            <p>
-              This ticket type has sales, so it can no longer be edited. Create a new ticket type to
-              offer different pricing or quantities.
-            </p>
+            <p>{t('ticketTypeSheet.lockedNotice')}</p>
           </div>
         ) : null}
 
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-6' noValidate>
           <div className='space-y-2'>
             <label htmlFor='ticket-type-name' className={labelClassName}>
-              Name
+              {t('ticketTypeSheet.nameLabel')}
             </label>
             <Input
               {...register('name')}
               id='ticket-type-name'
-              placeholder='General admission'
+              placeholder={t('ticketTypeSheet.namePlaceholder')}
               maxLength={100}
               disabled={isDisabled}
               aria-invalid={Boolean(errors.name)}
@@ -173,12 +179,16 @@ export function TicketTypeSheet({
 
           <div className='space-y-2'>
             <label htmlFor='ticket-type-description' className={labelClassName}>
-              Description <span className='text-gray-400 dark:text-neutral-500'>(optional)</span>
+              {t.rich('ticketTypeSheet.descriptionLabel', {
+                muted: (chunks) => (
+                  <span className='text-gray-400 dark:text-neutral-500'>{chunks}</span>
+                ),
+              })}
             </label>
             <Textarea
               {...register('description')}
               id='ticket-type-description'
-              placeholder='What does this ticket include?'
+              placeholder={t('ticketTypeSheet.descriptionPlaceholder')}
               rows={3}
               disabled={isDisabled}
               className='rounded-xl bg-gray-50 text-gray-900 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500'
@@ -186,12 +196,16 @@ export function TicketTypeSheet({
           </div>
 
           <div className='space-y-2'>
-            <span className={labelClassName}>Currency</span>
+            <span className={labelClassName}>{t('ticketTypeSheet.currencyLabel')}</span>
             <Controller
               control={control}
               name='price_currency'
               render={({ field }) => (
-                <div role='radiogroup' aria-label='Currency' className='grid grid-cols-5 gap-2'>
+                <div
+                  role='radiogroup'
+                  aria-label={t('ticketTypeSheet.currencyLabel')}
+                  className='grid grid-cols-5 gap-2'
+                >
                   {TICKET_CURRENCIES.map((currency) => {
                     const selected = field.value === currency;
                     return (
@@ -221,7 +235,7 @@ export function TicketTypeSheet({
           <div className='grid grid-cols-2 gap-4'>
             <div className='space-y-2'>
               <label htmlFor='ticket-type-price' className={labelClassName}>
-                Price
+                {t('ticketTypeSheet.priceLabel')}
               </label>
               <Input
                 {...register('price_amount', { valueAsNumber: true })}
@@ -237,13 +251,15 @@ export function TicketTypeSheet({
               {errors.price_amount ? (
                 <p className={errorClassName}>{errors.price_amount.message}</p>
               ) : (
-                <p className='text-xs text-gray-500 dark:text-neutral-400'>0 makes it free.</p>
+                <p className='text-xs text-gray-500 dark:text-neutral-400'>
+                  {t('ticketTypeSheet.priceHint')}
+                </p>
               )}
             </div>
 
             <div className='space-y-2'>
               <label htmlFor='ticket-type-quantity' className={labelClassName}>
-                Quantity
+                {t('ticketTypeSheet.quantityLabel')}
               </label>
               <Input
                 {...register('quantity_total', { valueAsNumber: true })}
@@ -259,14 +275,16 @@ export function TicketTypeSheet({
               {errors.quantity_total ? (
                 <p className={errorClassName}>{errors.quantity_total.message}</p>
               ) : (
-                <p className='text-xs text-gray-500 dark:text-neutral-400'>Total available.</p>
+                <p className='text-xs text-gray-500 dark:text-neutral-400'>
+                  {t('ticketTypeSheet.quantityHint')}
+                </p>
               )}
             </div>
           </div>
 
           {!isEdit ? (
             <p className='text-xs text-gray-500 dark:text-neutral-400'>
-              Ticket types can&apos;t be edited or removed once someone buys one.
+              {t('ticketTypeSheet.immutableNotice')}
             </p>
           ) : null}
 
@@ -278,12 +296,12 @@ export function TicketTypeSheet({
             {isSaving ? (
               <>
                 <Loader2 className='h-4 w-4 animate-spin' />
-                Saving...
+                {t('ticketTypeSheet.saving')}
               </>
             ) : isEdit ? (
-              'Save changes'
+              tCommon('actions.saveChanges')
             ) : (
-              'Create ticket type'
+              t('ticketTypeSheet.createSubmit')
             )}
           </Button>
         </form>

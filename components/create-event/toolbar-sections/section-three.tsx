@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import type { Editor } from '@tiptap/core';
 import { ChevronDown, List } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ShortcutKey } from '../shortcut-key';
 import { DropdownMenuItemClass, activeItemClass } from '../tiptap-utils';
@@ -12,6 +13,7 @@ interface SectionThreeProps {
 }
 
 export default function SectionThree({ editor, onOpenSheet }: SectionThreeProps) {
+  const t = useTranslations('createEvent');
   const [showDropdown, setShowDropdown] = useState(false);
 
   const toggleBulletList = () => {
@@ -24,7 +26,7 @@ export default function SectionThree({ editor, onOpenSheet }: SectionThreeProps)
     <div className='relative'>
       <ToolbarButton
         isActive={editor.isActive('bulletList') || editor.isActive('orderedList')}
-        tooltip='Lists'
+        tooltip={t('toolbar.lists')}
         className='w-12'
         onClick={() => {
           if (onOpenSheet && typeof window !== 'undefined' && window.innerWidth < 768) {
@@ -47,9 +49,9 @@ export default function SectionThree({ editor, onOpenSheet }: SectionThreeProps)
               className={cn(DropdownMenuItemClass, {
                 [activeItemClass]: editor.isActive('bulletList'),
               })}
-              aria-label='Bullet list'
+              aria-label={t('toolbar.bulletList')}
             >
-              <span className='grow'>Bullet list</span>
+              <span className='grow'>{t('toolbar.bulletList')}</span>
               <ShortcutKey keys={['mod', 'shift', '8']} />
             </button>
           </div>

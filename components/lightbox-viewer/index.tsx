@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { MiniListItem } from '@/components/ui/mini-list-item';
 import { Modal } from '@/components/ui/modal';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { UserDetails } from '@/lib/types/api';
 import { getOptimizedImageUrl } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
@@ -43,6 +44,7 @@ import {
   Trash2,
   XIcon,
 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { DeleteConfirmation } from './delete-confirmation';
@@ -68,6 +70,7 @@ const MobileGalleryMenu = React.memo(
     photoId: string;
     handleDelete: (photoId: string) => Promise<{ success: boolean }>;
   }) => {
+    const t = useTranslations('zap.lightbox');
     const [isOpen, setIsOpen] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -80,11 +83,11 @@ const MobileGalleryMenu = React.memo(
           setIsDialogOpen(false);
           setIsOpen(false);
         } else {
-          toast.error('Failed to delete photo. Please try again.');
+          toast.error(t('deleteFailed'));
         }
       } catch (error) {
         logger.error('Error deleting photo', { error });
-        toast.error('Failed to delete photo. Please try again.');
+        toast.error(t('deleteFailed'));
       } finally {
         setIsDeleting(false);
       }
@@ -94,13 +97,13 @@ const MobileGalleryMenu = React.memo(
       <>
         <Button variant='secondary' size='icon' onClick={() => setIsOpen(true)}>
           <MoreHorizontal className='h-4 w-4' />
-          <span className='sr-only'>Open menu</span>
+          <span className='sr-only'>{t('openMenu')}</span>
         </Button>
         <Modal open={isOpen} setOpen={setIsOpen}>
           <div className='px-2 pb-6 pt-4'>
             <MiniListItem
               icon={<Trash2 className='mr-2.5 h-5 w-5 text-red-400' />}
-              text='Delete photo'
+              text={t('deletePhoto')}
               onClick={() => setIsDialogOpen(true)}
             />
           </div>
@@ -130,6 +133,9 @@ export const LightboxViewer = React.memo(
     userId,
     eventId,
   }: LightboxViewerProps) => {
+    const t = useTranslations('zap.lightbox');
+    const tCommon = useTranslations('common');
+    const locale = getIntlLocale(useLocale());
     const [isDownloading, setIsDownloading] = useState(false);
     const [imageLoading, setImageLoading] = useState(true);
     const [imageError, setImageError] = useState(false);
@@ -204,21 +210,21 @@ export const LightboxViewer = React.memo(
 
                   await navigator.share({
                     files: [file],
-                    title: 'Save Image',
+                    title: t('saveImage'),
                   });
-                  toast.success('Image shared successfully!');
+                  toast.success(t('shared'));
                 } catch (error) {
                   if ((error as Error).name !== 'AbortError') {
                     logger.error('Error sharing image', { error });
                     // Fallback to opening in new tab if sharing fails
                     window.open(imageUrl, '_blank', 'noopener,noreferrer');
-                    toast.info('Image opened in new tab');
+                    toast.info(t('openedInNewTab'));
                   }
                 }
               } else {
                 // Fallback for iOS devices without Share API support
                 window.open(imageUrl, '_blank', 'noopener,noreferrer');
-                toast.info('Image opened in new tab');
+                toast.info(t('openedInNewTab'));
               }
             } else {
               // Non-iOS devices: Use traditional download
@@ -234,13 +240,13 @@ export const LightboxViewer = React.memo(
               link.click();
               document.body.removeChild(link);
               window.URL.revokeObjectURL(url);
-              toast.success('Photo downloaded successfully!');
+              toast.success(t('downloaded'));
             }
           }
         } catch (error) {
           if ((error as Error).name !== 'AbortError') {
             logger.error('Error handling image', { error });
-            toast.error('Failed to handle image. Please try again.');
+            toast.error(t('handleFailed'));
           }
         } finally {
           if (!controller.signal.aborted) {
@@ -249,7 +255,7 @@ export const LightboxViewer = React.memo(
           downloadControllerRef.current = null;
         }
       }
-    }, [selectedImage, images]);
+    }, [selectedImage, images, t]);
 
     const dialogHandlers = useSwipeable({
       onSwipedLeft: () => goToNext(),
@@ -275,7 +281,7 @@ export const LightboxViewer = React.memo(
         try {
           const result = await handleDelete(photoId);
           if (result.success) {
-            toast.success('Photo deleted.');
+            toast.success(t('deleted'));
             if (images.length <= 1) {
               onClose();
               return result;
@@ -294,11 +300,11 @@ export const LightboxViewer = React.memo(
           }
           return result;
         } catch (error) {
-          toast.error('Failed to delete photo. Please try again.');
+          toast.error(t('deleteFailed'));
           return { success: false };
         }
       },
-      [handleDelete, images.length, selectedImage, onClose, onImageChange]
+      [handleDelete, images.length, selectedImage, onClose, onImageChange, t]
     );
 
     // Reset loading states when image changes
@@ -349,7 +355,7 @@ export const LightboxViewer = React.memo(
               <button
                 onClick={downloadImage}
                 className='mr-2 text-white hover:text-gray-300'
-                aria-label='Download image'
+                aria-label={t('downloadImage')}
               >
                 {isDownloading ? (
                   <Loader2 className='h-6 w-6 animate-spin' />
@@ -360,7 +366,7 @@ export const LightboxViewer = React.memo(
               <button
                 onClick={onClose}
                 className='text-white hover:text-gray-300'
-                aria-label='Close fullscreen view'
+                aria-label={t('closeFullscreen')}
               >
                 <XIcon className='h-6 w-6' />
               </button>
@@ -375,7 +381,7 @@ export const LightboxViewer = React.memo(
                 {imageError ? (
                   <div className='flex flex-col items-center text-white'>
                     <div className='mb-2 text-4xl'>📷</div>
-                    <p>Failed to load image</p>
+                    <p>{t('loadFailed')}</p>
                     <button
                       onClick={() => {
                         setImageError(false);
@@ -383,13 +389,13 @@ export const LightboxViewer = React.memo(
                       }}
                       className='mt-2 rounded bg-white bg-opacity-20 px-4 py-2 text-sm hover:bg-opacity-30'
                     >
-                      Retry
+                      {tCommon('actions.retry')}
                     </button>
                   </div>
                 ) : (
                   <img
                     src={getImageUrl(images[selectedImage])}
-                    alt={`Fullscreen view of image ${selectedImage + 1}`}
+                    alt={t('fullscreenAlt', { index: selectedImage + 1 })}
                     className={`max-h-full max-w-full object-contain transition-opacity duration-200 ${
                       imageLoading ? 'opacity-0' : 'opacity-100'
                     }`}
@@ -406,14 +412,14 @@ export const LightboxViewer = React.memo(
             <button
               onClick={goToPrevious}
               className='absolute left-4 z-10 text-white hover:text-gray-300'
-              aria-label='Previous image'
+              aria-label={t('previousImage')}
             >
               <ChevronLeftIcon className='h-10 w-10' />
             </button>
             <button
               onClick={goToNext}
               className='absolute right-4 z-10 text-white hover:text-gray-300'
-              aria-label='Next image'
+              aria-label={t('nextImage')}
             >
               <ChevronRightIcon className='h-10 w-10' />
             </button>
@@ -433,7 +439,7 @@ export const LightboxViewer = React.memo(
                     <Avatar className='cursor-pointer border'>
                       <AvatarImage
                         src={images[selectedImage].user_details?.image || '/icon.png'}
-                        alt={images[selectedImage].user_details?.username || 'Username'}
+                        alt={images[selectedImage].user_details?.username || t('usernameAlt')}
                       />
                       <AvatarFallback>
                         {images[selectedImage].user_details?.username?.slice(0, 1) || 'E'}
@@ -455,8 +461,11 @@ export const LightboxViewer = React.memo(
                       )}
                       {images[selectedImage].created_at && (
                         <p className='cursor-pointer pt-2 text-[10px] text-gray-400 dark:text-neutral-500'>
-                          posted on{' '}
-                          {new Date(images[selectedImage].created_at).toLocaleDateString()}
+                          {t('postedOn', {
+                            date: new Date(images[selectedImage].created_at).toLocaleDateString(
+                              locale
+                            ),
+                          })}
                         </p>
                       )}
                     </div>

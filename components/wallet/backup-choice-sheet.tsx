@@ -23,6 +23,7 @@ import {
   KeyRound,
   Shield,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 type Step = 'choice' | 'password' | 'backup' | 'seed-pin' | 'seed-view';
@@ -39,6 +40,8 @@ export function BackupChoiceSheet({
   onOpenChange,
   onEncryptedBackupComplete,
 }: BackupChoiceSheetProps) {
+  const t = useTranslations('wallet');
+  const tCommon = useTranslations('common');
   const [step, setStep] = useState<Step>('choice');
   const [pin, setPin] = useState('');
   const [encryptedSeed, setEncryptedSeed] = useState('');
@@ -101,7 +104,7 @@ export function BackupChoiceSheet({
     const credential = isPasswordMode ? password : pinToUse;
 
     if (!credential || credential.length < 4) {
-      toast.error(isPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
+      toast.error(isPasswordMode ? t('pin.enterPassword') : t('pin.enterPin'));
       return;
     }
 
@@ -110,7 +113,10 @@ export function BackupChoiceSheet({
       setEncryptedSeed(backup);
       setStep('backup');
     } catch (error: any) {
-      toast.error(error.message || (isPasswordMode ? 'Invalid password' : 'Invalid PIN'));
+      toast.error(
+        error.message ||
+          (isPasswordMode ? t('backupChoice.invalidPassword') : t('backupChoice.invalidPin'))
+      );
       if (isPasswordMode) {
         setPassword('');
       } else {
@@ -123,10 +129,10 @@ export function BackupChoiceSheet({
     try {
       await navigator.clipboard.writeText(encryptedSeed);
       setCopied(true);
-      toast.success('Backup copied to clipboard');
+      toast.success(t('backupChoice.backupCopied'));
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      toast.error('Failed to copy');
+      toast.error(t('details.copyFailed'));
     }
   };
 
@@ -141,13 +147,13 @@ export function BackupChoiceSheet({
       try {
         await navigator.share({
           files: [file],
-          title: 'Wallet Backup',
+          title: t('backupChoice.shareTitle'),
         });
-        toast.success('Backup shared successfully');
+        toast.success(t('backupChoice.backupShared'));
       } catch (error) {
         // User cancelled or error
         if ((error as Error).name !== 'AbortError') {
-          toast.error('Failed to share backup');
+          toast.error(t('backupChoice.backupShareFailed'));
         }
       }
     } else {
@@ -158,17 +164,17 @@ export function BackupChoiceSheet({
       a.download = 'evento-wallet-encrypted-backup.txt';
       a.click();
       URL.revokeObjectURL(url);
-      toast.success('Backup downloaded');
+      toast.success(t('backupChoice.backupDownloaded'));
     }
   };
 
   const handleComplete = () => {
     if (!confirmed) {
-      toast.error('Please confirm you have saved your backup');
+      toast.error(t('backupChoice.confirmBackupRequired'));
       return;
     }
     markAsBackedUp();
-    toast.success('Wallet backed up successfully!');
+    toast.success(t('seedBackup.success'));
     handleOpenChange(false);
     onEncryptedBackupComplete();
   };
@@ -178,7 +184,7 @@ export function BackupChoiceSheet({
     const credential = isSeedPasswordMode ? seedPassword : pinToUse;
 
     if (!credential || credential.length < 4) {
-      toast.error(isSeedPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
+      toast.error(isSeedPasswordMode ? t('pin.enterPassword') : t('pin.enterPin'));
       return;
     }
 
@@ -186,7 +192,7 @@ export function BackupChoiceSheet({
     try {
       const encryptedSeedData = WalletStorageService.getEncryptedSeed();
       if (!encryptedSeedData) {
-        toast.error('No wallet found');
+        toast.error(t('backupChoice.noWallet'));
         return;
       }
 
@@ -194,7 +200,9 @@ export function BackupChoiceSheet({
       setMnemonic(decrypted);
       setStep('seed-view');
     } catch (error: any) {
-      toast.error(isSeedPasswordMode ? 'Invalid password' : 'Invalid PIN');
+      toast.error(
+        isSeedPasswordMode ? t('backupChoice.invalidPassword') : t('backupChoice.invalidPin')
+      );
       if (isSeedPasswordMode) {
         setSeedPassword('');
       } else {
@@ -210,10 +218,10 @@ export function BackupChoiceSheet({
     try {
       await navigator.clipboard.writeText(mnemonic);
       setSeedCopied(true);
-      toast.success('Recovery phrase copied to clipboard');
+      toast.success(t('seedBackup.copied'));
       setTimeout(() => setSeedCopied(false), 3000);
     } catch (error) {
-      toast.error('Failed to copy');
+      toast.error(t('details.copyFailed'));
     }
   };
 
@@ -227,12 +235,12 @@ export function BackupChoiceSheet({
       try {
         await navigator.share({
           files: [file],
-          title: 'Recovery Phrase',
+          title: t('backupChoice.phraseShareTitle'),
         });
-        toast.success('Recovery phrase shared successfully');
+        toast.success(t('backupChoice.phraseShared'));
       } catch (error) {
         if ((error as Error).name !== 'AbortError') {
-          toast.error('Failed to share recovery phrase');
+          toast.error(t('backupChoice.phraseShareFailed'));
         }
       }
     } else {
@@ -242,17 +250,17 @@ export function BackupChoiceSheet({
       a.download = 'evento-wallet-recovery-phrase.txt';
       a.click();
       URL.revokeObjectURL(url);
-      toast.success('Recovery phrase downloaded');
+      toast.success(t('backupChoice.phraseDownloaded'));
     }
   };
 
   const handleSeedComplete = () => {
     if (!seedConfirmed) {
-      toast.error('Please confirm you have saved your recovery phrase');
+      toast.error(t('seedBackup.confirmRequired'));
       return;
     }
     markAsBackedUp();
-    toast.success('Wallet backed up successfully!');
+    toast.success(t('seedBackup.success'));
     handleOpenChange(false);
     onEncryptedBackupComplete();
   };
@@ -261,11 +269,11 @@ export function BackupChoiceSheet({
 
   // Dynamic title based on current step
   const stepTitles: Record<Step, string> = {
-    choice: 'Choose Backup Method',
-    password: 'Backup Your Wallet',
-    backup: 'Encrypted Backup',
-    'seed-pin': 'View Recovery Phrase',
-    'seed-view': 'Your Recovery Phrase',
+    choice: t('backupChoice.titles.choice'),
+    password: t('backupChoice.titles.password'),
+    backup: t('backupChoice.titles.backup'),
+    'seed-pin': t('backupChoice.titles.seedPin'),
+    'seed-view': t('backupChoice.titles.seedView'),
   };
 
   return (
@@ -285,14 +293,14 @@ export function BackupChoiceSheet({
               <div className='min-w-0 flex-1'>
                 <div className='flex items-center gap-2'>
                   <p className='font-semibold text-gray-900 dark:text-neutral-100'>
-                    Encrypted Backup
+                    {t('backupChoice.titles.backup')}
                   </p>
                   <span className='rounded-full border border-green-300 bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:border-green-800 dark:bg-green-950/60 dark:text-green-400'>
-                    Recommended
+                    {t('backupChoice.recommended')}
                   </span>
                 </div>
                 <p className='mt-0.5 text-sm text-gray-500 dark:text-neutral-400'>
-                  PIN-protected backup that you can save to cloud storage.
+                  {t('backupChoice.encryptedDescription')}
                 </p>
               </div>
               <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
@@ -309,14 +317,14 @@ export function BackupChoiceSheet({
               <div className='min-w-0 flex-1'>
                 <div className='flex items-center gap-2'>
                   <p className='font-semibold text-gray-900 dark:text-neutral-100'>
-                    Recovery Phrase
+                    {t('backupChoice.phraseShareTitle')}
                   </p>
                   <span className='rounded-full border border-orange-300 bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700 dark:border-orange-800 dark:bg-orange-950/60 dark:text-orange-400'>
-                    Advanced
+                    {t('backupChoice.advanced')}
                   </span>
                 </div>
                 <p className='mt-0.5 text-sm text-gray-500 dark:text-neutral-400'>
-                  Write down your 12-word recovery phrase (also known as seed phrase)
+                  {t('backupChoice.phraseDescription')}
                 </p>
               </div>
               <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
@@ -324,11 +332,10 @@ export function BackupChoiceSheet({
           </div>
 
           <p className='mx-auto mt-6 max-w-sm text-center text-xs text-gray-400 dark:text-neutral-500'>
-            Your backup is the only way to recover your funds if you lose access to this device.
+            {t('backupChoice.onlyWay')}
             <br />
             <br />
-            If you choose the recovery phrase option and lose it, you will lose access to your
-            funds.
+            {t('backupChoice.phraseWarning')}
           </p>
         </div>
       )}
@@ -346,11 +353,11 @@ export function BackupChoiceSheet({
             </div>
             <p className='text-sm text-muted-foreground'>
               {isPasswordMode
-                ? 'Enter your admin password to export encrypted backup'
-                : 'Enter your PIN to export encrypted backup'}
+                ? t('backupChoice.exportPasswordPrompt')
+                : t('backupChoice.exportPinPrompt')}
             </p>
             {isPasswordMode && (
-              <p className='mt-1 text-xs text-muted-foreground'>Admin mode enabled</p>
+              <p className='mt-1 text-xs text-muted-foreground'>{t('unlock.adminMode')}</p>
             )}
           </div>
 
@@ -361,7 +368,7 @@ export function BackupChoiceSheet({
                 type='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder='Enter admin password'
+                placeholder={t('pin.adminPasswordPlaceholder')}
                 className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg dark:border-neutral-800 dark:bg-neutral-950'
                 autoFocus
                 disabled={isLoading}
@@ -407,7 +414,7 @@ export function BackupChoiceSheet({
               size='lg'
               disabled={(isPasswordMode ? password.length < 4 : pin.length < 4) || isLoading}
             >
-              {isLoading ? 'Verifying...' : 'Continue'}
+              {isLoading ? t('backupChoice.verifying') : tCommon('actions.continue')}
               {!isLoading && <ArrowRight className='ml-2 h-4 w-4' />}
             </Button>
             <Button
@@ -417,7 +424,7 @@ export function BackupChoiceSheet({
               size='lg'
               disabled={isLoading}
             >
-              Back
+              {tCommon('actions.back')}
             </Button>
           </div>
         </div>
@@ -430,14 +437,12 @@ export function BackupChoiceSheet({
             <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50 dark:bg-green-950/40'>
               <Shield className='h-8 w-8 text-green-600 dark:text-green-400' />
             </div>
-            <p className='text-sm text-muted-foreground'>
-              Save this encrypted backup to a secure location
-            </p>
+            <p className='text-sm text-muted-foreground'>{t('backupChoice.saveSecurely')}</p>
           </div>
 
           <div className='space-y-4'>
             <div className='space-y-2'>
-              <Label htmlFor='backup'>Encrypted Wallet Backup</Label>
+              <Label htmlFor='backup'>{t('backupChoice.encryptedLabel')}</Label>
               <Textarea
                 id='backup'
                 value={encryptedSeed}
@@ -457,12 +462,12 @@ export function BackupChoiceSheet({
                 {copied ? (
                   <>
                     <Check className='mr-2 h-4 w-4' />
-                    Copied!
+                    {t('seedBackup.copiedButton')}
                   </>
                 ) : (
                   <>
                     <Copy className='mr-2 h-4 w-4' />
-                    Copy
+                    {t('backupChoice.copy')}
                   </>
                 )}
               </Button>
@@ -473,7 +478,7 @@ export function BackupChoiceSheet({
                 size='lg'
               >
                 <Download className='mr-2 h-4 w-4' />
-                Save
+                {t('backupChoice.save')}
               </Button>
             </div>
 
@@ -481,12 +486,8 @@ export function BackupChoiceSheet({
               <div className='flex items-start gap-2'>
                 <Shield className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400' />
                 <div className='text-sm text-blue-900 dark:text-blue-400'>
-                  <p className='font-medium'>Why Backup?</p>
-                  <p className='mt-1'>
-                    If you lose your device, forget your PIN, or need to restore your wallet on a
-                    new device, this encrypted backup is your only way to recover your funds. Keep
-                    it safe!
-                  </p>
+                  <p className='font-medium'>{t('backupChoice.whyBackup')}</p>
+                  <p className='mt-1'>{t('backupChoice.whyBackupBody')}</p>
                 </div>
               </div>
             </div>
@@ -498,8 +499,7 @@ export function BackupChoiceSheet({
                 onCheckedChange={(checked: boolean) => setConfirmed(checked)}
               />
               <Label htmlFor='confirm-backup' className='text-sm font-normal leading-relaxed'>
-                I have saved my encrypted backup to a secure location. I understand that I will need
-                both this backup AND my PIN to restore my wallet.
+                {t('backupChoice.confirmEncrypted')}
               </Label>
             </div>
 
@@ -510,7 +510,7 @@ export function BackupChoiceSheet({
                 className='w-full rounded-full'
                 size='lg'
               >
-                I&apos;ve Saved My Backup
+                {t('backupChoice.savedBackup')}
               </Button>
             </div>
           </div>
@@ -530,11 +530,11 @@ export function BackupChoiceSheet({
             </div>
             <p className='text-sm text-muted-foreground'>
               {isSeedPasswordMode
-                ? 'Enter your admin password to view your recovery phrase'
-                : 'Enter your PIN to view your recovery phrase'}
+                ? t('backupChoice.viewPasswordPrompt')
+                : t('backupChoice.viewPinPrompt')}
             </p>
             {isSeedPasswordMode && (
-              <p className='mt-1 text-xs text-muted-foreground'>Admin mode enabled</p>
+              <p className='mt-1 text-xs text-muted-foreground'>{t('unlock.adminMode')}</p>
             )}
           </div>
 
@@ -545,7 +545,7 @@ export function BackupChoiceSheet({
                 type='password'
                 value={seedPassword}
                 onChange={(e) => setSeedPassword(e.target.value)}
-                placeholder='Enter admin password'
+                placeholder={t('pin.adminPasswordPlaceholder')}
                 className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg dark:border-neutral-800 dark:bg-neutral-950'
                 autoFocus
                 disabled={isVerifying}
@@ -593,7 +593,7 @@ export function BackupChoiceSheet({
                 (isSeedPasswordMode ? seedPassword.length < 4 : seedPin.length < 4) || isVerifying
               }
             >
-              {isVerifying ? 'Verifying...' : 'Continue'}
+              {isVerifying ? t('backupChoice.verifying') : tCommon('actions.continue')}
               {!isVerifying && <ArrowRight className='ml-2 h-4 w-4' />}
             </Button>
             <Button
@@ -608,7 +608,7 @@ export function BackupChoiceSheet({
               size='lg'
               disabled={isVerifying}
             >
-              Back
+              {tCommon('actions.back')}
             </Button>
           </div>
         </div>
@@ -618,36 +618,32 @@ export function BackupChoiceSheet({
       {step === 'seed-view' && (
         <div className='space-y-6 px-4 pb-8'>
           <div className='text-center'>
-            <p className='text-sm text-muted-foreground'>
-              Write down these 12 words in order and store them safely
-            </p>
+            <p className='text-sm text-muted-foreground'>{t('seedBackup.description')}</p>
           </div>
 
           <div className='rounded-2xl bg-red-50 p-4 dark:bg-red-950/40'>
             <div className='flex gap-3'>
               <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400' />
               <div className='text-sm text-red-900 dark:text-red-400'>
-                <p className='font-medium'>Keep this private</p>
-                <p className='mt-1'>
-                  Anyone with these words can access your wallet. Store them securely offline.
-                </p>
+                <p className='font-medium'>{t('seedBackup.keepPrivate')}</p>
+                <p className='mt-1'>{t('seedBackup.keepPrivateDescription')}</p>
               </div>
             </div>
           </div>
 
           <div className='space-y-4'>
             <div className='flex items-center justify-between'>
-              <span className='text-sm font-medium'>Your Recovery Phrase</span>
+              <span className='text-sm font-medium'>{t('backupChoice.titles.seedView')}</span>
               <Button variant='ghost' size='sm' onClick={() => setShowSeed(!showSeed)}>
                 {showSeed ? (
                   <>
                     <EyeOff className='mr-2 h-4 w-4' />
-                    Hide
+                    {t('seedBackup.hide')}
                   </>
                 ) : (
                   <>
                     <Eye className='mr-2 h-4 w-4' />
-                    Show
+                    {t('seedBackup.show')}
                   </>
                 )}
               </Button>
@@ -679,12 +675,12 @@ export function BackupChoiceSheet({
                   {seedCopied ? (
                     <>
                       <Check className='mr-2 h-4 w-4' />
-                      Copied!
+                      {t('seedBackup.copiedButton')}
                     </>
                   ) : (
                     <>
                       <Copy className='mr-2 h-4 w-4' />
-                      Copy
+                      {t('backupChoice.copy')}
                     </>
                   )}
                 </Button>
@@ -694,7 +690,7 @@ export function BackupChoiceSheet({
                   className='flex-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
                 >
                   <Download className='mr-2 h-4 w-4' />
-                  Save
+                  {t('backupChoice.save')}
                 </Button>
               </div>
             )}
@@ -706,7 +702,7 @@ export function BackupChoiceSheet({
                 onCheckedChange={(checked: boolean) => setSeedConfirmed(checked)}
               />
               <Label htmlFor='confirm-seed' className='text-sm font-normal'>
-                I&apos;ve saved my recovery phrase in a safe place
+                {t('seedBackup.savedConfirm')}
               </Label>
             </div>
           </div>
@@ -718,7 +714,7 @@ export function BackupChoiceSheet({
               className='w-full rounded-full'
               size='lg'
             >
-              Done
+              {tCommon('actions.done')}
             </Button>
           </div>
         </div>

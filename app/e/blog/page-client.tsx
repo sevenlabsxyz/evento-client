@@ -8,6 +8,7 @@ import { GhostPost } from '@/lib/types/ghost';
 import { cn } from '@/lib/utils';
 import { getVisibleTags } from '@/lib/utils/blog';
 import { AlertTriangle, Newspaper } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
 const BLOG_PATHNAME = '/e/blog';
@@ -56,18 +57,18 @@ function syncTagParam(tagSlug: string | null) {
 }
 
 function BlogPageHeader({ postCount }: { postCount: number }) {
+  const t = useTranslations('blog');
+
   return (
     <header className='flex flex-col gap-4 border-b border-gray-200 pb-8 dark:border-neutral-800 md:flex-row md:items-end md:justify-between md:gap-8'>
       <div className='min-w-0 max-w-2xl'>
         <p className='text-xs font-semibold uppercase tracking-wider text-red-600 dark:text-red-400'>
-          Evento Blog
+          {t('index.eyebrow')}
         </p>
         <h1 className='mt-2 text-balance text-3xl font-bold tracking-tight text-gray-900 dark:text-neutral-100 md:text-4xl'>
-          Stories from the Evento community
+          {t('index.title')}
         </h1>
-        <p className='mt-3 text-base text-gray-600 dark:text-neutral-400'>
-          Product updates, hosting guides, and ideas for bringing people together.
-        </p>
+        <p className='mt-3 text-base text-gray-600 dark:text-neutral-400'>{t('index.subtitle')}</p>
       </div>
       {postCount > 0 && (
         <p className='hidden shrink-0 text-right md:block'>
@@ -75,7 +76,7 @@ function BlogPageHeader({ postCount }: { postCount: number }) {
             {postCount}
           </span>
           <span className='text-sm text-gray-500 dark:text-neutral-500'>
-            {postCount === 1 ? 'story' : 'stories'}
+            {t('index.storyCount', { count: postCount })}
           </span>
         </p>
       )}
@@ -92,13 +93,17 @@ function TagFilter({
   selectedSlug: string | null;
   onSelect: (slug: string | null) => void;
 }) {
-  const chips: { slug: string | null; name: string }[] = [{ slug: null, name: 'All' }, ...options];
+  const t = useTranslations('blog');
+  const chips: { slug: string | null; name: string }[] = [
+    { slug: null, name: t('index.allTopics') },
+    ...options,
+  ];
 
   return (
     <div className='scrollbar-hide -mx-4 overflow-x-auto px-4 md:mx-0 md:px-0'>
       <div
         role='group'
-        aria-label='Filter stories by topic'
+        aria-label={t('index.filterLabel')}
         className='flex w-fit items-center gap-1 rounded-full border border-gray-200 bg-white p-1 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none'
       >
         {chips.map((chip) => {
@@ -134,6 +139,8 @@ function BlogEmptyState({
   description: string;
   onShowAll?: () => void;
 }) {
+  const t = useTranslations('blog');
+
   return (
     <div className='flex flex-col items-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-16 text-center dark:border-neutral-800 dark:bg-neutral-900'>
       <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-white text-gray-500 shadow-sm dark:bg-neutral-800 dark:text-neutral-300 dark:shadow-none'>
@@ -148,7 +155,7 @@ function BlogEmptyState({
           onClick={onShowAll}
           className='mt-5 rounded-full dark:border-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700'
         >
-          View all stories
+          {t('index.viewAllStories')}
         </Button>
       )}
     </div>
@@ -156,6 +163,8 @@ function BlogEmptyState({
 }
 
 function BlogLoadError() {
+  const t = useTranslations('blog');
+
   return (
     <div
       role='alert'
@@ -163,16 +172,17 @@ function BlogLoadError() {
     >
       <div className='mb-1 flex items-center gap-2 text-base font-semibold'>
         <AlertTriangle className='h-5 w-5' aria-hidden='true' />
-        Couldn&apos;t load the blog
+        {t('index.loadErrorTitle')}
       </div>
       <p className='text-sm text-amber-800 dark:text-amber-400'>
-        Something went wrong while loading stories. Please try again later.
+        {t('index.loadErrorDescription')}
       </p>
     </div>
   );
 }
 
 export default function BlogPageClient({ posts, loadFailed, initialTag }: BlogPageClientProps) {
+  const t = useTranslations('blog');
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const [selectedTag, setSelectedTag] = useState<string | null>(initialTag);
 
@@ -180,7 +190,7 @@ export default function BlogPageClient({ posts, loadFailed, initialTag }: BlogPa
     applyRouteConfig(BLOG_PATHNAME);
 
     setTopBarForRoute(BLOG_PATHNAME, {
-      title: 'Blog',
+      title: t('topBarTitle'),
       subtitle: '',
       leftMode: 'menu',
       centerMode: 'title',
@@ -194,7 +204,7 @@ export default function BlogPageClient({ posts, loadFailed, initialTag }: BlogPa
     return () => {
       clearRoute(BLOG_PATHNAME);
     };
-  }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
+  }, [applyRouteConfig, setTopBarForRoute, clearRoute, t]);
 
   const tagOptions = useMemo(() => collectTagOptions(posts), [posts]);
 
@@ -235,17 +245,18 @@ export default function BlogPageClient({ posts, loadFailed, initialTag }: BlogPa
     }
     if (posts.length === 0) {
       return (
-        <BlogEmptyState
-          title='No stories yet'
-          description='We’re working on our first posts. Check back soon.'
-        />
+        <BlogEmptyState title={t('index.emptyTitle')} description={t('index.emptyDescription')} />
       );
     }
     if (!featuredPost) {
       return (
         <BlogEmptyState
-          title={selectedTagName ? `No stories in ${selectedTagName}` : 'No stories in this topic'}
-          description='Try another topic, or browse everything we’ve published.'
+          title={
+            selectedTagName
+              ? t('index.noStoriesInTag', { tag: selectedTagName })
+              : t('index.noStoriesInTopic')
+          }
+          description={t('index.emptyTopicDescription')}
           onShowAll={() => handleSelectTag(null)}
         />
       );
@@ -260,7 +271,9 @@ export default function BlogPageClient({ posts, loadFailed, initialTag }: BlogPa
               id='blog-more-heading'
               className='mb-5 text-xl font-semibold text-gray-900 dark:text-neutral-100'
             >
-              {selectedTagName ? `More in ${selectedTagName}` : 'More stories'}
+              {selectedTagName
+                ? t('index.moreInTag', { tag: selectedTagName })
+                : t('index.moreStories')}
             </h2>
             <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
               {remainingPosts.map((post) => (

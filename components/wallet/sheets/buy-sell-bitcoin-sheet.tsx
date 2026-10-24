@@ -11,6 +11,7 @@ import { detectUserCountry } from '@/lib/utils/geo-detection';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { ArrowUpRight, Loader2, MapPin, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
@@ -29,6 +30,7 @@ export function BuySellBitcoinSheet({
   cashAppEnabled = false,
   onFundingStarted,
 }: BuySellBitcoinSheetProps) {
+  const t = useTranslations('walletFlows');
   const [countryCode, setCountryCode] = useState<string>('US');
   const [regionalExchanges, setRegionalExchanges] = useState<Exchange[]>([]);
   const [isDetecting, setIsDetecting] = useState(true);
@@ -125,12 +127,12 @@ export function BuySellBitcoinSheet({
     }
 
     if (!amountSats || amountSats <= 0) {
-      toast.error('Enter an amount to buy');
+      toast.error(t('buySellBitcoinSheet.enterAmountToBuy'));
       return;
     }
 
     if (!breezSDK.isConnected()) {
-      toast.error('Unlock your wallet first');
+      toast.error(t('buySellBitcoinSheet.unlockWalletFirst'));
       return;
     }
 
@@ -140,7 +142,9 @@ export function BuySellBitcoinSheet({
       setCashAppUrl(response.url);
       await onFundingStarted?.();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to start Cash App purchase');
+      toast.error(
+        error instanceof Error ? error.message : t('buySellBitcoinSheet.cashAppStartFailed')
+      );
     } finally {
       setIsStartingCashApp(false);
     }
@@ -190,7 +194,9 @@ export function BuySellBitcoinSheet({
                   {/* Header */}
                   <div className='flex items-center justify-between border-gray-200 bg-white px-4 py-3 pt-0 dark:border-neutral-800 dark:bg-neutral-900'>
                     <h2 className='text-xl font-semibold'>
-                      {cashAppEnabled ? 'Buy Bitcoin' : 'Buy/Sell Bitcoin'}
+                      {cashAppEnabled
+                        ? t('buySellBitcoinSheet.titleBuy')
+                        : t('buySellBitcoinSheet.titleBuySell')}
                     </h2>
                     <div className='flex items-center gap-3'>
                       <WalletBalanceDisplay />
@@ -214,7 +220,7 @@ export function BuySellBitcoinSheet({
                                 Cash App
                               </h3>
                               <p className='text-sm text-gray-600 dark:text-neutral-400'>
-                                Buy Bitcoin in Cash App and send it to your Evento wallet.
+                                {t('buySellBitcoinSheet.cashAppDescription')}
                               </p>
                             </div>
                           </div>
@@ -222,7 +228,7 @@ export function BuySellBitcoinSheet({
 
                         <div className='space-y-3'>
                           <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
-                            Amount
+                            {t('buySellBitcoinSheet.amount')}
                           </h3>
                           <div className='grid grid-cols-4 gap-2'>
                             {CASH_APP_USD_PRESETS.map((preset) => (
@@ -254,12 +260,12 @@ export function BuySellBitcoinSheet({
                             {isConvertingAmount ? (
                               <span className='inline-flex items-center gap-2'>
                                 <Loader2 className='h-4 w-4 animate-spin' />
-                                Estimating sats...
+                                {t('buySellBitcoinSheet.estimatingSats')}
                               </span>
                             ) : amountSats ? (
-                              `Estimated ${amountSats.toLocaleString()} sats`
+                              t('buySellBitcoinSheet.estimatedSats', { sats: amountSats })
                             ) : (
-                              'Enter a USD amount to estimate sats.'
+                              t('buySellBitcoinSheet.enterUsdAmount')
                             )}
                           </p>
                         </div>
@@ -275,17 +281,17 @@ export function BuySellBitcoinSheet({
                           {isStartingCashApp ? (
                             <>
                               <Loader2 className='h-5 w-5 animate-spin' />
-                              Preparing Cash App
+                              {t('buySellBitcoinSheet.preparingCashApp')}
                             </>
                           ) : cashAppUrl ? (
                             <>
                               <CashAppSVGIcon className='h-5 w-5' />
-                              Open Cash App
+                              {t('buySellBitcoinSheet.openCashApp')}
                             </>
                           ) : (
                             <>
                               <CashAppSVGIcon className='h-5 w-5' />
-                              Continue to Cash App
+                              {t('buySellBitcoinSheet.continueToCashApp')}
                             </>
                           )}
                         </Button>
@@ -297,7 +303,7 @@ export function BuySellBitcoinSheet({
                           <div className='flex items-center gap-2'>
                             <MapPin className='h-4 w-4 text-gray-500 dark:text-neutral-400' />
                             <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
-                              Available in Your Region
+                              {t('buySellBitcoinSheet.availableInRegion')}
                             </h3>
                             {!isDetecting && (
                               <span className='text-sm text-gray-500 dark:text-neutral-400'>
@@ -310,7 +316,7 @@ export function BuySellBitcoinSheet({
                             <div className='flex items-center justify-center py-8'>
                               <Loader2 className='h-6 w-6 animate-spin text-gray-400 dark:text-neutral-500' />
                               <span className='ml-2 text-sm text-gray-500 dark:text-neutral-400'>
-                                Detecting your location...
+                                {t('buySellBitcoinSheet.detectingLocation')}
                               </span>
                             </div>
                           ) : regionalExchanges.length > 0 ? (
@@ -321,7 +327,7 @@ export function BuySellBitcoinSheet({
                             </div>
                           ) : (
                             <p className='py-4 text-sm text-gray-500 dark:text-neutral-400'>
-                              No regional exchanges available for your location.
+                              {t('buySellBitcoinSheet.noRegionalExchanges')}
                             </p>
                           )}
                         </div>
@@ -329,7 +335,7 @@ export function BuySellBitcoinSheet({
                         {/* Global Exchanges */}
                         <div className='space-y-3'>
                           <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
-                            Global
+                            {t('buySellBitcoinSheet.global')}
                           </h3>
                           <div className='space-y-3'>
                             {GLOBAL_EXCHANGES.map((exchange) => (

@@ -2,54 +2,78 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import type { EventDashboard, EventDashboardActivity } from '@/lib/types/manage';
 import { getRelativeTime } from '@/lib/utils/date';
 import { Activity } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 
 interface ActivityFeedProps {
   dashboard: EventDashboard;
 }
 
-const RSVP_VERBS: Record<string, string> = {
-  yes: 'is going',
-  maybe: 'might go',
-  no: "can't go",
+type ActivityMessageKey =
+  | 'rsvpYes'
+  | 'rsvpMaybe'
+  | 'rsvpNo'
+  | 'rsvpUpdated'
+  | 'registrationPending'
+  | 'registrationApproved'
+  | 'registrationDenied'
+  | 'registered'
+  | 'ticket'
+  | 'comment'
+  | 'photo'
+  | 'pledgedSats'
+  | 'pledged'
+  | 'inviteYes'
+  | 'inviteMaybe'
+  | 'inviteNo'
+  | 'inviteResponded';
+
+const RSVP_KEYS: Record<string, ActivityMessageKey> = {
+  yes: 'rsvpYes',
+  maybe: 'rsvpMaybe',
+  no: 'rsvpNo',
 };
 
-const REGISTRATION_VERBS: Record<string, string> = {
-  pending: 'registered and is awaiting approval',
-  approved: 'registered and was approved',
-  denied: 'registered and was denied',
+const REGISTRATION_KEYS: Record<string, ActivityMessageKey> = {
+  pending: 'registrationPending',
+  approved: 'registrationApproved',
+  denied: 'registrationDenied',
 };
 
-const INVITE_RESPONSE_VERBS: Record<string, string> = {
-  yes: 'accepted an invite',
-  maybe: 'replied maybe to an invite',
-  no: 'declined an invite',
+const INVITE_RESPONSE_KEYS: Record<string, ActivityMessageKey> = {
+  yes: 'inviteYes',
+  maybe: 'inviteMaybe',
+  no: 'inviteNo',
 };
 
-function describeActivity(activity: EventDashboardActivity): { verb: string; detail?: string } {
+function describeActivity(activity: EventDashboardActivity): {
+  key: ActivityMessageKey;
+  sats?: number;
+  detail?: string;
+} {
   const detail = activity.detail;
   switch (activity.type) {
     case 'rsvp':
-      return { verb: (detail && RSVP_VERBS[detail]) || 'updated their RSVP' };
+      return { key: (detail && RSVP_KEYS[detail]) || 'rsvpUpdated' };
     case 'registration':
-      return { verb: (detail && REGISTRATION_VERBS[detail]) || 'registered' };
+      return { key: (detail && REGISTRATION_KEYS[detail]) || 'registered' };
     case 'ticket':
-      return { verb: 'got a ticket', detail: detail ?? undefined };
+      return { key: 'ticket', detail: detail ?? undefined };
     case 'comment':
-      return { verb: 'commented', detail: detail ?? undefined };
+      return { key: 'comment', detail: detail ?? undefined };
     case 'photo':
-      return { verb: 'added a photo' };
+      return { key: 'photo' };
     case 'pledge': {
       const sats = detail ? Number(detail) : NaN;
-      return {
-        verb: Number.isFinite(sats) ? `pledged ${sats.toLocaleString()} sats` : 'pledged',
-      };
+      return Number.isFinite(sats) ? { key: 'pledgedSats', sats } : { key: 'pledged' };
     }
     case 'invite_response':
-      return { verb: (detail && INVITE_RESPONSE_VERBS[detail]) || 'responded to an invite' };
+      return { key: (detail && INVITE_RESPONSE_KEYS[detail]) || 'inviteResponded' };
   }
 }
 
@@ -64,28 +88,33 @@ const ACTIVITY_PATHS: Record<EventDashboardActivity['type'], string> = {
 };
 
 export function ActivityFeed({ dashboard }: ActivityFeedProps) {
+  const t = useTranslations('manage');
+  const locale = useLocale();
   const base = `/e/${dashboard.event.id}/manage`;
   const activities = dashboard.recentActivity;
 
   return (
     <section className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
       <h2 className='mb-3 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-        Recent activity
+        {t('activityFeed.title')}
       </h2>
 
       {activities.length === 0 ? (
         <div className='flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 py-10 text-center dark:border-neutral-800'>
           <Activity className='mb-2 h-6 w-6 text-gray-400 dark:text-neutral-500' />
-          <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>No activity yet</p>
+          <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
+            {t('activityFeed.emptyTitle')}
+          </p>
           <p className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
-            RSVPs, comments and more will appear here.
+            {t('activityFeed.emptyDescription')}
           </p>
         </div>
       ) : (
         <ul className='divide-y divide-gray-100 dark:divide-neutral-800'>
           {activities.map((activity) => {
-            const { verb, detail } = describeActivity(activity);
-            const actorName = activity.actor?.name || activity.actor?.username || 'Someone';
+            const { key, sats, detail } = describeActivity(activity);
+            const actorName =
+              activity.actor?.name || activity.actor?.username || t('activityFeed.someone');
             return (
               <li key={activity.id}>
                 <Link
@@ -102,10 +131,15 @@ export function ActivityFeed({ dashboard }: ActivityFeedProps) {
                   />
                   <div className='min-w-0 flex-1'>
                     <p className='text-sm text-gray-700 dark:text-neutral-300'>
-                      <span className='font-medium text-gray-900 dark:text-neutral-100'>
-                        {actorName}
-                      </span>{' '}
-                      {verb}
+                      {t.rich(`activityFeed.actions.${key}`, {
+                        name: actorName,
+                        sats: sats?.toLocaleString(getIntlLocale(locale)) ?? '',
+                        actor: (chunks: ReactNode) => (
+                          <span className='font-medium text-gray-900 dark:text-neutral-100'>
+                            {chunks}
+                          </span>
+                        ),
+                      })}
                     </p>
                     {detail && (
                       <p className='mt-0.5 line-clamp-2 text-xs text-gray-500 dark:text-neutral-400'>

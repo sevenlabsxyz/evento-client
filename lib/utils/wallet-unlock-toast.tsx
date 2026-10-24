@@ -1,6 +1,7 @@
 'use client';
 
 import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { toast } from '@/lib/utils/toast';
 import { Info } from 'lucide-react';
 
@@ -61,10 +62,13 @@ export const redirectToWalletUnlock = (
 
 export const showWalletUnlockToast = (onAction: () => void) => {
   const walletExists = hasExistingWallet();
-  const actionLabel = walletExists ? 'Unlock wallet' : 'Create wallet';
+  const actionLabel = walletExists
+    ? translateHooks('wallet.unlockToast.unlockAction')
+    : translateHooks('wallet.unlockToast.createAction');
   const descriptionText = walletExists
-    ? 'Please unlock your Wallet to continue.'
-    : 'Please create your Wallet to continue.';
+    ? translateHooks('wallet.unlockToast.unlockDescription')
+    : translateHooks('wallet.unlockToast.createDescription');
+  const title = translateHooks('wallet.unlockToast.title');
 
   toast.custom(
     (id) => (
@@ -75,7 +79,7 @@ export const showWalletUnlockToast = (onAction: () => void) => {
           </div>
           <div className='min-w-0'>
             <p className='text-base font-semibold leading-none tracking-tight text-slate-900'>
-              Wallet action needed
+              {title}
             </p>
             <p className='mt-3 text-[16px] leading-[1.3] text-slate-700'>{descriptionText}</p>
           </div>

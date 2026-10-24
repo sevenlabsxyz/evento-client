@@ -21,6 +21,7 @@ import {
   Share,
   User,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { UserAvatar } from './ui/user-avatar';
@@ -42,6 +43,7 @@ export function EventCard({
   customMenuOptions,
   onMenuClick,
 }: EventCardProps) {
+  const t = useTranslations('misc.eventCard');
   const router = useRouter();
   const { date, timeWithTz } = formatEventDateFromParts({
     year: event.start_date_year,
@@ -58,7 +60,7 @@ export function EventCard({
   const getMenuOptions = (eventId: string, userUsername: string) => [
     {
       id: 'share',
-      label: 'Share Event',
+      label: t('shareEvent'),
       icon: Share,
       onClick: async () => {
         const eventUrl = `${window.location.origin}/e/${eventId}`;
@@ -66,17 +68,17 @@ export function EventCard({
           if (navigator.share) {
             await navigator.share({
               title: event.title,
-              text: `Check out this event: ${event.title}`,
+              text: t('shareText', { title: event.title }),
               url: eventUrl,
             });
           } else {
             navigator.clipboard.writeText(eventUrl);
-            toast.success('Link copied to clipboard!');
+            toast.success(t('linkCopied'));
           }
         } catch (error: any) {
           if (error?.name !== 'AbortError') {
             navigator.clipboard.writeText(eventUrl);
-            toast.success('Link copied to clipboard!');
+            toast.success(t('linkCopied'));
           }
         } finally {
           setIsMenuOpen(false);
@@ -85,17 +87,17 @@ export function EventCard({
     },
     {
       id: 'copy',
-      label: 'Copy Link',
+      label: t('copyLink'),
       icon: Copy,
       onClick: () => {
         navigator.clipboard.writeText(`${window.location.origin}/e/${eventId}`);
-        toast.success('Link copied to clipboard!');
+        toast.success(t('linkCopied'));
         setIsMenuOpen(false);
       },
     },
     {
       id: 'profile',
-      label: 'View Profile',
+      label: t('viewProfile'),
       icon: User,
       onClick: () => {
         router.push(`/${userUsername}`);
@@ -127,7 +129,7 @@ export function EventCard({
               {event.user_details.name || event.user_details.username}
             </p>
             <p className='text-xs text-gray-500 dark:text-neutral-400'>
-              Posted by @{event.user_details.username} {timeAgo}
+              {t('postedBy', { username: event.user_details.username, time: timeAgo })}
             </p>
           </div>
         </div>

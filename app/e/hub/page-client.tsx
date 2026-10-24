@@ -19,6 +19,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { GhostPost } from '@/lib/types/ghost';
 import { cn } from '@/lib/utils';
 import { AlertTriangle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 
 const PAGE_BACKGROUND_CLASS = 'min-h-full w-full bg-white dark:bg-neutral-900';
@@ -101,6 +102,7 @@ interface HubPageClientProps {
 }
 
 export default function HubPageClient({ posts }: HubPageClientProps) {
+  const t = useTranslations('hub');
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
   const { data: hubData, isLoading: isHubLoading, error: hubError, refetch } = useHubData();
@@ -117,7 +119,7 @@ export default function HubPageClient({ posts }: HubPageClientProps) {
     applyRouteConfig(pathname);
 
     setTopBarForRoute(pathname, {
-      title: 'Evento Hub',
+      title: t('page.title'),
       hideMobileBreadcrumb: true,
       desktopHidden: true,
       subtitle: '',
@@ -131,7 +133,7 @@ export default function HubPageClient({ posts }: HubPageClientProps) {
     return () => {
       clearRoute(pathname);
     };
-  }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
+  }, [applyRouteConfig, setTopBarForRoute, clearRoute, t]);
 
   if (isCheckingAuth || isCheckingOnboarding || isHubLoading) {
     return <HubPageSkeleton />;
@@ -144,19 +146,17 @@ export default function HubPageClient({ posts }: HubPageClientProps) {
           <div className='rounded-3xl border border-amber-200 bg-amber-50 p-5 text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400'>
             <div className='mb-2 flex items-center gap-2 text-base font-semibold'>
               <AlertTriangle className='h-5 w-5' />
-              Couldn&apos;t load your hub
+              {t('page.loadErrorTitle')}
             </div>
             <p className='mb-4 text-sm text-amber-800 dark:text-amber-400'>
-              {hubError instanceof Error
-                ? hubError.message
-                : 'Something went wrong while loading your hub data.'}
+              {hubError instanceof Error ? hubError.message : t('page.loadErrorFallback')}
             </p>
             <Button
               onClick={() => refetch()}
               variant='outline'
               className='rounded-full bg-white dark:bg-neutral-900'
             >
-              Try Again
+              {t('page.tryAgain')}
             </Button>
           </div>
           <HubBlogGallery posts={posts} />

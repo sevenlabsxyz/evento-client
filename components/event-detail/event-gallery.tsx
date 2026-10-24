@@ -5,6 +5,7 @@ import { GalleryItem as GalleryItemType } from '@/lib/hooks/use-event-gallery';
 import { EventDetail } from '@/lib/types/event';
 import { logger } from '@/lib/utils/logger';
 import { Camera, Share2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import GalleryItem from './gallery-item';
 import PhotoUploadSheet from './photo-upload-sheet';
@@ -24,6 +25,7 @@ export default function EventGallery({
   isEventHost = false,
   onImageClick,
 }: EventGalleryProps) {
+  const t = useTranslations('eventSocial');
   const [uploadSheetOpen, setUploadSheetOpen] = useState(false);
 
   const handleAddPhoto = () => {
@@ -34,8 +36,8 @@ export default function EventGallery({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${event.title} - Photo Gallery`,
-          text: `Check out photos from ${event.title}`,
+          title: t('gallery.shareTitle', { title: event.title }),
+          text: t('gallery.shareText', { title: event.title }),
           url: window.location.href,
         });
       } catch (error) {
@@ -57,8 +59,8 @@ export default function EventGallery({
       <div className='mb-3 flex items-center justify-between gap-3'>
         <p className='text-sm text-gray-500 dark:text-neutral-500'>
           {galleryItems.length > 0
-            ? `${galleryItems.length} ${galleryItems.length === 1 ? 'photo' : 'photos'}`
-            : 'Shared by guests'}
+            ? t('galleryPage.photoCount', { count: galleryItems.length })
+            : t('gallery.sharedByGuests')}
         </p>
         <div className='flex items-center gap-2'>
           {galleryItems.length > 0 && (
@@ -69,7 +71,7 @@ export default function EventGallery({
               className='h-8 gap-1.5 rounded-full border-gray-200 bg-white px-3 text-gray-700 hover:bg-gray-50 hover:text-gray-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-100'
             >
               <Share2 className='h-3.5 w-3.5' />
-              Share Album
+              {t('gallery.shareAlbum')}
             </Button>
           )}
           <Button
@@ -78,7 +80,7 @@ export default function EventGallery({
             className='h-8 gap-1.5 rounded-full bg-red-600 px-3 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600'
           >
             <Camera className='h-3.5 w-3.5' />
-            Add Photos
+            {t('gallery.addPhotos')}
           </Button>
         </div>
       </div>
@@ -108,10 +110,10 @@ export default function EventGallery({
           </span>
           <span className='min-w-0'>
             <span className='block text-sm font-medium text-gray-900 dark:text-neutral-100'>
-              No photos yet
+              {t('gallery.emptyTitle')}
             </span>
             <span className='block text-sm text-gray-500 dark:text-neutral-500'>
-              Be the first to add photos — they&apos;re visible to all guests.
+              {t('gallery.emptyDescription')}
             </span>
           </span>
         </button>

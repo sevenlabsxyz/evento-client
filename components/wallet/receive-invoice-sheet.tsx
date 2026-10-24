@@ -11,6 +11,7 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import type { Payment, SdkEvent } from '@breeztech/breez-sdk-spark/ssr';
 import { Bitcoin, CheckCircle2, Copy, Loader2, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AmountInputSheet } from './amount-input-sheet';
 
@@ -20,6 +21,8 @@ interface ReceiveLightningSheetProps {
 }
 
 export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSheetProps) {
+  const t = useTranslations('walletFlows');
+  const tCommon = useTranslations('common');
   const [activeTab, setActiveTab] = useState<'lightning' | 'bitcoin'>('lightning');
   const [qrCodeData, setQrCodeData] = useState<string>(''); // Lightning address or bolt11
   const [bitcoinAddress, setBitcoinAddress] = useState<string>('');
@@ -128,7 +131,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       logger.error('Failed to generate Bitcoin address', {
         error: error instanceof Error ? error.message : String(error),
       });
-      const errorMessage = error.message || 'Failed to generate Bitcoin address';
+      const errorMessage = error.message || t('receiveInvoiceSheet.generateAddressFailed');
       setBitcoinAddressError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -177,7 +180,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       logger.error('Failed to create invoice', {
         error: error instanceof Error ? error.message : String(error),
       });
-      toast.error(error.message || 'Failed to create invoice');
+      toast.error(error.message || t('receiveInvoiceSheet.createInvoiceFailed'));
     } finally {
       setIsGenerating(false);
     }
@@ -209,9 +212,9 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       // Fallback to copy
       try {
         await navigator.clipboard.writeText(shareContent);
-        toast.success('Copied to clipboard');
+        toast.success(t('receiveInvoiceSheet.copiedToClipboard'));
       } catch (error) {
-        toast.error('Failed to copy');
+        toast.error(t('receiveInvoiceSheet.copyFailed'));
       }
     }
   };
@@ -232,14 +235,18 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       <MasterScrollableSheet
         open={open}
         onOpenChange={onOpenChange}
-        title='Receive'
+        title={t('receiveInvoiceSheet.title')}
         headerSecondary={
           <div className='px-4 pb-2'>
             <AnimatedTabs
               expanded
               tabs={[
                 { title: 'Lightning', icon: Zap, onClick: () => handleTabChange('lightning') },
-                { title: 'Onchain', icon: Bitcoin, onClick: () => handleTabChange('bitcoin') },
+                {
+                  title: t('receiveInvoiceSheet.onchain'),
+                  icon: Bitcoin,
+                  onClick: () => handleTabChange('bitcoin'),
+                },
               ]}
               selected={['lightning', 'bitcoin'].indexOf(activeTab)}
             />
@@ -258,10 +265,10 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
               {/* Success Message */}
               <div className='text-center'>
                 <h3 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-                  Payment Received!
+                  {t('receiveInvoiceSheet.paymentReceived')}
                 </h3>
                 <p className='text-gray-600 dark:text-neutral-400'>
-                  You successfully received {invoiceAmount?.toLocaleString() || 0} sats
+                  {t('receiveInvoiceSheet.successfullyReceived', { amount: invoiceAmount || 0 })}
                 </p>
               </div>
 
@@ -272,7 +279,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                     ${invoiceAmountUSD.toFixed(2)}
                   </p>
                   <p className='text-center text-sm text-gray-600 dark:text-neutral-400'>
-                    {invoiceAmount?.toLocaleString()} sats
+                    {t('receiveInvoiceSheet.satsAmount', { amount: invoiceAmount ?? 0 })}
                   </p>
                 </div>
               )}
@@ -289,7 +296,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                 }}
                 className='h-12 w-full max-w-xs rounded-full'
               >
-                Done
+                {tCommon('actions.done')}
               </Button>
             </div>
           ) : (
@@ -302,10 +309,10 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                     <div className='flex flex-col items-center justify-center py-12 text-center'>
                       <Loader2 className='mb-4 h-8 w-8 animate-spin text-gray-400 dark:text-neutral-500' />
                       <p className='text-sm font-medium text-gray-600 dark:text-neutral-400'>
-                        Registering your Lightning address...
+                        {t('receiveInvoiceSheet.registeringAddress')}
                       </p>
                       <p className='mt-1 text-xs text-gray-400 dark:text-neutral-500'>
-                        This may take a few moments
+                        {t('receiveInvoiceSheet.mayTakeMoments')}
                       </p>
                     </div>
                   )}
@@ -316,7 +323,9 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                       <div className='flex items-start justify-between gap-2'>
                         <div className='flex min-w-0 flex-1 flex-col'>
                           <p className='mb-1 text-sm text-muted-foreground'>
-                            {invoiceAmount ? 'Lightning Invoice' : 'Lightning Address'}
+                            {invoiceAmount
+                              ? t('receiveInvoiceSheet.lightningInvoice')
+                              : t('receiveInvoiceSheet.lightningAddress')}
                           </p>
                           <p className='truncate font-mono text-base leading-relaxed'>
                             {invoiceAmount && activeInvoice
@@ -332,9 +341,13 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                             if (!copyContent) return;
                             try {
                               await navigator.clipboard.writeText(copyContent);
-                              toast.success(invoiceAmount ? 'Invoice copied!' : 'Address copied!');
+                              toast.success(
+                                invoiceAmount
+                                  ? t('receiveInvoiceSheet.invoiceCopied')
+                                  : t('receiveInvoiceSheet.addressCopied')
+                              );
                             } catch (error) {
-                              toast.error('Failed to copy');
+                              toast.error(t('receiveInvoiceSheet.copyFailed'));
                             }
                           }}
                           variant='ghost'
@@ -369,7 +382,10 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                       {invoiceAmount && invoiceAmountUSD !== null && (
                         <div className='text-center'>
                           <p className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-                            ${invoiceAmountUSD.toFixed(2)} · {invoiceAmount.toLocaleString()} sats
+                            {t('receiveInvoiceSheet.usdAndSats', {
+                              usd: invoiceAmountUSD.toFixed(2),
+                              amount: invoiceAmount,
+                            })}
                           </p>
                         </div>
                       )}
@@ -396,14 +412,16 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                       variant='outline'
                       className='h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
                     >
-                      {invoiceAmount ? 'Receive Any Amount' : 'Add Amount'}
+                      {invoiceAmount
+                        ? t('receiveInvoiceSheet.receiveAnyAmount')
+                        : t('receiveInvoiceSheet.addAmount')}
                     </Button>
                     <Button
                       onClick={handleShare}
                       variant='outline'
                       className='h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
                     >
-                      Share
+                      {tCommon('actions.share')}
                     </Button>
                   </div>
                 </>
@@ -417,14 +435,16 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                     <div className='flex flex-col items-center justify-center py-12'>
                       <div className='h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-primary dark:border-neutral-700' />
                       <p className='mt-4 text-sm text-gray-600 dark:text-neutral-400'>
-                        Generating Bitcoin address...
+                        {t('receiveInvoiceSheet.generatingAddress')}
                       </p>
                     </div>
                   ) : bitcoinAddress ? (
                     <>
                       {/* Bitcoin Address Display */}
                       <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
-                        <p className='mb-1 text-sm text-muted-foreground'>Bitcoin Address</p>
+                        <p className='mb-1 text-sm text-muted-foreground'>
+                          {t('receiveInvoiceSheet.bitcoinAddress')}
+                        </p>
                         <div className='flex items-start gap-2'>
                           <p className='flex-1 break-all font-mono text-base leading-relaxed'>
                             {formatBitcoinAddress(bitcoinAddress).map((item, index) => (
@@ -441,9 +461,9 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                             onClick={async () => {
                               try {
                                 await navigator.clipboard.writeText(bitcoinAddress);
-                                toast.success('Address copied!');
+                                toast.success(t('receiveInvoiceSheet.addressCopied'));
                               } catch (error) {
-                                toast.error('Failed to copy');
+                                toast.error(t('receiveInvoiceSheet.copyFailed'));
                               }
                             }}
                             variant='ghost'
@@ -485,23 +505,23 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                             } else {
                               try {
                                 await navigator.clipboard.writeText(bitcoinAddress);
-                                toast.success('Copied to clipboard');
+                                toast.success(t('receiveInvoiceSheet.copiedToClipboard'));
                               } catch (error) {
-                                toast.error('Failed to copy');
+                                toast.error(t('receiveInvoiceSheet.copyFailed'));
                               }
                             }
                           }}
                           variant='outline'
                           className='h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
                         >
-                          Share
+                          {tCommon('actions.share')}
                         </Button>
                       </div>
                     </>
                   ) : bitcoinAddressError ? (
                     <div className='flex flex-col items-center justify-center py-12 text-center'>
                       <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-                        Failed to generate Bitcoin address
+                        {t('receiveInvoiceSheet.generateAddressFailed')}
                       </p>
                       <p className='mt-1 max-w-xs text-sm text-gray-500 dark:text-neutral-400'>
                         {bitcoinAddressError}
@@ -514,7 +534,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                         variant='outline'
                         className='mt-4 h-12 rounded-full bg-gray-50 px-6 dark:bg-neutral-950'
                       >
-                        Try Again
+                        {t('receiveInvoiceSheet.tryAgain')}
                       </Button>
                     </div>
                   ) : null}

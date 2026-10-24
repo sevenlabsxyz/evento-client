@@ -7,6 +7,7 @@ import { useUserSearch } from '@/lib/hooks/use-search';
 import { UserDetails } from '@/lib/types/api';
 import { isValidEmail } from '@/lib/utils/email-validation';
 import { ChevronRight, Clock, MailIcon, Search, Users, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { UserAvatar } from '../ui/user-avatar';
@@ -32,6 +33,7 @@ export default function InviteCohostsStep1({
   toggleUser,
   onNext,
 }: InviteCohostsStep1Props) {
+  const t = useTranslations('manageLegacy');
   const { mutate: search, data: searchResults, isPending: isSearching, reset } = useUserSearch();
   const debouncedSearch = useDebounce(searchText, 400);
 
@@ -83,7 +85,9 @@ export default function InviteCohostsStep1({
   const renderUserRow = (u: InviteItem, isSelected: boolean) => {
     const isEmailInvite = 'isEmailInvite' in u && u.isEmailInvite;
     const displayEmail = isEmailInvite ? u.email : '';
-    const displayName = isEmailInvite ? 'Email invitation' : (u as UserDetails).name;
+    const displayName = isEmailInvite
+      ? t('cohosts.step1.emailInvitation')
+      : (u as UserDetails).name;
     const displayIdentifier = isEmailInvite ? displayEmail : `@${(u as UserDetails).username}`;
 
     return (
@@ -137,7 +141,7 @@ export default function InviteCohostsStep1({
           <input
             className='w-full rounded-full bg-gray-100 py-2 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-400'
             type='text'
-            placeholder='Search by @username or email'
+            placeholder={t('cohosts.step1.searchPlaceholder')}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -147,7 +151,7 @@ export default function InviteCohostsStep1({
       {pendingInvites.length > 0 && !showResults && (
         <div className='mt-4 px-4'>
           <h3 className='mb-2 text-sm font-medium text-gray-500 dark:text-neutral-400'>
-            Pending Invites
+            {t('cohosts.step1.pendingInvites')}
           </h3>
           <div className='flex flex-col gap-2'>
             {pendingInvites.map((invite) => (
@@ -165,7 +169,7 @@ export default function InviteCohostsStep1({
                       : invite.invitee_email}
                   </div>
                   <div className='truncate text-xs text-gray-500 dark:text-neutral-400'>
-                    Pending cohost invite
+                    {t('cohosts.step1.pendingInvite')}
                   </div>
                 </div>
                 <button
@@ -200,10 +204,10 @@ export default function InviteCohostsStep1({
                 <Users className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
               </div>
               <h3 className='mb-2 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-                Invite Cohosts
+                {t('cohosts.step1.empty.title')}
               </h3>
               <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                Search by @username or enter an email
+                {t('cohosts.step1.empty.description')}
               </p>
             </div>
           )
@@ -228,10 +232,10 @@ export default function InviteCohostsStep1({
               <Search className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
             </div>
             <h3 className='mb-2 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-              No users found
+              {t('cohosts.step1.noResults.title')}
             </h3>
             <p className='text-sm text-gray-500 dark:text-neutral-400'>
-              No users matching &quot;{searchText}&quot;
+              {t('cohosts.step1.noResults.description', { query: searchText })}
             </p>
           </div>
         ) : (
@@ -256,7 +260,7 @@ export default function InviteCohostsStep1({
             selectedCount === 0 ? 'bg-gray-300 dark:bg-neutral-600' : 'bg-red-600 hover:bg-red-700'
           }`}
         >
-          Next ({selectedCount}) <ChevronRight className='h-4 w-4' />
+          {t('cohosts.step1.next', { count: selectedCount })} <ChevronRight className='h-4 w-4' />
         </button>
       </div>
     </>

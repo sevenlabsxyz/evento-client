@@ -1,0 +1,461 @@
+{
+  "copy": {
+    "copiedToClipboard": "{label} copied to clipboard",
+    "copyFailed": "Copy failed",
+    "copiedAria": "{label} copied",
+    "copyAria": "Copy {label}"
+  },
+  "mcp": {
+    "meta": {
+      "title": "MCP server — Evento",
+      "description": "Connect Evento to Claude Desktop, Cursor, OpenClaw, and other MCP clients. List a user’s events and fetch event details from your AI agent with the Evento public MCP server."
+    },
+    "opensInNewTab": "(opens in a new tab)",
+    "setupGuide": "Setup guide",
+    "createApiKey": "Create an API key",
+    "required": "Required",
+    "optional": "Optional",
+    "terminal": "Terminal",
+    "hero": {
+      "title": "Connect Evento to your favorite agent",
+      "description": "The Evento public MCP server lets Claude Desktop, Cursor, and other MCP clients list a user’s events and fetch full event details — through the authenticated Evento public API, using your own API key.",
+      "viewTools": "View tools",
+      "highlights": {
+        "local": "Runs locally over stdio",
+        "apiKey": "Your API key on every request",
+        "tools": "2 public tools",
+        "anyClient": "Works with any stdio MCP client"
+      }
+    },
+    "cta": {
+      "title": "Give your agent your events",
+      "description": "Grab an API key, build the server, and look up Evento events right from your agent."
+    },
+    "flow": {
+      "eyebrow": "How it works",
+      "title": "A thin bridge between your agent and Evento",
+      "description": "The server is an MCP adapter over stdio. It turns tool calls into authenticated public API requests — no hosted MCP layer in between.",
+      "architecture": "Architecture",
+      "eachCall": "What happens on each call",
+      "nodes": {
+        "client": {
+          "kicker": "MCP client",
+          "title": "Your agent",
+          "detail": "Claude Desktop, Cursor, or any client that supports stdio servers."
+        },
+        "server": {
+          "kicker": "Runs on your machine",
+          "title": "Evento MCP server",
+          "detail": "Validates tool arguments, injects your API key, retries and normalizes responses."
+        },
+        "api": {
+          "kicker": "Authenticated",
+          "title": "Evento public API",
+          "detail": "Each tool maps to a /public/v1 route. No direct database access, nothing persisted."
+        }
+      },
+      "connectors": {
+        "stdio": "stdio · tools/call",
+        "apiRequest": "API request + your key"
+      },
+      "steps": {
+        "list": "Your client calls tools/list and the server returns the Evento tools.",
+        "call": "Your client calls tools/call with a tool name and arguments.",
+        "validate": "The executor validates the arguments and fills in the route placeholders.",
+        "request": "It sends an authenticated API request with a timeout and retry policy.",
+        "normalize": "The success or error payload is normalized back into an MCP response."
+      }
+    },
+    "setup": {
+      "eyebrow": "Setup",
+      "title": "Up and running in two steps",
+      "description": "Build the server once, then point any stdio-capable MCP client at it.",
+      "quickstart": "Quickstart",
+      "requirementsLabel": "Requirements",
+      "requirements": {
+        "node": "Node.js 18+",
+        "npm": "npm",
+        "apiKey": "Evento developer API key",
+        "stdioClient": "Any MCP client that supports stdio"
+      },
+      "build": {
+        "title": "Build the server",
+        "description": "Clone and build, then set <code>PUBLIC_API_KEY</code> in <code>.env</code>. Run <code>npm start</code> to launch it on its own.",
+        "copyLabel": "Install commands",
+        "environment": "Environment"
+      },
+      "connect": {
+        "title": "Connect your client",
+        "description": "MCP clients share the same server block; OpenClaw picks up the Evento skill instead."
+      }
+    },
+    "clients": {
+      "chooseClient": "Choose your MCP client",
+      "bestPractices": {
+        "absolutePath": "Use an absolute path in args",
+        "localEnv": "Keep PUBLIC_API_KEY in client-local env config",
+        "restart": "Restart the client after config changes"
+      },
+      "claudeDesktop": {
+        "label": "Claude Desktop",
+        "target": "claude_desktop_config.json",
+        "copyLabel": "Claude Desktop config",
+        "docsLabel": "Client configuration docs",
+        "steps": {
+          "s1": "Add the server block to claude_desktop_config.json.",
+          "s2": "Point args at the absolute path of dist/index.js and set PUBLIC_API_KEY.",
+          "s3": "Save, then restart Claude Desktop."
+        }
+      },
+      "cursor": {
+        "label": "Cursor",
+        "target": "Cursor MCP settings",
+        "copyLabel": "Cursor config",
+        "docsLabel": "Client configuration docs",
+        "steps": {
+          "s1": "Add the same server block in Cursor’s MCP settings.",
+          "s2": "Point args at the absolute path of dist/index.js and set PUBLIC_API_KEY.",
+          "s3": "Restart Cursor."
+        }
+      },
+      "other": {
+        "label": "Other MCP clients",
+        "target": "stdio server config",
+        "copyLabel": "MCP server config",
+        "docsLabel": "Client configuration docs",
+        "steps": {
+          "s1": "Find where your client configures stdio MCP servers.",
+          "s2": "Use the same command, args, and env fields shown here.",
+          "s3": "Restart the client after config changes."
+        }
+      },
+      "openclaw": {
+        "label": "OpenClaw",
+        "target": "Terminal",
+        "copyLabel": "OpenClaw install commands",
+        "docsLabel": "Add to OpenClaw guide",
+        "steps": {
+          "s1": "OpenClaw reuses the Evento SKILL.md from its skills workspace.",
+          "s2": "Create the skill folder and copy SKILL.md into it.",
+          "s3": "If OpenClaw is already running, restart your session or gateway to pick it up."
+        }
+      }
+    },
+    "tools": {
+      "eyebrow": "Tools",
+      "title": "What your agent can do",
+      "description": "Each tool maps to one authenticated route on the Evento public API.",
+      "reference": "Tool reference",
+      "inputs": "Inputs",
+      "descriptions": {
+        "listEvents": "Lists events for a user.",
+        "getEvent": "Fetches event details by ID."
+      }
+    },
+    "examples": {
+      "eyebrow": "In practice",
+      "title": "Ask in plain language",
+      "description": "Your agent picks the right tool and fills in its inputs from what you ask.",
+      "tryPrompt": "Try a prompt",
+      "quoted": "“{prompt}”",
+      "yourAgent": "Your agent",
+      "illustrative": "Illustrative",
+      "caption": "Example conversation. Real answers are built from the event data the Evento API returns.",
+      "you": "You",
+      "agent": "Agent",
+      "called": "Called <code>{tool}</code>",
+      "prompts": {
+        "userEvents": {
+          "prompt": "Show events for satoshi",
+          "reply": "Here are the events I found for satoshi:"
+        },
+        "myUpcoming": {
+          "prompt": "List my upcoming events",
+          "reply": "Here’s what’s coming up for you:"
+        },
+        "getEvent": {
+          "prompt": "Get event evt_abc123",
+          "reply": "Here are the details for evt_abc123:"
+        }
+      }
+    },
+    "skill": {
+      "eyebrow": "Agent skill",
+      "title": "Teach your agent with SKILL.md",
+      "description": "A maintained skill file tells your agent when to reach for the Evento tools and how to use them safely.",
+      "useItTo": "Use it to",
+      "notFor": "Not for",
+      "getSkill": "Get the skill",
+      "useWithOpenClaw": "Use it with OpenClaw",
+      "installForClaude": "Install for Claude",
+      "copyLabel": "Skill install commands",
+      "projectLocal": "Using project-local skills? Copy it to <code>.claude/skills/evento-public-mcp/SKILL.md</code> instead.",
+      "useCases": {
+        "listEvents": "List events for a username",
+        "getEvent": "Get event details from an evt_* ID",
+        "configure": "Configure MCP client settings for Evento",
+        "troubleshoot": "Troubleshoot missing tools or auth failures"
+      },
+      "nonGoals": {
+        "adminRoutes": "Admin-only API routes",
+        "database": "Direct database access",
+        "bypassAuth": "Bypassing API key authentication"
+      }
+    },
+    "troubleshooting": {
+      "eyebrow": "Troubleshooting",
+      "title": "If something’s off",
+      "description": "The common fixes, plus how the server behaves when requests fail.",
+      "docsLink": "Testing & troubleshooting",
+      "verify": "Verify your setup",
+      "copyLabel": "Test commands",
+      "items": {
+        "missingKey": {
+          "title": "Missing API key",
+          "fix": "Set PUBLIC_API_KEY in the MCP client’s env block."
+        },
+        "toolsHidden": {
+          "title": "Tools not visible",
+          "fix": "Run npm run build, confirm dist/index.js exists, use an absolute path in args, then restart the client."
+        },
+        "apiErrors": {
+          "title": "API errors",
+          "fix": "Check the key’s scope and EVENTO_API_BASE_URL, then run the smoke check with a known username."
+        }
+      },
+      "reliability": {
+        "title": "Retries and errors",
+        "items": {
+          "statusRetries": "Retries 408, 429 and 5xx responses",
+          "networkRetries": "Retries timeouts, DNS failures and connection resets",
+          "isError": "Failed calls return isError: true with a structured payload",
+          "noPersistence": "No database access and no persistence in the MCP layer"
+        }
+      },
+      "security": {
+        "title": "Keep your key safe",
+        "items": {
+          "localEnv": "Keep API keys in local env config, never in source control",
+          "rotate": "Rotate keys periodically",
+          "monitor": "Monitor usage against rate limits"
+        }
+      }
+    }
+  },
+  "api": {
+    "meta": {
+      "title": "Evento API — Build on top of your events",
+      "description": "Fetch public events, organizer feeds, and RSVP guest lists with the Evento Public API, or embed events anywhere with the no-auth, CORS-enabled Embed API."
+    },
+    "opensInNewTab": "(opens in a new tab)",
+    "request": "Request",
+    "response": "Response",
+    "hero": {
+      "title": "Build on top of your events",
+      "description": "Pull public events, organizer feeds, and RSVP guest lists into your own product — or drop events straight into any website with no-auth, CORS-ready embed endpoints.",
+      "readDocs": "Read the docs",
+      "getApiKey": "Get an API key",
+      "developerMode": "Turn on <strong>Developer Mode</strong> in <link>Settings → Advanced</link> to keep API keys one tap away.",
+      "responseExcerpt": "Response · excerpt",
+      "facts": {
+        "surfaces": "API surfaces",
+        "endpoints": "GET endpoints",
+        "requestsPerDay": "requests / day per key"
+      }
+    },
+    "surfaces": {
+      "eyebrow": "Two surfaces",
+      "title": "Pick the right API for the job",
+      "description": "Use the Public API from your backend for rich data, and the Embed API straight from the browser for widgets.",
+      "baseUrl": "Base URL:",
+      "public": {
+        "name": "Public API",
+        "tagline": "Read-only event and user data for third-party server integrations.",
+        "badge": "API key",
+        "snippetLabel": "Request headers",
+        "snippetCaption": "Request header",
+        "points": {
+          "p1": "Authenticated with Unkey API keys via <code>x-evento-api-key</code> or <code>Authorization: Bearer</code>",
+          "p2": "Rich payloads with creator metadata, links, contributions, and pagination",
+          "p3": "Event details, organizer event lists, and RSVP guest lists",
+          "p4": "Keep keyed requests server-side — never ship a key in client-side JavaScript"
+        },
+        "links": {
+          "overview": "Public API overview",
+          "secondary": "Authentication"
+        }
+      },
+      "embed": {
+        "name": "Embed API",
+        "tagline": "No-auth, CORS-friendly responses for widgets and client-side embeds.",
+        "badge": "No auth · CORS",
+        "snippetLabel": "CORS headers",
+        "snippetCaption": "Response headers",
+        "points": {
+          "p1": "No API key required — safe for client-side rendering",
+          "p2": "Cross-origin access for <code>GET</code> and <code>OPTIONS</code>",
+          "p3": "Lean payloads with a computed <code>status</code>: upcoming, ongoing, or past",
+          "p4": "Pairs with the <code>evento-embed-react</code> event card, list, and calendar components"
+        },
+        "links": {
+          "overview": "Embed API overview",
+          "secondary": "React components"
+        }
+      }
+    },
+    "explorer": {
+      "eyebrow": "Endpoints",
+      "title": "Five GET endpoints, one consistent envelope",
+      "description": "Explore each endpoint with real requests and response excerpts from the reference docs.",
+      "apiReference": "API reference",
+      "tablistLabel": "API endpoints",
+      "parameters": "Parameters",
+      "required": "Required",
+      "fullReference": "Full reference",
+      "locations": {
+        "path": "path",
+        "query": "query"
+      },
+      "endpoints": {
+        "publicEvent": {
+          "title": "Fetch event",
+          "description": "Retrieve detailed information for a published public event, including creator, links, and contribution metadata."
+        },
+        "publicEventGuests": {
+          "title": "Fetch event guests",
+          "description": "Retrieve RSVP guests for a published public event, filtered by RSVP status."
+        },
+        "publicUserEvents": {
+          "title": "Fetch user events",
+          "description": "List public events by username, with upcoming, past, or profile filters and pagination."
+        },
+        "embedEvent": {
+          "title": "Fetch embed event",
+          "description": "Retrieve a compact, embed-optimized event payload by ID — ready for event cards and detail embeds."
+        },
+        "embedUserEvents": {
+          "title": "Fetch embed user events",
+          "description": "Retrieve an embed-optimized event feed for a creator, with optional inclusive date bounds."
+        }
+      },
+      "params": {
+        "eventId": "Unique event identifier.",
+        "rsvpStatus": "RSVP filter: yes, maybe, no, or all. Defaults to yes.",
+        "guestsLimit": "Results per page, 1–100. Defaults to 10.",
+        "offset": "Pagination offset. Defaults to 0.",
+        "usernameNoPrefix": "Username, case-insensitive, without the @ prefix.",
+        "eventsType": "Optional filter: upcoming, past, or profile.",
+        "eventsLimit": "Results per page, max 100. Defaults to 20.",
+        "username": "Username, case-insensitive.",
+        "from": "Inclusive start datetime (ISO 8601).",
+        "to": "Inclusive end datetime (ISO 8601).",
+        "embedLimit": "Number of events to return, max 100. Defaults to 50."
+      },
+      "notes": {
+        "publicEventGuests": "Emails, phone numbers, and private contact details are never returned. Only guests linked to user profiles are included.",
+        "embedUserEvents": "Each event’s status is computed from its start and end timestamps: upcoming, ongoing, or past."
+      }
+    },
+    "codePanel": {
+      "codeLanguage": "Code language",
+      "copySnippet": "Copy {label} snippet",
+      "copiedAnnouncement": "Snippet copied to clipboard",
+      "copyFailedTitle": "Couldn’t copy snippet",
+      "copyFailedDescription": "Copy it manually from the code block."
+    },
+    "useCases": {
+      "eyebrow": "What you can build",
+      "title": "From widgets to community insights",
+      "description": "Integration patterns straight from the Evento guides.",
+      "codeExamples": "Code examples",
+      "items": {
+        "discovery": {
+          "title": "Event discovery platform",
+          "description": "Aggregate events from creator accounts and public event IDs, then cache responses to keep pages fast."
+        },
+        "widgets": {
+          "title": "Calendars & widgets",
+          "description": "Render browser-safe calendars and event cards with the Embed API — no API key needed."
+        },
+        "detailViews": {
+          "title": "Event detail views",
+          "description": "Build detail pages with creator metadata, Spotify and Wavlake links, and contribution handles."
+        },
+        "community": {
+          "title": "Community intelligence",
+          "description": "Measure RSVP conversion by status, verification mix, and repeat attendees across events."
+        },
+        "profiles": {
+          "title": "Organizer profiles",
+          "description": "Show a creator’s upcoming and past events on profile pages with the type filter."
+        },
+        "sync": {
+          "title": "Calendar exports & sync",
+          "description": "Transform public schedules into external calendars and feeds, and refresh local caches."
+        }
+      }
+    },
+    "contracts": {
+      "eyebrow": "Shared contracts",
+      "title": "Predictable by design",
+      "description": "Both surfaces share the same success and error envelope and status-code conventions. Public API keys report their quota in response headers.",
+      "rateLimits": {
+        "title": "Rate limits",
+        "description": "Over the limit you get a <code>429</code> — retry with exponential backoff and queue requests as you approach the daily quota.",
+        "snippetLabel": "Rate limit headers",
+        "snippetCaption": "Response headers",
+        "docsLink": "Rate limiting"
+      },
+      "envelope": {
+        "title": "Response envelope",
+        "description": "Check <code>success</code>, log the human-readable <code>message</code>, and read your payload from <code>data</code>. Lists add <code>pagination</code>.",
+        "docsLink": "Response format",
+        "tabs": {
+          "success": "Success",
+          "error": "Error",
+          "list": "List"
+        }
+      },
+      "statusCodes": {
+        "title": "Status codes",
+        "description": "Standard HTTP semantics. Private or unpublished resources return <code>404</code>, and a missing or revoked key returns <code>401</code>.",
+        "docsLink": "Error handling"
+      }
+    },
+    "getStarted": {
+      "eyebrow": "Get started",
+      "title": "Your first request is three steps away",
+      "steps": {
+        "developerMode": {
+          "title": "Enable Developer Mode",
+          "description": "Switch it on under Settings → Advanced to surface API keys in your settings.",
+          "link": "Open settings"
+        },
+        "createKey": {
+          "title": "Create an API key",
+          "description": "Name it, then copy it right away — keys are shown only once. Up to 10 active keys per account.",
+          "link": "Manage API keys"
+        },
+        "firstRequest": {
+          "title": "Make your first request",
+          "description": "Send the key in the x-evento-api-key header from your server. Successful calls return success: true with your payload in data.",
+          "link": "Follow the quickstart"
+        }
+      },
+      "docs": {
+        "quickstart": {
+          "title": "Quickstart",
+          "description": "Create an API key and make your first public API request."
+        },
+        "authentication": {
+          "title": "Authentication",
+          "description": "Header formats, auth flows by surface, and security practices."
+        },
+        "dataModels": {
+          "title": "Data models",
+          "description": "Canonical event, guest, and pagination object schemas."
+        }
+      }
+    }
+  }
+}

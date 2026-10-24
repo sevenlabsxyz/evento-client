@@ -1,11 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { DOCS_MCP_URL } from '@/lib/constants/external-links';
 import { ArrowUpRight, KeyRound } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 import { API_KEYS_SETTINGS_PATH } from './mcp-content';
 
 export function McpCtaBand() {
+  const t = useTranslations('developers.mcp');
+
   return (
     <section
       aria-labelledby='mcp-cta-heading'
@@ -24,11 +27,9 @@ export function McpCtaBand() {
         id='mcp-cta-heading'
         className='mx-auto max-w-2xl text-balance text-3xl font-bold tracking-tight text-white md:text-4xl'
       >
-        Give your agent your events
+        {t('cta.title')}
       </h2>
-      <p className='mx-auto mt-3 max-w-xl text-base text-neutral-400'>
-        Grab an API key, build the server, and look up Evento events right from your agent.
-      </p>
+      <p className='mx-auto mt-3 max-w-xl text-base text-neutral-400'>{t('cta.description')}</p>
 
       <div className='mt-8 flex flex-wrap items-center justify-center gap-3'>
         <Button
@@ -37,9 +38,9 @@ export function McpCtaBand() {
           className='gap-2 bg-white px-6 text-gray-900 hover:bg-gray-100 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100'
         >
           <a href={DOCS_MCP_URL} target='_blank' rel='noopener noreferrer'>
-            Setup guide
+            {t('setupGuide')}
             <ArrowUpRight className='h-4 w-4' aria-hidden='true' />
-            <span className='sr-only'>(opens in a new tab)</span>
+            <span className='sr-only'>{t('opensInNewTab')}</span>
           </a>
         </Button>
         <Button
@@ -50,7 +51,7 @@ export function McpCtaBand() {
         >
           <Link href={API_KEYS_SETTINGS_PATH}>
             <KeyRound className='h-4 w-4' aria-hidden='true' />
-            Create an API key
+            {t('createApiKey')}
           </Link>
         </Button>
       </div>

@@ -18,6 +18,7 @@ import { UNDATED_DATE_KEY, formatDateHeader } from '@/lib/utils/date';
 import { getProfileEventDateKey } from '@/lib/utils/profile-events';
 import debounce from 'lodash.debounce';
 import { Calendar, List, MapPinHouse, Search, UserRoundPen } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 function hasValidEventDate(eventDate: unknown): eventDate is string {
@@ -49,6 +50,7 @@ export default function EventSearchSheet({
   initialTimeframe,
   initialSortBy,
 }: EventSearchSheetProps) {
+  const t = useTranslations('misc.eventSearchSheet');
   const [searchText, setSearchText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<EventSearchFilter>(initialFilter ?? 'upcoming');
@@ -216,7 +218,7 @@ export default function EventSearchSheet({
 
   return (
     <MasterScrollableSheet
-      title='Events'
+      title={t('title')}
       open={isOpen}
       onOpenChange={(open) => !open && onClose()}
       headerSecondary={
@@ -228,7 +230,7 @@ export default function EventSearchSheet({
               ref={searchInputRef}
               className='h-10 w-full rounded-full border-none bg-gray-100 px-10 py-0 text-sm text-gray-800 outline-none dark:bg-neutral-800 dark:text-neutral-200 dark:placeholder:text-neutral-400'
               type='text'
-              placeholder='Search events'
+              placeholder={t('placeholder')}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
@@ -238,19 +240,19 @@ export default function EventSearchSheet({
           {isOwnProfile && (
             <AnimatedTabs
               tabs={[
-                { title: 'All', icon: List, onClick: () => handleFilterChange('upcoming') },
+                { title: t('tabs.all'), icon: List, onClick: () => handleFilterChange('upcoming') },
                 {
-                  title: 'Attending',
+                  title: t('tabs.attending'),
                   icon: Calendar,
                   onClick: () => handleFilterChange('attending'),
                 },
                 {
-                  title: 'Hosting',
+                  title: t('tabs.hosting'),
                   icon: MapPinHouse,
                   onClick: () => handleFilterChange('hosting'),
                 },
                 {
-                  title: 'Drafts',
+                  title: t('tabs.drafts'),
                   icon: UserRoundPen,
                   onClick: () => handleFilterChange('drafts'),
                 },
@@ -273,7 +275,7 @@ export default function EventSearchSheet({
                       : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   )}
                 >
-                  Upcoming
+                  {t('upcoming')}
                 </button>
                 <button
                   onClick={() => setTimeframe('past')}
@@ -284,7 +286,7 @@ export default function EventSearchSheet({
                       : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   )}
                 >
-                  Past
+                  {t('past')}
                 </button>
               </div>
 
@@ -299,7 +301,7 @@ export default function EventSearchSheet({
                       : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   )}
                 >
-                  Latest
+                  {t('latest')}
                 </button>
                 <button
                   onClick={() => setSortBy('date-asc')}
@@ -310,7 +312,7 @@ export default function EventSearchSheet({
                       : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   )}
                 >
-                  Oldest
+                  {t('oldest')}
                 </button>
               </div>
             </div>
@@ -330,16 +332,14 @@ export default function EventSearchSheet({
         // Error State
         <div className='flex flex-col items-center justify-center py-12'>
           <div className='text-center text-base text-gray-600 dark:text-neutral-400'>
-            Failed to load events
+            {t('loadError')}
           </div>
         </div>
       ) : events.length === 0 ? (
         // Empty State
         <div className='flex flex-col items-center justify-center py-12'>
           <div className='text-center text-base text-gray-600 dark:text-neutral-400'>
-            {searchText.trim()
-              ? `No events found matching "${searchText}"`
-              : `No ${filter} events found`}
+            {searchText.trim() ? t('noMatch', { query: searchText }) : t(`emptyByFilter.${filter}`)}
           </div>
         </div>
       ) : (
@@ -367,7 +367,7 @@ export default function EventSearchSheet({
                 onClick={() => fetchNextPage()}
                 disabled={isFetchingNextPage}
               >
-                {isFetchingNextPage ? 'Loading...' : 'Load more'}
+                {isFetchingNextPage ? t('loading') : t('loadMore')}
               </Button>
             </div>
           )}

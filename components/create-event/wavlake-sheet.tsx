@@ -1,6 +1,7 @@
 'use client';
 
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface WavlakeSheetProps {
@@ -16,6 +17,8 @@ export default function WavlakeSheet({
   onSave,
   initialUrl = '',
 }: WavlakeSheetProps) {
+  const t = useTranslations('createEvent');
+  const tCommon = useTranslations('common');
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
 
@@ -37,12 +40,12 @@ export default function WavlakeSheet({
 
   const handleSave = () => {
     if (!url.trim()) {
-      setError('Please enter a URL');
+      setError(t('music.enterUrl'));
       return;
     }
 
     if (!validateUrl(url)) {
-      setError('Please enter a valid Wavlake URL');
+      setError(t('wavlake.invalidUrl'));
       return;
     }
 
@@ -76,7 +79,7 @@ export default function WavlakeSheet({
               {/* Header */}
               <div className='mb-6'>
                 <h2 className='text-center text-xl font-semibold dark:text-neutral-100'>
-                  Add Wavlake Track or Playlist
+                  {t('wavlake.title')}
                 </h2>
               </div>
 
@@ -84,7 +87,7 @@ export default function WavlakeSheet({
               <div className='space-y-4'>
                 <div>
                   <label className='mb-2 block text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                    Wavlake URL
+                    {t('wavlake.urlLabel')}
                   </label>
                   <input
                     type='url'
@@ -99,7 +102,7 @@ export default function WavlakeSheet({
                   />
                   {error && <p className='mt-1 text-sm text-red-600 dark:text-red-400'>{error}</p>}
                   <p className='mt-2 text-xs text-gray-500 dark:text-neutral-400'>
-                    Paste a link to any Wavlake track or playlist
+                    {t('wavlake.hint')}
                   </p>
                 </div>
               </div>
@@ -110,13 +113,13 @@ export default function WavlakeSheet({
                   onClick={handleClose}
                   className='flex-1 rounded-xl border border-gray-300 px-4 py-3 font-medium text-gray-700 hover:bg-gray-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-950'
                 >
-                  Cancel
+                  {tCommon('actions.cancel')}
                 </button>
                 <button
                   onClick={handleSave}
                   className='flex-1 rounded-xl bg-red-500 px-4 py-3 font-medium text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 >
-                  Save
+                  {tCommon('actions.save')}
                 </button>
               </div>
             </div>

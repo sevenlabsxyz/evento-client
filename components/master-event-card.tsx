@@ -1,10 +1,12 @@
 'use client';
 
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { EventWithUser } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { MapPin } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useRef } from 'react';
@@ -18,6 +20,8 @@ interface MasterEventCardProps {
 }
 
 export function MasterEventCard({ event, className, onClick, onLongPress }: MasterEventCardProps) {
+  const t = useTranslations('misc.masterEventCard');
+  const locale = useLocale();
   const router = useRouter();
 
   // Get event time with timezone
@@ -33,7 +37,14 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
 
   // Price display
   const showPrice = event.cost && Number(event.cost) > 0 ? true : false;
-  const priceDisplay = showPrice ? `$${Number(event.cost)}` : null;
+  const priceDisplay = showPrice
+    ? new Intl.NumberFormat(getIntlLocale(locale), {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2,
+      }).format(Number(event.cost))
+    : null;
 
   const showCapacity = event.max_capacity && event.show_capacity_count;
 
@@ -110,10 +121,10 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
             size='xs'
           />
           <span className='text-sm text-gray-600 dark:text-neutral-400'>
-            by{' '}
-            <span className='font-semibold'>
-              @{event.user_details.name || event.user_details.username}
-            </span>
+            {t.rich('byHost', {
+              name: event.user_details.name || event.user_details.username,
+              strong: (chunks) => <span className='font-semibold'>{chunks}</span>,
+            })}
           </span>
         </div>
 
@@ -130,7 +141,7 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
           <div className='mt-1 flex items-center gap-2'>
             {showCapacity && (
               <span className='rounded-full border border-amber-500 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400'>
-                Capacity {event.max_capacity}
+                {t('capacity', { count: event.max_capacity })}
               </span>
             )}
             {showPrice && priceDisplay && (

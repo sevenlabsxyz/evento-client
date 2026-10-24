@@ -1,4 +1,5 @@
 import { LocationData } from '@/lib/hooks/use-google-places';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { EventLocation } from '@/lib/types/event';
 
 export interface EventLocationDisplayLines {
@@ -355,7 +356,7 @@ export function getLocationDisplayName(location: LocationData): string {
     return location.city;
   }
 
-  return location.formatted.split(',')[0] || 'Unknown Location';
+  return location.formatted.split(',')[0] || translateHooks('dates.unknownLocation');
 }
 
 export function getEventLocationDisplayLines(

@@ -4,6 +4,7 @@ import apiClient from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
 import { ApiResponse } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface LinkSubEventParams {
   parentEventId: string;
@@ -21,6 +22,7 @@ interface LinkSubEventResponse {
  */
 export function useLinkSubEvent() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async ({ parentEventId, subEventId }: LinkSubEventParams) => {
@@ -33,7 +35,7 @@ export function useLinkSubEvent() {
         return response.data;
       }
 
-      throw new Error('Failed to link sub event');
+      throw new Error(t('subEvents.linkFailed'));
     },
     onSuccess: (_data, { parentEventId, subEventId }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.eventSubEvents(parentEventId) });

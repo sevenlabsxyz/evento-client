@@ -8,6 +8,7 @@ import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Loader2, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface BiographySheetProps {
@@ -23,6 +24,8 @@ export default function BiographySheet({
   onSave,
   currentBio = '',
 }: BiographySheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const [bio, setBio] = useState(currentBio || '');
   const maxLength = 500;
   const updateProfileMutation = useUpdateUserProfile();
@@ -48,19 +51,19 @@ export default function BiographySheet({
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
-        toast.error(validation.error || 'Invalid bio');
+        toast.error(validation.error || t('edit.bio.invalid'));
         return;
       }
 
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
-      toast.success('Bio updated successfully');
+      toast.success(t('edit.bio.updated'));
 
       // Close sheet
       onClose();
     } catch (error) {
       logger.error('Failed to update bio', { error });
-      toast.error((error as string) || 'Failed to update bio');
+      toast.error((error as string) || t('edit.bio.updateFailed'));
     }
   };
 
@@ -87,7 +90,7 @@ export default function BiographySheet({
                 <SheetWithDetentFull.Handle className='dark:bg-neutral-700' />
               </div>
               <div className='flex items-center justify-between'>
-                <h2 className='text-xl font-semibold'>Biography</h2>
+                <h2 className='text-xl font-semibold'>{t('edit.bio.title')}</h2>
                 <button
                   onClick={handleCancel}
                   className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
@@ -105,7 +108,7 @@ export default function BiographySheet({
                   <Textarea
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    placeholder='Tell us about yourself...'
+                    placeholder={t('edit.bio.placeholder')}
                     className='mb-4 min-h-[200px] resize-none'
                     maxLength={maxLength}
                     autoFocus
@@ -118,8 +121,7 @@ export default function BiographySheet({
 
                   {/* Info text */}
                   <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
-                    Write a short bio to help others get to know you. Share your interests, what
-                    brings you to events, or anything else you&apos;d like people to know.
+                    {t('edit.bio.info')}
                   </p>
 
                   {/* Save/Cancel Buttons */}
@@ -132,14 +134,14 @@ export default function BiographySheet({
                       {isSaving ? (
                         <>
                           <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                          Saving...
+                          {t('saving')}
                         </>
                       ) : (
-                        'Save'
+                        tCommon('actions.save')
                       )}
                     </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
-                      Cancel
+                      {tCommon('actions.cancel')}
                     </Button>
                   </div>
                 </SheetWithDetentFull.ScrollContent>

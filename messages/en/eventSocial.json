@@ -1,0 +1,156 @@
+{
+  "galleryPage": {
+    "notFoundTitle": "Event Not Found",
+    "notFoundDescription": "The event you're trying to view doesn't exist.",
+    "goBack": "Go Back",
+    "goBackAria": "Go back",
+    "shareTitle": "{title} - Gallery",
+    "shareText": "Check out photos from {title}",
+    "linkCopied": "Gallery link copied to clipboard!",
+    "title": "Gallery",
+    "shareAria": "Share gallery",
+    "shareButtonTitle": "Share Gallery",
+    "addPhotosAria": "Add photos",
+    "addPhotosTitle": "Add Photos",
+    "emptyTitle": "No Photos Yet",
+    "emptyDescription": "Photos from this event will appear here once they're added.",
+    "photoCount": "{count, plural, one {# photo} other {# photos}}"
+  },
+  "comments": {
+    "addFailed": "Your comment was not saved. Please try again.",
+    "loadErrorTitle": "Could not load comments",
+    "loadErrorDescription": "There was a problem loading comments. Please try again later.",
+    "placeholder": "Add a comment",
+    "postAria": "Post comment",
+    "signInPrompt": "Please sign in to leave a comment.",
+    "emptyTitle": "No comments yet.",
+    "emptyDescription": "Be the first to leave a comment about this event."
+  },
+  "comment": {
+    "dateAtTime": "{date} at {time}",
+    "deleteFailed": "Failed to delete comment",
+    "editFailed": "Failed to edit comment",
+    "replyFailed": "Failed to add reply",
+    "reply": "Reply",
+    "replyPlaceholder": "Reply to @{username}",
+    "postReplyAria": "Post reply",
+    "hideReplies": "{count, plural, one {Hide # reply} other {Hide # replies}}",
+    "showReplies": "{count, plural, one {Show # reply} other {Show # replies}}"
+  },
+  "deleteSheet": {
+    "title": "{itemType, select, comment {Delete comment} reply {Delete reply} other {Delete {itemType}}}",
+    "description": "{itemType, select, comment {Are you sure you want to delete this comment? This action cannot be undone.} reply {Are you sure you want to delete this reply? This action cannot be undone.} other {Are you sure you want to delete this {itemType}? This action cannot be undone.}}",
+    "deleting": "Deleting..."
+  },
+  "gallery": {
+    "shareTitle": "{title} - Photo Gallery",
+    "shareText": "Check out photos from {title}",
+    "sharedByGuests": "Shared by guests",
+    "shareAlbum": "Share Album",
+    "addPhotos": "Add Photos",
+    "emptyTitle": "No photos yet",
+    "emptyDescription": "Be the first to add photos — they're visible to all guests."
+  },
+  "galleryItem": {
+    "unknownUser": "user",
+    "deleteConfirm": "Are you sure you want to delete this photo? This action cannot be undone.",
+    "deleteSuccess": "Photo deleted successfully",
+    "deleteFailed": "Failed to delete photo",
+    "openAria": "Open gallery image by {username}",
+    "imageAlt": "Gallery image by {username}",
+    "likeAria": "Like photo",
+    "unlikeAria": "Unlike photo",
+    "actionsAria": "Photo actions",
+    "deletePhoto": "Delete Photo"
+  },
+  "photoUpload": {
+    "uploadSuccess": "{count, plural, one {# photo uploaded successfully!} other {# photos uploaded successfully!}}",
+    "uploadPartial": "{successCount} photos uploaded, {failCount} failed.",
+    "title": "Upload Photos",
+    "selectPrompt": "Select up to {max} photos to upload to this event's gallery",
+    "selectPhotos": "Select Photos",
+    "selectedCount": "{count, plural, one {# photo selected} other {# photos selected}}",
+    "addMore": "Add More",
+    "previewAlt": "Photo preview",
+    "uploading": "Uploading..."
+  },
+  "contributions": {
+    "title": "Contributions",
+    "suggested": "Suggested: {amount}",
+    "welcome": "Contributions welcome",
+    "methodsAvailable": "{count, plural, one {# payment method available} other {# payment methods available}}"
+  },
+  "contributionSheet": {
+    "title": "Contribution",
+    "subtitle": "Support the host with a contribution",
+    "changeAmount": "Change amount",
+    "anyAmount": "Any amount is appreciated",
+    "chooseMethod": "Choose how you'd like to contribute:"
+  },
+  "campaign": {
+    "defaultTitle": "Crowdfunding"
+  },
+  "campaignCard": {
+    "title": "Support this event",
+    "raised": "{amount} raised"
+  },
+  "campaignDetail": {
+    "organizerFallback": "Campaign organizer",
+    "tabs": {
+      "details": "Details",
+      "contributors": "Contributors"
+    },
+    "contribute": "Contribute",
+    "satsRaised": "sats raised",
+    "of": "of",
+    "goal": "{amount} goal",
+    "contributionCount": "{count, plural, one {# contribution} other {# contributions}}",
+    "created": "Created {date}",
+    "emptyTitle": "No contributions yet",
+    "emptyDescription": "Be the first to contribute to this campaign.",
+    "anonymous": "Anonymous",
+    "timeAgo": {
+      "justNow": "just now",
+      "minutesAgo": "{count}m ago",
+      "hoursAgo": "{count}h ago",
+      "daysAgo": "{count}d ago"
+    }
+  },
+  "pledge": {
+    "createFailed": "Failed to create pledge. Please try again.",
+    "invoiceCopied": "Invoice copied to clipboard",
+    "copyFailed": "Failed to copy invoice",
+    "contributeTo": "Contribute to \"{title}\"",
+    "chooseAmount": "Choose an amount to contribute",
+    "sats": "sats",
+    "creatingInvoice": "Creating invoice…",
+    "contributeAmount": "Contribute {amount} sats",
+    "selectAmount": "Select an amount",
+    "walletPaymentFailed": "Payment failed. Try copying the invoice instead.",
+    "payAmount": "Pay <strong>{amount} sats</strong>",
+    "paying": "Paying…",
+    "payWithWallet": "Pay with Evento wallet",
+    "walletInstant": "Instant payment from your balance",
+    "walletNotConnected": "Wallet not connected",
+    "viewQr": "View QR code",
+    "viewQrDescription": "Scan or copy for any Lightning wallet",
+    "waitingForPayment": "Waiting for payment…",
+    "scanToPay": "Scan or copy the invoice to pay <strong>{amount} sats</strong>",
+    "copied": "Copied!",
+    "copyInvoice": "Copy invoice",
+    "thankYou": "Thank you!",
+    "received": "Your contribution of <strong>{amount} sats</strong> has been received.",
+    "expiredTitle": "Invoice expired",
+    "expiredDescription": "The payment window has closed. You can try again with a new invoice.",
+    "tryAgain": "Try again",
+    "failedTitle": "Payment failed",
+    "failedDescription": "We could not confirm this payment. You can try again with a new invoice.",
+    "steps": {
+      "amount": "Contribute",
+      "invoice": "Pay Invoice",
+      "settled": "Payment Received",
+      "expired": "Invoice Expired",
+      "failed": "Payment Failed"
+    }
+  }
+}

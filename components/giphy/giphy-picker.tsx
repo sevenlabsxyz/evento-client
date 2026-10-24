@@ -6,6 +6,7 @@ import { logger } from '@/lib/utils/logger';
 import { GiphyFetch } from '@giphy/js-fetch-api';
 import { IGif } from '@giphy/js-types';
 import { Loader2, Search } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 
 const gf = new GiphyFetch(Env.NEXT_PUBLIC_GIPHY_API_KEY);
@@ -15,6 +16,7 @@ interface GiphyPickerProps {
 }
 
 export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
+  const t = useTranslations('zap.giphy');
   const [searchQuery, setSearchQuery] = useState('');
   const [gifs, setGifs] = useState<IGif[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -92,7 +94,7 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
         <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400 dark:text-neutral-500' />
         <Input
           type='text'
-          placeholder='Search GIFs...'
+          placeholder={t('searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className='w-full bg-gray-100 pl-10 dark:bg-neutral-800 dark:focus-visible:ring-offset-neutral-900'
@@ -133,8 +135,8 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
       {/* No results */}
       {!isLoading && gifs.length === 0 && (
         <div className='flex flex-1 flex-col items-center justify-center p-4 text-center'>
-          <p className='text-gray-500 dark:text-neutral-400'>No GIFs found</p>
-          <p className='text-sm text-gray-400 dark:text-neutral-500'>Try a different search term</p>
+          <p className='text-gray-500 dark:text-neutral-400'>{t('noResults')}</p>
+          <p className='text-sm text-gray-400 dark:text-neutral-500'>{t('tryDifferent')}</p>
         </div>
       )}
     </div>

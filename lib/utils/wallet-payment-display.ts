@@ -1,3 +1,4 @@
+import { translateHooks } from '@/lib/i18n/active-translator';
 import type { Payment } from '@breeztech/breez-sdk-spark/ssr';
 
 export interface WalletPaymentDisplayData {
@@ -16,27 +17,29 @@ function normalizeText(value?: string | null): string | null {
 }
 
 function getLightningFallback(payment: Payment): string {
-  return payment.paymentType === 'receive' ? 'Lightning payment received' : 'Lightning payment';
+  return payment.paymentType === 'receive'
+    ? translateHooks('wallet.paymentDisplay.lightningReceived')
+    : translateHooks('wallet.paymentDisplay.lightning');
 }
 
 function getDefaultDescription(payment: Payment): string {
   if (!payment.details) {
-    return 'No description';
+    return translateHooks('wallet.paymentDisplay.noDescription');
   }
 
   switch (payment.details.type) {
     case 'lightning':
       return getLightningFallback(payment);
     case 'spark':
-      return 'Spark payment';
+      return translateHooks('wallet.paymentDisplay.spark');
     case 'token':
-      return 'Token payment';
+      return translateHooks('wallet.paymentDisplay.token');
     case 'withdraw':
-      return 'Withdrawal';
+      return translateHooks('wallet.paymentDisplay.withdrawal');
     case 'deposit':
-      return 'Deposit';
+      return translateHooks('wallet.paymentDisplay.deposit');
     default:
-      return 'Payment';
+      return translateHooks('wallet.paymentDisplay.payment');
   }
 }
 
@@ -79,7 +82,7 @@ function getLnurlWithdrawDomain(payment: Payment): string | null {
 export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisplayData {
   if (!payment.details) {
     return {
-      primaryText: 'No description',
+      primaryText: translateHooks('wallet.paymentDisplay.noDescription'),
       secondaryText: null,
       description: null,
       senderComment: null,
@@ -120,9 +123,9 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
     }
     case 'spark':
       return {
-        primaryText: 'Spark payment',
+        primaryText: translateHooks('wallet.paymentDisplay.spark'),
         secondaryText: null,
-        description: 'Spark payment',
+        description: translateHooks('wallet.paymentDisplay.spark'),
         senderComment: null,
         lightningAddress: null,
         lightningUsername: null,
@@ -130,9 +133,9 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
       };
     case 'token':
       return {
-        primaryText: 'Token payment',
+        primaryText: translateHooks('wallet.paymentDisplay.token'),
         secondaryText: null,
-        description: 'Token payment',
+        description: translateHooks('wallet.paymentDisplay.token'),
         senderComment: null,
         lightningAddress: null,
         lightningUsername: null,
@@ -140,9 +143,9 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
       };
     case 'withdraw':
       return {
-        primaryText: 'Withdrawal',
+        primaryText: translateHooks('wallet.paymentDisplay.withdrawal'),
         secondaryText: null,
-        description: 'Withdrawal',
+        description: translateHooks('wallet.paymentDisplay.withdrawal'),
         senderComment: null,
         lightningAddress: null,
         lightningUsername: null,
@@ -150,9 +153,9 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
       };
     case 'deposit':
       return {
-        primaryText: 'Deposit',
+        primaryText: translateHooks('wallet.paymentDisplay.deposit'),
         secondaryText: null,
-        description: 'Deposit',
+        description: translateHooks('wallet.paymentDisplay.deposit'),
         senderComment: null,
         lightningAddress: null,
         lightningUsername: null,
@@ -160,7 +163,7 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
       };
     default:
       return {
-        primaryText: 'Payment',
+        primaryText: translateHooks('wallet.paymentDisplay.payment'),
         secondaryText: null,
         description: null,
         senderComment: null,

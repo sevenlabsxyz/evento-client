@@ -3,7 +3,9 @@
 import { Button } from '@/components/ui/button';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { ArrowLeft, ArrowUpDown, Loader2, X } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface ZapCustomStepProps {
   customAmount: string;
@@ -30,6 +32,9 @@ export function ZapCustomStep({
   onBack,
   onClose,
 }: ZapCustomStepProps) {
+  const t = useTranslations('zap.steps');
+  const tCommon = useTranslations('common');
+  const locale = getIntlLocale(useLocale());
   const amountSats = Number(customAmount);
   const hasValidSatsAmount =
     customAmount !== '' &&
@@ -43,15 +48,17 @@ export function ZapCustomStep({
       <div className='flex items-center justify-between p-4 pt-0'>
         <button
           onClick={onBack}
+          aria-label={tCommon('actions.back')}
           className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
         >
           <ArrowLeft className='h-5 w-5' />
         </button>
-        <h2 className='text-xl font-semibold'>Custom Amount</h2>
+        <h2 className='text-xl font-semibold'>{t('customAmount')}</h2>
         <div className='flex items-center gap-3'>
           <WalletBalanceDisplay />
           <button
             onClick={onClose}
+            aria-label={tCommon('actions.close')}
             className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <X className='h-5 w-5' />
@@ -77,10 +84,10 @@ export function ZapCustomStep({
               <ArrowUpDown className='h-4 w-4' />
               <span>
                 {inputMode === 'usd' && customAmount
-                  ? `${Number(customAmount).toLocaleString()} sats`
+                  ? t('sats', { amount: Number(customAmount).toLocaleString(locale) })
                   : inputMode === 'sats' && customAmountUSD
                     ? `$${customAmountUSD}`
-                    : 'Convert'}
+                    : t('convert')}
               </span>
             </button>
           </div>
@@ -102,10 +109,10 @@ export function ZapCustomStep({
             {isPreparing ? (
               <>
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Preparing...
+                {t('preparing')}
               </>
             ) : (
-              'Next'
+              tCommon('actions.next')
             )}
           </Button>
         </div>

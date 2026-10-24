@@ -6,18 +6,21 @@ import {
   Calendar1,
   Code2,
   KeyRound,
+  LucideIcon,
   PanelRightClose,
   PanelRightOpen,
   Plus,
   Search,
+  Settings,
   Shield,
   Shirt,
   Star,
   Zap,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 
 import { NavMain, NavMainItem } from '@/components/dashboard/nav-main';
@@ -38,50 +41,34 @@ import {
 import { useDeveloperSettingsStore } from '@/lib/stores/developer-settings-store';
 // import { useRightSidebar } from '@/lib/stores/right-sidebar-store';
 
-const navMain: NavMainItem[] = [
-  {
-    title: 'Events',
-    url: '/e/hub',
-    icon: Calendar1,
-  },
-  {
-    title: 'Search',
-    url: '/e/search',
-    icon: Search,
-  },
-  {
-    title: 'Lists',
-    url: '/e/lists',
-    icon: Star,
-  },
-  {
-    title: 'Wallet',
-    url: '/e/wallet',
-    icon: Zap,
-  },
+type SidebarItemKey = 'events' | 'search' | 'lists' | 'wallet' | 'api' | 'mcp' | 'apiKeys';
+
+interface SidebarLink {
+  key: SidebarItemKey;
+  url: string;
+  icon: LucideIcon;
+}
+
+const navMain: SidebarLink[] = [
+  { key: 'events', url: '/e/hub', icon: Calendar1 },
+  { key: 'search', url: '/e/search', icon: Search },
+  { key: 'lists', url: '/e/lists', icon: Star },
+  { key: 'wallet', url: '/e/wallet', icon: Zap },
 ];
 
-const developerLinks: NavMainItem[] = [
-  {
-    title: 'API',
-    url: '/e/api',
-    icon: Code2,
-  },
-  {
-    title: 'MCP for AI agents',
-    url: '/e/mcp',
-    icon: Bot,
-  },
+const developerLinks: SidebarLink[] = [
+  { key: 'api', url: '/e/api', icon: Code2 },
+  { key: 'mcp', url: '/e/mcp', icon: Bot },
 ];
 
-const apiKeysLink: NavMainItem = {
-  title: 'API keys',
-  url: '/e/settings/api-keys',
-  icon: KeyRound,
-};
+const apiKeysLink: SidebarLink = { key: 'apiKeys', url: '/e/settings/api-keys', icon: KeyRound };
+
+const SETTINGS_URL = '/e/settings';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const t = useTranslations('nav');
   const router = useRouter();
+  const pathname = usePathname();
   const { state, setOpenMobile, toggleSidebar } = useSidebar();
   const isDeveloperMode = useDeveloperSettingsStore((s) => s.isDeveloperMode);
   const [mounted, setMounted] = React.useState(false);
@@ -93,8 +80,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     setMounted(true);
   }, []);
 
-  const developerItems =
+  const toNavItem = ({ key, url, icon }: SidebarLink): NavMainItem => ({
+    title: t(`sidebar.items.${key}`),
+    url,
+    icon,
+  });
+  const mainItems = navMain.map(toNavItem);
+  const developerLinksShown =
     mounted && isDeveloperMode ? [...developerLinks, apiKeysLink] : developerLinks;
+  const developerItems = developerLinksShown.map(toNavItem);
+
+  // Settings sub-pages that have their own sidebar entry (API keys) highlight that entry instead.
+  const isSettingsActive =
+    pathname === SETTINGS_URL ||
+    (!!pathname?.startsWith(`${SETTINGS_URL}/`) &&
+      !developerLinksShown.some((link) => pathname?.startsWith(link.url)));
+  const settingsLabel = t('sidebar.items.settings');
+  const createEventLabel = t('sidebar.createEvent');
+  const sidebarToggleLabel =
+    state === 'expanded' ? t('sidebar.hideSidebar') : t('sidebar.showSidebar');
 
   const handleCreateEvent = () => {
     router.push('/e/create');
@@ -126,47 +130,47 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <div className='mt-4 px-2 transition-opacity duration-200 group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:mt-0 group-data-[collapsible=icon]:h-0 group-data-[collapsible=icon]:overflow-hidden group-data-[collapsible=icon]:opacity-0'>
           <Button onClick={handleCreateEvent} className='w-full'>
             <Plus className='h-4 w-4' />
-            Create Event
+            {createEventLabel}
           </Button>
         </div>
         {/* Collapsed: icon-only dark SidebarMenuButton — fades in as sidebar collapses */}
         <SidebarMenu className='pointer-events-none h-0 overflow-hidden opacity-0 transition-opacity duration-200 group-data-[collapsible=icon]:pointer-events-auto group-data-[collapsible=icon]:mt-2 group-data-[collapsible=icon]:h-auto group-data-[collapsible=icon]:overflow-visible group-data-[collapsible=icon]:opacity-100'>
           <SidebarMenuItem>
             <SidebarMenuButton
-              tooltip='Create Event'
+              tooltip={createEventLabel}
               onClick={handleCreateEvent}
               className='rounded-full bg-black text-white hover:bg-black/90 hover:text-white active:bg-black/80 group-data-[collapsible=icon]:!rounded-full dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:hover:text-neutral-900 dark:active:bg-neutral-300 dark:active:text-neutral-900'
             >
               <Plus />
-              <span>Create Event</span>
+              <span>{createEventLabel}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navMain} />
-        <NavMain label='Developers' items={developerItems} />
+        <NavMain items={mainItems} />
+        <NavMain label={t('sidebar.developers')} items={developerItems} />
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip='Blog' asChild>
+            <SidebarMenuButton tooltip={t('sidebar.items.blog')} asChild>
               <Link href='/e/blog' onClick={() => setOpenMobile(false)}>
                 <BookOpen />
-                <span>Blog</span>
+                <span>{t('sidebar.items.blog')}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip='Security' asChild>
+            <SidebarMenuButton tooltip={t('sidebar.items.security')} asChild>
               <Link href='/e/security' onClick={() => setOpenMobile(false)}>
                 <Shield />
-                <span>Security</span>
+                <span>{t('sidebar.items.security')}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip='Store' asChild>
+            <SidebarMenuButton tooltip={t('sidebar.items.store')} asChild>
               <a
                 href='https://theoriginal.com/bitcoin'
                 target='_blank'
@@ -174,8 +178,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 onClick={() => setOpenMobile(false)}
               >
                 <Shirt />
-                <span>Store</span>
+                <span>{t('sidebar.items.store')}</span>
               </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip={settingsLabel} isActive={isSettingsActive} asChild>
+              <Link href={SETTINGS_URL} onClick={() => setOpenMobile(false)}>
+                <Settings />
+                <span>{settingsLabel}</span>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <NavTheme />
@@ -189,12 +201,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuButton>
           </SidebarMenuItem> */}
           <SidebarMenuItem className='hidden md:block'>
-            <SidebarMenuButton
-              tooltip={state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}
-              onClick={toggleSidebar}
-            >
+            <SidebarMenuButton tooltip={sidebarToggleLabel} onClick={toggleSidebar}>
               {state === 'expanded' ? <PanelRightOpen /> : <PanelRightClose />}
-              <span>{state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}</span>
+              <span>{sidebarToggleLabel}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

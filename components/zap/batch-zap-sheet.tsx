@@ -10,6 +10,7 @@ import {
   useNotifyWalletInviteBatch,
 } from '@/lib/hooks/use-notify-wallet-invite-batch';
 import { useWallet } from '@/lib/hooks/use-wallet';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import {
@@ -32,6 +33,7 @@ import {
   TriangleAlert,
   XCircle,
 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -65,6 +67,9 @@ const getErrorMessage = (error: unknown, fallback: string) => {
 };
 
 export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZapSheetProps) {
+  const t = useTranslations('zap.batch');
+  const tCommon = useTranslations('common');
+  const locale = getIntlLocale(useLocale());
   const router = useRouter();
   const { walletState } = useWallet();
   const { progress, reset, sendBatch } = useBatchZapPayments();
@@ -115,8 +120,11 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
 
   const recipientContextLine = useMemo(
     () =>
-      `This batch will go to ${recipientSummary.eligibleRecipients.length} guest(s). A total of ${recipientSummary.excludedNoLightning.length} guest(s) without an Evento wallet can't receive this batch zap but will be notified over email of the attempt.`,
-    [recipientSummary]
+      t('recipientContext', {
+        eligible: recipientSummary.eligibleRecipients.length,
+        excluded: recipientSummary.excludedNoLightning.length,
+      }),
+    [recipientSummary, t]
   );
 
   useEffect(() => {
@@ -207,15 +215,15 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
 
           setWalletNotifySummary(notifyResponse.summary);
         } catch (error) {
-          setWalletNotifyError(getErrorMessage(error, 'Failed to notify guests without wallets'));
+          setWalletNotifyError(getErrorMessage(error, t('notifyFailed')));
         }
       }
 
       if (batchResult.results.some((result) => result.status === 'sent')) {
-        toast.success('Batch Zap completed');
+        toast.success(t('completedToast'));
       }
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to start batch zap'));
+      toast.error(getErrorMessage(error, t('startFailed')));
     }
   };
 
@@ -229,17 +237,17 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
 
   const sheetTitle =
     progress.status === 'completed'
-      ? 'Batch Zap Complete'
+      ? t('titles.complete')
       : step === 'review'
-        ? 'Review Batch Zap'
+        ? t('titles.review')
         : step === 'comment'
-          ? 'Add a Message'
-          : 'Zap All';
+          ? t('titles.comment')
+          : t('titles.setup');
 
   const footer =
     progress.status === 'sending' ? null : progress.status === 'completed' ? (
       <Button className='w-full rounded-full' onClick={() => onOpenChange(false)}>
-        Done
+        {tCommon('actions.done')}
       </Button>
     ) : step === 'review' ? (
       <div className='flex flex-col gap-3'>
@@ -247,14 +255,14 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
           className='w-full rounded-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           onClick={handleConfirm}
         >
-          Confirm and send
+          {t('confirmAndSend')}
         </Button>
         <Button
           variant='outline'
           className='w-full rounded-full'
           onClick={() => setStep('comment')}
         >
-          Back
+          {tCommon('actions.back')}
         </Button>
       </div>
     ) : step === 'comment' ? (
@@ -263,10 +271,10 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
           className='w-full rounded-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           onClick={() => setStep('review')}
         >
-          Next
+          {tCommon('actions.next')}
         </Button>
         <Button variant='outline' className='w-full rounded-full' onClick={() => setStep('setup')}>
-          Back
+          {tCommon('actions.back')}
         </Button>
       </div>
     ) : (
@@ -276,14 +284,14 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
           disabled={!validation.valid}
           onClick={() => setStep('comment')}
         >
-          Next
+          {tCommon('actions.next')}
         </Button>
         <Button
           variant='outline'
           className='w-full rounded-full'
           onClick={() => onOpenChange(false)}
         >
-          Cancel
+          {tCommon('actions.cancel')}
         </Button>
       </div>
     );
@@ -315,12 +323,14 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                 <div>
                   <p className='font-semibold text-gray-900 dark:text-neutral-100'>
                     {failedResults.length === 0 && skippedResults.length === 0
-                      ? 'All payments were sent'
-                      : 'Batch finished with some issues'}
+                      ? t('completed.allSent')
+                      : t('completed.someIssues')}
                   </p>
                   <p className='mt-1 text-sm text-gray-700 dark:text-neutral-300'>
-                    {sentResults.length} payment{sentResults.length === 1 ? '' : 's'} sent for{' '}
-                    {totalSentSats.toLocaleString()} sats.
+                    {t('completed.paymentsSent', {
+                      count: sentResults.length,
+                      sats: totalSentSats.toLocaleString(locale),
+                    })}
                   </p>
                 </div>
               </div>
@@ -342,7 +352,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                   )}
                   <div>
                     <p className='font-semibold text-gray-900 dark:text-neutral-100'>
-                      Wallet reminder emails
+                      {t('completed.walletReminders')}
                     </p>
                     {walletNotifyError ? (
                       <p className='mt-1 text-sm text-red-700 dark:text-red-400'>
@@ -350,18 +360,19 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                       </p>
                     ) : walletNotifySummary ? (
                       <p className='mt-1 text-sm text-gray-700 dark:text-neutral-300'>
-                        {walletNotifySummary.sentCount} guest
-                        {walletNotifySummary.sentCount === 1 ? '' : 's'} emailed,{' '}
-                        {walletNotifySummary.alreadyNotifiedCount} already notified,{' '}
-                        {walletNotifySummary.errorCount} could not be notified.
+                        {t('completed.notifySummary', {
+                          sent: walletNotifySummary.sentCount,
+                          already: walletNotifySummary.alreadyNotifiedCount,
+                          errors: walletNotifySummary.errorCount,
+                        })}
                       </p>
                     ) : noWalletRecipientUsernames.length === 0 ? (
                       <p className='mt-1 text-sm text-gray-700 dark:text-neutral-300'>
-                        We could not identify any usernames for the guests without wallets.
+                        {t('completed.noUsernames')}
                       </p>
                     ) : (
                       <p className='mt-1 text-sm text-gray-700 dark:text-neutral-300'>
-                        Wallet reminder email results are not available yet.
+                        {t('completed.notifyPending')}
                       </p>
                     )}
                   </div>
@@ -374,26 +385,30 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                 <div className='text-2xl font-semibold text-gray-900 dark:text-neutral-100'>
                   {sentResults.length}
                 </div>
-                <div className='text-sm text-gray-500 dark:text-neutral-400'>Sent</div>
+                <div className='text-sm text-gray-500 dark:text-neutral-400'>{t('stats.sent')}</div>
               </div>
               <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center dark:bg-neutral-950'>
                 <div className='text-2xl font-semibold text-gray-900 dark:text-neutral-100'>
                   {failedResults.length}
                 </div>
-                <div className='text-sm text-gray-500 dark:text-neutral-400'>Failed</div>
+                <div className='text-sm text-gray-500 dark:text-neutral-400'>
+                  {t('stats.failed')}
+                </div>
               </div>
               <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center dark:bg-neutral-950'>
                 <div className='text-2xl font-semibold text-gray-900 dark:text-neutral-100'>
                   {skippedResults.length}
                 </div>
-                <div className='text-sm text-gray-500 dark:text-neutral-400'>Skipped</div>
+                <div className='text-sm text-gray-500 dark:text-neutral-400'>
+                  {t('stats.skipped')}
+                </div>
               </div>
             </div>
 
             {(failedResults.length > 0 || skippedResults.length > 0) && (
               <div className='space-y-3'>
                 <h3 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-                  Needs attention
+                  {t('completed.needsAttention')}
                 </h3>
                 {failedResults.map((result) => (
                   <div
@@ -407,7 +422,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                           {result.recipient.name}
                         </p>
                         <p className='text-sm text-red-700 dark:text-red-400'>
-                          {result.error || 'Payment failed'}
+                          {result.error || t('completed.paymentFailed')}
                         </p>
                       </div>
                     </div>
@@ -425,7 +440,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                           {result.recipient.name}
                         </p>
                         <p className='text-sm text-gray-600 dark:text-neutral-400'>
-                          {result.error || 'Payment skipped'}
+                          {result.error || t('completed.paymentSkipped')}
                         </p>
                       </div>
                     </div>
@@ -449,21 +464,21 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                   <div className='flex items-center justify-between gap-3'>
                     <div>
                       <p className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-                        Amount
+                        {t('setup.amount')}
                       </p>
                       <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                        Choose how to calculate the batch.
+                        {t('setup.amountHint')}
                       </p>
                     </div>
                     <div className='text-right'>
                       <div className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                        {walletState.balance.toLocaleString()} sats
+                        {t('sats', { amount: walletState.balance.toLocaleString(locale) })}
                       </div>
                       {isBalanceUSDLoading ? (
                         <Skeleton className='ml-auto mt-1 h-3 w-16' />
                       ) : (
                         <div className='text-xs text-gray-500 dark:text-neutral-400'>
-                          ${availableBalanceUSD.toFixed(2)} available
+                          {t('setup.available', { amount: `$${availableBalanceUSD.toFixed(2)}` })}
                         </div>
                       )}
                     </div>
@@ -479,8 +494,8 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                           : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
                       }`}
                     >
-                      <p className='font-medium'>Per person</p>
-                      <p className='mt-1 text-sm opacity-80'>Each guest gets the entered amount.</p>
+                      <p className='font-medium'>{t('setup.perPerson')}</p>
+                      <p className='mt-1 text-sm opacity-80'>{t('setup.perPersonHint')}</p>
                     </button>
                     <button
                       type='button'
@@ -491,10 +506,8 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                           : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
                       }`}
                     >
-                      <p className='font-medium'>Total split</p>
-                      <p className='mt-1 text-sm opacity-80'>
-                        Divide the total across all recipients.
-                      </p>
+                      <p className='font-medium'>{t('setup.totalSplit')}</p>
+                      <p className='mt-1 text-sm opacity-80'>{t('setup.totalSplitHint')}</p>
                     </button>
                   </div>
 
@@ -503,19 +516,19 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                       htmlFor='batch-zap-amount'
                       className='mb-2 block text-sm font-medium text-gray-700 dark:text-neutral-300'
                     >
-                      Amount in sats
+                      {t('setup.amountInSats')}
                     </label>
                     <input
                       id='batch-zap-amount'
                       inputMode='numeric'
                       pattern='[0-9]*'
-                      placeholder='Enter sats'
+                      placeholder={t('setup.enterSats')}
                       value={amountInput}
                       onChange={(event) => setAmountInput(event.target.value.replace(/[^\d]/g, ''))}
                       className='h-14 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 text-lg font-semibold text-gray-900 outline-none placeholder:text-gray-400 focus:border-red-200 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-red-900'
                     />
                     <p className='mt-2 text-xs text-gray-500 dark:text-neutral-400'>
-                      Minimum 5 sats per guest. Total-split keeps any remainder in your wallet.
+                      {t('setup.minimumHint')}
                     </p>
                   </div>
                 </div>
@@ -546,10 +559,10 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                     </div>
                     <div>
                       <p className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-                        Shared comment
+                        {t('comment.title')}
                       </p>
                       <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-                        This optional note will be attached to every payment in the batch.
+                        {t('comment.description')}
                       </p>
                     </div>
                   </div>
@@ -560,19 +573,18 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                         htmlFor='batch-zap-comment'
                         className='block text-sm font-medium text-gray-700 dark:text-neutral-300'
                       >
-                        Add a message (optional)
+                        {t('comment.label')}
                       </label>
                       <textarea
                         id='batch-zap-comment'
                         value={comment}
                         onChange={(event) => setComment(event.target.value)}
-                        placeholder='Say something nice...'
+                        placeholder={t('comment.placeholder')}
                         rows={4}
                         className='w-full resize-none rounded-3xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-red-200 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-red-900'
                       />
                       <p className='text-xs text-gray-500 dark:text-neutral-400'>
-                        This message is sent when possible. If a recipient wallet rejects comments,
-                        that payment may fail.
+                        {t('comment.hint')}
                       </p>
                     </div>
                   </div>
@@ -594,11 +606,11 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                 {validation.distribution && (
                   <div className='space-y-3 rounded-3xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900'>
                     <h3 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-                      Send summary
+                      {t('review.summary')}
                     </h3>
                     <div className={SUMMARY_ROW_CLASS}>
                       <span className='text-sm text-gray-500 dark:text-neutral-400'>
-                        Recipients
+                        {t('review.recipients')}
                       </span>
                       <span className='font-semibold text-gray-900 dark:text-neutral-100'>
                         {validation.distribution.recipientCount}
@@ -606,27 +618,34 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                     </div>
                     <div className={SUMMARY_ROW_CLASS}>
                       <span className='text-sm text-gray-500 dark:text-neutral-400'>
-                        Per recipient
+                        {t('review.perRecipient')}
                       </span>
                       <span className='font-semibold text-gray-900 dark:text-neutral-100'>
-                        {validation.distribution.perRecipientAmountSats.toLocaleString()} sats
+                        {t('sats', {
+                          amount:
+                            validation.distribution.perRecipientAmountSats.toLocaleString(locale),
+                        })}
                       </span>
                     </div>
                     <div className={SUMMARY_ROW_CLASS}>
                       <span className='text-sm text-gray-500 dark:text-neutral-400'>
-                        Total to send
+                        {t('review.total')}
                       </span>
                       <span className='font-semibold text-gray-900 dark:text-neutral-100'>
-                        {validation.distribution.totalAmountSats.toLocaleString()} sats
+                        {t('sats', {
+                          amount: validation.distribution.totalAmountSats.toLocaleString(locale),
+                        })}
                       </span>
                     </div>
                     {validation.distribution.leftoverSats > 0 && (
                       <div className={SUMMARY_ROW_CLASS}>
                         <span className='text-sm text-gray-500 dark:text-neutral-400'>
-                          Remainder kept in wallet
+                          {t('review.remainder')}
                         </span>
                         <span className='font-semibold text-gray-900 dark:text-neutral-100'>
-                          {validation.distribution.leftoverSats.toLocaleString()} sats
+                          {t('sats', {
+                            amount: validation.distribution.leftoverSats.toLocaleString(locale),
+                          })}
                         </span>
                       </div>
                     )}
@@ -635,7 +654,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
 
                 <div className='space-y-3 rounded-3xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900'>
                   <h3 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-                    Shared comment
+                    {t('comment.title')}
                   </h3>
                   {comment.trim() ? (
                     <div className='rounded-2xl bg-gray-50 px-4 py-3 text-sm text-gray-700 dark:bg-neutral-950 dark:text-neutral-300'>
@@ -643,7 +662,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                     </div>
                   ) : (
                     <div className='rounded-2xl bg-gray-50 px-4 py-3 text-sm text-gray-500 dark:bg-neutral-950 dark:text-neutral-400'>
-                      No shared comment will be included.
+                      {t('review.noComment')}
                     </div>
                   )}
                 </div>
@@ -683,11 +702,8 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                 <div className='flex items-start gap-3'>
                   <AlertTriangle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-300' />
                   <div>
-                    <p className='font-semibold text-white'>Don&apos;t leave this screen</p>
-                    <p className='mt-1 text-sm leading-6 text-white/75'>
-                      Keep Evento open and avoid switching tabs or apps while these self-custody
-                      wallet payments are being sent.
-                    </p>
+                    <p className='font-semibold text-white'>{t('sending.dontLeave')}</p>
+                    <p className='mt-1 text-sm leading-6 text-white/75'>{t('sending.keepOpen')}</p>
                   </div>
                 </div>
               </div>
@@ -696,9 +712,14 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                 <div className='flex items-center gap-3'>
                   <Loader2 className='h-6 w-6 animate-spin text-red-400' />
                   <div>
-                    <p className='text-sm uppercase tracking-[0.18em] text-white/55'>Batch Zap</p>
+                    <p className='text-sm uppercase tracking-[0.18em] text-white/55'>
+                      {t('sending.label')}
+                    </p>
                     <p className='text-2xl font-semibold'>
-                      Sending payment {progress.currentIndex} of {progress.totalCount}
+                      {t('sending.progress', {
+                        current: progress.currentIndex,
+                        total: progress.totalCount,
+                      })}
                     </p>
                   </div>
                 </div>
@@ -718,30 +739,30 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                 <div className='mt-6 grid grid-cols-3 gap-3 text-center text-sm'>
                   <div className='rounded-2xl bg-white/10 px-3 py-3'>
                     <div className='text-xl font-semibold'>{progress.sentCount}</div>
-                    <div className='text-white/65'>Sent</div>
+                    <div className='text-white/65'>{t('stats.sent')}</div>
                   </div>
                   <div className='rounded-2xl bg-white/10 px-3 py-3'>
                     <div className='text-xl font-semibold'>{progress.failedCount}</div>
-                    <div className='text-white/65'>Failed</div>
+                    <div className='text-white/65'>{t('stats.failed')}</div>
                   </div>
                   <div className='rounded-2xl bg-white/10 px-3 py-3'>
                     <div className='text-xl font-semibold'>{progress.remainingCount}</div>
-                    <div className='text-white/65'>Remaining</div>
+                    <div className='text-white/65'>{t('stats.remaining')}</div>
                   </div>
                 </div>
               </div>
 
               <div className='mt-5 rounded-3xl border border-white/10 bg-white/5 p-5'>
                 <p className='text-xs font-semibold uppercase tracking-[0.18em] text-white/55'>
-                  Current recipient
+                  {t('sending.currentRecipient')}
                 </p>
                 <p className='mt-2 text-lg font-semibold text-white'>
-                  {progress.currentRecipient?.name || 'Preparing next payment'}
+                  {progress.currentRecipient?.name || t('sending.preparingNext')}
                 </p>
                 <p className='text-sm text-white/65'>
                   {progress.currentRecipient?.username
                     ? `@${progress.currentRecipient.username}`
-                    : 'Processing Lightning payment'}
+                    : t('sending.processing')}
                 </p>
               </div>
             </motion.div>

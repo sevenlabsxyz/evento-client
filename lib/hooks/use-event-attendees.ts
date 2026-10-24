@@ -10,6 +10,7 @@ import type {
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 function invalidateAttendeeQueries(queryClient: QueryClient, eventId: string) {
   queryClient.invalidateQueries({ queryKey: queryKeys.eventAttendees(eventId) });
@@ -20,6 +21,7 @@ function invalidateAttendeeQueries(queryClient: QueryClient, eventId: string) {
  * Ticket holders for an event (excluding cancelled tickets) with check-in summary
  */
 export function useEventAttendees(eventId: string) {
+  const t = useTranslations('hooks');
   return useQuery({
     queryKey: queryKeys.eventAttendees(eventId),
     queryFn: async (): Promise<EventAttendeesResponse> => {
@@ -29,7 +31,7 @@ export function useEventAttendees(eventId: string) {
       const data = response?.data;
 
       if (!data) {
-        throw new Error('Failed to load attendees');
+        throw new Error(t('attendees.loadFailed'));
       }
 
       const attendees = Array.isArray(data.attendees) ? data.attendees : [];
@@ -52,6 +54,7 @@ export function useEventAttendees(eventId: string) {
  */
 export function useCheckIn(eventId: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (variables: CheckInVariables): Promise<CheckInResult> => {
@@ -64,7 +67,7 @@ export function useCheckIn(eventId: string) {
         return response.data;
       }
 
-      throw new Error('Check-in failed');
+      throw new Error(t('attendees.checkInFailed'));
     },
     onSuccess: () => {
       invalidateAttendeeQueries(queryClient, eventId);
@@ -77,6 +80,7 @@ export function useCheckIn(eventId: string) {
 
 export function useUndoCheckIn(eventId: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async ({ ticketId }: { ticketId: string }): Promise<UndoCheckInResult> => {
@@ -89,7 +93,7 @@ export function useUndoCheckIn(eventId: string) {
         return response.data;
       }
 
-      throw new Error('Failed to undo check-in');
+      throw new Error(t('attendees.undoCheckInFailed'));
     },
     onSuccess: () => {
       invalidateAttendeeQueries(queryClient, eventId);

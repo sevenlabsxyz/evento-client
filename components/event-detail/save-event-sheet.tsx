@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { toast } from '@/lib/utils/toast';
 import { ArrowRight, Check, Loader2, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 
@@ -32,6 +33,9 @@ interface SaveEventSheetProps {
 }
 
 export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSheetProps) {
+  const t = useTranslations('event');
+  const tLists = useTranslations('lists');
+  const tCommon = useTranslations('common');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [showValidation, setShowValidation] = useState(false);
@@ -87,20 +91,24 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
       // Checkbox state flips optimistically inside the mutation hooks.
       if (isSaved) {
         await removeFromListMutation.mutateAsync({ listId: list.id, eventId });
-        toast.success(`Removed from ${list.name}.`, 'Removed');
+        toast.success(t('saveSheet.removedFrom', { list: list.name }), t('saveSheet.removedTitle'));
       } else {
         await addToListMutation.mutateAsync({ listId: list.id, eventId });
-        toast.success(`Saved to ${list.name}.`, 'Saved');
+        toast.success(t('saveSheet.savedTo', { list: list.name }), tCommon('toasts.saved'));
       }
     } catch (error) {
-      toast.error(getErrorMessage(error), 'Couldn’t update list');
+      toast.error(getErrorMessage(error), t('saveSheet.updateFailedTitle'));
     } finally {
       setListPending(list.id, false);
     }
   };
 
   const nameError = validateListName(newListName, orderedLists);
-  const visibleNameError = createError ?? (showValidation ? nameError : null);
+  const visibleNameError =
+    createError ??
+    (showValidation && nameError
+      ? tLists(`nameErrors.${nameError}`, { max: LIST_NAME_MAX_LENGTH })
+      : null);
   const isCreating = createListMutation.isPending;
 
   const handleCreateList = async (formEvent: FormEvent) => {
@@ -126,11 +134,14 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
     setListPending(createdList.id, true);
     try {
       await addToListMutation.mutateAsync({ listId: createdList.id, eventId });
-      toast.success(`Created ${createdList.name} and saved this event to it.`, 'Saved');
+      toast.success(
+        t('saveSheet.createdAndSaved', { list: createdList.name }),
+        tCommon('toasts.saved')
+      );
     } catch (error) {
       toast.error(
-        `${createdList.name} was created, but the event wasn’t added: ${getErrorMessage(error)}`,
-        'Couldn’t save event'
+        t('saveSheet.createdNotAdded', { list: createdList.name, error: getErrorMessage(error) }),
+        t('saveSheet.saveFailedTitle')
       );
     } finally {
       setListPending(createdList.id, false);
@@ -155,7 +166,7 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
     if (loadError) {
       return (
         <ListLoadError
-          title='Couldn’t load your lists'
+          title={t('saveSheet.loadFailed')}
           message={getErrorMessage(loadError)}
           onRetry={() => {
             if (listsError) void refetchLists();
@@ -178,7 +189,7 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
                 htmlFor='save-sheet-new-list'
                 className='text-sm font-medium text-gray-900 dark:text-neutral-100'
               >
-                New list
+                {t('saveSheet.newList')}
               </label>
               <span className='text-xs tabular-nums text-gray-500 dark:text-neutral-500'>
                 {newListName.trim().length}/{LIST_NAME_MAX_LENGTH}
@@ -192,7 +203,7 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
                 setNewListName(changeEvent.target.value);
                 setCreateError(null);
               }}
-              placeholder='e.g. Summer in Lisbon'
+              placeholder={t('saveSheet.namePlaceholder')}
               maxLength={LIST_NAME_MAX_LENGTH}
               autoComplete='off'
               autoFocus
@@ -225,16 +236,16 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
                 disabled={isCreating}
                 className='flex-1 dark:bg-neutral-900 dark:hover:bg-neutral-800'
               >
-                Cancel
+                {tCommon('actions.cancel')}
               </Button>
               <Button type='submit' disabled={isCreating} className='flex-1'>
                 {isCreating ? (
                   <>
                     <Loader2 className='animate-spin' aria-hidden='true' />
-                    Creating…
+                    {t('saveSheet.creating')}
                   </>
                 ) : (
-                  'Create & save'
+                  t('saveSheet.createAndSave')
                 )}
               </Button>
             </div>
@@ -248,12 +259,12 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
             <span className='flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
               <Plus className='h-4 w-4' aria-hidden='true' />
             </span>
-            New list
+            {t('saveSheet.newList')}
           </button>
         )}
 
         {orderedLists.length > 0 && (
-          <ul className='space-y-2' aria-label='Your lists'>
+          <ul className='space-y-2' aria-label={t('saveSheet.yourLists')}>
             {orderedLists.map((list) => {
               const checked = savedListIds.has(list.id);
               const isPending = pendingListIds.has(list.id);
@@ -297,7 +308,7 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
                     </span>
                     {isDefaultList(list, orderedLists) && (
                       <span className='shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'>
-                        Default
+                        {t('saveSheet.default')}
                       </span>
                     )}
                   </button>
@@ -312,20 +323,20 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
 
   return (
     <MasterScrollableSheet
-      title='Save event'
+      title={t('saveSheet.title')}
       open={isOpen}
       onOpenChange={(open) => !open && onClose()}
       headerSecondary={
         <div className='flex items-center justify-between gap-3 px-4 pb-3'>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            Choose the lists to save this event to.
+            {t('saveSheet.description')}
           </p>
           <Link
             href='/e/lists'
             onClick={onClose}
             className='inline-flex shrink-0 items-center gap-1 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
           >
-            Your lists
+            {t('saveSheet.yourLists')}
             <ArrowRight className='h-3.5 w-3.5' aria-hidden='true' />
           </Link>
         </div>

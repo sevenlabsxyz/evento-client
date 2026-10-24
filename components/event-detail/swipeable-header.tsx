@@ -2,6 +2,7 @@
 
 import { NO_COVER_FALLBACK } from '@/components/event-covers';
 import { EventDetail } from '@/lib/types/event';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 
@@ -11,6 +12,7 @@ interface SwipeableHeaderProps {
 }
 
 export default function SwipeableHeader({ event, onImageClick }: SwipeableHeaderProps) {
+  const t = useTranslations('event');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -72,7 +74,7 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
       >
         <Image
           src={images[currentIndex]}
-          alt={`${event.title} - Image ${currentIndex + 1}`}
+          alt={t('header.imageAlt', { title: event.title, index: currentIndex + 1 })}
           fill
           sizes='(min-width: 1024px) 400px, (min-width: 768px) 672px, 100vw'
           className='object-cover transition-transform duration-300 ease-out'
@@ -87,7 +89,7 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
               <button
                 key={index}
                 type='button'
-                aria-label={`Show image ${index + 1}`}
+                aria-label={t('header.showImage', { index: index + 1 })}
                 aria-current={index === currentIndex ? 'true' : undefined}
                 onClick={(e) => {
                   e.stopPropagation();

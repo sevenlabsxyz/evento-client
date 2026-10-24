@@ -13,6 +13,7 @@ import { Interest } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
 interface InterestsSheetProps {
@@ -21,6 +22,8 @@ interface InterestsSheetProps {
 }
 
 export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
 
@@ -105,12 +108,12 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
         new Set(selectedSlugs.map((slug) => slugToIdMap[slug]).filter(Boolean))
       );
       await replaceInterestsMutation.mutateAsync(selectedIds);
-      toast.success('Interests updated successfully');
+      toast.success(t('edit.interests.updated'));
       setSearchQuery('');
       onClose();
     } catch (error) {
       logger.error('Failed to update interests', { error });
-      toast.error('Failed to update interests');
+      toast.error(t('edit.interests.updateFailed'));
     }
   };
 
@@ -136,14 +139,14 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
 
   return (
     <MasterScrollableSheet
-      title='Interests'
+      title={t('interests')}
       open={isOpen}
       onOpenChange={(open) => !open && handleClose()}
       headerLeft={
         <div>
-          <h2 className='text-xl font-semibold'>Interests</h2>
+          <h2 className='text-xl font-semibold'>{t('interests')}</h2>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            {selectedSlugs.length} interest{selectedSlugs.length !== 1 ? 's' : ''} selected
+            {t('edit.interests.selectedCount', { count: selectedSlugs.length })}
           </p>
         </div>
       }
@@ -152,7 +155,7 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
           <input
             className='w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-gray-300 focus:bg-white dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-700 dark:focus:bg-neutral-900'
             type='text'
-            placeholder='Search interests...'
+            placeholder={t('edit.interests.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -179,8 +182,8 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
         <div className='flex flex-col items-center justify-center py-12'>
           <p className='text-gray-500 dark:text-neutral-400'>
             {searchQuery.trim()
-              ? `No interests found matching "${searchQuery}"`
-              : 'No interests available'}
+              ? t('edit.interests.noMatches', { query: searchQuery })
+              : t('edit.interests.noneAvailable')}
           </p>
         </div>
       ) : (
@@ -205,14 +208,14 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
               {isSaving ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Saving...
+                  {t('saving')}
                 </>
               ) : (
-                'Save'
+                tCommon('actions.save')
               )}
             </Button>
             <Button onClick={handleClose} variant='outline' className='w-full'>
-              Cancel
+              {tCommon('actions.cancel')}
             </Button>
           </div>
         </>

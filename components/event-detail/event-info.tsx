@@ -13,6 +13,7 @@ import { formatICSDate, formatICSDateFromParts } from '@/lib/utils/ics';
 import { formatEventLocationAddress, getEventLocationDisplayLines } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
 import { ChevronRight, Clock, Globe, Lock, MapPin, Star, XCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { type ReactNode, useMemo, useState } from 'react';
 import { DateTimeActionsSheet } from './date-time-actions-sheet';
 import RsvpSheet from './event-rsvp-sheet';
@@ -20,11 +21,11 @@ import { LocationActionsSheet } from './location-actions-sheet';
 import OwnerEventButtons from './owner-event-buttons';
 import { RegistrationStatus } from './registration-status';
 
-const EVENT_TYPE_LABELS: Record<EventBehaviorType, string> = {
-  rsvp: 'RSVP',
-  registration: 'Registration',
-  ticketed: 'Ticketed',
-};
+const EVENT_TYPE_LABEL_KEYS = {
+  rsvp: 'rsvp',
+  registration: 'registration',
+  ticketed: 'ticketed',
+} as const satisfies Record<EventBehaviorType, string>;
 
 const NEUTRAL_CHIP_CLASS = 'bg-gray-100 text-gray-700 dark:bg-neutral-800 dark:text-neutral-300';
 
@@ -58,6 +59,8 @@ interface EventInfoProps {
 }
 
 export default function EventInfo({ event, currentUserId = '', eventData, hosts }: EventInfoProps) {
+  const t = useTranslations('event');
+  const tCommon = useTranslations('common');
   const [showRsvpSheet, setShowRsvpSheet] = useState(false);
   const [showDateTimeSheet, setShowDateTimeSheet] = useState(false);
   const [showLocationSheet, setShowLocationSheet] = useState(false);
@@ -98,31 +101,31 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   const rsvpButton = useMemo(() => {
     if (currentStatus === 'yes')
       return {
-        label: "You're going",
+        label: t('info.rsvpButton.going'),
         className: 'bg-green-600 hover:bg-green-700 text-white',
       };
     if (shouldDisableRsvpButton)
       return {
-        label: 'NO SPOTS LEFT',
+        label: t('info.rsvpButton.noSpots'),
         className: 'bg-gray-500 text-white',
       };
     if (currentStatus === 'maybe')
       return {
-        label: 'Maybe',
+        label: t('info.rsvpButton.maybe'),
         className:
           'bg-black dark:bg-neutral-100 hover:bg-gray-900 dark:hover:bg-neutral-200 text-white dark:text-neutral-900',
       };
     if (currentStatus === 'no')
       return {
-        label: 'Not going',
+        label: t('info.rsvpButton.notGoing'),
         className:
           'bg-gray-400 dark:bg-neutral-500 hover:bg-gray-400 dark:hover:bg-neutral-500 text-white',
       };
     return {
-      label: 'RSVP',
+      label: t('info.rsvpButton.rsvp'),
       className: 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white',
     };
-  }, [currentStatus, shouldDisableRsvpButton]);
+  }, [currentStatus, shouldDisableRsvpButton, t]);
 
   const handleRSVP = () => {
     if (shouldDisableRsvpButton) return;
@@ -130,11 +133,11 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   };
 
   const handlePendingClick = () => {
-    toast.info('Your registration is pending host approval');
+    toast.info(t('info.pendingToast'));
   };
 
   const handleDeniedClick = () => {
-    toast.error('Your registration was not approved. Contact the host for details.');
+    toast.error(t('info.deniedToast'));
   };
 
   const copyText = async (value: string) => {
@@ -166,7 +169,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     };
 
     const location = isLocationHidden
-      ? 'Location hidden until registration approval'
+      ? t('info.icsLocationHidden')
       : `${event.location.name}, ${
           event.location.address || ''
         }, ${event.location.city}, ${event.location.state || ''} ${event.location.zipCode || ''}`
@@ -201,7 +204,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       `SUMMARY:${escapeICS(event.title)}`,
       `DESCRIPTION:${escapeICS(
         isDescriptionHidden
-          ? 'Description hidden until registration approval'
+          ? t('info.icsDescriptionHidden')
           : event.description.replace(/<[^>]*>/g, '')
       )}`,
       `LOCATION:${escapeICS(location)}`,
@@ -228,9 +231,9 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   const handleCopyDateTime = async () => {
     try {
       await copyText(dateTimeText);
-      toast.success('Date and time copied');
+      toast.success(t('info.dateTimeCopied'));
     } catch {
-      toast.error('Failed to copy date and time');
+      toast.error(t('info.dateTimeCopyFailed'));
     }
   };
 
@@ -341,18 +344,23 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
 
   const isDraft = eventData?.status === 'draft';
   const isCancelled = eventData?.status === 'cancelled' || eventData?.status === 'archived';
-  const typeLabel = eventData?.type ? EVENT_TYPE_LABELS[eventData.type] : null;
+  const typeLabel = eventData?.type
+    ? t(`info.types.${EVENT_TYPE_LABEL_KEYS[eventData.type]}`)
+    : null;
 
   const viewerChip = isOwnerOrCohost
-    ? { label: 'Hosting', className: 'bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-400' }
+    ? {
+        label: t('info.chips.hosting'),
+        className: 'bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-400',
+      }
     : hasPendingRegistration
       ? {
-          label: 'Pending approval',
+          label: t('info.chips.pendingApproval'),
           className: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400',
         }
       : currentStatus === 'yes'
         ? {
-            label: 'Going',
+            label: t('info.chips.going'),
             className:
               'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400',
           }
@@ -361,22 +369,22 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   // One-line status above the action buttons. RSVP states are already spelled out by the
   // RSVP button label, so only states the buttons don't convey get a line here.
   const actionStatus: { text: string; tone: ActionStatusTone } | null = isOwnerOrCohost
-    ? { text: "You're hosting this event", tone: 'positive' }
+    ? { text: t('info.status.hosting'), tone: 'positive' }
     : hasPendingRegistration
-      ? { text: 'Waiting for host approval', tone: 'pending' }
+      ? { text: t('info.status.waitingApproval'), tone: 'pending' }
       : hasDeniedRegistration
-        ? { text: 'Registration not approved', tone: 'negative' }
+        ? { text: t('info.status.notApproved'), tone: 'negative' }
         : !currentStatus && eventData?.type === 'registration'
-          ? { text: 'Registration required', tone: 'neutral' }
+          ? { text: t('info.status.registrationRequired'), tone: 'neutral' }
           : !currentStatus && eventData?.type === 'ticketed'
-            ? { text: 'Ticketed event', tone: 'neutral' }
+            ? { text: t('info.status.ticketed'), tone: 'neutral' }
             : null;
 
   const capacityText =
     !isOwnerOrCohost && shouldShowCapacityInfo && spotsRemaining !== null
       ? isEventFull && isYesRsvp
-        ? 'No more spots left'
-        : `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`
+        ? t('info.noMoreSpots')
+        : t('info.spotsLeft', { count: spotsRemaining })
       : null;
 
   const detailRowClassName =
@@ -402,12 +410,12 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
             <div className='flex flex-wrap items-center gap-1.5'>
               {isCancelled && (
                 <HeroChip className='bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400'>
-                  Cancelled
+                  {t('info.chips.cancelled')}
                 </HeroChip>
               )}
               {isDraft && (
                 <HeroChip className='bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400'>
-                  Draft
+                  {tCommon('labels.draft')}
                 </HeroChip>
               )}
               {eventData?.visibility && (
@@ -417,7 +425,9 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                   ) : (
                     <Lock className='h-3 w-3' aria-hidden='true' />
                   )}
-                  {eventData.visibility === 'public' ? 'Public' : 'Private'}
+                  {eventData.visibility === 'public'
+                    ? tCommon('labels.public')
+                    : tCommon('labels.private')}
                 </HeroChip>
               )}
               {typeLabel && <HeroChip className={NEUTRAL_CHIP_CLASS}>{typeLabel}</HeroChip>}
@@ -533,7 +543,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                   )}
                 >
                   <Clock className='h-5 w-5' aria-hidden='true' />
-                  <span>Pending</span>
+                  <span>{t('info.pending')}</span>
                 </button>
               ) : hasDeniedRegistration ? (
                 <button
@@ -545,7 +555,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                   )}
                 >
                   <XCircle className='h-5 w-5' aria-hidden='true' />
-                  <span>Denied</span>
+                  <span>{t('info.denied')}</span>
                 </button>
               ) : (
                 <button

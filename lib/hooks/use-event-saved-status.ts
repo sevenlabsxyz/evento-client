@@ -4,8 +4,10 @@ import apiClient from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
 import { ApiResponse, SavedEventStatus } from '@/lib/types/api';
 import { QueryClient, useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 export function useEventSavedStatus(eventId: string, enabled: boolean = true) {
+  const t = useTranslations('hooks');
   return useQuery<SavedEventStatus, Error>({
     queryKey: queryKeys.eventSavedStatus(eventId),
     queryFn: async () => {
@@ -17,7 +19,7 @@ export function useEventSavedStatus(eventId: string, enabled: boolean = true) {
         return response.data;
       }
 
-      throw new Error('Failed to fetch saved status');
+      throw new Error(t('lists.fetchSavedStatusFailed'));
     },
     enabled: enabled && !!eventId,
     staleTime: 1 * 60 * 1000,

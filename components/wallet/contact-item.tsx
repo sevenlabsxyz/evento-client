@@ -5,6 +5,7 @@ import { useEventoCashProfile } from '@/lib/hooks/use-evento-cash-profile';
 import type { Contact } from '@/lib/types/wallet';
 import { cn } from '@/lib/utils';
 import { ChevronRight, Pencil, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
 
 interface ContactItemProps {
@@ -24,6 +25,8 @@ export function ContactItem({
   className,
   rightContent,
 }: ContactItemProps) {
+  const t = useTranslations('walletFlows');
+  const tCommon = useTranslations('common');
   const [isHovered, setIsHovered] = useState(false);
 
   // Fetch profile for @evento.cash addresses
@@ -107,8 +110,8 @@ export function ContactItem({
                   <button
                     onClick={handleEdit}
                     className='rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 dark:text-neutral-400 dark:hover:bg-neutral-700'
-                    aria-label='Edit contact'
-                    title='Edit'
+                    aria-label={t('contactItem.editAria')}
+                    title={tCommon('actions.edit')}
                   >
                     <Pencil className='h-4 w-4' />
                   </button>
@@ -117,8 +120,8 @@ export function ContactItem({
                   <button
                     onClick={handleDelete}
                     className='rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-red-500 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-red-400'
-                    aria-label='Delete contact'
-                    title='Delete'
+                    aria-label={t('contactItem.deleteAria')}
+                    title={tCommon('actions.delete')}
                   >
                     <Trash2 className='h-4 w-4' />
                   </button>

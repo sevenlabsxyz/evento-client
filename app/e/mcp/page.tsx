@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import McpPageClient from './page-client';
 
-export const metadata: Metadata = {
-  title: 'MCP server — Evento',
-  description:
-    'Connect Evento to Claude Desktop, Cursor, OpenClaw, and other MCP clients. List a user’s events and fetch event details from your AI agent with the Evento public MCP server.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('developers.mcp.meta');
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
+}
 
 export default function McpPage() {
   return <McpPageClient />;

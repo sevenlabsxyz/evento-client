@@ -15,6 +15,7 @@ import { useContacts } from '@/lib/hooks/use-contacts';
 import { useEventoCashProfile } from '@/lib/hooks/use-evento-cash-profile';
 import type { Contact } from '@/lib/types/wallet';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface ContactAutocompleteProps {
@@ -79,12 +80,14 @@ export function ContactAutocomplete({
   value,
   onChange,
   onSelect,
-  placeholder = 'Search contacts...',
+  placeholder,
   className,
   disabled = false,
   multiline = false,
   rows = 4,
 }: ContactAutocompleteProps) {
+  const t = useTranslations('walletFlows');
+  const resolvedPlaceholder = placeholder ?? t('contactAutocomplete.placeholder');
   const [isOpen, setIsOpen] = useState(false);
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { contacts } = useContacts();
@@ -151,7 +154,7 @@ export function ContactAutocomplete({
             onChange={handleInputChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            placeholder={placeholder}
+            placeholder={resolvedPlaceholder}
             disabled={disabled}
             className={cn(className)}
             rows={rows}
@@ -167,7 +170,7 @@ export function ContactAutocomplete({
             onChange={handleInputChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            placeholder={placeholder}
+            placeholder={resolvedPlaceholder}
             disabled={disabled}
             className={cn(className)}
             autoComplete='off'
@@ -187,9 +190,12 @@ export function ContactAutocomplete({
           <Command shouldFilter={false} className='rounded-lg'>
             <CommandList className='max-h-[200px]'>
               <CommandEmpty className='py-2 text-center text-sm text-muted-foreground'>
-                No contacts found
+                {t('contactAutocomplete.empty')}
               </CommandEmpty>
-              <CommandGroup heading='Contacts' className='overflow-hidden p-1'>
+              <CommandGroup
+                heading={t('contactAutocomplete.heading')}
+                className='overflow-hidden p-1'
+              >
                 {filteredContacts.map((contact) => (
                   <ContactAutocompleteItem
                     key={contact.id}

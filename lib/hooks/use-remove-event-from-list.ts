@@ -4,6 +4,7 @@ import apiClient from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
 import { ApiResponse, ListEvent, SavedEventStatus } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface RemoveEventResponse {
   removed_event_id: string;
@@ -22,6 +23,7 @@ interface RemoveEventFromListContext {
 
 export function useRemoveEventFromList() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation<
     RemoveEventResponse,
@@ -38,7 +40,7 @@ export function useRemoveEventFromList() {
         return response.data;
       }
 
-      throw new Error('Failed to remove event from list');
+      throw new Error(t('lists.removeEventFailed'));
     },
     onMutate: async ({ listId, eventId }) => {
       const statusKey = queryKeys.eventSavedStatus(eventId);

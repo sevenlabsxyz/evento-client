@@ -4,6 +4,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { logger } from '@/lib/utils/logger';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface WalletBalanceDisplayProps {
@@ -17,6 +18,7 @@ export function WalletBalanceDisplay({
   showLabel = true,
   size = 'md',
 }: WalletBalanceDisplayProps) {
+  const t = useTranslations('wallet');
   const { walletState } = useWallet();
   const [balanceUSD, setBalanceUSD] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,7 +61,11 @@ export function WalletBalanceDisplay({
       >
         ${balanceUSD.toFixed(2)}
       </div>
-      {showLabel && <div className='text-xs text-gray-500 dark:text-neutral-400'>available</div>}
+      {showLabel && (
+        <div className='text-xs text-gray-500 dark:text-neutral-400'>
+          {t('balanceDisplay.available')}
+        </div>
+      )}
     </div>
   );
 }

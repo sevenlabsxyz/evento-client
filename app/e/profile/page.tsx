@@ -55,10 +55,13 @@ import {
   Settings,
   User,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 export default function ProfilePage() {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -117,7 +120,7 @@ export default function ProfilePage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Profile',
+      title: tCommon('labels.profile'),
       hideMobileBreadcrumb: true,
       leftMode: 'menu',
       buttons: [
@@ -125,13 +128,13 @@ export default function ProfilePage() {
           id: 'edit',
           icon: Edit3,
           onClick: () => router.push('/e/profile/edit'),
-          label: 'Edit profile',
+          label: t('own.editProfileLabel'),
         },
         {
           id: 'settings',
           icon: Settings,
           onClick: () => router.push('/e/settings'),
-          label: 'Settings',
+          label: tCommon('labels.settings'),
         },
       ],
     });
@@ -139,7 +142,7 @@ export default function ProfilePage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [router, setTopBarForRoute, applyRouteConfig, clearRoute, pathname]);
+  }, [router, setTopBarForRoute, applyRouteConfig, clearRoute, pathname, t, tCommon]);
 
   const userStats = {
     events: eventCount || 0,
@@ -150,9 +153,9 @@ export default function ProfilePage() {
   };
 
   const userData = {
-    name: user?.name || 'User',
+    name: user?.name || t('page.user'),
     username: user?.username ? `@${user.username}` : '@user',
-    status: user?.bio || 'Welcome to Evento',
+    status: user?.bio || t('own.welcome'),
     image: user?.image,
     verification_status: user?.verification_status,
     isVerified: user?.verification_status === 'verified',
@@ -223,7 +226,7 @@ export default function ProfilePage() {
                   : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
-              Upcoming
+              {t('page.upcoming')}
             </button>
             <button
               type='button'
@@ -235,7 +238,7 @@ export default function ProfilePage() {
                   : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
-              Past
+              {t('page.past')}
             </button>
           </div>
         </div>
@@ -257,7 +260,7 @@ export default function ProfilePage() {
               <div className='rounded-full bg-gray-100 p-3 dark:bg-neutral-800'>
                 <MessageCircle className='h-6 w-6 text-gray-400 dark:text-neutral-500' />
               </div>
-              <p className='text-sm text-gray-500 dark:text-neutral-400'>No events found</p>
+              <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('own.noEvents')}</p>
             </div>
           ) : (
             groupedProfileEvents.map((group) => (
@@ -286,10 +289,10 @@ export default function ProfilePage() {
                 {isFetchingNextPage ? (
                   <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Loading...
+                    {t('loadingEllipsis')}
                   </>
                 ) : (
-                  'Load more'
+                  t('loadMore')
                 )}
               </Button>
             </div>
@@ -326,7 +329,7 @@ export default function ProfilePage() {
         {/* Bio/Description */}
         {!user?.bio ? null : (
           <div>
-            <RowCard title={'Bio'} subtitle={user?.bio} />
+            <RowCard title={t('page.bio')} subtitle={user?.bio} />
           </div>
         )}
 
@@ -360,7 +363,7 @@ export default function ProfilePage() {
             className='w-full rounded-full'
             onClick={() => setShowBadgesManagementSheet(true)}
           >
-            Pick favorite badges
+            {t('own.pickBadges')}
           </Button>
         )}
         {sortedBadges.length ? (
@@ -383,8 +386,8 @@ export default function ProfilePage() {
               <EmptyMedia variant='icon'>
                 <BadgeCheck className='size-5' />
               </EmptyMedia>
-              <EmptyTitle>No badges yet</EmptyTitle>
-              <EmptyDescription>You have not been awarded any badges yet.</EmptyDescription>
+              <EmptyTitle>{t('page.noBadgesTitle')}</EmptyTitle>
+              <EmptyDescription>{t('own.noBadgesBody')}</EmptyDescription>
             </EmptyHeader>
             <EmptyContent />
           </Empty>
@@ -442,7 +445,9 @@ export default function ProfilePage() {
                     <div className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
                       {userStats.events}
                     </div>
-                    <div className='text-sm text-gray-500 dark:text-neutral-400'>Events</div>
+                    <div className='text-sm text-gray-500 dark:text-neutral-400'>
+                      {t('page.events')}
+                    </div>
                   </div>
                   <motion.button
                     className='text-center'
@@ -453,7 +458,9 @@ export default function ProfilePage() {
                     <div className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
                       {userStats.following}
                     </div>
-                    <div className='text-sm text-gray-500 dark:text-neutral-400'>Following</div>
+                    <div className='text-sm text-gray-500 dark:text-neutral-400'>
+                      {t('following.title')}
+                    </div>
                   </motion.button>
                   <motion.button
                     className='text-center'
@@ -464,7 +471,9 @@ export default function ProfilePage() {
                     <div className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
                       {userStats.followers}
                     </div>
-                    <div className='text-sm text-gray-500 dark:text-neutral-400'>Followers</div>
+                    <div className='text-sm text-gray-500 dark:text-neutral-400'>
+                      {t('followers.title')}
+                    </div>
                   </motion.button>
                 </div>
               </div>
@@ -475,7 +484,7 @@ export default function ProfilePage() {
                   className='w-full shadow-none'
                   onClick={() => router.push('/e/profile/edit')}
                 >
-                  Edit Profile
+                  {t('own.editProfile')}
                   <ArrowUpRight className='h-4 w-4' />
                 </Button>
               </div>
@@ -492,17 +501,17 @@ export default function ProfilePage() {
                 className='mx-auto'
                 tabs={[
                   {
-                    title: 'About',
+                    title: t('page.tabs.about'),
                     icon: User,
                     onClick: () => router.push('/e/profile', { scroll: false }),
                   },
                   {
-                    title: 'Events',
+                    title: t('page.events'),
                     icon: Calendar,
                     onClick: () => router.push('/e/profile?tab=events', { scroll: false }),
                   },
                   {
-                    title: 'Badges',
+                    title: t('badges.title'),
                     icon: Award,
                     onClick: () => router.push('/e/profile?tab=badges', { scroll: false }),
                   },
@@ -528,12 +537,9 @@ export default function ProfilePage() {
               <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
             </div>
             <h3 className='mb-4 text-xl font-bold text-gray-900 dark:text-neutral-100'>
-              You are verified
+              {t('own.verifiedTitle')}
             </h3>
-            <p className='mb-6 text-gray-600 dark:text-neutral-400'>
-              Congratulations! Your account is verified. You have premium member status with
-              enhanced credibility and access to exclusive features on our platform.
-            </p>
+            <p className='mb-6 text-gray-600 dark:text-neutral-400'>{t('own.verifiedBody')}</p>
             <div className='flex flex-col gap-3'>
               <Button
                 onClick={() => {
@@ -544,14 +550,14 @@ export default function ProfilePage() {
                 }}
                 className='w-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
-                Contact support
+                {t('own.contactSupport')}
               </Button>
               <Button
                 variant='ghost'
                 onClick={() => setShowVerificationModal(false)}
                 className='w-full'
               >
-                Close
+                {tCommon('actions.close')}
               </Button>
             </div>
           </div>

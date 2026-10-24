@@ -13,12 +13,20 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import type { RegistrationStatus, RegistrationSubmission } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { format, type Locale } from 'date-fns';
+import { enUS, es, ptBR } from 'date-fns/locale';
 import { CheckCircle, ChevronRight, ClipboardList, Clock, XCircle } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 type TabStatus = RegistrationStatus;
+
+function getDateFnsLocale(locale: string): Locale {
+  if (locale === 'pt-BR') return ptBR;
+  if (locale === 'es') return es;
+  return enUS;
+}
 
 export default function RegistrationSubmissionsPage() {
   const params = useParams();
@@ -26,6 +34,8 @@ export default function RegistrationSubmissionsPage() {
   const router = useRouter();
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const eventId = params.id as string;
+  const t = useTranslations('manageLegacy');
+  const submissionsTitle = t('registrationSubmissions.topBarTitle');
 
   const [activeTab, setActiveTab] = useState<TabStatus>('pending');
   const [selectedRegistrationId, setSelectedRegistrationId] = useState<string | null>(null);
@@ -33,7 +43,7 @@ export default function RegistrationSubmissionsPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Registration Submissions',
+      title: submissionsTitle,
       leftMode: 'back',
       centerMode: 'title',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
@@ -45,7 +55,15 @@ export default function RegistrationSubmissionsPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
+  }, [
+    eventId,
+    router,
+    pathname,
+    setTopBarForRoute,
+    applyRouteConfig,
+    clearRoute,
+    submissionsTitle,
+  ]);
 
   // Get existing event data from API
   const { data: existingEvent, isLoading: isLoadingEvent, error } = useEventDetails(eventId);
@@ -71,18 +89,22 @@ export default function RegistrationSubmissionsPage() {
   const totalCount = counts.pending + counts.approved + counts.denied;
 
   const tabs: { key: TabStatus; label: string; count: number }[] = [
-    { key: 'pending', label: 'Pending', count: counts.pending },
-    { key: 'approved', label: 'Approved', count: counts.approved },
-    { key: 'denied', label: 'Denied', count: counts.denied },
+    { key: 'pending', label: t('registrationSubmissions.status.pending'), count: counts.pending },
+    {
+      key: 'approved',
+      label: t('registrationSubmissions.status.approved'),
+      count: counts.approved,
+    },
+    { key: 'denied', label: t('registrationSubmissions.status.denied'), count: counts.denied },
   ];
 
   const handleApprove = async (registrationId: string) => {
     try {
       await approveRegistration.mutateAsync({ eventId, registrationId });
       queryClient.invalidateQueries({ queryKey: queryKeys.eventDashboard(eventId) });
-      toast.success('Registration approved');
+      toast.success(t('registrationSubmissions.toasts.approved'));
     } catch {
-      toast.error('Failed to approve registration');
+      toast.error(t('registrationSubmissions.toasts.approveFailed'));
     }
   };
 
@@ -94,9 +116,9 @@ export default function RegistrationSubmissionsPage() {
         reason,
       });
       queryClient.invalidateQueries({ queryKey: queryKeys.eventDashboard(eventId) });
-      toast.success('Registration denied');
+      toast.success(t('registrationSubmissions.toasts.denied'));
     } catch {
-      toast.error('Failed to deny registration');
+      toast.error(t('registrationSubmissions.toasts.denyFailed'));
     }
   };
 
@@ -116,9 +138,9 @@ export default function RegistrationSubmissionsPage() {
     };
 
     const labels: Record<RegistrationStatus, string> = {
-      pending: 'Pending',
-      approved: 'Approved',
-      denied: 'Denied',
+      pending: t('registrationSubmissions.status.pending'),
+      approved: t('registrationSubmissions.status.approved'),
+      denied: t('registrationSubmissions.status.denied'),
     };
 
     return (
@@ -148,9 +170,11 @@ export default function RegistrationSubmissionsPage() {
 
   const pageIntro = (
     <div className='space-y-1'>
-      <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Submissions</h2>
+      <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+        {t('registrationSubmissions.title')}
+      </h2>
       <p className='text-sm text-gray-500 dark:text-neutral-400'>
-        Review registration submissions and approve or deny guests.
+        {t('registrationSubmissions.subtitle')}
       </p>
     </div>
   );
@@ -174,16 +198,16 @@ export default function RegistrationSubmissionsPage() {
       <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-            Event Not Found
+            {t('registrationSubmissions.eventNotFound.title')}
           </h1>
           <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            The event you&apos;re trying to manage doesn&apos;t exist.
+            {t('registrationSubmissions.eventNotFound.description')}
           </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
-            Go Back
+            {t('registration.invalidType.goBack')}
           </button>
         </div>
       </div>
@@ -200,11 +224,14 @@ export default function RegistrationSubmissionsPage() {
       <div className='max-w-md'>
         <AnimatedTabs
           tabs={tabs.map((tab) => ({
-            title: tab.count > 0 ? `${tab.label} (${tab.count})` : tab.label,
+            title:
+              tab.count > 0
+                ? t('registrationSubmissions.tabWithCount', { label: tab.label, count: tab.count })
+                : tab.label,
             icon: tab.key === 'pending' ? Clock : tab.key === 'approved' ? CheckCircle : XCircle,
             onClick: () => setActiveTab(tab.key),
           }))}
-          selected={tabs.findIndex((t) => t.key === activeTab)}
+          selected={tabs.findIndex((tab) => tab.key === activeTab)}
         />
       </div>
 
@@ -230,10 +257,12 @@ export default function RegistrationSubmissionsPage() {
             <table className='w-full text-left text-sm'>
               <thead className='border-b border-gray-200 bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-400'>
                 <tr>
-                  <th className='px-4 py-3'>Guest</th>
-                  <th className='px-4 py-3'>Submitted</th>
-                  <th className='px-4 py-3'>Status</th>
-                  <th className='px-4 py-3 text-right'>Actions</th>
+                  <th className='px-4 py-3'>{t('registrationSubmissions.table.guest')}</th>
+                  <th className='px-4 py-3'>{t('registrationSubmissions.table.submitted')}</th>
+                  <th className='px-4 py-3'>{t('registrationSubmissions.table.status')}</th>
+                  <th className='px-4 py-3 text-right'>
+                    {t('registrationSubmissions.table.actions')}
+                  </th>
                 </tr>
               </thead>
               <tbody className='divide-y divide-gray-100 dark:divide-neutral-800'>
@@ -258,12 +287,12 @@ export default function RegistrationSubmissionsPage() {
             <ClipboardList className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
           </div>
           <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
-            No Submissions
+            {t('registrationSubmissions.empty.title')}
           </h3>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            {activeTab === 'pending' && 'No pending registrations to review.'}
-            {activeTab === 'approved' && 'No approved registrations.'}
-            {activeTab === 'denied' && 'No denied registrations.'}
+            {activeTab === 'pending' && t('registrationSubmissions.empty.pending')}
+            {activeTab === 'approved' && t('registrationSubmissions.empty.approved')}
+            {activeTab === 'denied' && t('registrationSubmissions.empty.denied')}
           </p>
         </div>
       )}
@@ -289,9 +318,12 @@ export default function RegistrationSubmissionsPage() {
           </>
         ) : (
           <>
-            <span>Total: {totalCount}</span>
+            <span>{t('registrationSubmissions.summary.total', { count: totalCount })}</span>
             <span>
-              Showing {activeTab}: {filteredRegistrations.length}
+              {t('registrationSubmissions.summary.showing', {
+                status: activeTab,
+                count: filteredRegistrations.length,
+              })}
             </span>
           </>
         )}
@@ -321,6 +353,8 @@ function RegistrationTableRow({
   isReviewing,
   getStatusBadge,
 }: RegistrationTableRowProps) {
+  const t = useTranslations('manageLegacy');
+  const dateLocale = getDateFnsLocale(useLocale());
   return (
     <tr className='transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800'>
       <td className='px-4 py-3'>
@@ -346,7 +380,7 @@ function RegistrationTableRow({
         </button>
       </td>
       <td className='whitespace-nowrap px-4 py-3 text-gray-500 dark:text-neutral-400'>
-        {format(new Date(registration.created_at), 'MMM d, yyyy')}
+        {format(new Date(registration.created_at), 'MMM d, yyyy', { locale: dateLocale })}
       </td>
       <td className='px-4 py-3'>{getStatusBadge(registration.approval_status)}</td>
       <td className='px-4 py-3'>
@@ -358,14 +392,14 @@ function RegistrationTableRow({
                 disabled={isReviewing}
                 className='rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:opacity-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800'
               >
-                Deny
+                {t('registrationSubmissions.actions.deny')}
               </button>
               <button
                 onClick={onApprove}
                 disabled={isReviewing}
                 className='rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50'
               >
-                Approve
+                {t('registrationSubmissions.actions.approve')}
               </button>
             </>
           )}
@@ -373,7 +407,7 @@ function RegistrationTableRow({
             onClick={onView}
             className='rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-800'
           >
-            View
+            {t('registrationSubmissions.actions.view')}
           </button>
         </div>
       </td>
@@ -388,6 +422,8 @@ interface RegistrationCardProps {
 }
 
 function RegistrationCard({ registration, onClick, getStatusBadge }: RegistrationCardProps) {
+  const t = useTranslations('manageLegacy');
+  const dateLocale = getDateFnsLocale(useLocale());
   return (
     <button
       onClick={onClick}
@@ -422,7 +458,11 @@ function RegistrationCard({ registration, onClick, getStatusBadge }: Registratio
             </div>
           </div>
           <p className='mt-1 text-xs text-gray-400 dark:text-neutral-500'>
-            Submitted {format(new Date(registration.created_at), 'MMM d, yyyy')}
+            {t('registrationSubmissions.submittedOn', {
+              date: format(new Date(registration.created_at), 'MMM d, yyyy', {
+                locale: dateLocale,
+              }),
+            })}
           </p>
         </div>
       </div>

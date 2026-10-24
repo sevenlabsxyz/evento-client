@@ -27,10 +27,12 @@ import {
   Type,
   User,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EditProfilePage() {
+  const t = useTranslations('profile');
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
@@ -89,7 +91,7 @@ export default function EditProfilePage() {
 
     // Set route-specific configuration
     setTopBarForRoute(pathname, {
-      title: 'Edit Profile',
+      title: t('own.editProfile'),
       subtitle: undefined,
       onBackPress: () => router.push('/e/profile'),
       leftMode: 'back',
@@ -101,7 +103,7 @@ export default function EditProfilePage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute, router]);
+  }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute, router, t]);
 
   // Initialize form data from user profile
   useEffect(() => {
@@ -234,10 +236,10 @@ export default function EditProfilePage() {
               </div>
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
-                  Profile Picture
+                  {t('editPage.picture')}
                 </h3>
                 <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                  {image ? 'Tap to change photo' : 'Add a profile photo'}
+                  {image ? t('editPage.changePhoto') : t('editPage.addPhoto')}
                 </p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
@@ -252,9 +254,11 @@ export default function EditProfilePage() {
                 <AtSign className='h-6 w-6 text-blue-600 dark:text-blue-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Username</h3>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                  {t('edit.username.title')}
+                </h3>
                 <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                  {username || 'Choose a username'}
+                  {username || t('editPage.chooseUsername')}
                 </p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
@@ -269,9 +273,11 @@ export default function EditProfilePage() {
                 <User className='h-6 w-6 text-blue-600 dark:text-blue-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Name</h3>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                  {t('edit.name.title')}
+                </h3>
                 <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                  {name || 'Add your name'}
+                  {name || t('editPage.addName')}
                 </p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
@@ -286,11 +292,13 @@ export default function EditProfilePage() {
                 <Type className='h-6 w-6 text-green-600 dark:text-green-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Biography</h3>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                  {t('edit.bio.title')}
+                </h3>
                 <p className='text-sm text-gray-500 dark:text-neutral-400'>
                   {bio
                     ? bio.replace(/<[^>]*>/g, '').substring(0, 40) + '...'
-                    : 'Tell us about yourself'}
+                    : t('editPage.bioEmpty')}
                 </p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
@@ -308,11 +316,17 @@ export default function EditProfilePage() {
                 <Instagram className='h-6 w-6 text-purple-600 dark:text-purple-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Social Links</h3>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                  {t('edit.social.title')}
+                </h3>
                 <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                  {[instagram_handle && 'Instagram', x_handle && 'X', bio_link && 'Website']
+                  {[
+                    instagram_handle && 'Instagram',
+                    x_handle && 'X',
+                    bio_link && t('sheets.website.title'),
+                  ]
                     .filter(Boolean)
-                    .join(', ') || 'Add your social profiles'}
+                    .join(', ') || t('editPage.addSocial')}
                 </p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
@@ -329,7 +343,7 @@ export default function EditProfilePage() {
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Nostr</h3>
                 <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                  {nip05 || 'Add Nostr identifier'}
+                  {nip05 || t('editPage.addNostr')}
                 </p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
@@ -347,8 +361,12 @@ export default function EditProfilePage() {
                 <Heart className='h-6 w-6 text-teal-600 dark:text-teal-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Interests</h3>
-                <p className='text-sm text-gray-500 dark:text-neutral-400'>Share what you love</p>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                  {t('interests')}
+                </h3>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                  {t('editPage.interestsHint')}
+                </p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
             </button>
@@ -362,9 +380,11 @@ export default function EditProfilePage() {
                 <MessageSquare className='h-6 w-6 text-indigo-600 dark:text-indigo-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Prompts</h3>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                  {t('edit.prompts.title')}
+                </h3>
                 <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                  Showcase your personality
+                  {t('editPage.promptsHint')}
                 </p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
@@ -379,11 +399,13 @@ export default function EditProfilePage() {
                 <Award className='h-6 w-6 text-amber-600 dark:text-amber-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Badges</h3>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                  {t('badges.title')}
+                </h3>
                 <p className='text-sm text-gray-500 dark:text-neutral-400'>
                   {displayedBadgesCount > 0
-                    ? `${displayedBadgesCount} badge${displayedBadgesCount !== 1 ? 's' : ''} on display`
-                    : 'Showcase your achievements'}
+                    ? t('editPage.badgesOnDisplay', { count: displayedBadgesCount })
+                    : t('editPage.badgesHint')}
                 </p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />

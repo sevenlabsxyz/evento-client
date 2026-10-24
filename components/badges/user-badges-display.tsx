@@ -4,6 +4,7 @@ import { BadgeItem } from '@/components/badges/badge-item';
 import { UserBadge } from '@/lib/types/badges';
 import { cn } from '@/lib/utils';
 import { ChevronRight, Settings2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface UserBadgesDisplayProps {
   badges: UserBadge[];
@@ -20,6 +21,8 @@ export function UserBadgesDisplay({
   onBadgeClick,
   className,
 }: UserBadgesDisplayProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   // Don't render if no badges
   if (!badges || badges.length === 0) {
     return null;
@@ -44,14 +47,16 @@ export function UserBadgesDisplay({
     >
       {/* Header */}
       <div className='mb-4 flex items-center justify-between'>
-        <h2 className='text-lg font-bold text-gray-900 dark:text-neutral-100'>Badges</h2>
+        <h2 className='text-lg font-bold text-gray-900 dark:text-neutral-100'>
+          {t('badges.title')}
+        </h2>
         {isOwnProfile && onManageClick && (
           <button
             onClick={onManageClick}
             className='flex items-center gap-1 text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
           >
             <Settings2 className='h-4 w-4' />
-            <span>Manage</span>
+            <span>{tCommon('actions.manage')}</span>
             <ChevronRight className='h-4 w-4' />
           </button>
         )}

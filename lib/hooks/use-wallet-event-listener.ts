@@ -7,6 +7,7 @@ import { BreezEvent, breezSDK } from '@/lib/services/breez-sdk';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletStore } from '@/lib/stores/wallet-store';
 import { logger } from '@/lib/utils/logger';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef } from 'react';
 
 /**
@@ -15,6 +16,7 @@ import { useCallback, useEffect, useRef } from 'react';
  * Handles Breez SDK events and updates wallet state accordingly
  */
 export function useWalletEventListener() {
+  const t = useTranslations('hooks');
   // Use Zustand selector for stable primitive value
   const isConnected = useWalletStore((state) => state.walletState.isConnected);
   const setWalletState = useWalletStore((state) => state.setWalletState);
@@ -27,7 +29,7 @@ export function useWalletEventListener() {
   const refreshBalance = useCallback(async (): Promise<void> => {
     try {
       if (!breezSDK.isConnected()) {
-        throw new Error('Wallet not connected');
+        throw new Error(t('wallet.notConnected'));
       }
 
       const balance = await breezSDK.getBalance();
@@ -39,8 +41,9 @@ export function useWalletEventListener() {
       logger.error('Failed to refresh balance', {
         error: err instanceof Error ? err.message : String(err),
       });
-      setError(err.message || 'Failed to refresh balance');
+      setError(err.message || t('wallet.failedToRefreshBalance'));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setWalletState, setError]);
 
   // Use ref to prevent refreshBalance from causing re-subscriptions
@@ -68,8 +71,10 @@ export function useWalletEventListener() {
           // Show browser notification for incoming payment
           if (typeof window !== 'undefined' && 'Notification' in window) {
             if (Notification.permission === 'granted') {
-              new Notification('Payment Received', {
-                body: `You received ${payment?.amountSats || 0} sats`,
+              new Notification(t('wallet.paymentReceivedTitle'), {
+                body: t('wallet.paymentReceivedBody', {
+                  amount: String(payment?.amountSats || 0),
+                }),
                 icon: '/logo.png',
               });
             }
@@ -87,6 +92,7 @@ export function useWalletEventListener() {
     return () => {
       unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, setLightningAddress]);
 
   return null; // This hook doesn't return anything

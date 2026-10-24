@@ -4,6 +4,7 @@ import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
 import { VerificationStatus } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
 
@@ -37,6 +38,7 @@ export function UserAvatar({
   height,
   width,
 }: UserAvatarProps) {
+  const t = useTranslations('zap.ui');
   const [avatarSrc, setAvatarSrc] = useState(getAvatarImageSrc(user?.image));
 
   useEffect(() => {
@@ -106,7 +108,7 @@ export function UserAvatar({
     >
       <AvatarImage
         src={avatarSrc}
-        alt='Profile'
+        alt={t('profileAlt')}
         className={avatarSrc === DEFAULT_AVATAR_IMAGE ? 'dark:invert' : undefined}
         onError={() => {
           if (avatarSrc !== DEFAULT_AVATAR_IMAGE) {
@@ -117,7 +119,7 @@ export function UserAvatar({
       <AvatarFallback className={cn('bg-white dark:bg-neutral-900', sizeConfig.textSize)}>
         <img
           src={DEFAULT_AVATAR_IMAGE}
-          alt='Default profile'
+          alt={t('defaultProfileAlt')}
           className='h-full w-full object-cover dark:invert'
         />
       </AvatarFallback>
@@ -138,7 +140,7 @@ export function UserAvatar({
         (onVerificationClick ? (
           <button
             type='button'
-            aria-label='Verification badge'
+            aria-label={t('verificationBadge')}
             onClick={handleVerificationClick}
             className={cn(
               'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600 dark:border-neutral-700',

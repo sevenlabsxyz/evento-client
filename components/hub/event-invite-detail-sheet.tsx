@@ -6,6 +6,7 @@ import { formatEventDateFromParts } from '@/lib/utils/date';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { VisuallyHidden } from '@silk-hq/components';
 import { Check, Eye, MapPin, Users, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
@@ -26,6 +27,7 @@ export function EventInviteDetailSheet({
   onRSVP,
 }: EventInviteDetailSheetProps) {
   const router = useRouter();
+  const t = useTranslations('hub');
 
   if (!invite) return null;
 
@@ -66,7 +68,7 @@ export function EventInviteDetailSheet({
               </div>
 
               <VisuallyHidden.Root asChild>
-                <DetachedSheet.Title>Event Invite</DetachedSheet.Title>
+                <DetachedSheet.Title>{t('invites.detailTitle')}</DetachedSheet.Title>
               </VisuallyHidden.Root>
 
               <div className='overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-900'>
@@ -98,7 +100,7 @@ export function EventInviteDetailSheet({
                         {event.hosts[0].name}
                       </p>
                       <p className='text-xs text-gray-500 dark:text-neutral-400'>
-                        invited you to an event on {eventDate} at {eventTime}
+                        {t('invites.invitedYou', { date: eventDate, time: eventTime })}
                       </p>
                     </div>
                   </div>
@@ -114,7 +116,7 @@ export function EventInviteDetailSheet({
                       )}
                     >
                       <MapPin className='mr-1 h-4 w-4' />
-                      <span>{invite.events.location || 'TBD'}</span>
+                      <span>{invite.events.location || t('invites.tbd')}</span>
                     </div>
                     {invite.message && (
                       <p className='text-sm text-gray-600 dark:text-neutral-400'>
@@ -134,7 +136,7 @@ export function EventInviteDetailSheet({
                         className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                       >
                         <Users className='mr-2 h-4 w-4' />
-                        RSVP
+                        {t('invites.rsvp')}
                       </Button>
                       <Button
                         size='default'
@@ -143,7 +145,7 @@ export function EventInviteDetailSheet({
                         className='flex-1'
                       >
                         <Eye className='mr-2 h-4 w-4' />
-                        View
+                        {t('invites.view')}
                       </Button>
                     </div>
                   )}
@@ -164,14 +166,14 @@ export function EventInviteDetailSheet({
                         {invite.response === 'going' && <Check className='mr-1 h-3 w-3' />}
                         {invite.response === 'not_going' && <X className='mr-1 h-3 w-3' />}
                         {invite.response === 'going'
-                          ? 'Going'
+                          ? t('invites.response.going')
                           : invite.response === 'maybe'
-                            ? 'Maybe'
-                            : 'Not Going'}
+                            ? t('invites.response.maybe')
+                            : t('invites.response.notGoing')}
                       </span>
                       <Button size='default' variant='outline' onClick={handleViewEvent}>
                         <Eye className='mr-2 h-4 w-4' />
-                        View
+                        {t('invites.view')}
                       </Button>
                     </div>
                   )}

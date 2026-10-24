@@ -2,6 +2,7 @@ import { CircledIconButton } from '@/components/circled-icon-button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { EARN_PARTNERS, type EarnPartner } from '@/lib/constants/earn-partners';
 import { ArrowUpRight, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
 type EarnBitcoinSheetProps = {
@@ -11,6 +12,7 @@ type EarnBitcoinSheetProps = {
 };
 
 export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnBitcoinSheetProps) {
+  const t = useTranslations('walletFlows');
   const PartnerCard = ({ partner }: { partner: EarnPartner }) => {
     return (
       <div
@@ -54,7 +56,7 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
 
                   {/* Header */}
                   <div className='flex items-center justify-between border-gray-200 bg-white px-4 py-3 pt-0 dark:border-neutral-800 dark:bg-neutral-900'>
-                    <h2 className='text-xl font-semibold'>Earn Bitcoin</h2>
+                    <h2 className='text-xl font-semibold'>{t('earnBitcoinSheet.title')}</h2>
                     <button onClick={() => onOpenChange(false)}>
                       <X className='h-5 w-5 text-gray-500 dark:text-neutral-400' />
                     </button>
@@ -75,31 +77,35 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
                       {/* How It Works */}
                       <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
                         <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
-                          How It Works
+                          {t('earnBitcoinSheet.howItWorks')}
                         </h3>
                         <ol className='mt-3 space-y-2 text-sm text-gray-600 dark:text-neutral-400'>
                           <li className='flex gap-3'>
                             <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white dark:bg-neutral-100 dark:text-neutral-900'>
                               1
                             </span>
-                            <span>Use a partner app to earn Bitcoin</span>
+                            <span>{t('earnBitcoinSheet.step1')}</span>
                           </li>
                           <li className='flex gap-3'>
                             <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white dark:bg-neutral-100 dark:text-neutral-900'>
                               2
                             </span>
                             <span>
-                              Send your earnings to{' '}
-                              <span className='font-semibold text-gray-900 dark:text-neutral-100'>
-                                {lightningAddress}
-                              </span>
+                              {t.rich('earnBitcoinSheet.step2', {
+                                address: lightningAddress,
+                                strong: (chunks) => (
+                                  <span className='font-semibold text-gray-900 dark:text-neutral-100'>
+                                    {chunks}
+                                  </span>
+                                ),
+                              })}
                             </span>
                           </li>
                           <li className='flex gap-3'>
                             <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white dark:bg-neutral-100 dark:text-neutral-900'>
                               3
                             </span>
-                            <span>Use it inside Evento</span>
+                            <span>{t('earnBitcoinSheet.step3')}</span>
                           </li>
                         </ol>
                       </div>

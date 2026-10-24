@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { designTokens } from '@/lib/design-tokens/colors';
 import { UserMinus, UserPlus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useCallback } from 'react';
 
 interface ProfileActionsProps {
@@ -18,6 +19,7 @@ export function ProfileActions({
   isPending,
   onFollowToggle,
 }: ProfileActionsProps) {
+  const t = useTranslations('zap.quickProfile');
   const handleFollowClick = useCallback(() => {
     onFollowToggle();
   }, [onFollowToggle]);
@@ -36,12 +38,12 @@ export function ProfileActions({
         {isFollowing ? (
           <>
             <UserMinus className='mr-2 h-4 w-4' />
-            {isPending ? 'Unfollowing...' : 'Following'}
+            {isPending ? t('unfollowing') : t('following')}
           </>
         ) : (
           <>
             <UserPlus className='mr-2 h-4 w-4' />
-            {isPending ? 'Following...' : 'Follow'}
+            {isPending ? t('followingPending') : t('follow')}
           </>
         )}
       </Button>

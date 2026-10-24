@@ -1,0 +1,60 @@
+{
+  "sidebar": {
+    "createEvent": "Create Event",
+    "developers": "Developers",
+    "items": {
+      "events": "Events",
+      "search": "Search",
+      "lists": "Lists",
+      "wallet": "Wallet",
+      "api": "API",
+      "mcp": "MCP for AI agents",
+      "apiKeys": "API keys",
+      "blog": "Blog",
+      "security": "Security",
+      "store": "Store",
+      "settings": "Settings"
+    },
+    "hideSidebar": "Hide Sidebar",
+    "showSidebar": "Show Sidebar",
+    "opensInNewTab": "(opens in a new tab)"
+  },
+  "sidebarRight": {
+    "calendar": "Calendar"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "lightTheme": "Light theme",
+    "darkTheme": "Dark theme",
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme"
+  },
+  "user": {
+    "fallbackName": "Evento User",
+    "avatarAlt": "User",
+    "welcome": "Welcome to Evento",
+    "logOut": "Log out"
+  },
+  "bottomTabs": {
+    "events": "Events",
+    "wallet": "Wallet",
+    "create": "Create",
+    "search": "Search",
+    "profile": "Profile",
+    "avatarAlt": "Me"
+  },
+  "logout": {
+    "title": "Log Out",
+    "walletWarningTitle": "Warning: Wallet Data",
+    "walletOnDevice": "You have a wallet set up on this device.",
+    "walletDeleteWarning": "Logging out will permanently delete your wallet data from this device, including your encrypted seed phrase.",
+    "backupReminder": "Make sure you have a backup!",
+    "backupLoss": "Without a backup, you will lose access to any funds permanently.",
+    "confirmMessage": "Are you sure you want to log out? You'll need to sign in again to access your account.",
+    "backUpFirst": "Back Up Wallet First",
+    "loggingOut": "Logging out...",
+    "confirm": "Log Out"
+  }
+}

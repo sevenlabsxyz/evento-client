@@ -1,5 +1,6 @@
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 import { useCallback, useRef, useState } from 'react';
 
@@ -37,19 +38,20 @@ export function useMultiFileUpload({
   const [uploadProgressIndividual, setUploadProgressIndividual] = useState<UploadProgress[]>([]);
 
   const inputFileRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations('hooks');
 
   const acceptedFileTypes = acceptedTypes.join(',');
 
   const validateFile = (file: File): string | null => {
     // Check file type
     if (!acceptedTypes.includes(file.type)) {
-      return `File type ${file.type} is not supported`;
+      return t('upload.unsupportedType', { type: file.type });
     }
 
     // Check file size
     const fileSizeMB = file.size / (1024 * 1024);
     if (fileSizeMB > maxFileSize) {
-      return `File size (${fileSizeMB.toFixed(1)}MB) exceeds limit of ${maxFileSize}MB`;
+      return t('upload.fileTooLarge', { size: fileSizeMB.toFixed(1), limit: maxFileSize });
     }
 
     return null;
@@ -63,7 +65,7 @@ export function useMultiFileUpload({
 
       // Check total files limit
       if (selectedFilesData.length + files.length > maxFiles) {
-        toast.error(`Cannot select more than ${maxFiles} files`);
+        toast.error(t('upload.tooManyFiles', { max: maxFiles }));
         return;
       }
 
@@ -83,7 +85,9 @@ export function useMultiFileUpload({
       // Show errors for invalid files
       if (invalidFiles.length > 0) {
         toast.error(
-          `Invalid files:\n${invalidFiles.slice(0, 3).join('\n')}${invalidFiles.length > 3 ? '\n...' : ''}`
+          t('upload.invalidFiles', {
+            files: `${invalidFiles.slice(0, 3).join('\n')}${invalidFiles.length > 3 ? '\n...' : ''}`,
+          })
         );
       }
 
@@ -98,7 +102,7 @@ export function useMultiFileUpload({
       );
 
       if (newFiles.length !== validFiles.length) {
-        toast.warning('Some files were already selected');
+        toast.warning(t('upload.alreadySelected'));
       }
 
       // Create file data with preview URLs - no compression for fast mobile performance
@@ -111,15 +115,13 @@ export function useMultiFileUpload({
         setSelectedFilesData((prev) => [...prev, ...newFileData]);
 
         if (newFiles.length > 0) {
-          toast.success(
-            `Selected ${newFiles.length} ${newFiles.length === 1 ? 'photo' : 'photos'}`
-          );
+          toast.success(t('upload.selectedPhotos', { count: newFiles.length }));
         }
       } catch (error) {
         logger.error('Error processing files', {
           error: error instanceof Error ? error.message : String(error),
         });
-        toast.error('Error processing some files');
+        toast.error(t('upload.processingError'));
       }
 
       // Clear the input
@@ -127,7 +129,7 @@ export function useMultiFileUpload({
         inputFileRef.current.value = '';
       }
     },
-    [selectedFilesData, maxFiles, maxFileSize, acceptedTypes]
+    [selectedFilesData, maxFiles, maxFileSize, acceptedTypes, t]
   );
 
   const removeFileFromSelection = useCallback((fileName: string) => {
@@ -187,7 +189,7 @@ export function useMultiFileUpload({
                 ? {
                     ...item,
                     status: 'failed',
-                    message: result.message || result.error || 'Upload failed',
+                    message: result.message || result.error || t('upload.uploadFailed'),
                   }
                 : item
             )
@@ -208,7 +210,7 @@ export function useMultiFileUpload({
               ? {
                   ...item,
                   status: 'failed',
-                  message: error?.message || 'Upload failed',
+                  message: error?.message || t('upload.uploadFailed'),
                 }
               : item
           )
@@ -224,18 +226,16 @@ export function useMultiFileUpload({
 
     // Show final result
     if (successCount > 0) {
-      toast.success(
-        `Successfully uploaded ${successCount} ${successCount === 1 ? 'photo' : 'photos'}`
-      );
+      toast.success(t('upload.uploadedPhotos', { count: successCount }));
       onSuccess?.();
     }
 
     if (failCount > 0) {
-      toast.error(`Failed to upload ${failCount} ${failCount === 1 ? 'photo' : 'photos'}`);
+      toast.error(t('upload.failedPhotos', { count: failCount }));
     }
 
     setIsUploading(false);
-  }, [selectedFilesData, isUploading, onUpload, onSuccess]);
+  }, [selectedFilesData, isUploading, onUpload, onSuccess, t]);
 
   const triggerFileSelect = useCallback(() => {
     inputFileRef.current?.click();

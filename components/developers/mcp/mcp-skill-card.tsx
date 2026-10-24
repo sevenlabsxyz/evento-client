@@ -1,25 +1,21 @@
 import { Button } from '@/components/ui/button';
 import { DOCS_MCP_OPENCLAW_URL, DOCS_MCP_SKILL_URL } from '@/lib/constants/external-links';
 import { ArrowUpRight, Check, FileText, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { McpCodeBlock } from './mcp-code-block';
 import { MCP_CLAUDE_SKILL_SNIPPET } from './mcp-content';
 import { McpDocsLink } from './mcp-section-header';
 
-const SKILL_USE_CASES = [
-  'List events for a username',
-  'Get event details from an evt_* ID',
-  'Configure MCP client settings for Evento',
-  'Troubleshoot missing tools or auth failures',
-] as const;
+/** Keys under `developers.mcp.skill.useCases`. */
+const SKILL_USE_CASES = ['listEvents', 'getEvent', 'configure', 'troubleshoot'] as const;
 
-const SKILL_NON_GOALS = [
-  'Admin-only API routes',
-  'Direct database access',
-  'Bypassing API key authentication',
-] as const;
+/** Keys under `developers.mcp.skill.nonGoals`. */
+const SKILL_NON_GOALS = ['adminRoutes', 'database', 'bypassAuth'] as const;
 
 export function McpSkillCard() {
+  const t = useTranslations('developers.mcp');
+
   return (
     <section
       aria-labelledby='mcp-skill-heading'
@@ -31,23 +27,22 @@ export function McpSkillCard() {
             <FileText className='h-5 w-5' aria-hidden='true' />
           </span>
           <p className='mt-5 text-xs font-semibold uppercase tracking-wider text-red-600 dark:text-red-400'>
-            Agent skill
+            {t('skill.eyebrow')}
           </p>
           <h2
             id='mcp-skill-heading'
             className='mt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-neutral-100'
           >
-            Teach your agent with SKILL.md
+            {t('skill.title')}
           </h2>
           <p className='mt-2 text-base text-gray-600 dark:text-neutral-400'>
-            A maintained skill file tells your agent when to reach for the Evento tools and how to
-            use them safely.
+            {t('skill.description')}
           </p>
 
           <div className='mt-6 grid gap-5 sm:grid-cols-2'>
             <div>
               <h3 className='text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-neutral-500'>
-                Use it to
+                {t('skill.useItTo')}
               </h3>
               <ul className='mt-2 space-y-2'>
                 {SKILL_USE_CASES.map((item) => (
@@ -59,14 +54,14 @@ export function McpSkillCard() {
                       className='mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400'
                       aria-hidden='true'
                     />
-                    {item}
+                    {t(`skill.useCases.${item}`)}
                   </li>
                 ))}
               </ul>
             </div>
             <div>
               <h3 className='text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-neutral-500'>
-                Not for
+                {t('skill.notFor')}
               </h3>
               <ul className='mt-2 space-y-2'>
                 {SKILL_NON_GOALS.map((item) => (
@@ -78,7 +73,7 @@ export function McpSkillCard() {
                       className='mt-0.5 h-4 w-4 shrink-0 text-gray-400 dark:text-neutral-500'
                       aria-hidden='true'
                     />
-                    {item}
+                    {t(`skill.nonGoals.${item}`)}
                   </li>
                 ))}
               </ul>
@@ -88,28 +83,29 @@ export function McpSkillCard() {
           <div className='mt-8 flex flex-wrap items-center gap-x-5 gap-y-3'>
             <Button asChild className='gap-2 rounded-full'>
               <a href={DOCS_MCP_SKILL_URL} target='_blank' rel='noopener noreferrer'>
-                Get the skill
+                {t('skill.getSkill')}
                 <ArrowUpRight className='h-4 w-4' aria-hidden='true' />
-                <span className='sr-only'>(opens in a new tab)</span>
+                <span className='sr-only'>{t('opensInNewTab')}</span>
               </a>
             </Button>
-            <McpDocsLink href={DOCS_MCP_OPENCLAW_URL}>Use it with OpenClaw</McpDocsLink>
+            <McpDocsLink href={DOCS_MCP_OPENCLAW_URL}>{t('skill.useWithOpenClaw')}</McpDocsLink>
           </div>
         </div>
 
         <div className='flex flex-col justify-center gap-3 border-t border-gray-200 bg-gray-50 p-6 dark:border-neutral-800 dark:bg-neutral-950 md:p-8 lg:border-l lg:border-t-0'>
           <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-            Install for Claude
+            {t('skill.installForClaude')}
           </p>
           <McpCodeBlock
             code={MCP_CLAUDE_SKILL_SNIPPET}
             language='bash'
-            title='Terminal'
-            copyLabel='Skill install commands'
+            title={t('terminal')}
+            copyLabel={t('skill.copyLabel')}
           />
           <p className='text-xs text-gray-500 dark:text-neutral-500'>
-            Using project-local skills? Copy it to{' '}
-            <code className='font-mono'>.claude/skills/evento-public-mcp/SKILL.md</code> instead.
+            {t.rich('skill.projectLocal', {
+              code: (chunks) => <code className='font-mono'>{chunks}</code>,
+            })}
           </p>
         </div>
       </div>

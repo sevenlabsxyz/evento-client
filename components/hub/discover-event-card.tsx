@@ -6,8 +6,11 @@ import { cn } from '@/lib/utils';
 import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { MapPin } from 'lucide-react';
+import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 
 interface DiscoverEventCardProps {
   event: EventWithUser;
@@ -23,6 +26,7 @@ function getEventPlace(event: EventWithUser): string | null {
 }
 
 export function DiscoverEventCard({ event, className }: DiscoverEventCardProps) {
+  const locale = useLocale();
   const { dayOfWeek, monthShort, dayOfMonth, timeWithTz } = formatEventDateFromParts({
     year: event.start_date_year,
     month: event.start_date_month,
@@ -38,7 +42,15 @@ export function DiscoverEventCard({ event, className }: DiscoverEventCardProps) 
   const host = event.user_details;
   const hostHandle = host?.username || host?.name;
   const place = getEventPlace(event);
-  const price = event.cost && Number(event.cost) > 0 ? `$${Number(event.cost)}` : null;
+  const price =
+    event.cost && Number(event.cost) > 0
+      ? new Intl.NumberFormat(getIntlLocale(locale), {
+          style: 'currency',
+          currency: 'USD',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 2,
+        }).format(Number(event.cost))
+      : null;
   const timeLine = [dayOfWeek, timeWithTz].filter(Boolean).join(' · ');
 
   return (

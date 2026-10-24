@@ -1,0 +1,178 @@
+{
+  "batch": {
+    "recipientContext": "Este lote será enviado para {eligible} convidado(s). Um total de {excluded} convidado(s) sem carteira Evento não pode receber este zap em lote, mas será avisado por e-mail sobre a tentativa.",
+    "notifyFailed": "Não foi possível avisar os convidados sem carteira",
+    "completedToast": "Zap em lote concluído",
+    "startFailed": "Não foi possível iniciar o zap em lote",
+    "titles": {
+      "complete": "Zap em lote concluído",
+      "review": "Revisar zap em lote",
+      "comment": "Adicionar mensagem",
+      "setup": "Zap para todos"
+    },
+    "confirmAndSend": "Confirmar e enviar",
+    "sats": "{amount} sats",
+    "completed": {
+      "allSent": "Todos os pagamentos foram enviados",
+      "someIssues": "O lote terminou com alguns problemas",
+      "paymentsSent": "{count, plural, one {# pagamento enviado, total de {sats} sats.} other {# pagamentos enviados, total de {sats} sats.}}",
+      "walletReminders": "E-mails de lembrete de carteira",
+      "notifySummary": "{sent, plural, one {# convidado avisado por e-mail} other {# convidados avisados por e-mail}}, {already} já avisados, {errors} não puderam ser avisados.",
+      "noUsernames": "Não conseguimos identificar nomes de usuário para os convidados sem carteira.",
+      "notifyPending": "Os resultados dos e-mails de lembrete ainda não estão disponíveis.",
+      "needsAttention": "Requer atenção",
+      "paymentFailed": "Falha no pagamento",
+      "paymentSkipped": "Pagamento ignorado"
+    },
+    "stats": {
+      "sent": "Enviados",
+      "failed": "Falharam",
+      "skipped": "Ignorados",
+      "remaining": "Restantes"
+    },
+    "setup": {
+      "amount": "Valor",
+      "amountHint": "Escolha como calcular o lote.",
+      "available": "{amount} disponível",
+      "perPerson": "Por pessoa",
+      "perPersonHint": "Cada convidado recebe o valor informado.",
+      "totalSplit": "Dividir total",
+      "totalSplitHint": "Divide o total entre todos os destinatários.",
+      "amountInSats": "Valor em sats",
+      "enterSats": "Digite os sats",
+      "minimumHint": "Mínimo de 5 sats por convidado. Na divisão do total, o que sobrar fica na sua carteira."
+    },
+    "comment": {
+      "title": "Comentário compartilhado",
+      "description": "Esta nota opcional será anexada a cada pagamento do lote.",
+      "label": "Adicionar mensagem (opcional)",
+      "placeholder": "Diga algo legal...",
+      "hint": "Esta mensagem é enviada quando possível. Se a carteira do destinatário rejeitar comentários, esse pagamento pode falhar."
+    },
+    "review": {
+      "summary": "Resumo do envio",
+      "recipients": "Destinatários",
+      "perRecipient": "Por destinatário",
+      "total": "Total a enviar",
+      "remainder": "Sobra mantida na carteira",
+      "noComment": "Nenhum comentário compartilhado será incluído."
+    },
+    "sending": {
+      "dontLeave": "Não saia desta tela",
+      "keepOpen": "Mantenha o Evento aberto e evite trocar de aba ou de app enquanto estes pagamentos da carteira de autocustódia são enviados.",
+      "label": "Zap em lote",
+      "progress": "Enviando pagamento {current} de {total}",
+      "currentRecipient": "Destinatário atual",
+      "preparingNext": "Preparando o próximo pagamento",
+      "processing": "Processando pagamento Lightning"
+    }
+  },
+  "sheet": {
+    "title": "Enviar Zap",
+    "loadDetailsFailed": "Não foi possível carregar os detalhes do pagamento. Tente novamente.",
+    "invalidAddress": "Endereço Lightning inválido",
+    "prepareFailed": "Não foi possível preparar o pagamento",
+    "sendFailed": "Não foi possível enviar o pagamento",
+    "selfZap": "Você não pode enviar um zap para si mesmo!"
+  },
+  "steps": {
+    "sendZap": "Enviar Zap",
+    "confirmZap": "Confirmar Zap",
+    "customAmount": "Valor personalizado",
+    "selectAmount": "Selecione o valor",
+    "custom": "Outro",
+    "sats": "{amount} sats",
+    "usdApprox": "≈ US${amount}",
+    "messageLabel": "Adicionar mensagem (opcional)",
+    "messagePlaceholder": "Diga algo legal...",
+    "preparing": "Preparando...",
+    "sendingTo": "Enviando para",
+    "networkFee": "Taxa de rede",
+    "message": "Mensagem",
+    "confirmAndSend": "Confirmar e enviar",
+    "convert": "Converter",
+    "sendingZap": "Enviando Zap...",
+    "pleaseWait": "Aguarde",
+    "zapSent": "Zap enviado!",
+    "sentTo": "{amount} sats para {name}"
+  },
+  "noWallet": {
+    "heading": "Carteira não configurada",
+    "headingNamed": "{name} ainda não configurou a carteira",
+    "sending": "Enviando...",
+    "notified": "Avisado",
+    "alreadyNotified": "Já avisado",
+    "letThemKnow": "Avisar",
+    "description": "Este usuário ainda não configurou a Carteira Evento. Avise para que ele comece a receber pagamentos Lightning!"
+  },
+  "lightbox": {
+    "deleteFailed": "Não foi possível excluir a foto. Tente novamente.",
+    "openMenu": "Abrir menu",
+    "deletePhoto": "Excluir foto",
+    "saveImage": "Salvar imagem",
+    "shared": "Imagem compartilhada!",
+    "openedInNewTab": "Imagem aberta em nova aba",
+    "downloaded": "Foto baixada!",
+    "handleFailed": "Não foi possível processar a imagem. Tente novamente.",
+    "deleted": "Foto excluída.",
+    "downloadImage": "Baixar imagem",
+    "closeFullscreen": "Fechar tela cheia",
+    "loadFailed": "Não foi possível carregar a imagem",
+    "fullscreenAlt": "Imagem {index} em tela cheia",
+    "previousImage": "Imagem anterior",
+    "nextImage": "Próxima imagem",
+    "usernameAlt": "Nome de usuário",
+    "postedOn": "publicado em {date}",
+    "deleteTitle": "Excluir foto",
+    "deleteDescription": "Tem certeza de que deseja excluir esta foto? Essa ação não pode ser desfeita.",
+    "deleting": "Excluindo..."
+  },
+  "giphy": {
+    "searchPlaceholder": "Buscar GIFs...",
+    "noResults": "Nenhum GIF encontrado",
+    "tryDifferent": "Tente outro termo de busca"
+  },
+  "errorBoundary": {
+    "description": "Desculpe, ocorreu um erro ao carregar este conteúdo."
+  },
+  "quickProfile": {
+    "thisUser": "este usuário",
+    "followed": "Você seguiu {name}!",
+    "unfollowed": "Você deixou de seguir {name}",
+    "followFailed": "Não foi possível seguir. Tente novamente.",
+    "unfollowFailed": "Não foi possível deixar de seguir. Tente novamente.",
+    "invalidUsername": "Formato de nome de usuário inválido",
+    "sheetTitle": "Perfil rápido de {name} (@{username})",
+    "openingProfile": "Abrindo perfil...",
+    "viewFullProfile": "Ver perfil completo",
+    "unfollowing": "Deixando de seguir...",
+    "following": "Seguindo",
+    "followingPending": "Seguindo...",
+    "follow": "Seguir",
+    "unknownUser": "Usuário desconhecido",
+    "bio": "Bio",
+    "followers": "Seguidores"
+  },
+  "ui": {
+    "searchEmojis": "Buscar emojis...",
+    "noEmoji": "Nenhum emoji encontrado.",
+    "previousSlide": "Slide anterior",
+    "nextSlide": "Próximo slide",
+    "carousel": "carrossel",
+    "slide": "slide",
+    "failedToLoad": "Falha ao carregar",
+    "profileAlt": "Perfil",
+    "defaultProfileAlt": "Perfil padrão",
+    "verificationBadge": "Selo de verificação",
+    "selectInterests": "Selecione seus interesses.",
+    "breadcrumb": "trilha de navegação",
+    "pagination": "paginação",
+    "previousPage": "Ir para a página anterior",
+    "nextPage": "Ir para a próxima página",
+    "morePages": "Mais páginas",
+    "sidebar": "Barra lateral",
+    "sidebarDescription": "Exibe a barra lateral no celular.",
+    "toggleSidebar": "Alternar barra lateral",
+    "loading": "Carregando..."
+  }
+}

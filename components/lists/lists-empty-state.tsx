@@ -1,27 +1,17 @@
 import { Button } from '@/components/ui/button';
 import { Bookmark, Compass, ListPlus, Search } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 const SAVE_STEPS = [
-  {
-    icon: Compass,
-    title: 'Find an event',
-    description: 'Browse Discover in your hub or search for events and hosts.',
-  },
-  {
-    icon: Bookmark,
-    title: 'Tap the bookmark',
-    description: 'On any event page, tap the bookmark at the top to save it.',
-  },
-  {
-    icon: ListPlus,
-    title: 'Pick your lists',
-    description: 'Save it to your default list or to any list you create.',
-  },
+  { id: 'find', icon: Compass },
+  { id: 'bookmark', icon: Bookmark },
+  { id: 'pick', icon: ListPlus },
 ] as const;
 
 /** Shown when the user hasn't saved any events yet; explains the save flow. */
 export function ListsEmptyState() {
+  const t = useTranslations('lists');
   return (
     <section
       aria-labelledby='lists-empty-heading'
@@ -35,11 +25,10 @@ export function ListsEmptyState() {
           id='lists-empty-heading'
           className='mt-4 text-lg font-semibold text-gray-900 dark:text-neutral-100'
         >
-          Nothing saved yet
+          {t('emptyState.title')}
         </h2>
         <p className='mt-1 text-sm text-gray-600 dark:text-neutral-400'>
-          Keep track of events you don’t want to miss. Everything you save shows up here, grouped
-          into lists.
+          {t('emptyState.description')}
         </p>
       </div>
 
@@ -48,7 +37,7 @@ export function ListsEmptyState() {
           const Icon = step.icon;
           return (
             <li
-              key={step.title}
+              key={step.id}
               className='flex gap-3 rounded-2xl border border-gray-200 bg-white p-4 text-left dark:border-neutral-800 dark:bg-neutral-800 sm:flex-col'
             >
               <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-700 dark:bg-neutral-900 dark:text-neutral-300'>
@@ -56,11 +45,13 @@ export function ListsEmptyState() {
               </div>
               <div className='min-w-0'>
                 <p className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                  <span className='sr-only'>Step {index + 1}: </span>
-                  {step.title}
+                  <span className='sr-only'>
+                    {t('emptyState.stepLabel', { number: index + 1 })}
+                  </span>
+                  {t(`emptyState.steps.${step.id}.title`)}
                 </p>
                 <p className='mt-0.5 text-sm text-gray-600 dark:text-neutral-400'>
-                  {step.description}
+                  {t(`emptyState.steps.${step.id}.description`)}
                 </p>
               </div>
             </li>
@@ -72,13 +63,13 @@ export function ListsEmptyState() {
         <Button asChild>
           <Link href='/e/hub#discover'>
             <Compass aria-hidden='true' />
-            Explore Discover
+            {t('exploreDiscover')}
           </Link>
         </Button>
         <Button asChild variant='outline' className='dark:bg-neutral-900 dark:hover:bg-neutral-800'>
           <Link href='/e/search'>
             <Search aria-hidden='true' />
-            Search events
+            {t('searchEvents')}
           </Link>
         </Button>
       </div>

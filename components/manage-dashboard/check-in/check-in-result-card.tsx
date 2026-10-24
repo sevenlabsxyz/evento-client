@@ -1,9 +1,11 @@
 'use client';
 
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import type { CheckInResult } from '@/lib/types/manage';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, CheckCircle2, X, XCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export type CheckInResultTone = 'success' | 'already-used' | 'invalid';
 
@@ -23,9 +25,11 @@ export function formatCheckInTime(isoString: string): string {
 
   const isToday = date.toDateString() === new Date().toDateString();
 
+  const locale = getIntlLocale();
+
   return isToday
-    ? date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
-    : date.toLocaleString([], {
+    ? date.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })
+    : date.toLocaleString(locale, {
         month: 'short',
         day: 'numeric',
         hour: 'numeric',
@@ -66,11 +70,11 @@ const toneIcons = {
   invalid: XCircle,
 } as const;
 
-const toneTitles: Record<CheckInResultTone, string> = {
-  success: 'Checked in',
-  'already-used': 'Already checked in',
-  invalid: 'Invalid ticket',
-};
+const toneTitleKeys = {
+  success: 'success',
+  'already-used': 'alreadyUsed',
+  invalid: 'invalid',
+} as const satisfies Record<CheckInResultTone, string>;
 
 interface CheckInResultCardProps {
   result: CheckInResult;
@@ -79,21 +83,24 @@ interface CheckInResultCardProps {
 }
 
 export function CheckInResultCard({ result, onDismiss, className }: CheckInResultCardProps) {
+  const t = useTranslations('manage');
   const tone = getCheckInResultTone(result);
   const styles = toneStyles[tone];
   const Icon = toneIcons[tone];
   const checkedInTime = result.checkedInAt ? formatCheckInTime(result.checkedInAt) : '';
-  const attendeeName = result.attendee?.name || 'Guest';
+  const attendeeName = result.attendee?.name || t('checkInResult.guestFallback');
 
   let description: string;
   if (tone === 'success') {
-    description = checkedInTime ? `Welcome in · ${checkedInTime}` : 'Welcome in';
+    description = checkedInTime
+      ? t('checkInResult.welcomeAt', { time: checkedInTime })
+      : t('checkInResult.welcome');
   } else if (tone === 'already-used') {
     description = checkedInTime
-      ? `This ticket was already used at ${checkedInTime}`
-      : 'This ticket was already used';
+      ? t('checkInResult.alreadyUsedAt', { time: checkedInTime })
+      : t('checkInResult.alreadyUsed');
   } else {
-    description = result.error || 'This ticket could not be verified for this event.';
+    description = result.error || t('checkInResult.invalidFallback');
   }
 
   return (
@@ -107,7 +114,7 @@ export function CheckInResultCard({ result, onDismiss, className }: CheckInResul
           type='button'
           onClick={onDismiss}
           className='absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-black/5 dark:text-neutral-400 dark:hover:bg-white/10'
-          aria-label='Dismiss result'
+          aria-label={t('checkInResult.dismiss')}
         >
           <X className='h-4 w-4' />
         </button>
@@ -123,7 +130,9 @@ export function CheckInResultCard({ result, onDismiss, className }: CheckInResul
           <Icon className={cn('h-5 w-5', styles.icon)} />
         </div>
         <div className='min-w-0 flex-1'>
-          <p className={cn('text-base font-semibold', styles.title)}>{toneTitles[tone]}</p>
+          <p className={cn('text-base font-semibold', styles.title)}>
+            {t(`checkInResult.titles.${toneTitleKeys[tone]}`)}
+          </p>
           <p className={cn('mt-0.5 text-sm', styles.body)}>{description}</p>
         </div>
       </div>

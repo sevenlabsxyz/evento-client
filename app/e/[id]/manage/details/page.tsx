@@ -24,6 +24,7 @@ import { getLocationDisplayName } from '@/lib/utils/location';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Calendar, ChevronRight, Edit3, MapPin, Users } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -34,6 +35,8 @@ export default function EditEventDetailsPage() {
   const eventId = params.id as string;
   const updateEventMutation = useUpdateEvent();
   const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
 
   // Fetch real event data
   const { data: eventData, isLoading, error } = useEventDetails(eventId);
@@ -92,7 +95,7 @@ export default function EditEventDetailsPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Event Details',
+      title: t('details.topBarTitle'),
       leftMode: 'back',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
       centerMode: 'title',
@@ -103,7 +106,7 @@ export default function EditEventDetailsPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute, router, eventId]);
+  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute, router, eventId, t]);
 
   // Populate form when event data is loaded
   useEffect(() => {
@@ -212,17 +215,16 @@ export default function EditEventDetailsPage() {
       <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-            Event Not Found
+            {t('details.notFound.title')}
           </h1>
           <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            The event you&apos;re trying to edit doesn&apos;t exist or you don&apos;t have
-            permission.
+            {t('details.notFound.description')}
           </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
-            Go Back
+            {tCommon('actions.goBack')}
           </button>
         </div>
       </div>
@@ -243,12 +245,12 @@ export default function EditEventDetailsPage() {
         },
         {
           onSuccess: () => {
-            toast.success('Event updated successfully!');
+            toast.success(t('details.toasts.updated'));
             // Navigate back to the manage page on success
             router.push(`/e/${eventId}/manage`);
           },
           onError: () => {
-            toast.error('Failed to update event');
+            toast.error(t('details.toasts.updateFailed'));
           },
         }
       );
@@ -263,16 +265,18 @@ export default function EditEventDetailsPage() {
   return (
     <div className='space-y-4 py-4 md:py-6'>
       <div>
-        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Details</h2>
-        <p className='text-sm text-gray-500 dark:text-neutral-400'>
-          Edit your event&apos;s cover, title, date, location, description and capacity.
-        </p>
+        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+          {t('details.heading')}
+        </h2>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('details.subheading')}</p>
       </div>
 
       <div className='max-w-2xl space-y-4'>
         {/* Media */}
         <section className='space-y-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
-          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Media</h3>
+          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+            {t('details.media')}
+          </h3>
           <div className='max-w-sm'>
             <CoverImageSelector
               selectedImage={coverImage}
@@ -283,16 +287,18 @@ export default function EditEventDetailsPage() {
 
         {/* Event Title Module */}
         <div className='space-y-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
-          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Basics</h3>
+          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+            {t('details.basics')}
+          </h3>
           <div className='space-y-2'>
             <label className='text-sm font-medium text-gray-500 dark:text-neutral-400'>
-              Event Title
+              {t('details.eventTitle')}
             </label>
             <div className='flex items-center gap-3'>
               <EmojiSelector selectedEmoji={emoji} onEmojiSelect={setEmoji} />
               <input
                 type='text'
-                placeholder='Enter event name'
+                placeholder={t('details.eventTitlePlaceholder')}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className='flex-1 border-none bg-transparent text-lg font-medium text-gray-900 outline-none dark:text-neutral-100'
@@ -304,13 +310,15 @@ export default function EditEventDetailsPage() {
         {/* Date & Time Module */}
         <div className='space-y-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
           <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-            Date &amp; time
+            {t('details.dateTime')}
           </h3>
           <div className='flex items-center gap-4'>
             <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
               <Calendar className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
-            <span className='w-16 font-medium text-gray-700 dark:text-neutral-300'>Starts</span>
+            <span className='w-16 font-medium text-gray-700 dark:text-neutral-300'>
+              {t('details.starts')}
+            </span>
             <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowStartDateModal(true)}
@@ -331,7 +339,9 @@ export default function EditEventDetailsPage() {
             <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
               <Calendar className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
             </div>
-            <span className='w-16 font-medium text-gray-700 dark:text-neutral-300'>Ends</span>
+            <span className='w-16 font-medium text-gray-700 dark:text-neutral-300'>
+              {t('details.ends')}
+            </span>
             <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowEndDateModal(true)}
@@ -351,7 +361,9 @@ export default function EditEventDetailsPage() {
 
         {/* Address Module */}
         <div className='space-y-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
-          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Location</h3>
+          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+            {tCommon('labels.location')}
+          </h3>
           <button
             onClick={() => setShowLocationModal(true)}
             className='flex w-full items-center gap-4 text-left'
@@ -361,13 +373,13 @@ export default function EditEventDetailsPage() {
             </div>
             <div className='flex-1'>
               <label className='mb-1 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
-                Address
+                {t('details.address')}
               </label>
               <div className='flex items-center justify-between'>
                 <span
                   className={`font-medium ${location ? 'text-gray-900 dark:text-neutral-100' : 'text-gray-400 dark:text-neutral-400'}`}
                 >
-                  {location ? getLocationDisplayName(location) : 'Choose address'}
+                  {location ? getLocationDisplayName(location) : t('details.chooseAddress')}
                 </span>
                 <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
               </div>
@@ -377,7 +389,9 @@ export default function EditEventDetailsPage() {
 
         {/* Description Module */}
         <div className='space-y-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
-          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Description</h3>
+          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+            {tCommon('labels.description')}
+          </h3>
           <button
             onClick={() => setShowDescriptionModal(true)}
             className='flex w-full items-start gap-4 text-left'
@@ -387,14 +401,14 @@ export default function EditEventDetailsPage() {
             </div>
             <div className='flex-1'>
               <label className='mb-2 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
-                Description
+                {tCommon('labels.description')}
               </label>
               <div className='flex items-center justify-between'>
                 <span
                   className={`${isContentEmpty(description) ? 'text-gray-400 dark:text-neutral-400' : 'text-gray-900 dark:text-neutral-100'}`}
                 >
                   {isContentEmpty(description)
-                    ? 'Add description about this event...'
+                    ? t('details.descriptionPlaceholder')
                     : getContentPreview(description, 80)}
                 </span>
                 <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400 dark:text-neutral-500' />
@@ -404,7 +418,9 @@ export default function EditEventDetailsPage() {
         </div>
 
         <div className='space-y-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
-          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Capacity</h3>
+          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+            {t('details.capacity')}
+          </h3>
           <div className='space-y-3'>
             <div className='flex items-center gap-4'>
               <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
@@ -414,11 +430,13 @@ export default function EditEventDetailsPage() {
                 <div className='flex items-center justify-between'>
                   <div className='flex flex-col'>
                     <label className='mb-1 text-sm font-medium text-gray-500 dark:text-neutral-400'>
-                      {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
+                      {hasCapacity && capacity
+                        ? t('details.capacityValue', { capacity })
+                        : t('details.setCapacity')}
                     </label>
                     {hasCapacity && capacity && (
                       <span className='text-xs text-gray-400 dark:text-neutral-400'>
-                        Maximum attendees: {capacity}
+                        {t('details.maxAttendees', { capacity })}
                       </span>
                     )}
                   </div>
@@ -448,10 +466,10 @@ export default function EditEventDetailsPage() {
               <div className='flex items-center justify-between rounded-xl border border-gray-200 px-3 py-2 dark:border-neutral-800'>
                 <div>
                   <p className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                    Show capacity count
+                    {t('details.showCapacityCount')}
                   </p>
                   <p className='text-xs text-gray-500 dark:text-neutral-400'>
-                    Display spots remaining to guests
+                    {t('details.showCapacityCountHint')}
                   </p>
                 </div>
                 <button
@@ -484,7 +502,7 @@ export default function EditEventDetailsPage() {
         onClose={() => setShowStartDateModal(false)}
         onDateSelect={setStartDate}
         selectedDate={startDate}
-        title='Start Date'
+        title={t('details.startDate')}
       />
 
       <DatePickerSheet
@@ -492,7 +510,7 @@ export default function EditEventDetailsPage() {
         onClose={() => setShowEndDateModal(false)}
         onDateSelect={setEndDate}
         selectedDate={endDate}
-        title='End Date'
+        title={t('details.endDate')}
         referenceDate={startDate}
       />
 
@@ -502,7 +520,7 @@ export default function EditEventDetailsPage() {
         onTimeSelect={setStartTime}
         selectedTime={startTime}
         timezone={timezone}
-        title='Start Time'
+        title={t('details.startTime')}
         onTimezoneSelect={function (timezone: string): void {
           setTimezone(timezone);
         }}
@@ -514,7 +532,7 @@ export default function EditEventDetailsPage() {
         onTimeSelect={setEndTime}
         selectedTime={endTime}
         timezone={timezone}
-        title='End Time'
+        title={t('details.endTime')}
         onTimezoneSelect={function (timezone: string): void {
           setTimezone(timezone);
         }}
@@ -580,7 +598,7 @@ export default function EditEventDetailsPage() {
             disabled={!isFormValid || updateEventMutation.isPending}
             loading={updateEventMutation.isPending}
           >
-            Save
+            {tCommon('actions.save')}
           </SubmitButton>
         </div>
       </div>

@@ -11,6 +11,7 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { redirectToWalletUnlock } from '@/lib/utils/wallet-unlock-toast';
 import { Loader2, X, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -27,6 +28,8 @@ export default function LightningAddressSheet({
   onSave,
   currentAddress = '',
 }: LightningAddressSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const [address, setAddress] = useState(currentAddress);
   const updateProfileMutation = useUpdateUserProfile();
@@ -66,7 +69,7 @@ export default function LightningAddressSheet({
     const trimmedAddress = address.trim();
 
     if (trimmedAddress && !validateLightningAddress(trimmedAddress)) {
-      toast.error('Invalid Lightning address format (e.g., user@wallet.com)');
+      toast.error(t('edit.lightning.invalidFormat'));
       return;
     }
 
@@ -81,19 +84,19 @@ export default function LightningAddressSheet({
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
-        toast.error(validation.error || 'Invalid Lightning address');
+        toast.error(validation.error || t('edit.lightning.invalid'));
         return;
       }
 
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
-      toast.success('Lightning address updated successfully');
+      toast.success(t('edit.lightning.updated'));
 
       // Close sheet
       onClose();
     } catch (error) {
       logger.error('Failed to update Lightning address', { error });
-      toast.error('Failed to update Lightning address');
+      toast.error(t('edit.lightning.updateFailed'));
     }
   };
 
@@ -121,7 +124,7 @@ export default function LightningAddressSheet({
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='flex items-center justify-between'>
-                <h2 className='text-xl font-semibold'>Bitcoin</h2>
+                <h2 className='text-xl font-semibold'>{t('edit.lightning.title')}</h2>
                 <button
                   onClick={handleCancel}
                   className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
@@ -131,8 +134,8 @@ export default function LightningAddressSheet({
               </div>
               <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
                 {isWalletManaged
-                  ? 'Your Lightning address is managed by your Evento wallet.'
-                  : 'Add your Lightning Network address to receive payments.'}
+                  ? t('edit.lightning.managedSubtitle')
+                  : t('edit.lightning.subtitle')}
               </p>
             </div>
 
@@ -163,21 +166,19 @@ export default function LightningAddressSheet({
                   {/* Info text */}
                   <div className='mb-6 space-y-3'>
                     <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                      {isWalletManaged
-                        ? 'Evento syncs this address from your built-in wallet so crowdfunding and wallet payments always use the same destination.'
-                        : 'Lightning addresses allow you to receive instant Bitcoin payments from anyone attending your events or visiting your profile.'}
+                      {isWalletManaged ? t('edit.lightning.managedInfo') : t('edit.lightning.info')}
                     </p>
 
                     {isWalletManaged ? (
                       <div className='rounded-xl bg-blue-50 p-4 dark:bg-blue-950/40'>
                         <p className='text-sm font-medium text-blue-800 dark:text-blue-400'>
-                          Open Wallet to unlock, create, or resync your Lightning address.
+                          {t('edit.lightning.openWalletHint')}
                         </p>
                       </div>
                     ) : (
                       <div className='rounded-xl bg-orange-50 p-4 dark:bg-orange-950/40'>
                         <p className='mb-2 text-sm font-medium text-orange-800 dark:text-orange-400'>
-                          Popular Lightning wallets:
+                          {t('edit.lightning.popularWallets')}
                         </p>
                         <ul className='space-y-1 text-sm text-orange-700 dark:text-orange-400'>
                           <li>• Strike</li>
@@ -198,18 +199,18 @@ export default function LightningAddressSheet({
                       className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                     >
                       {isWalletManaged ? (
-                        'Open Wallet'
+                        t('edit.lightning.openWallet')
                       ) : isSaving ? (
                         <>
                           <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                          Saving...
+                          {t('saving')}
                         </>
                       ) : (
-                        'Save'
+                        tCommon('actions.save')
                       )}
                     </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
-                      Cancel
+                      {tCommon('actions.cancel')}
                     </Button>
                   </div>
                 </SheetWithDetentFull.ScrollContent>

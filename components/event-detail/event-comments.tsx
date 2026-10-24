@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Loader2, MessageCircle, SendHorizontal } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
@@ -20,6 +21,7 @@ interface EventCommentsProps {
 }
 
 export default function EventComments({ eventId, isEventHost = false }: EventCommentsProps) {
+  const t = useTranslations('eventSocial');
   const { user } = useAuth();
   const router = useRouter();
   const { data: comments = [], isLoading, error } = useEventComments(eventId);
@@ -55,8 +57,7 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
       logger.error('Error adding comment', { error });
 
       // Show detailed error message
-      const errorMessage =
-        error instanceof Error ? error.message : 'Your comment was not saved. Please try again.';
+      const errorMessage = error instanceof Error ? error.message : t('comments.addFailed');
 
       toast.error(errorMessage);
     }
@@ -84,10 +85,10 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
         <MessageCircle className='h-5 w-5 shrink-0 text-gray-400 dark:text-neutral-500' />
         <div className='min-w-0'>
           <h3 className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-            Could not load comments
+            {t('comments.loadErrorTitle')}
           </h3>
           <p className='text-sm text-gray-500 dark:text-neutral-500'>
-            There was a problem loading comments. Please try again later.
+            {t('comments.loadErrorDescription')}
           </p>
         </div>
       </div>
@@ -119,14 +120,14 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder='Add a comment'
+                placeholder={t('comments.placeholder')}
                 className='min-h-[36px] w-full resize-none bg-transparent px-1 py-2 pr-10 text-sm text-gray-900 outline-none placeholder:text-gray-400 disabled:cursor-not-allowed dark:text-neutral-100 dark:placeholder:text-neutral-500'
                 disabled={!user}
                 rows={1}
               />
               <button
                 type='button'
-                aria-label='Post comment'
+                aria-label={t('comments.postAria')}
                 className={cn(
                   'absolute bottom-0 right-0 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full transition-colors',
                   commentText.trim()
@@ -142,7 +143,7 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
           </div>
           {!user && (
             <p className='mt-2 pl-1 text-xs text-gray-500 dark:text-neutral-500'>
-              Please sign in to leave a comment.
+              {t('comments.signInPrompt')}
             </p>
           )}
         </div>
@@ -167,9 +168,9 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
             <MessageCircle className='h-5 w-5 shrink-0 text-gray-400 dark:text-neutral-500' />
             <p className='text-sm text-gray-500 dark:text-neutral-400'>
               <span className='font-medium text-gray-900 dark:text-neutral-100'>
-                No comments yet.
+                {t('comments.emptyTitle')}
               </span>{' '}
-              Be the first to leave a comment about this event.
+              {t('comments.emptyDescription')}
             </p>
           </div>
         )}

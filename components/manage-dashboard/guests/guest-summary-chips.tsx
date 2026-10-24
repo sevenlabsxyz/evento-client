@@ -1,9 +1,13 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import type { Translator } from '@/lib/i18n/types';
 import type { EventDashboard } from '@/lib/types/manage';
 import { cn } from '@/lib/utils';
 import { CircleCheck, CircleHelp, CircleX, Mail, type LucideIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+type ManageT = Translator<'manage'>;
 
 interface GuestSummaryChipsProps {
   dashboard: EventDashboard | undefined;
@@ -19,37 +23,38 @@ interface SummaryChip {
   iconClassName: string;
 }
 
-function buildChips(dashboard: EventDashboard): SummaryChip[] {
+function buildChips(dashboard: EventDashboard, t: ManageT): SummaryChip[] {
   const { rsvps, capacity, invites } = dashboard;
 
   return [
     {
       id: 'going',
-      label: 'Going',
+      label: t('guestSummaryChips.going'),
       value: rsvps.yes,
-      sublabel: capacity.max ? `of ${capacity.max} spots` : undefined,
+      sublabel: capacity.max ? t('guestSummaryChips.ofSpots', { max: capacity.max }) : undefined,
       icon: CircleCheck,
       iconClassName: 'bg-green-100 text-green-600 dark:bg-green-950/60 dark:text-green-400',
     },
     {
       id: 'maybe',
-      label: 'Maybe',
+      label: t('guestSummaryChips.maybe'),
       value: rsvps.maybe,
       icon: CircleHelp,
       iconClassName: 'bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400',
     },
     {
       id: 'not-going',
-      label: 'Not going',
+      label: t('guestSummaryChips.notGoing'),
       value: rsvps.no,
       icon: CircleX,
       iconClassName: 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400',
     },
     {
       id: 'invited',
-      label: 'Invited',
+      label: t('guestSummaryChips.invited'),
       value: invites.total,
-      sublabel: invites.total > 0 ? `${invites.pending} pending` : undefined,
+      sublabel:
+        invites.total > 0 ? t('guestSummaryChips.pending', { count: invites.pending }) : undefined,
       icon: Mail,
       iconClassName: 'bg-blue-100 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400',
     },
@@ -57,6 +62,8 @@ function buildChips(dashboard: EventDashboard): SummaryChip[] {
 }
 
 export function GuestSummaryChips({ dashboard, isLoading }: GuestSummaryChipsProps) {
+  const t = useTranslations('manage');
+
   if (isLoading) {
     return (
       <div className='grid grid-cols-2 gap-3 md:grid-cols-4' aria-busy='true'>
@@ -70,8 +77,11 @@ export function GuestSummaryChips({ dashboard, isLoading }: GuestSummaryChipsPro
   if (!dashboard) return null;
 
   return (
-    <ul aria-label='Guest summary' className='grid grid-cols-2 gap-3 md:grid-cols-4'>
-      {buildChips(dashboard).map((chip) => {
+    <ul
+      aria-label={t('guestSummaryChips.summaryLabel')}
+      className='grid grid-cols-2 gap-3 md:grid-cols-4'
+    >
+      {buildChips(dashboard, t).map((chip) => {
         const Icon = chip.icon;
 
         return (

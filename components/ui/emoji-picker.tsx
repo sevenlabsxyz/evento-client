@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import { EmojiPicker as EmojiPickerPrimitive } from 'frimousse';
+import { useTranslations } from 'next-intl';
 import * as React from 'react';
 
 interface EmojiPickerProps {
@@ -30,62 +31,69 @@ EmojiPicker.displayName = 'EmojiPicker';
 const EmojiPickerSearch = React.forwardRef<
   HTMLInputElement,
   React.ComponentPropsWithoutRef<typeof EmojiPickerPrimitive.Search>
->(({ className, ...props }, ref) => (
-  <EmojiPickerPrimitive.Search
-    ref={ref}
-    className={cn(
-      'z-10 mx-2 mt-2 appearance-none rounded-md border-none bg-neutral-100 px-2.5 py-2 text-sm outline-none focus:ring-0 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-500',
-      className
-    )}
-    placeholder='Search emojis...'
-    {...props}
-  />
-));
+>(({ className, ...props }, ref) => {
+  const t = useTranslations('zap.ui');
+  return (
+    <EmojiPickerPrimitive.Search
+      ref={ref}
+      className={cn(
+        'z-10 mx-2 mt-2 appearance-none rounded-md border-none bg-neutral-100 px-2.5 py-2 text-sm outline-none focus:ring-0 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-500',
+        className
+      )}
+      placeholder={t('searchEmojis')}
+      {...props}
+    />
+  );
+});
 EmojiPickerSearch.displayName = 'EmojiPickerSearch';
 
 const EmojiPickerContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<typeof EmojiPickerPrimitive.Viewport>
->(({ className, ...props }, ref) => (
-  <EmojiPickerPrimitive.Viewport
-    ref={ref}
-    className={cn('outline-hidden relative flex-1', className)}
-    {...props}
-  >
-    <EmojiPickerPrimitive.Loading className='absolute inset-0 flex items-center justify-center text-sm text-neutral-400 dark:text-neutral-500'>
-      Loading…
-    </EmojiPickerPrimitive.Loading>
-    <EmojiPickerPrimitive.Empty className='absolute inset-0 flex items-center justify-center text-sm text-neutral-400 dark:text-neutral-500'>
-      No emoji found.
-    </EmojiPickerPrimitive.Empty>
-    <EmojiPickerPrimitive.List
-      className='select-none pb-1.5'
-      components={{
-        CategoryHeader: ({ category, ...props }) => (
-          <div
-            className='sticky top-0 bg-white px-3 pb-1.5 pt-3 text-xs font-medium text-neutral-600 dark:bg-neutral-900 dark:text-neutral-400'
-            {...props}
-          >
-            {category.label}
-          </div>
-        ),
-        Row: ({ children, ...props }) => (
-          <div className='scroll-my-1.5 px-1.5' {...props}>
-            {children}
-          </div>
-        ),
-        Emoji: ({ emoji, ...props }) => (
-          <button
-            className='flex size-8 items-center justify-center rounded-md text-lg transition-colors hover:bg-neutral-100 data-[active]:bg-neutral-100 dark:hover:bg-neutral-800 dark:data-[active]:bg-neutral-800'
-            {...props}
-          >
-            {emoji.emoji}
-          </button>
-        ),
-      }}
-    />
-  </EmojiPickerPrimitive.Viewport>
-));
+>(({ className, ...props }, ref) => {
+  const t = useTranslations('zap.ui');
+  const tCommon = useTranslations('common');
+  return (
+    <EmojiPickerPrimitive.Viewport
+      ref={ref}
+      className={cn('outline-hidden relative flex-1', className)}
+      {...props}
+    >
+      <EmojiPickerPrimitive.Loading className='absolute inset-0 flex items-center justify-center text-sm text-neutral-400 dark:text-neutral-500'>
+        {tCommon('states.loading')}
+      </EmojiPickerPrimitive.Loading>
+      <EmojiPickerPrimitive.Empty className='absolute inset-0 flex items-center justify-center text-sm text-neutral-400 dark:text-neutral-500'>
+        {t('noEmoji')}
+      </EmojiPickerPrimitive.Empty>
+      <EmojiPickerPrimitive.List
+        className='select-none pb-1.5'
+        components={{
+          CategoryHeader: ({ category, ...props }) => (
+            <div
+              className='sticky top-0 bg-white px-3 pb-1.5 pt-3 text-xs font-medium text-neutral-600 dark:bg-neutral-900 dark:text-neutral-400'
+              {...props}
+            >
+              {category.label}
+            </div>
+          ),
+          Row: ({ children, ...props }) => (
+            <div className='scroll-my-1.5 px-1.5' {...props}>
+              {children}
+            </div>
+          ),
+          Emoji: ({ emoji, ...props }) => (
+            <button
+              className='flex size-8 items-center justify-center rounded-md text-lg transition-colors hover:bg-neutral-100 data-[active]:bg-neutral-100 dark:hover:bg-neutral-800 dark:data-[active]:bg-neutral-800'
+              {...props}
+            >
+              {emoji.emoji}
+            </button>
+          ),
+        }}
+      />
+    </EmojiPickerPrimitive.Viewport>
+  );
+});
 EmojiPickerContent.displayName = 'EmojiPickerContent';
 
 const EmojiPickerFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(

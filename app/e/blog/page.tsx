@@ -3,16 +3,19 @@ import { ghostService } from '@/lib/services/ghost';
 import { GhostPost } from '@/lib/types/ghost';
 import { logger } from '@/lib/utils/logger';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { Suspense } from 'react';
 import BlogPageClient from './page-client';
 
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: 'Blog — Evento',
-  description:
-    'Product updates, hosting guides, and stories from the Evento community — the social platform for events.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('blog');
+  return {
+    title: t('meta.title'),
+    description: t('meta.description'),
+  };
+}
 
 interface BlogPageProps {
   searchParams: { tag?: string | string[] };

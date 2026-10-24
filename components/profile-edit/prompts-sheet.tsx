@@ -35,6 +35,7 @@ import {
   Plus,
   Trash2,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface PromptsSheetProps {
@@ -52,6 +53,8 @@ type EditingPrompt = {
 };
 
 export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const { user } = useAuthStore();
   const [view, setView] = useState<'list' | 'add' | 'edit'>('list');
   const [editingPrompt, setEditingPrompt] = useState<EditingPrompt | null>(null);
@@ -106,11 +109,11 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
 
     // Validate answer length
     if (editingPrompt.answer.length < 5) {
-      toast.error('Answer must be at least 5 characters');
+      toast.error(t('edit.prompts.answerTooShort'));
       return;
     }
     if (editingPrompt.answer.length > 500) {
-      toast.error('Answer must be less than 500 characters');
+      toast.error(t('edit.prompts.answerTooLong'));
       return;
     }
 
@@ -124,7 +127,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
             is_visible: editingPrompt.isVisible,
           },
         });
-        toast.success('Prompt updated successfully');
+        toast.success(t('edit.prompts.updated'));
       } else {
         // Answer new prompt
         await answerPromptMutation.mutateAsync({
@@ -132,16 +135,16 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
           answer: editingPrompt.answer,
           display_order: editingPrompt.displayOrder,
         });
-        toast.success('Prompt answered successfully');
+        toast.success(t('edit.prompts.answered'));
       }
       setView('list');
       setEditingPrompt(null);
     } catch (error: any) {
       logger.error('Failed to save prompt', { error });
       if (error?.message?.includes('PROMPT_LIMIT_EXCEEDED')) {
-        toast.error('You can only have up to 4 prompts');
+        toast.error(t('edit.prompts.limit'));
       } else {
-        toast.error('Failed to save prompt');
+        toast.error(t('edit.prompts.saveFailed'));
       }
     }
   };
@@ -156,12 +159,12 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
 
     try {
       await deletePromptMutation.mutateAsync(promptToDelete);
-      toast.success('Prompt deleted successfully');
+      toast.success(t('edit.prompts.deleted'));
       setDeleteConfirmOpen(false);
       setPromptToDelete(null);
     } catch (error) {
       logger.error('Failed to delete prompt', { error });
-      toast.error('Failed to delete prompt');
+      toast.error(t('edit.prompts.deleteFailed'));
     }
   };
 
@@ -174,11 +177,11 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
         },
       });
       toast.success(
-        userPrompt.is_visible ? 'Prompt hidden from profile' : 'Prompt visible on profile'
+        userPrompt.is_visible ? t('edit.prompts.hiddenToast') : t('edit.prompts.visibleToast')
       );
     } catch (error) {
       logger.error('Failed to toggle visibility', { error });
-      toast.error('Failed to update visibility');
+      toast.error(t('edit.prompts.visibilityFailed'));
     }
   };
 
@@ -195,10 +198,10 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
 
     try {
       await reorderPromptsMutation.mutateAsync(reorderData);
-      toast.success('Prompt order updated');
+      toast.success(t('edit.prompts.reordered'));
     } catch (error) {
       logger.error('Failed to reorder prompts', { error });
-      toast.error('Failed to reorder prompts');
+      toast.error(t('edit.prompts.reorderFailed'));
     }
   };
 
@@ -215,10 +218,10 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
 
     try {
       await reorderPromptsMutation.mutateAsync(reorderData);
-      toast.success('Prompt order updated');
+      toast.success(t('edit.prompts.reordered'));
     } catch (error) {
       logger.error('Failed to reorder prompts', { error });
-      toast.error('Failed to reorder prompts');
+      toast.error(t('edit.prompts.reorderFailed'));
     }
   };
 
@@ -246,7 +249,12 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
     updatePromptMutation.isPending ||
     deletePromptMutation.isPending;
 
-  const sheetTitle = view === 'list' ? 'Prompts' : view === 'add' ? 'Answer Prompt' : 'Edit Prompt';
+  const sheetTitle =
+    view === 'list'
+      ? t('edit.prompts.title')
+      : view === 'add'
+        ? t('edit.prompts.answerTitle')
+        : t('edit.prompts.editTitle');
 
   return (
     <>
@@ -259,7 +267,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
             <h2 className='text-xl font-semibold'>{sheetTitle}</h2>
             {view === 'list' && (
               <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-                {userPrompts?.length || 0}/4 prompts • Showcase your personality
+                {t('edit.prompts.subtitle', { count: userPrompts?.length || 0 })}
               </p>
             )}
           </div>
@@ -281,7 +289,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                 {userPrompts && userPrompts.length > 0 && (
                   <div className='mb-6 space-y-3'>
                     <h3 className='text-sm font-semibold text-gray-700 dark:text-neutral-300'>
-                      Your Prompts
+                      {t('edit.prompts.yourPrompts')}
                     </h3>
                     {userPrompts.map((userPrompt, index) => (
                       <div
@@ -304,7 +312,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                                   onClick={() => handleMoveUp(index)}
                                   disabled={index === 0}
                                   className='rounded-lg p-1.5 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:bg-neutral-800'
-                                  title='Move up'
+                                  title={t('edit.prompts.moveUp')}
                                 >
                                   <ArrowUp className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
                                 </button>
@@ -312,7 +320,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                                   onClick={() => handleMoveDown(index)}
                                   disabled={index === userPrompts.length - 1}
                                   className='rounded-lg p-1.5 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30 dark:hover:bg-neutral-800'
-                                  title='Move down'
+                                  title={t('edit.prompts.moveDown')}
                                 >
                                   <ArrowDown className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
                                 </button>
@@ -322,7 +330,9 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                               onClick={() => handleToggleVisibility(userPrompt)}
                               className='rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
                               title={
-                                userPrompt.is_visible ? 'Hide from profile' : 'Show on profile'
+                                userPrompt.is_visible
+                                  ? t('edit.prompts.hideFromProfile')
+                                  : t('edit.prompts.showOnProfile')
                               }
                             >
                               {userPrompt.is_visible ? (
@@ -334,7 +344,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                             <button
                               onClick={() => handleDeletePrompt(userPrompt.id)}
                               className='rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
-                              title='Delete prompt'
+                              title={t('edit.prompts.deletePrompt')}
                             >
                               <Trash2 className='h-4 w-4 text-red-600 dark:text-red-400' />
                             </button>
@@ -347,7 +357,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                           onClick={() => handleEditPrompt(userPrompt)}
                           className='text-sm font-medium text-blue-600 hover:underline dark:text-blue-400'
                         >
-                          Edit answer
+                          {t('edit.prompts.editAnswer')}
                         </button>
                       </div>
                     ))}
@@ -359,7 +369,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                   <>
                     <div className='mb-3 flex items-center justify-between'>
                       <h3 className='text-sm font-semibold text-gray-700 dark:text-neutral-300'>
-                        Available Prompts
+                        {t('edit.prompts.available')}
                       </h3>
                       {/* Category filter */}
                       <Select
@@ -367,12 +377,14 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                         onValueChange={(value) => setSelectedCategory(value)}
                       >
                         <SelectTrigger className='max-w-fit'>
-                          <SelectValue placeholder='Select a category' />
+                          <SelectValue placeholder={t('edit.prompts.selectCategory')} />
                         </SelectTrigger>
                         <SelectContent className='z-[60] max-w-fit'>
                           {categories.map((cat) => (
                             <SelectItem key={cat} value={cat}>
-                              {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                              {cat === 'all'
+                                ? tCommon('labels.all')
+                                : cat.charAt(0).toUpperCase() + cat.slice(1)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -411,7 +423,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                     ) : (
                       <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-neutral-800 dark:bg-neutral-950'>
                         <p className='text-gray-500 dark:text-neutral-400'>
-                          No available prompts in this category
+                          {t('edit.prompts.noneInCategory')}
                         </p>
                       </div>
                     )}
@@ -420,15 +432,14 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
 
                 {!canAddMore && (!userPrompts || userPrompts.length === 0) && (
                   <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-neutral-800 dark:bg-neutral-950'>
-                    <p className='text-gray-500 dark:text-neutral-400'>No prompts yet</p>
+                    <p className='text-gray-500 dark:text-neutral-400'>{t('edit.prompts.empty')}</p>
                   </div>
                 )}
 
                 {!canAddMore && userPrompts && userPrompts.length > 0 && (
                   <div className='rounded-xl border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900 dark:bg-yellow-950/40'>
                     <p className='text-sm text-yellow-800 dark:text-yellow-400'>
-                      You&apos;ve reached the maximum of 4 prompts. Delete a prompt to add a new
-                      one.
+                      {t('edit.prompts.maxReached')}
                     </p>
                   </div>
                 )}
@@ -450,7 +461,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
             {/* Answer */}
             <div>
               <label className='mb-2 block text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                Your Answer
+                {t('edit.prompts.yourAnswer')}
               </label>
               <Textarea
                 value={editingPrompt.answer}
@@ -460,13 +471,13 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                     answer: e.target.value,
                   })
                 }
-                placeholder='Share your thoughts...'
+                placeholder={t('edit.prompts.answerPlaceholder')}
                 className='min-h-[120px] resize-none'
                 maxLength={500}
                 autoFocus
               />
               <div className='mt-1 flex items-center justify-between text-sm text-gray-500 dark:text-neutral-400'>
-                <span>Minimum 5 characters</span>
+                <span>{t('edit.prompts.minChars')}</span>
                 <span>{editingPrompt.answer.length}/500</span>
               </div>
             </div>
@@ -474,9 +485,11 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
             {/* Visibility toggle */}
             <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
               <div>
-                <p className='font-medium text-gray-900 dark:text-neutral-100'>Show on profile</p>
+                <p className='font-medium text-gray-900 dark:text-neutral-100'>
+                  {t('edit.prompts.showOnProfile')}
+                </p>
                 <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                  Make this prompt visible to others
+                  {t('edit.prompts.visibleHint')}
                 </p>
               </div>
               <button
@@ -508,14 +521,14 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                 {isSaving ? (
                   <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Saving...
+                    {t('saving')}
                   </>
                 ) : (
-                  'Save'
+                  tCommon('actions.save')
                 )}
               </Button>
               <Button onClick={handleCancel} variant='outline' className='flex-1'>
-                Cancel
+                {tCommon('actions.cancel')}
               </Button>
             </div>
           </div>
@@ -542,12 +555,12 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                   <div className='flex h-10 w-10 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40'>
                     <AlertTriangle className='h-5 w-5 text-red-500 dark:text-red-400' />
                   </div>
-                  <h2 className='text-xl font-semibold'>Delete Prompt</h2>
+                  <h2 className='text-xl font-semibold'>{t('edit.prompts.deleteTitle')}</h2>
                 </div>
 
                 {/* Body */}
                 <div className='mb-8 text-gray-600 dark:text-neutral-400'>
-                  <p>Are you sure you want to delete this prompt? This action cannot be undone.</p>
+                  <p>{t('edit.prompts.deleteConfirm')}</p>
                 </div>
 
                 {/* Actions */}
@@ -557,7 +570,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                     variant='outline'
                     className='w-full'
                   >
-                    Cancel
+                    {tCommon('actions.cancel')}
                   </Button>
                   <Button
                     onClick={confirmDelete}
@@ -565,7 +578,9 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                     className='w-full'
                     disabled={deletePromptMutation.isPending}
                   >
-                    {deletePromptMutation.isPending ? 'Deleting...' : 'Delete Prompt'}
+                    {deletePromptMutation.isPending
+                      ? t('edit.prompts.deleting')
+                      : t('edit.prompts.deleteTitle')}
                   </Button>
                 </div>
               </div>

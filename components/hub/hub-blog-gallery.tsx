@@ -3,6 +3,7 @@
 import { GhostPost } from '@/lib/types/ghost';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -16,6 +17,7 @@ interface HubBlogGalleryProps {
 }
 
 export function HubBlogGallery({ posts }: HubBlogGalleryProps) {
+  const t = useTranslations('hub');
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
@@ -44,17 +46,19 @@ export function HubBlogGallery({ posts }: HubBlogGalleryProps) {
   return (
     <div className='space-y-3'>
       <div className='flex items-center justify-between'>
-        <h2 className='text-xl font-semibold'>Latest from Evento</h2>
+        <h2 className='text-xl font-semibold'>{t('blog.galleryTitle')}</h2>
         <div className='flex items-center gap-2'>
           <CircledIconButton
             icon={ArrowLeft}
             onClick={() => carouselApi?.scrollPrev()}
             disabled={!canScrollPrev}
+            ariaLabel={t('blog.previous')}
           />
           <CircledIconButton
             icon={ArrowRight}
             onClick={() => carouselApi?.scrollNext()}
             disabled={!canScrollNext}
+            ariaLabel={t('blog.next')}
           />
         </div>
       </div>

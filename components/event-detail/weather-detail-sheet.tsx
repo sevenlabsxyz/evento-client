@@ -4,6 +4,7 @@ import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { WeatherData } from '@/lib/types/weather';
 import { logger } from '@/lib/utils/logger';
 import { Droplets, MoreHorizontal, Sun, Thermometer, Wind } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
 // Temperature conversion helper functions
@@ -28,6 +29,7 @@ export default function WeatherDetailSheet({
   isOpen,
   onClose,
 }: WeatherDetailSheetProps) {
+  const t = useTranslations('event');
   const iconUrl = `https://openweathermap.org/img/wn/${weather.icon}@2x.png`;
 
   // Local unit toggle state (resets when sheet reopens)
@@ -102,7 +104,7 @@ export default function WeatherDetailSheet({
                 <div className='mb-2 flex items-center justify-between'>
                   <div className='flex-1'></div>
                   <h2 className='text-xl font-semibold text-gray-900 dark:text-neutral-100'>
-                    Current Weather
+                    {t('weather.title')}
                   </h2>
                   <div className='flex flex-1 justify-end'>
                     {/* Temperature Unit Menu */}
@@ -127,7 +129,7 @@ export default function WeatherDetailSheet({
                                 : 'text-gray-700 dark:text-neutral-300'
                             }`}
                           >
-                            <span>Fahrenheit</span>
+                            <span>{t('weather.fahrenheit')}</span>
                             {displayUnit === 'F' && (
                               <div className='h-2 w-2 rounded-full bg-red-600 dark:bg-red-400'></div>
                             )}
@@ -143,7 +145,7 @@ export default function WeatherDetailSheet({
                                 : 'text-gray-700 dark:text-neutral-300'
                             }`}
                           >
-                            <span>Celsius</span>
+                            <span>{t('weather.celsius')}</span>
                             {displayUnit === 'C' && (
                               <div className='h-2 w-2 rounded-full bg-red-600 dark:bg-red-400'></div>
                             )}
@@ -196,7 +198,7 @@ export default function WeatherDetailSheet({
                   <div className='rounded-lg bg-gray-50 p-4 text-center dark:bg-neutral-950'>
                     <Thermometer className='mx-auto mb-2 h-6 w-6 text-gray-600 dark:text-neutral-400' />
                     <div className='mb-1 text-xs font-medium text-gray-900 dark:text-neutral-100'>
-                      Feels like
+                      {t('weather.feelsLike')}
                     </div>
                     <div className='text-sm font-semibold text-gray-700 dark:text-neutral-300'>
                       {getTemperature(weather.feelsLike, weather.unit, displayUnit)}°{displayUnit}
@@ -208,7 +210,7 @@ export default function WeatherDetailSheet({
                   <div className='rounded-lg bg-gray-50 p-4 text-center dark:bg-neutral-950'>
                     <Droplets className='mx-auto mb-2 h-6 w-6 text-gray-600 dark:text-neutral-400' />
                     <div className='mb-1 text-xs font-medium text-gray-900 dark:text-neutral-100'>
-                      Humidity
+                      {t('weather.humidity')}
                     </div>
                     <div className='text-sm font-semibold text-gray-700 dark:text-neutral-300'>
                       {weather.humidity}%
@@ -220,7 +222,7 @@ export default function WeatherDetailSheet({
                   <div className='rounded-lg bg-gray-50 p-4 text-center dark:bg-neutral-950'>
                     <Wind className='mx-auto mb-2 h-6 w-6 text-gray-600 dark:text-neutral-400' />
                     <div className='mb-1 text-xs font-medium text-gray-900 dark:text-neutral-100'>
-                      Wind
+                      {t('weather.wind')}
                     </div>
                     <div className='text-sm font-semibold text-gray-700 dark:text-neutral-300'>
                       {getWindSpeed(weather.windSpeed, displayUnit).speed}{' '}
@@ -233,8 +235,9 @@ export default function WeatherDetailSheet({
               {/* Disclaimer */}
               <div className='mt-6 rounded-lg bg-blue-50 p-3 dark:bg-blue-950/40'>
                 <div className='text-xs text-blue-800 dark:text-blue-400'>
-                  <strong>Note:</strong> This shows current weather conditions at the event
-                  location, not the actual weather from the event date.
+                  {t.rich('weather.disclaimer', {
+                    strong: (chunks) => <strong>{chunks}</strong>,
+                  })}
                 </div>
               </div>
             </div>

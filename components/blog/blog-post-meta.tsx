@@ -1,7 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { GhostPost } from '@/lib/types/ghost';
 import { cn } from '@/lib/utils';
-import { formatPostDate, formatReadingTime } from '@/lib/utils/blog';
+import { formatPostDate, getReadingMinutes } from '@/lib/utils/blog';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface BlogPostMetaProps {
   post: GhostPost;
@@ -21,9 +22,12 @@ function getInitials(name: string): string {
 export function BlogPostMeta({ post, size = 'sm', className }: BlogPostMetaProps) {
   const author = post.primary_author ?? post.authors?.[0] ?? null;
   const authorName = author?.name?.trim() ?? '';
+  const locale = useLocale();
+  const tCommon = useTranslations('common');
+  const readingMinutes = getReadingMinutes(post.reading_time);
   const details = [
-    formatPostDate(post.published_at, size === 'md' ? 'long' : 'short'),
-    formatReadingTime(post.reading_time),
+    formatPostDate(post.published_at, size === 'md' ? 'long' : 'short', locale),
+    readingMinutes === null ? '' : tCommon('counts.minRead', { count: readingMinutes }),
   ].filter(Boolean);
   const isMedium = size === 'md';
 

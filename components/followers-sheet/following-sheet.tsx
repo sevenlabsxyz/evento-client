@@ -7,6 +7,7 @@ import { useUserFollowing } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 import { UserAvatar } from '../ui/user-avatar';
@@ -21,6 +22,7 @@ interface FollowingSheetProps {
 }
 
 export default function FollowingSheet({ isOpen, onClose, userId, username }: FollowingSheetProps) {
+  const t = useTranslations('profile');
   const PAGE_SIZE = 50;
   const [activeDetent, setActiveDetent] = useState(0);
   const [searchText, setSearchText] = useState('');
@@ -101,12 +103,12 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
               <div className='grid grid-rows-[min-content_1fr] gap-3 border-b border-gray-200 px-5 pb-3 text-[0] dark:border-neutral-800'>
                 <SheetWithDetent.Handle className='col-start-1 col-end-[-1] row-start-1 mt-2 self-start justify-self-center' />
                 <VisuallyHidden.Root asChild>
-                  <SheetWithDetent.Title>Following</SheetWithDetent.Title>
+                  <SheetWithDetent.Title>{t('following.title')}</SheetWithDetent.Title>
                 </VisuallyHidden.Root>
                 <input
                   className='box-border h-11 w-full appearance-none rounded-xl border-none bg-gray-200 px-3 text-lg text-gray-800 outline-none placeholder:text-gray-500 dark:bg-neutral-700 dark:text-neutral-200 dark:placeholder:text-neutral-400'
                   type='text'
-                  placeholder='Search following'
+                  placeholder={t('following.searchPlaceholder')}
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   onFocus={() => setActiveDetent(2)}
@@ -133,7 +135,7 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
                       // Error State
                       <div className='flex items-center justify-center px-4 py-12'>
                         <div className='text-center text-base text-red-500 dark:text-red-400'>
-                          Failed to load following
+                          {t('following.loadFailed')}
                         </div>
                       </div>
                     ) : filteredFollowing.length === 0 ? (
@@ -141,8 +143,8 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
                       <div className='flex items-center justify-center px-4 py-12'>
                         <div className='text-center text-base text-gray-500 dark:text-neutral-400'>
                           {searchText.trim()
-                            ? `No following found matching "${searchText}"`
-                            : `@${username} is not following anyone yet`}
+                            ? t('following.noMatches', { query: searchText })
+                            : t('following.empty', { username })}
                         </div>
                       </div>
                     ) : (
@@ -192,7 +194,7 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
                             disabled={isFetching}
                             className='w-full'
                           >
-                            {isFetching ? 'Loading...' : 'Load more'}
+                            {isFetching ? t('loadingEllipsis') : t('loadMore')}
                           </Button>
                         )}
                       </>

@@ -17,14 +17,15 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useDeleteGalleryItem } from '@/lib/hooks/use-delete-gallery-item';
 import { useEventGallery, type GalleryItem } from '@/lib/hooks/use-event-gallery';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { queryKeys } from '@/lib/query-client';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { getOptimizedImageUrlPreservingGif } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
 import { ImageIcon, Loader2, Trash2 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useMemo, useState } from 'react';
 
 interface PhotosModerationProps {
@@ -32,6 +33,9 @@ interface PhotosModerationProps {
 }
 
 export function PhotosModeration({ eventId }: PhotosModerationProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
+  const intlLocale = getIntlLocale(useLocale());
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { data: photos = [], isLoading, error, refetch } = useEventGallery(eventId);
@@ -63,14 +67,14 @@ export function PhotosModeration({ eventId }: PhotosModerationProps) {
     async (photoId: string) => {
       try {
         await deletePhoto(photoId);
-        toast.success('Photo deleted');
+        toast.success(t('photosModeration.deleted'));
         return { success: true };
       } catch (deleteError) {
         logger.error('Failed to delete photo', { error: getErrorMessage(deleteError), eventId });
         return { success: false };
       }
     },
-    [deletePhoto, eventId]
+    [deletePhoto, eventId, t]
   );
 
   const handleConfirmDelete = async () => {
@@ -80,10 +84,10 @@ export function PhotosModeration({ eventId }: PhotosModerationProps) {
 
     try {
       await deletePhoto(pendingDelete.id);
-      toast.success('Photo deleted');
+      toast.success(t('photosModeration.deleted'));
       setPendingDelete(null);
     } catch (deleteError) {
-      const message = getErrorMessage(deleteError) || 'Failed to delete photo';
+      const message = getErrorMessage(deleteError) || t('photosModeration.deleteFailed');
       toast.error(message);
       logger.error('Failed to delete photo', { error: message, eventId });
     }
@@ -103,13 +107,13 @@ export function PhotosModeration({ eventId }: PhotosModerationProps) {
     return (
       <div className='rounded-2xl border border-gray-200 bg-white p-8 text-center dark:border-neutral-800 dark:bg-neutral-900'>
         <p className='mb-1 font-medium text-gray-900 dark:text-neutral-100'>
-          Couldn&apos;t load photos
+          {t('photosModeration.loadError')}
         </p>
         <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>
-          {getErrorMessage(error) || 'Something went wrong. Please try again.'}
+          {getErrorMessage(error) || tCommon('states.errorTryAgain')}
         </p>
         <Button variant='outline' size='sm' onClick={() => refetch()}>
-          Try again
+          {tCommon('actions.tryAgain')}
         </Button>
       </div>
     );
@@ -122,10 +126,10 @@ export function PhotosModeration({ eventId }: PhotosModerationProps) {
           <ImageIcon className='h-6 w-6 text-gray-400 dark:text-neutral-500' />
         </div>
         <h3 className='mb-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-          No photos yet
+          {t('photosModeration.emptyTitle')}
         </h3>
         <p className='text-sm text-gray-500 dark:text-neutral-400'>
-          Photos you and your guests add to the event gallery will show up here.
+          {t('photosModeration.emptyDescription')}
         </p>
       </div>
     );
@@ -136,7 +140,9 @@ export function PhotosModeration({ eventId }: PhotosModerationProps) {
       <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4'>
         {photos.map((photo, index) => {
           const uploaderName =
-            photo.user_details?.name || photo.user_details?.username || 'Unknown';
+            photo.user_details?.name ||
+            photo.user_details?.username ||
+            t('photosModeration.unknownUser');
 
           return (
             <div
@@ -145,14 +151,14 @@ export function PhotosModeration({ eventId }: PhotosModerationProps) {
             >
               <button
                 type='button'
-                aria-label={`Open photo by ${uploaderName}`}
+                aria-label={t('photosModeration.openPhotoBy', { name: uploaderName })}
                 onClick={() => setSelectedIndex(index)}
                 className='absolute inset-0 h-full w-full'
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={getOptimizedImageUrlPreservingGif(photo.url, 400, 75)}
-                  alt={`Photo by ${uploaderName}`}
+                  alt={t('photosModeration.photoBy', { name: uploaderName })}
                   loading='lazy'
                   className='h-full w-full object-cover transition-transform duration-300 group-hover:scale-105'
                 />
@@ -163,7 +169,11 @@ export function PhotosModeration({ eventId }: PhotosModerationProps) {
                 <div className='min-w-0 flex-1'>
                   <p className='truncate text-xs font-medium text-white'>{uploaderName}</p>
                   <p className='truncate text-[11px] text-white/80'>
-                    {format(new Date(photo.created_at), 'MMM d, yyyy')}
+                    {new Date(photo.created_at).toLocaleDateString(intlLocale, {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
                   </p>
                 </div>
               </div>
@@ -172,7 +182,7 @@ export function PhotosModeration({ eventId }: PhotosModerationProps) {
                 type='button'
                 variant='secondary'
                 size='icon'
-                aria-label='Delete photo'
+                aria-label={t('photosModeration.deletePhoto')}
                 onClick={() => setPendingDelete(photo)}
                 className='absolute right-2 top-2 h-8 w-8 rounded-full bg-white/90 text-red-600 shadow-sm hover:bg-white dark:bg-neutral-900/90 dark:text-red-400 dark:hover:bg-neutral-900'
               >
@@ -204,21 +214,21 @@ export function PhotosModeration({ eventId }: PhotosModerationProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete photo</AlertDialogTitle>
+            <AlertDialogTitle>{t('photosModeration.deletePhoto')}</AlertDialogTitle>
             <AlertDialogDescription>
-              This photo will be permanently removed from the event gallery. This cannot be undone.
+              {t('photosModeration.deleteDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           {pendingDelete && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={getOptimizedImageUrlPreservingGif(pendingDelete.url, 400, 75)}
-              alt='Photo to delete'
+              alt={t('photosModeration.photoToDelete')}
               className='mx-auto max-h-48 rounded-xl object-contain'
             />
           )}
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>{tCommon('actions.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={(event) => {
                 event.preventDefault();
@@ -230,10 +240,10 @@ export function PhotosModeration({ eventId }: PhotosModerationProps) {
               {isDeleting ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Deleting...
+                  {t('photosModeration.deleting')}
                 </>
               ) : (
-                'Delete'
+                tCommon('actions.delete')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

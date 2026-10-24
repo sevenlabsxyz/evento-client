@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { MoreHorizontal, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { DeleteConfirmation } from './delete-confirmation';
 
@@ -14,6 +15,7 @@ interface GalleryDropdownMenuProps {
 }
 
 export const GalleryDropdownMenu = ({ photoId, handleDelete }: GalleryDropdownMenuProps) => {
+  const t = useTranslations('zap.lightbox');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -24,11 +26,11 @@ export const GalleryDropdownMenu = ({ photoId, handleDelete }: GalleryDropdownMe
       if (result.success) {
         setIsDialogOpen(false);
       } else {
-        toast.error('Failed to delete photo. Please try again.');
+        toast.error(t('deleteFailed'));
       }
     } catch (error) {
       logger.error('Error deleting photo', { error });
-      toast.error('Failed to delete photo. Please try again.');
+      toast.error(t('deleteFailed'));
     } finally {
       setIsDeleting(false);
     }
@@ -36,7 +38,7 @@ export const GalleryDropdownMenu = ({ photoId, handleDelete }: GalleryDropdownMe
 
   const dropdownItems = [
     {
-      label: 'Delete photo',
+      label: t('deletePhoto'),
       icon: <Trash2 className='h-4 w-4' />,
       action: () => setIsDialogOpen(true),
       destructive: true,
@@ -49,7 +51,7 @@ export const GalleryDropdownMenu = ({ photoId, handleDelete }: GalleryDropdownMe
         trigger={
           <Button variant='secondary' size='icon'>
             <MoreHorizontal className='h-4 w-4' />
-            <span className='sr-only'>Open menu</span>
+            <span className='sr-only'>{t('openMenu')}</span>
           </Button>
         }
         items={dropdownItems}

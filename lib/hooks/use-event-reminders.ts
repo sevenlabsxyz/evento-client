@@ -1,4 +1,5 @@
 import apiClient from '@/lib/api/client';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { queryKeys } from '@/lib/query-client';
 import type { ApiError, ApiResponse } from '@/lib/types/api';
 import {
@@ -11,9 +12,13 @@ import {
 } from '@/lib/types/api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-export const FOURTH_REMINDER_ERROR = 'You can select up to 3 reminders';
-export const INVALID_REMINDER_OFFSET_ERROR =
-  'Only 1h, 2h, 3h, 8h, 1d, and 3d reminders are allowed';
+export function getFourthReminderError(): string {
+  return translateHooks('reminders.maxReached', { max: MAX_EVENT_REMINDERS });
+}
+
+export function getInvalidReminderOffsetError(): string {
+  return translateHooks('reminders.invalidOffset');
+}
 
 const EMPTY_REMINDERS: EventReminders = { offsets: [] };
 const UNAVAILABLE_REMINDERS: EventRemindersState = { offsets: [], available: false };
@@ -52,7 +57,7 @@ export function toggleReminderOffset(
   offset: EventReminderOffset
 ): { offsets: EventReminderOffset[]; error?: string } {
   if (!isEventReminderOffset(offset)) {
-    return { offsets: current, error: INVALID_REMINDER_OFFSET_ERROR };
+    return { offsets: current, error: getInvalidReminderOffsetError() };
   }
 
   const selected = new Set(sanitizeReminderOffsets(current));
@@ -65,7 +70,7 @@ export function toggleReminderOffset(
   if (selected.size >= MAX_EVENT_REMINDERS) {
     return {
       offsets: EVENT_REMINDER_OFFSETS.filter((value) => selected.has(value)),
-      error: FOURTH_REMINDER_ERROR,
+      error: getFourthReminderError(),
     };
   }
 
@@ -78,17 +83,17 @@ export function validateReminderOffsetsForSave(offsets: unknown): {
   error?: string;
 } {
   if (!Array.isArray(offsets)) {
-    return { offsets: [], error: INVALID_REMINDER_OFFSET_ERROR };
+    return { offsets: [], error: getInvalidReminderOffsetError() };
   }
 
   if (offsets.some((offset) => !isEventReminderOffset(offset))) {
-    return { offsets: sanitizeReminderOffsets(offsets), error: INVALID_REMINDER_OFFSET_ERROR };
+    return { offsets: sanitizeReminderOffsets(offsets), error: getInvalidReminderOffsetError() };
   }
 
   const sanitized = sanitizeReminderOffsets(offsets);
 
   if (offsets.length > MAX_EVENT_REMINDERS || sanitized.length > MAX_EVENT_REMINDERS) {
-    return { offsets: sanitized.slice(0, MAX_EVENT_REMINDERS), error: FOURTH_REMINDER_ERROR };
+    return { offsets: sanitized.slice(0, MAX_EVENT_REMINDERS), error: getFourthReminderError() };
   }
 
   return { offsets: sanitized };

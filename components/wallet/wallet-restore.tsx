@@ -8,6 +8,7 @@ import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, CheckCircle2, Key, KeyRound, Loader2, RefreshCw } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface WalletRestoreProps {
@@ -37,6 +38,8 @@ function detectInputType(input: string): InputType {
 }
 
 export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
+  const t = useTranslations('wallet');
+  const tCommon = useTranslations('common');
   const [step, setStep] = useState<Step>('input');
   const [backupInput, setBackupInput] = useState('');
   const [inputType, setInputType] = useState<InputType>('invalid');
@@ -59,7 +62,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
   // Handle "Next" from input step
   const handleInputNext = () => {
     if (inputType === 'invalid') {
-      setError('Please enter a valid backup string or 12-word seed phrase');
+      setError(t('restore.invalidInput'));
       return;
     }
 
@@ -98,7 +101,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
     const credential = isPasswordMode ? password : pinToUse;
 
     if (!credential || credential.length < 4) {
-      toast.error(isPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
+      toast.error(isPasswordMode ? t('pin.enterPassword') : t('pin.enterPin'));
       return;
     }
 
@@ -107,10 +110,10 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
 
     try {
       await restoreWallet(backupInput.trim(), credential);
-      toast.success('Wallet restored successfully!');
+      toast.success(t('restore.success'));
       onComplete();
     } catch (err: any) {
-      setError(err.message || 'Invalid backup or PIN');
+      setError(err.message || t('restore.invalidBackupOrPin'));
       if (isPasswordMode) {
         setPassword('');
       } else {
@@ -124,7 +127,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
   // Move to confirm PIN step
   const handleCreatePinNext = (pinToConfirm = pin) => {
     if (pinToConfirm.length < 6) {
-      toast.error('PIN must be at least 6 digits');
+      toast.error(t('pin.minLength'));
       return;
     }
     setStep('confirm-pin');
@@ -133,7 +136,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
   // Finalize mnemonic restore with new PIN
   const handleConfirmPin = async (confirmedPin = confirmPin) => {
     if (confirmedPin !== pin) {
-      toast.error('PINs do not match');
+      toast.error(t('pin.mismatch'));
       setConfirmPin('');
       return;
     }
@@ -143,10 +146,10 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
 
     try {
       await restoreFromMnemonic(backupInput.trim(), pin);
-      toast.success('Wallet restored successfully!');
+      toast.success(t('restore.success'));
       onComplete();
     } catch (err: any) {
-      setError(err.message || 'Failed to restore wallet');
+      setError(err.message || t('restore.failed'));
       setStep('create-pin');
       setPin('');
       setConfirmPin('');
@@ -179,24 +182,23 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10'>
             <RefreshCw className='h-8 w-8 text-primary' />
           </div>
-          <h2 className='text-2xl font-bold'>Sign in to your wallet</h2>
+          <h2 className='text-2xl font-bold'>{t('restore.title')}</h2>
           <p className='mt-2 text-sm text-muted-foreground'>
-            Your wallet backup is what lets you open your Bitcoin wallet on a new device.
+            {t('restore.intro')}
             <br />
             <br />
-            If you saved your backup code or 12-word phrase when you first created your Evento
-            wallet, paste it here to regain access.
+            {t('restore.introPaste')}
           </p>
         </div>
 
         <div className='space-y-4'>
           <div className='space-y-2'>
-            <Label htmlFor='backup'>Backup or Seed Phrase</Label>
+            <Label htmlFor='backup'>{t('restore.inputLabel')}</Label>
             <Textarea
               id='backup'
               value={backupInput}
               onChange={(e) => handleInputChange(e.target.value)}
-              placeholder='Enter your encrypted backup or 12-word seed phrase'
+              placeholder={t('restore.inputPlaceholder')}
               rows={4}
               className='font-mono text-sm'
             />
@@ -208,19 +210,19 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
               {inputType === 'encrypted' && (
                 <span className='inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800 dark:bg-blue-950/60 dark:text-blue-400'>
                   <Key className='h-3.5 w-3.5' />
-                  Encrypted backup detected
+                  {t('restore.encryptedDetected')}
                 </span>
               )}
               {inputType === 'mnemonic' && (
                 <span className='inline-flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 dark:bg-green-950/60 dark:text-green-400'>
                   <CheckCircle2 className='h-3.5 w-3.5' />
-                  Seed phrase detected
+                  {t('restore.seedDetected')}
                 </span>
               )}
               {inputType === 'invalid' && (
                 <span className='inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800 dark:bg-amber-950/60 dark:text-amber-400'>
                   <AlertCircle className='h-3.5 w-3.5' />
-                  Invalid format
+                  {t('restore.invalidFormat')}
                 </span>
               )}
             </div>
@@ -243,10 +245,10 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
             className='w-full'
             size='lg'
           >
-            Next
+            {tCommon('actions.next')}
           </Button>
           <Button onClick={onCancel} variant='outline' className='w-full'>
-            Cancel
+            {tCommon('actions.cancel')}
           </Button>
         </div>
       </div>
@@ -265,10 +267,8 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
               <Key className='h-8 w-8 text-black dark:text-white' />
             )}
           </div>
-          <h2 className='text-2xl font-bold'>Enter Your PIN</h2>
-          <p className='mt-2 text-sm text-muted-foreground'>
-            Enter the PIN you used to encrypt this backup
-          </p>
+          <h2 className='text-2xl font-bold'>{t('pin.enterTitle')}</h2>
+          <p className='mt-2 text-sm text-muted-foreground'>{t('restore.enterPinDescription')}</p>
         </div>
 
         <div className='space-y-4'>
@@ -278,7 +278,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
                 type='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder='Enter admin password'
+                placeholder={t('pin.adminPasswordPlaceholder')}
                 className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg dark:border-neutral-800 dark:bg-neutral-950'
                 autoFocus
                 disabled={isRestoring}
@@ -319,10 +319,10 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
             {isRestoring ? (
               <>
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Restoring...
+                {t('restore.restoring')}
               </>
             ) : (
-              'Restore Wallet'
+              t('restore.restoreWallet')
             )}
           </Button>
 
@@ -338,7 +338,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
             className='w-full'
             disabled={isRestoring}
           >
-            Back
+            {tCommon('actions.back')}
           </Button>
         </div>
       </div>
@@ -353,10 +353,8 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50 dark:bg-neutral-950'>
             <Key className='h-8 w-8 text-black dark:text-white' />
           </div>
-          <h2 className='text-2xl font-bold'>Create a PIN</h2>
-          <p className='mt-2 text-sm text-muted-foreground'>
-            Create a 6-digit PIN to protect your wallet
-          </p>
+          <h2 className='text-2xl font-bold'>{t('pin.createTitle')}</h2>
+          <p className='mt-2 text-sm text-muted-foreground'>{t('restore.createPinDescription')}</p>
         </div>
 
         <div className='space-y-4'>
@@ -386,7 +384,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
             size='lg'
             disabled={pin.length < 6}
           >
-            Next
+            {tCommon('actions.next')}
           </Button>
 
           <Button
@@ -398,7 +396,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
             variant='ghost'
             className='w-full'
           >
-            Back
+            {tCommon('actions.back')}
           </Button>
         </div>
       </div>
@@ -413,8 +411,8 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50 dark:bg-neutral-950'>
             <Key className='h-8 w-8 text-black dark:text-white' />
           </div>
-          <h2 className='text-2xl font-bold'>Confirm Your PIN</h2>
-          <p className='mt-2 text-sm text-muted-foreground'>Enter your PIN again to confirm</p>
+          <h2 className='text-2xl font-bold'>{t('pin.confirmTitle')}</h2>
+          <p className='mt-2 text-sm text-muted-foreground'>{t('pin.confirmDescription')}</p>
         </div>
 
         <div className='space-y-4'>
@@ -448,10 +446,10 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
             {isRestoring ? (
               <>
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Restoring...
+                {t('restore.restoring')}
               </>
             ) : (
-              'Complete'
+              t('restore.complete')
             )}
           </Button>
 
@@ -465,7 +463,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
             className='w-full'
             disabled={isRestoring}
           >
-            Back
+            {tCommon('actions.back')}
           </Button>
         </div>
       </div>

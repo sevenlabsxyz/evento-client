@@ -4,6 +4,7 @@ import { apiClient } from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
 import { EventRSVP, RSVPStatus } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface UpsertRSVPArgs {
   eventId: string;
@@ -32,6 +33,7 @@ export class RSVPError extends Error {
 
 export function useUpsertRSVP() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation<EventRSVP | null, Error, UpsertRSVPArgs>({
     mutationFn: async ({ eventId, status, hasExisting }) => {
@@ -46,7 +48,7 @@ export function useUpsertRSVP() {
         }
       } catch (error: unknown) {
         const errorData = error as { message?: string; redirectTo?: string; status?: number };
-        const message = errorData.message || 'Failed to update RSVP';
+        const message = errorData.message || t('rsvp.updateFailed');
         const redirectTo = errorData.redirectTo;
         const statusCode = errorData.status;
 
@@ -56,7 +58,7 @@ export function useUpsertRSVP() {
 
       if (!res?.success) {
         console.error('[RSVP] Unsuccessful response:', { eventId, status, hasExisting, res });
-        throw new Error(res?.message || 'Failed to update RSVP');
+        throw new Error(res?.message || t('rsvp.updateFailed'));
       }
       const arr = res?.data ?? [];
       return Array.isArray(arr) && arr.length > 0 ? (arr[0] as EventRSVP) : null;

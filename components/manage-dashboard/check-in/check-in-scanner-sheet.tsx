@@ -9,6 +9,7 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ClipboardPaste, Loader2, ScanLine, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckInResultCard } from './check-in-result-card';
 
@@ -41,6 +42,8 @@ interface CheckInScannerSheetProps {
 }
 
 export function CheckInScannerSheet({ eventId, open, onOpenChange }: CheckInScannerSheetProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
   const { mutateAsync: checkInAsync } = useCheckIn(eventId);
   const [phase, setPhase] = useState<ScanPhase>('scanning');
   const [result, setResult] = useState<CheckInResult | null>(null);
@@ -65,7 +68,7 @@ export function CheckInScannerSheet({ eventId, open, onOpenChange }: CheckInScan
         logger.error('Ticket check-in failed', { error: getErrorMessage(error) });
         nextResult = {
           valid: false,
-          error: getErrorMessage(error) || 'Check-in failed. Please try again.',
+          error: getErrorMessage(error) || t('checkInScanner.checkInFailed'),
         };
       }
 
@@ -73,7 +76,7 @@ export function CheckInScannerSheet({ eventId, open, onOpenChange }: CheckInScan
       setResult(nextResult);
       setPhase('result');
     },
-    [checkInAsync]
+    [checkInAsync, t]
   );
 
   // CameraScanner restarts (and stops) its camera whenever the callback identity
@@ -106,11 +109,11 @@ export function CheckInScannerSheet({ eventId, open, onOpenChange }: CheckInScan
       if (clipboardText.trim()) {
         await submitToken(clipboardText);
       } else {
-        toast.error('Clipboard is empty');
+        toast.error(t('checkInScanner.clipboardEmpty'));
       }
     } catch (error) {
       logger.error('Clipboard read failed', { error: getErrorMessage(error) });
-      toast.error('Unable to access clipboard. Use the manual entry on the check-in page.');
+      toast.error(t('checkInScanner.clipboardUnavailable'));
     } finally {
       setIsPasting(false);
     }
@@ -123,7 +126,7 @@ export function CheckInScannerSheet({ eventId, open, onOpenChange }: CheckInScan
           <SheetWithDetent.Backdrop />
           <SheetWithDetent.Content className='min-h-max p-0'>
             <VisuallyHidden.Root asChild>
-              <SheetWithDetent.Title>Scan tickets</SheetWithDetent.Title>
+              <SheetWithDetent.Title>{t('checkInScanner.title')}</SheetWithDetent.Title>
             </VisuallyHidden.Root>
 
             <div className='relative h-screen w-full overflow-hidden rounded-t-3xl bg-black'>
@@ -135,7 +138,9 @@ export function CheckInScannerSheet({ eventId, open, onOpenChange }: CheckInScan
                 <div className='absolute inset-0 z-20 flex items-center justify-center bg-black'>
                   <div className='flex flex-col items-center gap-4'>
                     <Loader2 className='h-10 w-10 animate-spin text-white' />
-                    <p className='text-[17px] font-semibold text-white'>Checking ticket…</p>
+                    <p className='text-[17px] font-semibold text-white'>
+                      {t('checkInScanner.checking')}
+                    </p>
                   </div>
                 </div>
               ) : null}
@@ -150,14 +155,14 @@ export function CheckInScannerSheet({ eventId, open, onOpenChange }: CheckInScan
                       className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-white text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-100 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
                     >
                       <ScanLine className='h-5 w-5' />
-                      Scan next ticket
+                      {t('checkInScanner.scanNext')}
                     </button>
                     <button
                       type='button'
                       onClick={() => onOpenChange(false)}
                       className='flex h-12 w-full items-center justify-center rounded-full border border-white/20 text-sm font-semibold text-white transition-colors hover:bg-white/10'
                     >
-                      Done
+                      {tCommon('actions.done')}
                     </button>
                   </div>
                 </div>
@@ -167,7 +172,7 @@ export function CheckInScannerSheet({ eventId, open, onOpenChange }: CheckInScan
                 type='button'
                 onClick={() => onOpenChange(false)}
                 className='absolute right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70'
-                aria-label='Close scanner'
+                aria-label={t('checkInScanner.close')}
               >
                 <X className='h-6 w-6 text-white' />
               </button>
@@ -179,22 +184,18 @@ export function CheckInScannerSheet({ eventId, open, onOpenChange }: CheckInScan
                     onClick={handlePaste}
                     disabled={isPasting}
                     className='absolute left-4 top-4 z-50 flex items-center gap-2 rounded-full bg-black/50 px-4 py-2 backdrop-blur-sm transition-colors hover:bg-black/70 disabled:opacity-50'
-                    aria-label='Paste ticket code from clipboard'
+                    aria-label={t('checkInScanner.pasteLabel')}
                   >
                     <ClipboardPaste className='h-5 w-5 text-white' />
                     <span className='text-sm font-medium text-white'>
-                      {isPasting ? 'Pasting...' : 'Paste'}
+                      {isPasting ? t('checkInScanner.pasting') : t('checkInScanner.paste')}
                     </span>
                   </button>
 
                   <div className='absolute bottom-8 left-0 right-0 z-40 px-6 text-center'>
                     <div className='mx-auto max-w-sm rounded-2xl bg-black/50 p-4 backdrop-blur-sm'>
-                      <p className='text-sm font-medium text-white'>
-                        Point your camera at a ticket QR code
-                      </p>
-                      <p className='mt-1 text-xs text-white/80'>
-                        Guests will be checked in as soon as their code is read
-                      </p>
+                      <p className='text-sm font-medium text-white'>{t('checkInScanner.hint')}</p>
+                      <p className='mt-1 text-xs text-white/80'>{t('checkInScanner.hintBody')}</p>
                     </div>
                   </div>
                 </>

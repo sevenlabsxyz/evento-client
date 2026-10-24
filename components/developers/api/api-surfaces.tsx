@@ -1,80 +1,52 @@
 import { cn } from '@/lib/utils';
 import { Check, Globe, KeyRound, type LucideIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { API_DOCS, EMBED_API_BASE_URL, PUBLIC_API_BASE_URL } from './api-links';
 import { ApiSectionHeader, DocsTextLink, InlineCode } from './api-primitives';
 import { CodePanel, type CodeSnippet } from './code-panel';
 
+type SurfaceKey = 'public' | 'embed';
+
+/** Keys under `developers.api.surfaces.<id>.points`. */
+const SURFACE_POINT_KEYS = ['p1', 'p2', 'p3', 'p4'] as const;
+
 interface SurfaceCard {
-  id: string;
-  name: string;
-  tagline: string;
+  /** Name, tagline, badge, points, captions and link labels live under `developers.api.surfaces.<id>`. */
+  id: SurfaceKey;
   icon: LucideIcon;
   iconClassName: string;
-  badge: string;
   badgeClassName: string;
   baseUrl: string;
-  points: ReactNode[];
   snippet: CodeSnippet;
-  snippetCaption: string;
-  links: { label: string; href: string }[];
+  links: { key: 'overview' | 'secondary'; href: string }[];
 }
 
 const SURFACES: SurfaceCard[] = [
   {
     id: 'public',
-    name: 'Public API',
-    tagline: 'Read-only event and user data for third-party server integrations.',
     icon: KeyRound,
     iconClassName: 'bg-red-50 text-red-600 dark:bg-red-950/60 dark:text-red-400',
-    badge: 'API key',
     badgeClassName:
       'bg-red-50 text-red-700 ring-red-600/15 dark:bg-red-950/60 dark:text-red-300 dark:ring-red-400/20',
     baseUrl: PUBLIC_API_BASE_URL,
-    points: [
-      <>
-        Authenticated with Unkey API keys via <InlineCode>x-evento-api-key</InlineCode> or{' '}
-        <InlineCode>Authorization: Bearer</InlineCode>
-      </>,
-      'Rich payloads with creator metadata, links, contributions, and pagination',
-      'Event details, organizer event lists, and RSVP guest lists',
-      'Keep keyed requests server-side — never ship a key in client-side JavaScript',
-    ],
     snippet: {
       id: 'public-headers',
       label: 'Request headers',
       language: 'http',
       code: 'x-evento-api-key: YOUR_API_KEY',
     },
-    snippetCaption: 'Request header',
     links: [
-      { label: 'Public API overview', href: API_DOCS.publicOverview },
-      { label: 'Authentication', href: API_DOCS.authentication },
+      { key: 'overview', href: API_DOCS.publicOverview },
+      { key: 'secondary', href: API_DOCS.authentication },
     ],
   },
   {
     id: 'embed',
-    name: 'Embed API',
-    tagline: 'No-auth, CORS-friendly responses for widgets and client-side embeds.',
     icon: Globe,
     iconClassName: 'bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400',
-    badge: 'No auth · CORS',
     badgeClassName:
       'bg-sky-50 text-sky-700 ring-sky-600/15 dark:bg-sky-950/60 dark:text-sky-300 dark:ring-sky-400/20',
     baseUrl: EMBED_API_BASE_URL,
-    points: [
-      'No API key required — safe for client-side rendering',
-      <>
-        Cross-origin access for <InlineCode>GET</InlineCode> and <InlineCode>OPTIONS</InlineCode>
-      </>,
-      <>
-        Lean payloads with a computed <InlineCode>status</InlineCode>: upcoming, ongoing, or past
-      </>,
-      <>
-        Pairs with the <InlineCode>evento-embed-react</InlineCode> event card, list, and calendar
-        components
-      </>,
-    ],
     snippet: {
       id: 'embed-cors',
       label: 'CORS headers',
@@ -83,22 +55,23 @@ const SURFACES: SurfaceCard[] = [
 Access-Control-Allow-Methods: GET, OPTIONS
 Access-Control-Allow-Headers: Content-Type`,
     },
-    snippetCaption: 'Response headers',
     links: [
-      { label: 'Embed API overview', href: API_DOCS.embedOverview },
-      { label: 'React components', href: API_DOCS.reactComponents },
+      { key: 'overview', href: API_DOCS.embedOverview },
+      { key: 'secondary', href: API_DOCS.reactComponents },
     ],
   },
 ];
 
 export function ApiSurfaces() {
+  const t = useTranslations('developers.api.surfaces');
+
   return (
     <section aria-labelledby='api-surfaces-title' className='space-y-8'>
       <ApiSectionHeader
         id='api-surfaces-title'
-        eyebrow='Two surfaces'
-        title='Pick the right API for the job'
-        description='Use the Public API from your backend for rich data, and the Embed API straight from the browser for widgets.'
+        eyebrow={t('eyebrow')}
+        title={t('title')}
+        description={t('description')}
       />
 
       <div className='grid gap-4 lg:grid-cols-2 lg:gap-6'>
@@ -125,7 +98,7 @@ export function ApiSurfaces() {
                     surface.badgeClassName
                   )}
                 >
-                  {surface.badge}
+                  {t(`${surface.id}.badge`)}
                 </span>
               </div>
 
@@ -133,33 +106,39 @@ export function ApiSurfaces() {
                 id={`api-surface-${surface.id}`}
                 className='mt-4 text-xl font-semibold tracking-tight text-gray-900 dark:text-neutral-100'
               >
-                {surface.name}
+                {t(`${surface.id}.name`)}
               </h3>
-              <p className='mt-1 text-sm text-gray-600 dark:text-neutral-400'>{surface.tagline}</p>
+              <p className='mt-1 text-sm text-gray-600 dark:text-neutral-400'>
+                {t(`${surface.id}.tagline`)}
+              </p>
 
               <p className='mt-4 truncate rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 font-mono text-xs text-gray-700 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300'>
-                <span className='sr-only'>Base URL: </span>
+                <span className='sr-only'>{t('baseUrl')} </span>
                 {surface.baseUrl}
               </p>
 
               <ul className='mt-5 space-y-3'>
-                {surface.points.map((point, index) => (
+                {SURFACE_POINT_KEYS.map((pointKey) => (
                   <li
-                    key={index}
+                    key={pointKey}
                     className='flex gap-3 text-sm leading-6 text-gray-700 dark:text-neutral-300'
                   >
                     <Check
                       className='mt-1 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400'
                       aria-hidden='true'
                     />
-                    <span className='min-w-0'>{point}</span>
+                    <span className='min-w-0'>
+                      {t.rich(`${surface.id}.points.${pointKey}`, {
+                        code: (chunks) => <InlineCode>{chunks}</InlineCode>,
+                      })}
+                    </span>
                   </li>
                 ))}
               </ul>
 
               <CodePanel
-                snippets={[surface.snippet]}
-                caption={surface.snippetCaption}
+                snippets={[{ ...surface.snippet, label: t(`${surface.id}.snippetLabel`) }]}
+                caption={t(`${surface.id}.snippetCaption`)}
                 className='mt-5 shadow-none dark:shadow-none'
                 bodyClassName='py-3'
               />
@@ -167,7 +146,7 @@ export function ApiSurfaces() {
               <div className='mt-auto flex flex-wrap gap-x-5 gap-y-2 pt-5'>
                 {surface.links.map((link) => (
                   <DocsTextLink key={link.href} href={link.href}>
-                    {link.label}
+                    {t(`${surface.id}.links.${link.key}`)}
                   </DocsTextLink>
                 ))}
               </div>

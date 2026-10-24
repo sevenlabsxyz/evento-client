@@ -1,0 +1,321 @@
+{
+  "toast": {
+    "success": "Sucesso",
+    "error": "Erro",
+    "info": "Informação",
+    "warning": "Aviso"
+  },
+  "apiKeys": {
+    "created": "Chave de API criada com sucesso",
+    "createFailed": "Falha ao criar a chave de API",
+    "revoked": "Chave de API revogada com sucesso",
+    "revokeFailed": "Falha ao revogar a chave de API"
+  },
+  "cohostInvites": {
+    "sent": "{count, plural, one {# convite de coanfitrião enviado} other {# convites de coanfitrião enviados}}",
+    "invitesSent": "Convites enviados",
+    "sendFailed": "Falha ao enviar convites de coanfitrião",
+    "acceptFailed": "Falha ao aceitar o convite",
+    "declined": "Convite recusado",
+    "declineFailed": "Falha ao recusar o convite",
+    "cancelled": "Convite cancelado",
+    "cancelFailed": "Falha ao cancelar o convite"
+  },
+  "eventInvites": {
+    "noInvitees": "Nenhum convidado selecionado",
+    "sent": "{count, plural, one {# convite enviado} other {# convites enviados}}",
+    "invitesSent": "Convites enviados",
+    "sendFailed": "Falha ao enviar os convites"
+  },
+  "upload": {
+    "unsupportedType": "O tipo de arquivo {type} não é compatível",
+    "fileTooLarge": "O tamanho do arquivo ({size} MB) excede o limite de {limit} MB",
+    "tooManyFiles": "Não é possível selecionar mais de {max} arquivos",
+    "invalidFiles": "Arquivos inválidos:\n{files}",
+    "alreadySelected": "Alguns arquivos já estavam selecionados",
+    "selectedPhotos": "{count, plural, one {# foto selecionada} other {# fotos selecionadas}}",
+    "processingError": "Erro ao processar alguns arquivos",
+    "uploadFailed": "Falha no envio",
+    "uploadedPhotos": "{count, plural, one {# foto enviada com sucesso} other {# fotos enviadas com sucesso}}",
+    "failedPhotos": "{count, plural, one {Falha ao enviar # foto} other {Falha ao enviar # fotos}}",
+    "uploadFailedStatus": "Falha no envio (status {status})"
+  },
+  "walletInvite": {
+    "notifyFailed": "Falha ao enviar a notificação",
+    "notified": "Já avisamos!",
+    "notifyBatchFailed": "Falha ao enviar as notificações da carteira"
+  },
+  "galleryLikes": {
+    "unableToLike": "Não foi possível curtir esta imagem",
+    "updateFailed": "Falha ao atualizar a curtida. Tente novamente."
+  },
+  "earnPartners": {
+    "zbd": "Ganhe Bitcoin jogando e completando tarefas",
+    "fold": "Ganhe recompensas em Bitcoin nas compras do dia a dia com o cartão de débito Fold",
+    "stackerNews": "Ganhe Bitcoin compartilhando e interagindo com conteúdo",
+    "lolli": "Ganhe Bitcoin ao comprar em mais de 1.000 lojas online",
+    "visit": "Visitar"
+  },
+  "exchanges": {
+    "cashApp": "Compre e venda Bitcoin com facilidade",
+    "river": "Instituição financeira exclusiva de Bitcoin",
+    "strike": "Compre Bitcoin na hora, sem taxas",
+    "flash": "Neobanco de Bitcoin na Jamaica",
+    "kraken": "Plataforma de negociação avançada",
+    "coinbase": "Corretora de criptomoedas confiável"
+  },
+  "covers": {
+    "coverTitle": "Capa {category} {number}",
+    "categories": {
+      "featured": "Destaques",
+      "gifs": "GIFs",
+      "party": "Festa",
+      "social": "Social",
+      "classic": "Clássico",
+      "tech": "Tecnologia"
+    }
+  },
+  "lists": {
+    "addEventFailed": "Falha ao adicionar o evento à lista",
+    "createFailed": "Falha ao criar a lista",
+    "deleteFailed": "Falha ao excluir a lista",
+    "fetchEventsFailed": "Falha ao carregar os eventos da lista",
+    "fetchFailed": "Falha ao carregar as listas",
+    "updateFailed": "Falha ao atualizar a lista",
+    "fetchSavedStatusFailed": "Falha ao carregar o status de salvo",
+    "removeEventFailed": "Falha ao remover o evento da lista"
+  },
+  "events": {
+    "createFailed": "Falha ao criar o evento",
+    "duplicateFailed": "Falha ao duplicar o evento",
+    "fetchUserEventsFailed": "Falha ao carregar os eventos do usuário",
+    "generateDescriptionFailed": "Falha ao gerar a descrição",
+    "fetchDraftsFailed": "Falha ao carregar os rascunhos de eventos",
+    "invalidPassword": "Senha inválida",
+    "updateFailed": "Falha ao atualizar o evento",
+    "dashboardLoadFailed": "Falha ao carregar o painel do evento"
+  },
+  "gallery": {
+    "deleteFailed": "Falha ao excluir a foto"
+  },
+  "discountCodes": {
+    "createFailed": "Falha ao criar o código de desconto",
+    "updateFailed": "Falha ao atualizar o código de desconto"
+  },
+  "emailBlasts": {
+    "createFailed": "Falha ao criar o disparo de e-mail",
+    "updateFailed": "Falha ao atualizar o disparo de e-mail",
+    "cancelFailed": "Falha ao cancelar o disparo de e-mail",
+    "noSubject": "Sem assunto",
+    "recipients": {
+      "all": "Todas as confirmações",
+      "yes": "Confirmação: Vou",
+      "yesAndMaybe": "Confirmação: Vou e Talvez",
+      "no": "Confirmação: Não vou",
+      "maybe": "Confirmação: Talvez",
+      "invited": "Convidados",
+      "allRecipients": "Todos os destinatários"
+    }
+  },
+  "attendees": {
+    "loadFailed": "Falha ao carregar os participantes",
+    "checkInFailed": "Falha no check-in",
+    "undoCheckInFailed": "Falha ao desfazer o check-in"
+  },
+  "subEvents": {
+    "unlinkFailed": "Falha ao remover o subevento",
+    "linkFailed": "Falha ao vincular o subevento"
+  },
+  "rsvp": {
+    "updateFailed": "Falha ao atualizar a confirmação de presença"
+  },
+  "sales": {
+    "loadFailed": "Falha ao carregar os dados de vendas",
+    "exportFailed": "Falha ao exportar os participantes (status {status})"
+  },
+  "tickets": {
+    "createFailed": "Falha ao criar o tipo de ingresso",
+    "updateFailed": "Falha ao atualizar o tipo de ingresso"
+  },
+  "support": {
+    "sendFailed": "Falha ao enviar a mensagem"
+  },
+  "wakeLock": {
+    "failed": "Falha ao manter a tela ligada"
+  },
+  "places": {
+    "apiKeyMissing": "Chave da API do Google Maps não configurada",
+    "fetchFailed": "Falha ao buscar locais",
+    "geolocationUnsupported": "Seu navegador não é compatível com geolocalização",
+    "currentLocation": "Localização atual",
+    "permissionDenied": "Permissão de localização negada",
+    "unavailable": "Informações de localização indisponíveis",
+    "timeout": "A solicitação de localização expirou",
+    "locationFailed": "Falha ao obter a localização"
+  },
+  "username": {
+    "tooShort": "O nome de usuário deve ter pelo menos 3 caracteres",
+    "tooLong": "O nome de usuário deve ter menos de 20 caracteres",
+    "invalidChars": "O nome de usuário só pode conter letras, números e sublinhados",
+    "checkFailed": "Não foi possível verificar a disponibilidade do nome de usuário"
+  },
+  "reminders": {
+    "maxReached": "Você pode selecionar até {max} lembretes",
+    "invalidOffset": "Só são permitidos lembretes de 1h, 2h, 3h, 8h, 1d e 3d"
+  },
+  "auth": {
+    "emailRequiredResend": "É necessário informar o e-mail para reenviar o código",
+    "emailRequiredVerify": "É necessário informar o e-mail para a verificação",
+    "invalidCode": "Código inválido. Tente novamente."
+  },
+  "validation": {
+    "emailRequired": "O e-mail é obrigatório",
+    "emailInvalid": "Insira um endereço de e-mail válido",
+    "emailTooLong": "O e-mail deve ter menos de 100 caracteres",
+    "codeRequired": "O código de verificação é obrigatório",
+    "codeLength": "O código deve ter exatamente 6 dígitos",
+    "codeNumbersOnly": "O código deve conter apenas números",
+    "usernameRequired": "O nome de usuário é obrigatório",
+    "usernameAlphanumeric": "O nome de usuário só pode conter letras e números",
+    "nameRequired": "O nome é obrigatório",
+    "nameTooLong50": "O nome deve ter menos de 50 caracteres",
+    "nameTooLong100": "O nome deve ter menos de 100 caracteres",
+    "bioTooLong": "A bio deve ter menos de 280 caracteres",
+    "urlInvalid": "Insira uma URL válida",
+    "httpUrlInvalid": "Insira uma URL http(s) válida",
+    "xHandleTooLong": "O usuário do X deve ter menos de 50 caracteres",
+    "instagramHandleTooLong": "O usuário do Instagram deve ter menos de 50 caracteres",
+    "lightningAddressEmailFormat": "O endereço Lightning deve estar em formato de e-mail válido",
+    "nip05EmailFormat": "O identificador NIP-05 deve estar em formato de e-mail válido",
+    "lightningAddressInvalid": "Insira um endereço Lightning válido",
+    "nip05Invalid": "Insira um identificador NIP-05 válido",
+    "imageUrlInvalid": "Insira uma URL de imagem válida",
+    "searchRequired": "O termo de busca é obrigatório",
+    "searchTooLong": "O termo de busca deve ter menos de 100 caracteres",
+    "profileInvalid": "Dados de perfil inválidos",
+    "titleRequired": "O título é obrigatório",
+    "titleTooLong": "O título deve ter no máximo 200 caracteres",
+    "goalWholeNumber": "A meta deve ser um número inteiro",
+    "goalPositive": "A meta deve ser um número positivo",
+    "timezoneRequired": "O fuso horário é obrigatório",
+    "spotifyUrlInvalid": "A URL do Spotify deve ser um link válido do open.spotify.com",
+    "wavlakeUrlInvalid": "A URL do Wavlake deve ser um link válido do Wavlake"
+  },
+  "dates": {
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "noDateSet": "Sem data definida",
+    "unknownLocation": "Local desconhecido"
+  },
+  "breez": {
+    "network": "Problema de conexão com a rede. Verifique sua internet e tente novamente.",
+    "timeout": "A solicitação expirou. Tente novamente.",
+    "connection": "Não foi possível conectar à rede Lightning. Tente novamente mais tarde.",
+    "offline": "Parece que você está offline. Verifique sua conexão com a internet.",
+    "insufficient": "Saldo insuficiente para concluir este pagamento.",
+    "invoiceExpired": "Esta fatura expirou. Solicite uma nova.",
+    "invoiceAlreadyPaid": "Esta fatura já foi paga.",
+    "paymentFailed": "O pagamento falhou. Tente novamente ou entre em contato com o suporte se o problema continuar.",
+    "noRoute": "Não foi possível encontrar uma rota de pagamento. O destinatário pode estar offline ou inacessível.",
+    "routeNotFound": "Não foi possível encontrar uma rota de pagamento. Tente novamente mais tarde.",
+    "amountTooLow": "O valor do pagamento é muito baixo. Aumente o valor.",
+    "amountTooHigh": "O valor do pagamento excede o máximo permitido. Reduza o valor.",
+    "amountOutOfRange": "O valor do pagamento está fora do intervalo aceito.",
+    "invalidInput": "Entrada inválida. Verifique o que você digitou e tente novamente.",
+    "malformed": "Formato inválido. Verifique o que você digitou e tente novamente.",
+    "notFound": "Recurso não encontrado. Verifique as informações e tente novamente.",
+    "sdkNotConnected": "Carteira não conectada. Desbloqueie sua carteira e tente novamente.",
+    "sdkInitialization": "Falha ao inicializar a carteira. Atualize a página e tente novamente.",
+    "provider": "Nosso provedor de pagamentos relatou um erro. Tente novamente mais tarde.",
+    "serviceUnavailable": "Serviço temporariamente indisponível. Tente novamente em alguns instantes.",
+    "rateLimit": "Muitas solicitações. Aguarde um momento e tente novamente.",
+    "invalidLightningAddress": "Endereço Lightning inválido. Verifique o endereço e tente novamente.",
+    "lightningAddressTaken": "Este endereço Lightning já está em uso. Escolha outro.",
+    "feeTooHigh": "A taxa da transação está muito alta. Tente novamente mais tarde, quando as taxas estiverem menores.",
+    "claimFailed": "Falha ao resgatar o depósito. Tente novamente ou entre em contato com o suporte.",
+    "unexpected": "Ocorreu um erro inesperado. Tente novamente.",
+    "sdkInitFailedRefresh": "Falha ao inicializar o Breez SDK. Atualize a página e tente novamente. Se o problema continuar, verifique se o pacote do Breez SDK está instalado corretamente.",
+    "contexts": {
+      "createInvoice": "Falha ao criar a fatura. Tente novamente.",
+      "preparePayment": "Falha ao preparar o pagamento. Tente novamente.",
+      "sendPayment": "Falha ao enviar o pagamento. Tente novamente.",
+      "fetchPaymentHistory": "Falha ao carregar o histórico de pagamentos. Tente novamente.",
+      "sendZap": "Falha ao enviar o zap. Tente novamente.",
+      "loadLightningAddress": "Falha ao carregar o endereço Lightning. Tente novamente.",
+      "checkLightningAddressAvailability": "Falha ao verificar a disponibilidade do endereço Lightning. Tente novamente.",
+      "registerLightningAddress": "Falha ao registrar o endereço Lightning. Tente novamente.",
+      "deleteLightningAddress": "Falha ao excluir o endereço Lightning. Tente novamente.",
+      "listContacts": "Falha ao carregar os contatos. Tente novamente.",
+      "addContact": "Falha ao adicionar o contato. Tente novamente.",
+      "updateContact": "Falha ao atualizar o contato. Tente novamente.",
+      "deleteContact": "Falha ao excluir o contato. Tente novamente.",
+      "createWallet": "Falha ao criar a carteira. Tente novamente.",
+      "restoreWallet": "Falha ao restaurar a carteira. Tente novamente.",
+      "unlockWallet": "Falha ao desbloquear a carteira. Tente novamente.",
+      "lockWallet": "Falha ao bloquear a carteira. Tente novamente.",
+      "refreshBalance": "Falha ao atualizar o saldo. Tente novamente.",
+      "connectToWallet": "Falha ao conectar à carteira. Tente novamente.",
+      "disconnectWallet": "Falha ao desconectar a carteira. Tente novamente.",
+      "fetchBalance": "Falha ao carregar o saldo. Tente novamente.",
+      "generatePaymentMethod": "Falha ao gerar o método de pagamento. Tente novamente.",
+      "waitForPayment": "Falha ao aguardar o pagamento. Tente novamente.",
+      "prepareSendAllPayment": "Falha ao preparar o envio de todo o saldo. Tente novamente.",
+      "parseInput": "Falha ao interpretar a entrada. Tente novamente.",
+      "prepareLightningAddressPayment": "Falha ao preparar o pagamento para o endereço Lightning. Tente novamente.",
+      "sendLightningAddressPayment": "Falha ao enviar o pagamento para o endereço Lightning. Tente novamente.",
+      "receiveLnurlWithdraw": "Falha ao receber o saque LNURL. Tente novamente.",
+      "fetchWalletInfo": "Falha ao carregar as informações da carteira. Tente novamente.",
+      "fetchLightningAddress": "Falha ao carregar o endereço Lightning. Tente novamente.",
+      "fetchUnclaimedDeposits": "Falha ao carregar os depósitos não resgatados. Tente novamente.",
+      "claimDeposit": "Falha ao resgatar o depósito. Tente novamente.",
+      "refundDeposit": "Falha ao reembolsar o depósito. Tente novamente.",
+      "startCashAppPurchase": "Falha ao iniciar a compra pelo Cash App. Tente novamente.",
+      "parsePaymentInput": "Falha ao interpretar os dados de pagamento. Tente novamente.",
+      "prepareBitcoinPayment": "Falha ao preparar o pagamento em Bitcoin. Tente novamente.",
+      "loadIncomingFunds": "Falha ao carregar os fundos a receber. Tente novamente."
+    }
+  },
+  "wallet": {
+    "satsReceived": "+{amount} sats recebidos",
+    "paymentReceivedTitle": "Pagamento recebido",
+    "paymentReceivedBody": "Você recebeu {amount} sats",
+    "notConnected": "Carteira não conectada",
+    "failedToRefreshBalance": "Falha ao atualizar o saldo",
+    "failedToLoad": "Falha ao carregar a carteira",
+    "invalidPassword": "Senha inválida",
+    "unlockToast": {
+      "title": "Ação necessária na carteira",
+      "unlockAction": "Desbloquear carteira",
+      "createAction": "Criar carteira",
+      "unlockDescription": "Desbloqueie sua Carteira para continuar.",
+      "createDescription": "Crie sua Carteira para continuar."
+    },
+    "paymentDisplay": {
+      "noDescription": "Sem descrição",
+      "lightningReceived": "Pagamento Lightning recebido",
+      "lightning": "Pagamento Lightning",
+      "spark": "Pagamento Spark",
+      "token": "Pagamento em token",
+      "withdrawal": "Saque",
+      "deposit": "Depósito",
+      "payment": "Pagamento"
+    }
+  },
+  "batchZap": {
+    "noEligibleGuests": "Não há convidados aptos a receber este zap em lote.",
+    "chooseAmountMode": "Escolha se o valor é por pessoa ou dividido do total.",
+    "wholeNumber": "Digite um número inteiro de sats maior que zero.",
+    "validAmount": "Digite um valor válido para continuar.",
+    "perPersonMinimum": "Cada convidado deve receber pelo menos {min} sats.",
+    "totalSplitMinimum": "Este total resulta em menos de {min} sats por convidado.",
+    "invalidLightningAddress": "Endereço Lightning inválido",
+    "failedToSendPayment": "Falha ao enviar o pagamento",
+    "walletDisconnectedSkipped": "A carteira foi desconectada antes que este pagamento pudesse ser enviado."
+  },
+  "contacts": {
+    "added": "Contato adicionado",
+    "updated": "Contato atualizado",
+    "deleted": "Contato excluído",
+    "alreadyExists": "Já existe um contato com este endereço Lightning"
+  }
+}

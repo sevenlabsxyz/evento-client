@@ -5,6 +5,7 @@ import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { InviteItem, UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import CsvImportSheet from './csv-import-sheet';
 import Step1SearchUsers from './invite-users-step1';
@@ -17,6 +18,7 @@ interface InviteUsersSheetProps {
 }
 
 export default function InviteUsersSheet({ eventId, isOpen, onClose }: InviteUsersSheetProps) {
+  const t = useTranslations('manageLegacy');
   const [step, setStep] = useState<1 | 2>(1);
   const [searchText, setSearchText] = useState('');
   const [message, setMessage] = useState('');
@@ -31,7 +33,7 @@ export default function InviteUsersSheet({ eventId, isOpen, onClose }: InviteUse
     const newEmails = new Set(selectedEmails);
     emails.forEach((email) => newEmails.add(email));
     setSelectedEmails(newEmails);
-    toast.success(`Imported ${emails.length} email${emails.length !== 1 ? 's' : ''} from CSV`);
+    toast.success(t('inviteUsers.sheet.csvImported', { count: emails.length }));
     setIsCsvImportOpen(false);
   };
 
@@ -95,7 +97,8 @@ export default function InviteUsersSheet({ eventId, isOpen, onClose }: InviteUse
   }, [isOpen]);
 
   // Dynamic title and header based on step
-  const title = step === 1 ? 'Invite Guests' : 'Add Note';
+  const title =
+    step === 1 ? t('inviteUsers.sheet.inviteTitle') : t('inviteUsers.sheet.addNoteTitle');
   const headerLeft =
     step === 2 ? (
       <CircledIconButton

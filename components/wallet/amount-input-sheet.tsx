@@ -6,6 +6,7 @@ import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { ArrowUpDown, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface AmountInputSheetProps {
@@ -27,6 +28,7 @@ export function AmountInputSheet({
   maxAmount,
   minAmount,
 }: AmountInputSheetProps) {
+  const t = useTranslations('walletFlows');
   const [amount, setAmount] = useState('');
   const [amountUSD, setAmountUSD] = useState('');
   const [inputMode, setInputMode] = useState<'sats' | 'usd'>('usd');
@@ -50,13 +52,13 @@ export function AmountInputSheet({
   // Get validation message
   const getValidationMessage = () => {
     if (amount && Number.isFinite(satsAmount) && satsAmount > 0 && !Number.isInteger(satsAmount)) {
-      return 'Enter a whole number of sats';
+      return t('amountInputSheet.wholeNumber');
     }
     if (minAmount != null && satsAmount < minAmount && satsAmount > 0) {
-      return `Minimum: ${minAmount.toLocaleString()} sats`;
+      return t('amountInputSheet.minimum', { amount: minAmount });
     }
     if (maxAmount != null && satsAmount > maxAmount) {
-      return `Maximum: ${maxAmount.toLocaleString()} sats`;
+      return t('amountInputSheet.maximum', { amount: maxAmount });
     }
     return null;
   };
@@ -193,7 +195,11 @@ export function AmountInputSheet({
   };
 
   return (
-    <MasterScrollableSheet open={open} onOpenChange={onOpenChange} title='Enter Amount'>
+    <MasterScrollableSheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('amountInputSheet.title')}
+    >
       <div className='p-6'>
         <div className='mx-auto max-w-md space-y-6'>
           {/* Amount Display */}
@@ -211,10 +217,10 @@ export function AmountInputSheet({
               <ArrowUpDown className='h-4 w-4' />
               <span>
                 {inputMode === 'usd' && amount
-                  ? `${Number(amount).toLocaleString()} sats`
+                  ? t('amountInputSheet.satsAmount', { amount: Number(amount) })
                   : inputMode === 'sats' && amountUSD
                     ? `$${amountUSD}`
-                    : 'Convert'}
+                    : t('amountInputSheet.convert')}
               </span>
             </button>
           </div>
@@ -229,7 +235,7 @@ export function AmountInputSheet({
                   : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
               }`}
             >
-              Send All ({maxAmount.toLocaleString()} sats)
+              {t('amountInputSheet.sendAll', { amount: maxAmount })}
             </button>
           )}
 
@@ -237,11 +243,11 @@ export function AmountInputSheet({
           {(minAmount != null || maxAmount != null) && (
             <div className='text-center text-sm text-muted-foreground'>
               {minAmount != null && maxAmount != null
-                ? `Range: ${minAmount.toLocaleString()} - ${maxAmount.toLocaleString()} sats`
+                ? t('amountInputSheet.range', { min: minAmount, max: maxAmount })
                 : minAmount != null
-                  ? `Minimum: ${minAmount.toLocaleString()} sats`
+                  ? t('amountInputSheet.minimum', { amount: minAmount })
                   : maxAmount != null
-                    ? `Maximum: ${maxAmount.toLocaleString()} sats`
+                    ? t('amountInputSheet.maximum', { amount: maxAmount })
                     : ''}
             </div>
           )}
@@ -271,10 +277,10 @@ export function AmountInputSheet({
             {isLoading ? (
               <>
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Preparing...
+                {t('amountInputSheet.preparing')}
               </>
             ) : (
-              'Next'
+              t('amountInputSheet.next')
             )}
           </Button>
         </div>

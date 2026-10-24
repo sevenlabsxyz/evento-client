@@ -32,6 +32,7 @@ import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useSubEvents } from '@/lib/hooks/use-sub-events';
 import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
+import type { Translator } from '@/lib/i18n/types';
 import { useTopBarStore } from '@/lib/stores/topbar-store';
 import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
@@ -52,6 +53,7 @@ import {
   Share,
   Users,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -62,11 +64,11 @@ const EVENT_DETAIL_SECTION_IDS = ['details', 'comments', 'gallery'] as const;
 const QUICK_ACTION_CLASS =
   'inline-flex h-10 items-center justify-center gap-2 rounded-full border border-gray-200 bg-white text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:hover:bg-neutral-800';
 
-function formatHostNames(hosts: EventDetail['hosts']): string {
+function formatHostNames(hosts: EventDetail['hosts'], t: Translator<'event'>): string {
   const names = hosts.map((host) => host.name || `@${host.username}`);
   if (names.length <= 1) return names[0] ?? '';
-  if (names.length === 2) return `${names[0]} & ${names[1]}`;
-  return `${names[0]} & ${names.length - 1} others`;
+  if (names.length === 2) return t('page.twoHosts', { first: names[0], second: names[1] });
+  return t('page.manyHosts', { first: names[0], count: names.length - 1 });
 }
 
 export default function EventDetailPageClient() {
@@ -74,6 +76,8 @@ export default function EventDetailPageClient() {
   const router = useRouter();
   const pathname = usePathname();
   const eventId = params.id as string;
+  const t = useTranslations('event');
+  const tCommon = useTranslations('common');
   const { user, isAuthenticated } = useAuth();
   const setTopBarForRoute = useTopBarStore((s) => s.setTopBarForRoute);
   const applyRouteConfig = useTopBarStore((s) => s.applyRouteConfig);
@@ -239,10 +243,10 @@ export default function EventDetailPageClient() {
         onSuccess: () => {
           const msg =
             rsvpParam === 'yes'
-              ? "You're going"
+              ? t('page.rsvpGoing')
               : rsvpParam === 'maybe'
-                ? 'Marked as maybe'
-                : 'You are not going';
+                ? t('page.rsvpMaybe')
+                : t('page.rsvpNotGoing');
           toast.success(msg);
 
           // Clean up URL params
@@ -253,7 +257,7 @@ export default function EventDetailPageClient() {
           router.replace(newUrl, { scroll: false });
         },
         onError: (error: Error) => {
-          toast.error(error.message || 'Failed to update RSVP. Please try again.');
+          toast.error(error.message || t('page.rsvpFailed'));
 
           // Clean up URL params even on error
           const newParams = new URLSearchParams(searchParams);
@@ -276,6 +280,7 @@ export default function EventDetailPageClient() {
     isUserRsvpLoading,
     isUserRsvpFetching,
     userRsvpData,
+    t,
   ]);
 
   // Fetch event data from API
@@ -444,7 +449,7 @@ export default function EventDetailPageClient() {
           id: 'share',
           icon: Share,
           onClick: handleShare,
-          label: 'Share',
+          label: tCommon('actions.share'),
         },
         ...(!isOwnerOrCohost
           ? [
@@ -452,7 +457,7 @@ export default function EventDetailPageClient() {
                 id: 'save-event',
                 icon: Bookmark,
                 onClick: () => setShowSaveSheet(true),
-                label: 'Save Event',
+                label: t('page.saveEvent'),
               },
             ]
           : []),
@@ -469,6 +474,8 @@ export default function EventDetailPageClient() {
     router,
     isAuthenticated,
     handleShare,
+    t,
+    tCommon,
   ]);
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
@@ -545,10 +552,10 @@ export default function EventDetailPageClient() {
             <CalendarX className='h-6 w-6 text-gray-500 dark:text-neutral-400' aria-hidden='true' />
           </div>
           <h1 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-            Event not found
+            {t('page.notFoundTitle')}
           </h1>
           <p className='mt-1 text-sm text-gray-600 dark:text-neutral-400'>
-            The event you&apos;re looking for doesn&apos;t exist or is no longer available.
+            {t('page.notFoundDescription')}
           </p>
           <div className='mt-6 flex flex-col gap-2 sm:flex-row'>
             <Button
@@ -557,10 +564,10 @@ export default function EventDetailPageClient() {
               className='flex-1 rounded-full dark:bg-neutral-900 dark:hover:bg-neutral-800'
               onClick={() => router.back()}
             >
-              Go back
+              {t('page.goBack')}
             </Button>
             <Button asChild className='flex-1 rounded-full'>
-              <Link href={isAuthenticated ? '/e/hub' : '/'}>Explore events</Link>
+              <Link href={isAuthenticated ? '/e/hub' : '/'}>{t('page.exploreEvents')}</Link>
             </Button>
           </div>
         </div>
@@ -577,11 +584,7 @@ export default function EventDetailPageClient() {
       {hasHiddenDetails && (
         <div className='flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400'>
           <EyeOff className='mt-0.5 h-4 w-4 shrink-0' aria-hidden='true' />
-          <p>
-            {registrationRequired
-              ? 'Some event details are hidden until your registration is approved.'
-              : 'Some event details are hidden until you RSVP.'}
-          </p>
+          <p>{registrationRequired ? t('page.hiddenUntilApproved') : t('page.hiddenUntilRsvp')}</p>
         </div>
       )}
       {!isGuestListHidden && (
@@ -611,7 +614,7 @@ export default function EventDetailPageClient() {
 
       {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
       {(eventData?.spotify_url || eventData?.wavlake_url) && (
-        <EventSection title='Music' variant='plain' bodyClassName='space-y-4'>
+        <EventSection title={t('page.music')} variant='plain' bodyClassName='space-y-4'>
           {eventData.spotify_url && <EventSpotifyEmbed link={eventData.spotify_url} />}
           {eventData.wavlake_url && <WavlakeEmbed link={eventData.wavlake_url} />}
         </EventSection>
@@ -652,10 +655,10 @@ export default function EventDetailPageClient() {
                   </div>
                   <div className='min-w-0'>
                     <p className='text-xs font-medium text-gray-500 dark:text-neutral-500'>
-                      Hosted by
+                      {t('page.hostedBy')}
                     </p>
                     <p className='truncate text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                      {formatHostNames(summaryHosts)}
+                      {formatHostNames(summaryHosts, t)}
                     </p>
                   </div>
                 </div>
@@ -684,10 +687,14 @@ export default function EventDetailPageClient() {
                     </div>
                   )}
                   <p className='text-sm text-gray-600 dark:text-neutral-400'>
-                    <span className='font-semibold text-gray-900 dark:text-neutral-100'>
-                      {goingGuests.length}
-                    </span>{' '}
-                    going
+                    {t.rich('page.goingCount', {
+                      count: goingGuests.length,
+                      strong: (chunks) => (
+                        <span className='font-semibold text-gray-900 dark:text-neutral-100'>
+                          {chunks}
+                        </span>
+                      ),
+                    })}
                   </p>
                 </div>
               )}
@@ -702,7 +709,7 @@ export default function EventDetailPageClient() {
               >
                 <button type='button' onClick={handleShare} className={QUICK_ACTION_CLASS}>
                   <Share className='h-4 w-4' aria-hidden='true' />
-                  Share
+                  {tCommon('actions.share')}
                 </button>
                 {!isOwnerOrCohost && (
                   <button
@@ -711,7 +718,7 @@ export default function EventDetailPageClient() {
                     className={QUICK_ACTION_CLASS}
                   >
                     <Bookmark className='h-4 w-4' aria-hidden='true' />
-                    Save
+                    {tCommon('actions.save')}
                   </button>
                 )}
               </div>
@@ -728,20 +735,28 @@ export default function EventDetailPageClient() {
             />
 
             <nav
-              aria-label='Event sections'
+              aria-label={t('page.sectionsNav')}
               className='sticky top-0 z-20 -mx-4 mb-6 mt-8 border-b border-gray-100 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900 md:-mx-8 md:px-8 lg:mx-0 lg:px-0'
             >
               <AnimatedTabs
                 expanded
                 className='mx-auto lg:mx-0'
                 tabs={[
-                  { title: 'Details', icon: Info, onClick: () => handleTabChange('details') },
                   {
-                    title: 'Comments',
+                    title: t('page.tabs.details'),
+                    icon: Info,
+                    onClick: () => handleTabChange('details'),
+                  },
+                  {
+                    title: t('page.tabs.comments'),
                     icon: MessageSquare,
                     onClick: () => handleTabChange('comments'),
                   },
-                  { title: 'Gallery', icon: Image, onClick: () => handleTabChange('gallery') },
+                  {
+                    title: t('page.tabs.gallery'),
+                    icon: Image,
+                    onClick: () => handleTabChange('gallery'),
+                  },
                 ]}
                 selected={sectionIds.indexOf(activeTab as (typeof sectionIds)[number])}
               />
@@ -763,7 +778,7 @@ export default function EventDetailPageClient() {
                 ref={(element) => {
                   commentsSectionRef.current = element;
                 }}
-                title='Comments'
+                title={t('page.tabs.comments')}
               >
                 <EventComments eventId={event.id} isEventHost={isOwnerOrCohost} />
               </EventSection>
@@ -773,7 +788,7 @@ export default function EventDetailPageClient() {
                 ref={(element) => {
                   gallerySectionRef.current = element;
                 }}
-                title='Photos'
+                title={t('page.photos')}
                 variant='plain'
               >
                 <EventGallery

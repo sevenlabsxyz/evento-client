@@ -14,6 +14,7 @@ import {
 import { VisuallyHidden } from '@silk-hq/components';
 import { motion } from 'framer-motion';
 import { Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { cloneElement, isValidElement, useEffect, useState } from 'react';
 import { ZapAmountStep } from './steps/zap-amount-step';
@@ -40,6 +41,7 @@ export function ZapSheet({
   onError,
   currentUsername,
 }: ZapSheetProps) {
+  const t = useTranslations('zap.sheet');
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>('amount');
@@ -122,7 +124,7 @@ export function ZapSheet({
             setStep('no-wallet');
           } else {
             setOpen(false);
-            toast.error('Failed to load payment details. Please try again.');
+            toast.error(t('loadDetailsFailed'));
           }
         }
       }
@@ -214,13 +216,13 @@ export function ZapSheet({
           currentPayRequest = (parsed as any).payRequest as LnurlPayRequestDetails;
           setPayRequest(currentPayRequest);
         } else {
-          toast.error('Invalid lightning address');
+          toast.error(t('invalidAddress'));
           return;
         }
       }
 
       if (!currentPayRequest) {
-        toast.error('Invalid lightning address');
+        toast.error(t('invalidAddress'));
         return;
       }
 
@@ -247,7 +249,7 @@ export function ZapSheet({
         setOpen(false);
         showWalletUnlockToast();
       } else {
-        toast.error(error.message || 'Failed to prepare payment');
+        toast.error(error.message || t('prepareFailed'));
       }
       onError?.(error);
     } finally {
@@ -269,13 +271,13 @@ export function ZapSheet({
           currentPayRequest = (parsed as any).payRequest as LnurlPayRequestDetails;
           setPayRequest(currentPayRequest);
         } else {
-          toast.error('Invalid lightning address');
+          toast.error(t('invalidAddress'));
           return;
         }
       }
 
       if (!currentPayRequest) {
-        toast.error('Invalid lightning address');
+        toast.error(t('invalidAddress'));
         return;
       }
 
@@ -302,7 +304,7 @@ export function ZapSheet({
         setOpen(false);
         showWalletUnlockToast();
       } else {
-        toast.error(error.message || 'Failed to prepare payment');
+        toast.error(error.message || t('prepareFailed'));
       }
       onError?.(error);
     } finally {
@@ -340,7 +342,7 @@ export function ZapSheet({
         setOpen(false);
         showWalletUnlockToast();
       } else {
-        toast.error(error.message || 'Failed to send payment');
+        toast.error(error.message || t('sendFailed'));
       }
       onError?.(error);
       setStep('confirm');
@@ -361,7 +363,7 @@ export function ZapSheet({
   // Handle opening the zap sheet
   const handleOpenSheet = () => {
     if (currentUsername && recipientUsername && currentUsername === recipientUsername) {
-      toast.error('You cannot zap yourself!');
+      toast.error(t('selfZap'));
       return;
     }
     setOpen(true);
@@ -508,7 +510,7 @@ export function ZapSheet({
                       <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
                     </div>
                     <VisuallyHidden.Root asChild>
-                      <SheetWithDetentFull.Title>Send Zap</SheetWithDetentFull.Title>
+                      <SheetWithDetentFull.Title>{t('title')}</SheetWithDetentFull.Title>
                     </VisuallyHidden.Root>
 
                     {renderStepContent()}

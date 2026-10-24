@@ -1,8 +1,16 @@
 'use client';
 
 import { EventWithUser } from '@/lib/types/api';
-import { format, parseISO } from 'date-fns';
+import { format, Locale, parseISO } from 'date-fns';
+import { enUS, es, ptBR } from 'date-fns/locale';
+import { useLocale } from 'next-intl';
 import { EventCompactItem } from './event-compact-item';
+
+const HEADER_FORMATS: Record<string, { locale: Locale; pattern: string }> = {
+  en: { locale: enUS, pattern: 'EEEE, MMMM do' },
+  'pt-BR': { locale: ptBR, pattern: "EEEE, d 'de' MMMM" },
+  es: { locale: es, pattern: "EEEE, d 'de' MMMM" },
+};
 
 interface EventDateGroupProps {
   date: string; // ISO date string for the day
@@ -17,8 +25,12 @@ export function EventDateGroup({
   onBookmark,
   bookmarkedEvents = new Set(),
 }: EventDateGroupProps) {
+  const appLocale = useLocale();
   // Format the date header (e.g., "Tuesday, September 2nd")
-  const formattedDate = format(parseISO(date), 'EEEE, MMMM do');
+  const headerFormat = HEADER_FORMATS[appLocale] ?? HEADER_FORMATS.en;
+  const formattedDate = format(parseISO(date), headerFormat.pattern, {
+    locale: headerFormat.locale,
+  });
 
   return (
     <div className='mb-5'>

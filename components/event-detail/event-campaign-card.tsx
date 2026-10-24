@@ -2,7 +2,9 @@
 
 import { Progress } from '@/components/ui/progress';
 import { useEventCampaign } from '@/lib/hooks/use-event-campaign';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { ChevronRight, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { CampaignDetailSheet } from './campaign-detail-sheet';
 import { EventSection } from './event-section';
@@ -20,7 +22,7 @@ function formatSats(sats: number): string {
   if (sats >= 1_000) {
     return `${(sats / 1_000).toFixed(sats >= 10_000 ? 0 : 1)}k`;
   }
-  return sats.toLocaleString();
+  return sats.toLocaleString(getIntlLocale());
 }
 
 export default function EventCampaignCard({
@@ -28,6 +30,7 @@ export default function EventCampaignCard({
   hasCampaign,
   className,
 }: EventCampaignCardProps) {
+  const t = useTranslations('eventSocial');
   const campaignQueryEnabled = hasCampaign !== false;
   const { data: campaign, isLoading } = useEventCampaign(eventId, {
     enabled: campaignQueryEnabled,
@@ -47,7 +50,7 @@ export default function EventCampaignCard({
   const progressPercent = hasGoal ? campaign.progressPercent : 0;
 
   return (
-    <EventSection title='Support this event' variant='plain' className={className}>
+    <EventSection title={t('campaignCard.title')} variant='plain' className={className}>
       <button
         type='button'
         data-testid='event-campaign-card'
@@ -62,7 +65,7 @@ export default function EventCampaignCard({
           {/* Text block */}
           <div className='min-w-0 flex-1 text-left'>
             <p className='truncate text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-              {campaign.title || 'Crowdfunding'}
+              {campaign.title || t('campaign.defaultTitle')}
             </p>
             <div className='mt-1 flex items-center gap-2'>
               {/* Thin progress bar */}
@@ -73,7 +76,7 @@ export default function EventCampaignCard({
                 />
               )}
               <span className='shrink-0 text-xs text-gray-500 dark:text-neutral-500'>
-                {formatSats(campaign.raised_sats)} raised
+                {t('campaignCard.raised', { amount: formatSats(campaign.raised_sats) })}
               </span>
             </div>
           </div>

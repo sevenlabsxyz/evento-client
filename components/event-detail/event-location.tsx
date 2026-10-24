@@ -5,6 +5,7 @@ import { EventDetail } from '@/lib/types/event';
 import { WeatherData } from '@/lib/types/weather';
 import { formatEventLocationAddress } from '@/lib/utils/location';
 import { ExternalLink, MapPin, Sun } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { EventSection } from './event-section';
 import { LocationActionsSheet } from './location-actions-sheet';
@@ -16,6 +17,8 @@ interface EventLocationProps {
 }
 
 export default function EventLocation({ event, weather }: EventLocationProps) {
+  const t = useTranslations('event');
+  const tCommon = useTranslations('common');
   const [showMapOptions, setShowMapOptions] = useState(false);
   const [showWeatherDetail, setShowWeatherDetail] = useState(false);
 
@@ -33,7 +36,7 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
   return (
     <>
       <EventSection
-        title='Location'
+        title={tCommon('labels.location')}
         action={
           weather ? (
             <button
@@ -84,15 +87,15 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
               allowFullScreen
               referrerPolicy='no-referrer-when-downgrade'
               src={mapUrl}
-              title={`Map of ${event.location.name}`}
-              aria-label={`Map showing ${event.location.name}`}
+              title={t('location.mapTitle', { name: event.location.name })}
+              aria-label={t('location.mapAria', { name: event.location.name })}
               style={{ pointerEvents: 'none' }}
             ></iframe>
 
             <button
               onClick={() => window.open(googleMapsDirectionsUrl, '_blank', 'noopener,noreferrer')}
               className='absolute inset-0 z-10 cursor-pointer bg-transparent'
-              aria-label={`Open directions to ${event.location.name} in Google Maps`}
+              aria-label={t('location.directionsAria', { name: event.location.name })}
               type='button'
             />
 

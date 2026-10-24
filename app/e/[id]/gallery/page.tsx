@@ -12,10 +12,12 @@ import { useEventHosts } from '@/lib/hooks/use-event-hosts';
 import { getOptimizedImageUrlPreservingGif } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
 import { ArrowLeft, Plus, Share } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 
 export default function GalleryPage() {
+  const t = useTranslations('eventSocial');
   const { user } = useAuth();
   const params = useParams();
   const router = useRouter();
@@ -89,16 +91,16 @@ export default function GalleryPage() {
       <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-            Event Not Found
+            {t('galleryPage.notFoundTitle')}
           </h1>
           <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            The event you&apos;re trying to view doesn&apos;t exist.
+            {t('galleryPage.notFoundDescription')}
           </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
-            Go Back
+            {t('galleryPage.goBack')}
           </button>
         </div>
       </div>
@@ -116,8 +118,8 @@ export default function GalleryPage() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${eventData.title} - Gallery`,
-          text: `Check out photos from ${eventData.title}`,
+          title: t('galleryPage.shareTitle', { title: eventData.title }),
+          text: t('galleryPage.shareText', { title: eventData.title }),
           url: galleryUrl,
         });
       } catch (error) {
@@ -129,7 +131,7 @@ export default function GalleryPage() {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(galleryUrl);
       // Could show a toast notification here
-      alert('Gallery link copied to clipboard!');
+      alert(t('galleryPage.linkCopied'));
     }
   };
 
@@ -145,15 +147,15 @@ export default function GalleryPage() {
           <button
             type='button'
             onClick={() => router.back()}
-            aria-label='Go back'
+            aria-label={t('galleryPage.goBackAria')}
             className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <ArrowLeft className='h-5 w-5' />
           </button>
           <div>
-            <h1 className='text-xl font-semibold'>Gallery</h1>
+            <h1 className='text-xl font-semibold'>{t('galleryPage.title')}</h1>
             <p className='text-sm text-gray-500 dark:text-neutral-400'>
-              {galleryImages.length} photos
+              {t('galleryPage.photoCount', { count: galleryImages.length })}
             </p>
           </div>
         </div>
@@ -163,9 +165,9 @@ export default function GalleryPage() {
           <button
             type='button'
             onClick={handleShareGallery}
-            aria-label='Share gallery'
+            aria-label={t('galleryPage.shareAria')}
             className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
-            title='Share Gallery'
+            title={t('galleryPage.shareButtonTitle')}
           >
             <Share className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
           </button>
@@ -173,9 +175,9 @@ export default function GalleryPage() {
             <button
               type='button'
               onClick={handleAddPhoto}
-              aria-label='Add photos'
+              aria-label={t('galleryPage.addPhotosAria')}
               className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
-              title='Add Photos'
+              title={t('galleryPage.addPhotosTitle')}
             >
               <Plus className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
             </button>
@@ -216,10 +218,10 @@ export default function GalleryPage() {
               </svg>
             </div>
             <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
-              No Photos Yet
+              {t('galleryPage.emptyTitle')}
             </h3>
             <p className='text-sm text-gray-500 dark:text-neutral-400'>
-              Photos from this event will appear here once they&apos;re added.
+              {t('galleryPage.emptyDescription')}
             </p>
           </div>
         )}

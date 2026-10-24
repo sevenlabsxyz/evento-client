@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface DeleteConfirmationProps {
   isOpen: boolean;
@@ -25,17 +26,17 @@ export const DeleteConfirmation = ({
   onConfirm,
   isDeleting,
 }: DeleteConfirmationProps) => {
+  const t = useTranslations('zap.lightbox');
+  const tCommon = useTranslations('common');
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Photo</AlertDialogTitle>
-          <AlertDialogDescription>
-            Are you sure you want to delete this photo? This action cannot be undone.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
+          <AlertDialogDescription>{t('deleteDescription')}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>{tCommon('actions.cancel')}</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             disabled={isDeleting}
@@ -44,10 +45,10 @@ export const DeleteConfirmation = ({
             {isDeleting ? (
               <>
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Deleting...
+                {t('deleting')}
               </>
             ) : (
-              'Delete'
+              tCommon('actions.delete')
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

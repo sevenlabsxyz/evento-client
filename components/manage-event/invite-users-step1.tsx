@@ -8,6 +8,7 @@ import { isValidEmail } from '@/lib/utils/email-validation';
 import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
 import { ChevronRight, MailIcon, Search, Share2, Upload, Users } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { UserAvatar } from '../ui/user-avatar';
@@ -33,6 +34,7 @@ export default function Step1SearchUsers({
   onCSVClick,
   onNext,
 }: Step1SearchUsersProps) {
+  const t = useTranslations('manageLegacy');
   // Search - use direct destructuring pattern (same as working search page)
   const { mutate: search, data: searchResults, isPending: isSearching, reset } = useUserSearch();
   const debouncedSearch = useDebounce(searchText, 400);
@@ -67,7 +69,7 @@ export default function Step1SearchUsers({
   const handleShareInviteLink = async () => {
     if (!inviteLink) return;
     if (!navigator.share) {
-      toast.info('Sharing is not available on this device');
+      toast.info(t('inviteUsers.step1.shareUnavailable'));
       return;
     }
 
@@ -79,7 +81,7 @@ export default function Step1SearchUsers({
       if (error instanceof Error && error.name === 'AbortError') {
         return;
       }
-      toast.error('Unable to share event link');
+      toast.error(t('inviteUsers.step1.shareFailed'));
     }
   };
 
@@ -144,10 +146,10 @@ export default function Step1SearchUsers({
           <div className='grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2'>
             <div className='min-w-0 overflow-hidden'>
               <p className='text-sm font-semibold text-blue-900 dark:text-blue-400'>
-                Share event link
+                {t('inviteUsers.step1.shareLink.title')}
               </p>
               <p className='mt-0.5 text-xs text-blue-700 dark:text-blue-400'>
-                Use your share menu to send this URL.
+                {t('inviteUsers.step1.shareLink.description')}
               </p>
               <p className='mt-2 truncate font-mono text-xs text-blue-900 dark:text-blue-400'>
                 {inviteLink || `/e/${eventId}`}
@@ -158,7 +160,7 @@ export default function Step1SearchUsers({
               onClick={handleShareInviteLink}
               whileTap={{ scale: 0.95 }}
               disabled={!canShareLink}
-              aria-label='Share event link'
+              aria-label={t('inviteUsers.step1.shareLink.title')}
               className='inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-blue-300 bg-white text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-blue-800 dark:bg-neutral-900 dark:text-blue-400 dark:hover:bg-blue-950/60'
             >
               <Share2 className='h-4 w-4' />
@@ -174,7 +176,7 @@ export default function Step1SearchUsers({
           <input
             className='w-full rounded-full bg-gray-100 py-2 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-400'
             type='text'
-            placeholder='Email or @username'
+            placeholder={t('inviteUsers.step1.searchPlaceholder')}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -226,7 +228,9 @@ export default function Step1SearchUsers({
                         {'isEmailInvite' in u && u.isEmailInvite ? u.email : `@${u.username}`}
                       </div>
                       <div className='truncate text-xs text-gray-500 dark:text-neutral-400'>
-                        {'isEmailInvite' in u && u.isEmailInvite ? 'Email invitation' : u.name}
+                        {'isEmailInvite' in u && u.isEmailInvite
+                          ? t('inviteUsers.step1.emailInvitation')
+                          : u.name}
                       </div>
                     </div>
                     <span
@@ -251,10 +255,10 @@ export default function Step1SearchUsers({
                 <Users className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
               </div>
               <h3 className='mb-2 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-                Find Evento Users
+                {t('inviteUsers.step1.empty.title')}
               </h3>
               <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                Search by @username or import a CSV
+                {t('inviteUsers.step1.empty.description')}
               </p>
             </div>
           )
@@ -281,10 +285,10 @@ export default function Step1SearchUsers({
               <Search className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
             </div>
             <h3 className='mb-2 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-              No users found
+              {t('inviteUsers.step1.noResults.title')}
             </h3>
             <p className='text-sm text-gray-500 dark:text-neutral-400'>
-              No users matching &quot;{searchText}&quot;
+              {t('inviteUsers.step1.noResults.description', { query: searchText })}
             </p>
           </div>
         ) : (
@@ -322,7 +326,9 @@ export default function Step1SearchUsers({
                       {'isEmailInvite' in u && u.isEmailInvite ? u.email : `@${u.username}`}
                     </div>
                     <div className='truncate text-xs text-gray-500 dark:text-neutral-400'>
-                      {'isEmailInvite' in u && u.isEmailInvite ? 'Email invitation' : u.name}
+                      {'isEmailInvite' in u && u.isEmailInvite
+                        ? t('inviteUsers.step1.emailInvitation')
+                        : u.name}
                     </div>
                   </div>
                   <span
@@ -353,7 +359,8 @@ export default function Step1SearchUsers({
             selectedCount === 0 ? 'bg-gray-300 dark:bg-neutral-600' : 'bg-red-600 hover:bg-red-700'
           }`}
         >
-          Next ({selectedCount}) <ChevronRight className='h-4 w-4' />
+          {t('inviteUsers.step1.next', { count: selectedCount })}{' '}
+          <ChevronRight className='h-4 w-4' />
         </button>
       </div>
     </>

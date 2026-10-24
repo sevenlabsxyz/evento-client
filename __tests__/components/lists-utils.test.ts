@@ -69,15 +69,15 @@ describe('list utils', () => {
     const lists = [makeList({ id: 'a', name: 'Trips' })];
 
     it('requires a non-blank name', () => {
-      expect(validateListName('   ', lists)).toMatch(/name/i);
+      expect(validateListName('   ', lists)).toBe('required');
     });
 
     it('rejects names over 50 characters', () => {
-      expect(validateListName('x'.repeat(51), lists)).toMatch(/50/);
+      expect(validateListName('x'.repeat(51), lists)).toBe('tooLong');
     });
 
     it('rejects duplicates except for the list being renamed', () => {
-      expect(validateListName(' Trips ', lists)).toMatch(/already/i);
+      expect(validateListName(' Trips ', lists)).toBe('duplicate');
       expect(validateListName('Trips', lists, 'a')).toBeNull();
       expect(validateListName('Concerts', lists)).toBeNull();
     });

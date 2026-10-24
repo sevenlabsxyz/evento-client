@@ -3,6 +3,8 @@
 'use client';
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface DatePickerSheetProps {
@@ -22,6 +24,8 @@ export default function DatePickerSheet({
   title,
   referenceDate,
 }: DatePickerSheetProps) {
+  const tCommon = useTranslations('common');
+  const intlLocale = getIntlLocale(useLocale());
   const [currentDate, setCurrentDate] = useState(selectedDate || new Date());
   const [viewMonth, setViewMonth] = useState(currentDate.getMonth());
   const [viewYear, setViewYear] = useState(currentDate.getFullYear());
@@ -36,22 +40,16 @@ export default function DatePickerSheet({
     }
   }, [selectedDate, isOpen]);
 
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
+  const monthYearLabel = new Intl.DateTimeFormat(intlLocale, {
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(viewYear, viewMonth, 1));
 
-  const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  // 2023-01-01 was a Sunday; build localized short weekday names starting on Sunday
+  const weekdayFormatter = new Intl.DateTimeFormat(intlLocale, { weekday: 'short' });
+  const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
+    weekdayFormatter.format(new Date(2023, 0, 1 + i)).toUpperCase()
+  );
 
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -161,12 +159,12 @@ export default function DatePickerSheet({
               <div className='mb-4'>
                 <div className='mb-4 flex items-center justify-between'>
                   <button onClick={onClose} className='font-medium text-red-500 dark:text-red-400'>
-                    Cancel
+                    {tCommon('actions.cancel')}
                   </button>
                   <div className='text-center'>
                     <h2 className='text-lg font-semibold'>{title}</h2>
                     <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                      {currentDate.toLocaleDateString('en-US', {
+                      {currentDate.toLocaleDateString(intlLocale, {
                         weekday: 'short',
                         month: 'short',
                         day: '2-digit',
@@ -177,7 +175,7 @@ export default function DatePickerSheet({
                     onClick={handleSave}
                     className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white dark:bg-red-600'
                   >
-                    Save
+                    {tCommon('actions.save')}
                   </button>
                 </div>
 
@@ -189,9 +187,7 @@ export default function DatePickerSheet({
                   >
                     ←
                   </button>
-                  <h3 className='text-lg font-semibold'>
-                    {monthNames[viewMonth]} {viewYear}
-                  </h3>
+                  <h3 className='text-lg font-semibold'>{monthYearLabel}</h3>
                   <button
                     onClick={() => navigateMonth('next')}
                     className='rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'

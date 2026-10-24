@@ -4,41 +4,51 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { useCreateDiscountCode, useUpdateDiscountCode } from '@/lib/hooks/use-discount-codes';
+import type { Translator } from '@/lib/i18n/types';
 import type { DiscountCode } from '@/lib/types/manage';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { toast } from '@/lib/utils/toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-const usageLimitSchema = z
-  .number({ error: 'Enter how many times the code can be used' })
-  .int('Usage limit must be a whole number')
-  .min(1, 'Must allow at least 1 use');
+type ManageTranslator = Translator<'manage'>;
 
-const createDiscountCodeFormSchema = z.object({
-  code: z
-    .string()
-    .min(1, 'Code is required')
-    .max(50, 'Code must be 50 characters or fewer')
-    .regex(/^[A-Z0-9_-]+$/, 'Use letters, numbers, dashes or underscores'),
-  percentage: z
-    .number({ error: 'Enter a discount percentage' })
-    .int('Percentage must be a whole number')
-    .min(1, 'Minimum 1%')
-    .max(100, 'Maximum 100%'),
-  usage_limit: usageLimitSchema,
-});
+function buildUsageLimitSchema(t: ManageTranslator) {
+  return z
+    .number({ error: t('discountCodeSheet.validation.usageLimitRequired') })
+    .int(t('discountCodeSheet.validation.usageLimitInteger'))
+    .min(1, t('discountCodeSheet.validation.usageLimitMin'));
+}
 
-type CreateDiscountCodeFormData = z.infer<typeof createDiscountCodeFormSchema>;
+function buildCreateDiscountCodeFormSchema(t: ManageTranslator) {
+  return z.object({
+    code: z
+      .string()
+      .min(1, t('discountCodeSheet.validation.codeRequired'))
+      .max(50, t('discountCodeSheet.validation.codeMax'))
+      .regex(/^[A-Z0-9_-]+$/, t('discountCodeSheet.validation.codeFormat')),
+    percentage: z
+      .number({ error: t('discountCodeSheet.validation.percentageRequired') })
+      .int(t('discountCodeSheet.validation.percentageInteger'))
+      .min(1, t('discountCodeSheet.validation.percentageMin'))
+      .max(100, t('discountCodeSheet.validation.percentageMax')),
+    usage_limit: buildUsageLimitSchema(t),
+  });
+}
 
-const editDiscountCodeFormSchema = z.object({
-  usage_limit: usageLimitSchema,
-});
+type CreateDiscountCodeFormData = z.infer<ReturnType<typeof buildCreateDiscountCodeFormSchema>>;
 
-type EditDiscountCodeFormData = z.infer<typeof editDiscountCodeFormSchema>;
+function buildEditDiscountCodeFormSchema(t: ManageTranslator) {
+  return z.object({
+    usage_limit: buildUsageLimitSchema(t),
+  });
+}
+
+type EditDiscountCodeFormData = z.infer<ReturnType<typeof buildEditDiscountCodeFormSchema>>;
 
 const CREATE_DEFAULTS: CreateDiscountCodeFormData = {
   code: '',
@@ -66,9 +76,10 @@ export function DiscountCodeSheet({
   onOpenChange,
   discountCode,
 }: DiscountCodeSheetProps) {
+  const t = useTranslations('manage');
   return (
     <MasterScrollableSheet
-      title={discountCode ? 'Edit discount code' : 'New discount code'}
+      title={discountCode ? t('discountCodeSheet.editTitle') : t('discountCodeSheet.newTitle')}
       open={open}
       onOpenChange={onOpenChange}
     >
@@ -99,6 +110,8 @@ interface CreateDiscountCodeFormProps {
 }
 
 function CreateDiscountCodeForm({ eventId, open, onDone }: CreateDiscountCodeFormProps) {
+  const t = useTranslations('manage');
+  const createDiscountCodeFormSchema = useMemo(() => buildCreateDiscountCodeFormSchema(t), [t]);
   const createDiscountCode = useCreateDiscountCode(eventId);
   const {
     control,
@@ -121,10 +134,10 @@ function CreateDiscountCodeForm({ eventId, open, onDone }: CreateDiscountCodeFor
   const onSubmit = async (data: CreateDiscountCodeFormData) => {
     try {
       await createDiscountCode.mutateAsync(data);
-      toast.success(`Discount code ${data.code} created`);
+      toast.success(t('discountCodeSheet.createdToast', { code: data.code }));
       onDone();
     } catch (error) {
-      toast.error(getErrorMessage(error) || 'Failed to create discount code');
+      toast.error(getErrorMessage(error) || t('discountCodeSheet.createError'));
     }
   };
 
@@ -134,7 +147,7 @@ function CreateDiscountCodeForm({ eventId, open, onDone }: CreateDiscountCodeFor
     <form onSubmit={handleSubmit(onSubmit)} className='space-y-6' noValidate>
       <div className='space-y-2'>
         <label htmlFor='discount-code' className={labelClassName}>
-          Code
+          {t('discountCodeSheet.codeLabel')}
         </label>
         <Controller
           control={control}
@@ -163,14 +176,14 @@ function CreateDiscountCodeForm({ eventId, open, onDone }: CreateDiscountCodeFor
         {errors.code ? (
           <p className={errorClassName}>{errors.code.message}</p>
         ) : (
-          <p className={hintClassName}>Buyers enter this at checkout. Codes are uppercase.</p>
+          <p className={hintClassName}>{t('discountCodeSheet.codeHint')}</p>
         )}
       </div>
 
       <div className='grid grid-cols-2 gap-4'>
         <div className='space-y-2'>
           <label htmlFor='discount-percentage' className={labelClassName}>
-            Discount (%)
+            {t('discountCodeSheet.percentageLabel')}
           </label>
           <Input
             {...register('percentage', { valueAsNumber: true })}
@@ -187,13 +200,13 @@ function CreateDiscountCodeForm({ eventId, open, onDone }: CreateDiscountCodeFor
           {errors.percentage ? (
             <p className={errorClassName}>{errors.percentage.message}</p>
           ) : (
-            <p className={hintClassName}>1–100% off.</p>
+            <p className={hintClassName}>{t('discountCodeSheet.percentageHint')}</p>
           )}
         </div>
 
         <div className='space-y-2'>
           <label htmlFor='discount-usage-limit' className={labelClassName}>
-            Usage limit
+            {t('discountCodeSheet.usageLimitLabel')}
           </label>
           <Input
             {...register('usage_limit', { valueAsNumber: true })}
@@ -209,24 +222,21 @@ function CreateDiscountCodeForm({ eventId, open, onDone }: CreateDiscountCodeFor
           {errors.usage_limit ? (
             <p className={errorClassName}>{errors.usage_limit.message}</p>
           ) : (
-            <p className={hintClassName}>Total redemptions.</p>
+            <p className={hintClassName}>{t('discountCodeSheet.usageLimitHint')}</p>
           )}
         </div>
       </div>
 
-      <p className={hintClassName}>
-        The code and percentage can&apos;t be changed after creation. You can adjust the usage limit
-        or pause the code later.
-      </p>
+      <p className={hintClassName}>{t('discountCodeSheet.immutableNotice')}</p>
 
       <Button type='submit' disabled={isSaving} className='h-12 w-full rounded-full'>
         {isSaving ? (
           <>
             <Loader2 className='h-4 w-4 animate-spin' />
-            Creating...
+            {t('discountCodeSheet.creating')}
           </>
         ) : (
-          'Create discount code'
+          t('discountCodeSheet.createSubmit')
         )}
       </Button>
     </form>
@@ -241,6 +251,9 @@ interface EditDiscountCodeFormProps {
 }
 
 function EditDiscountCodeForm({ eventId, open, discountCode, onDone }: EditDiscountCodeFormProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
+  const editDiscountCodeFormSchema = useMemo(() => buildEditDiscountCodeFormSchema(t), [t]);
   const updateDiscountCode = useUpdateDiscountCode(eventId);
   const minimumLimit = Math.max(1, discountCode.usage_count);
   const {
@@ -265,7 +278,10 @@ function EditDiscountCodeForm({ eventId, open, discountCode, onDone }: EditDisco
     if (data.usage_limit < minimumLimit) {
       setError('usage_limit', {
         type: 'manual',
-        message: `Already used ${discountCode.usage_count} times — limit must be at least ${minimumLimit}`,
+        message: t('discountCodeSheet.validation.usageLimitBelowUsed', {
+          count: discountCode.usage_count,
+          minimum: minimumLimit,
+        }),
       });
       return;
     }
@@ -275,10 +291,10 @@ function EditDiscountCodeForm({ eventId, open, discountCode, onDone }: EditDisco
         codeId: discountCode.id,
         usage_limit: data.usage_limit,
       });
-      toast.success(`${discountCode.code} updated`);
+      toast.success(t('discountCodeSheet.updatedToast', { code: discountCode.code }));
       onDone();
     } catch (error) {
-      toast.error(getErrorMessage(error) || 'Failed to update discount code');
+      toast.error(getErrorMessage(error) || t('discountCodeSheet.updateError'));
     }
   };
 
@@ -292,17 +308,20 @@ function EditDiscountCodeForm({ eventId, open, discountCode, onDone }: EditDisco
             {discountCode.code}
           </p>
           <p className={hintClassName}>
-            {discountCode.usage_count} of {discountCode.usage_limit} used
+            {t('discountCodeSheet.usageSummary', {
+              used: discountCode.usage_count,
+              limit: discountCode.usage_limit,
+            })}
           </p>
         </div>
         <span className='rounded-full bg-red-100 px-2.5 py-1 text-sm font-semibold text-red-700 dark:bg-red-950/60 dark:text-red-400'>
-          {discountCode.percentage}% off
+          {t('discountCodeSheet.percentOff', { percentage: discountCode.percentage })}
         </span>
       </div>
 
       <div className='space-y-2'>
         <label htmlFor='discount-edit-usage-limit' className={labelClassName}>
-          Usage limit
+          {t('discountCodeSheet.usageLimitLabel')}
         </label>
         <Input
           {...register('usage_limit', { valueAsNumber: true })}
@@ -318,9 +337,7 @@ function EditDiscountCodeForm({ eventId, open, discountCode, onDone }: EditDisco
         {errors.usage_limit ? (
           <p className={errorClassName}>{errors.usage_limit.message}</p>
         ) : (
-          <p className={hintClassName}>
-            Code and percentage are fixed. Only the usage limit can be changed.
-          </p>
+          <p className={hintClassName}>{t('discountCodeSheet.editHint')}</p>
         )}
       </div>
 
@@ -328,10 +345,10 @@ function EditDiscountCodeForm({ eventId, open, discountCode, onDone }: EditDisco
         {isSaving ? (
           <>
             <Loader2 className='h-4 w-4 animate-spin' />
-            Saving...
+            {t('discountCodeSheet.saving')}
           </>
         ) : (
-          'Save changes'
+          tCommon('actions.saveChanges')
         )}
       </Button>
     </form>

@@ -20,6 +20,7 @@ import {
   Search,
   UserRoundPen,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
@@ -33,35 +34,14 @@ const TAB_ORDER: MyEventsTab[] = ['upcoming', 'hosting', 'drafts', 'past'];
 
 interface EmptyStateConfig {
   icon: LucideIcon;
-  title: string;
-  description: string;
-  cta?: { label: string; href: string };
+  ctaHref?: string;
 }
 
 const EMPTY_STATES: Record<MyEventsTab, EmptyStateConfig> = {
-  upcoming: {
-    icon: Calendar,
-    title: 'No upcoming events',
-    description: 'RSVP to events or create your own',
-    cta: { label: 'Find events', href: '/e/search' },
-  },
-  hosting: {
-    icon: MapPinHouse,
-    title: "No events you're hosting",
-    description: 'Create an event to get started',
-    cta: { label: 'Create event', href: '/e/create' },
-  },
-  drafts: {
-    icon: UserRoundPen,
-    title: 'No draft events',
-    description: 'Your draft events will appear here',
-    cta: { label: 'Create event', href: '/e/create' },
-  },
-  past: {
-    icon: History,
-    title: 'No past events',
-    description: 'Events you hosted or attended will appear here',
-  },
+  upcoming: { icon: Calendar, ctaHref: '/e/search' },
+  hosting: { icon: MapPinHouse, ctaHref: '/e/create' },
+  drafts: { icon: UserRoundPen, ctaHref: '/e/create' },
+  past: { icon: History },
 };
 
 interface MyEventsSectionProps {
@@ -79,6 +59,7 @@ export function MyEventsSection({
   upcomingHasMore = false,
   upcomingError,
 }: MyEventsSectionProps) {
+  const t = useTranslations('hub');
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState<MyEventsTab>('upcoming');
   const [loadedTabs, setLoadedTabs] = useState<MyEventsTab[]>([]);
@@ -165,21 +146,39 @@ export function MyEventsSection({
   return (
     <section className='flex flex-col gap-3'>
       {/* Header */}
-      <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>My Events</h2>
+      <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+        {t('myEvents.title')}
+      </h2>
 
       {/* Tabs + search */}
       <div className='flex items-center justify-between gap-3'>
         <AnimatedTabs
           expanded={!isMobile}
           tabs={[
-            { title: 'Upcoming', icon: Calendar, onClick: () => setActiveTab('upcoming') },
-            { title: 'Hosting', icon: MapPinHouse, onClick: () => setActiveTab('hosting') },
-            { title: 'Drafts', icon: UserRoundPen, onClick: () => setActiveTab('drafts') },
-            { title: 'Past', icon: History, onClick: () => setActiveTab('past') },
+            {
+              title: t('myEvents.tabs.upcoming'),
+              icon: Calendar,
+              onClick: () => setActiveTab('upcoming'),
+            },
+            {
+              title: t('myEvents.tabs.hosting'),
+              icon: MapPinHouse,
+              onClick: () => setActiveTab('hosting'),
+            },
+            {
+              title: t('myEvents.tabs.drafts'),
+              icon: UserRoundPen,
+              onClick: () => setActiveTab('drafts'),
+            },
+            { title: t('myEvents.tabs.past'), icon: History, onClick: () => setActiveTab('past') },
           ]}
           selected={TAB_ORDER.indexOf(activeTab)}
         />
-        <CircledIconButton icon={Search} onClick={handleViewAll} ariaLabel='Search my events' />
+        <CircledIconButton
+          icon={Search}
+          onClick={handleViewAll}
+          ariaLabel={t('myEvents.searchAria')}
+        />
       </div>
 
       {/* Content */}
@@ -209,7 +208,7 @@ export function MyEventsSection({
           <div className='flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400'>
             <AlertTriangle className='mt-0.5 h-4 w-4 shrink-0' />
             <div className='min-w-0'>
-              <p className='text-sm font-semibold'>Could not load upcoming events</p>
+              <p className='text-sm font-semibold'>{t('myEvents.loadError')}</p>
               <p className='text-sm text-amber-800 dark:text-amber-400'>{upcomingError?.message}</p>
             </div>
           </div>
@@ -220,20 +219,20 @@ export function MyEventsSection({
             </div>
             <div className='min-w-0 flex-1'>
               <p className='truncate text-sm font-medium text-gray-900 dark:text-neutral-100'>
-                {emptyState.title}
+                {t(`myEvents.empty.${activeTab}.title`)}
               </p>
               <p className='truncate text-xs text-gray-500 dark:text-neutral-400'>
-                {emptyState.description}
+                {t(`myEvents.empty.${activeTab}.description`)}
               </p>
             </div>
-            {emptyState.cta && (
+            {emptyState.ctaHref && activeTab !== 'past' && (
               <Button
                 asChild
                 size='sm'
                 variant='outline'
                 className='h-8 shrink-0 bg-white text-xs font-medium dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800'
               >
-                <Link href={emptyState.cta.href}>{emptyState.cta.label}</Link>
+                <Link href={emptyState.ctaHref}>{t(`myEvents.empty.${activeTab}.cta`)}</Link>
               </Button>
             )}
           </div>
@@ -258,10 +257,11 @@ export function MyEventsSection({
               variant='ghost'
               className='mt-3 h-9 w-full rounded-full border border-gray-200 bg-gray-50 text-sm hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
             >
-              View All Events
               {activeTab === 'upcoming' && (upcomingHasMore || upcomingTotalCount)
-                ? ` (${upcomingTotalCount ?? upcomingEvents.length})`
-                : ''}
+                ? t('myEvents.viewAllCount', {
+                    count: upcomingTotalCount ?? upcomingEvents.length,
+                  })
+                : t('myEvents.viewAll')}
               <ArrowRight className='h-4 w-4' />
             </Button>
           </>

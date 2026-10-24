@@ -14,10 +14,13 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { EmailBlast } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { Loader2, Mail, Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EmailBlastPage() {
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
   const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const params = useParams();
   const pathname = usePathname();
@@ -40,7 +43,7 @@ export default function EmailBlastPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Email Blasts',
+      title: t('emailBlast.page.topBarTitle'),
       buttons: [],
       leftMode: 'back',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
@@ -50,7 +53,7 @@ export default function EmailBlastPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig, router, eventId]);
+  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig, router, eventId, t]);
 
   const handleCreateBlast = () => {
     setBlastToEdit(null);
@@ -86,7 +89,7 @@ export default function EmailBlastPage() {
 
     try {
       await cancelEmailBlastMutation.mutateAsync();
-      toast.success('Email blast cancelled successfully');
+      toast.success(t('emailBlast.page.cancelSuccess'));
       setShowCancelConfirmation(false);
       setBlastToCancel(null);
       setSelectedBlastId(null);
@@ -95,8 +98,8 @@ export default function EmailBlastPage() {
       const errorMessage =
         mutationError && typeof mutationError === 'object' && 'message' in mutationError
           ? String((mutationError as { message?: unknown }).message || '')
-          : 'Failed to cancel email blast';
-      toast.error(errorMessage || 'Failed to cancel email blast');
+          : t('emailBlast.page.cancelFailed');
+      toast.error(errorMessage || t('emailBlast.page.cancelFailed'));
 
       if (isEmailBlastScheduledMutationRaceError(mutationError)) {
         await refetch();
@@ -115,10 +118,10 @@ export default function EmailBlastPage() {
       <div className='flex items-start justify-between gap-4'>
         <div>
           <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-            Email blasts
+            {t('emailBlast.page.heading')}
           </h2>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            Send updates to your guests by email, now or on a schedule.
+            {t('emailBlast.page.subtitle')}
           </p>
         </div>
         <button
@@ -127,7 +130,7 @@ export default function EmailBlastPage() {
           className='flex shrink-0 items-center gap-1.5 rounded-full bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
         >
           <Plus className='h-4 w-4' />
-          New blast
+          {t('emailBlast.page.newBlast')}
         </button>
       </div>
 
@@ -137,7 +140,7 @@ export default function EmailBlastPage() {
           {isLoading ? (
             <div className='py-12 text-center'>
               <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500 dark:text-red-400' />
-              <p className='text-gray-600 dark:text-neutral-400'>Loading email blasts...</p>
+              <p className='text-gray-600 dark:text-neutral-400'>{t('emailBlast.page.loading')}</p>
             </div>
           ) : error ? (
             <div className='py-12 text-center'>
@@ -145,16 +148,16 @@ export default function EmailBlastPage() {
                 <Mail className='h-8 w-8 text-red-400' />
               </div>
               <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
-                Failed to load email blasts
+                {t('emailBlast.page.loadErrorTitle')}
               </h3>
               <p className='mb-6 text-gray-500 dark:text-neutral-400'>
-                There was an error loading your email blasts. Please try again.
+                {t('emailBlast.page.loadErrorDescription')}
               </p>
               <button
                 onClick={() => window.location.reload()}
                 className='rounded-lg bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
-                Retry
+                {tCommon('actions.retry')}
               </button>
             </div>
           ) : transformedBlasts.length === 0 ? (
@@ -163,17 +166,17 @@ export default function EmailBlastPage() {
                 <Mail className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
               </div>
               <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
-                No email blasts yet
+                {t('emailBlast.page.emptyTitle')}
               </h3>
               <p className='mb-6 text-gray-500 dark:text-neutral-400'>
-                Send your first email blast to keep your guests informed
+                {t('emailBlast.page.emptyDescription')}
               </p>
               <button
                 onClick={handleCreateBlast}
                 className='mx-auto flex h-12 w-full max-w-xs items-center justify-center gap-2 rounded-full bg-red-500 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 <Plus className='h-5 w-5' />
-                Create Email Blast
+                {t('emailBlast.page.createBlast')}
               </button>
             </div>
           ) : (

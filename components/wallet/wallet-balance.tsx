@@ -20,6 +20,7 @@ import {
   Scan,
   Zap,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { WalletEducationalSheet } from './wallet-educational-sheet';
 
@@ -30,6 +31,7 @@ interface WalletBalanceProps {
 }
 
 export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps) {
+  const t = useTranslations('wallet');
   const { walletState, isLoading, refreshBalance } = useWallet();
   const { address, isLoading: isAddressLoading } = useLightningAddress();
   const { balanceHidden, toggleBalanceVisibility } = useWalletPreferences();
@@ -128,7 +130,7 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
                   <div className='flex items-center gap-2'>
                     <Loader2 className='h-4 w-4 animate-spin text-gray-400 dark:text-neutral-500' />
                     <span className='text-sm text-gray-500 dark:text-neutral-400'>
-                      Registering...
+                      {t('balance.registering')}
                     </span>
                   </div>
                 ) : (
@@ -204,7 +206,7 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
                 className='font-lg h-12 rounded-full bg-white font-semibold active:bg-gray-100 dark:bg-neutral-900 dark:active:bg-neutral-800'
               >
                 <ArrowDownLeft className='h-5 w-5' />
-                Receive
+                {t('actions.receive')}
               </Button>
               <Button
                 onClick={onSend}
@@ -212,7 +214,7 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
                 className='font-lg h-12 rounded-full bg-white font-semibold active:bg-gray-100 dark:bg-neutral-900 dark:active:bg-neutral-800'
               >
                 <ArrowUpRight className='h-5 w-5' />
-                Send
+                {t('actions.send')}
               </Button>
             </div>
             <Button
@@ -221,7 +223,7 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
               className='font-lg h-12 w-full rounded-full bg-white font-semibold active:bg-gray-100 dark:bg-neutral-900 dark:active:bg-neutral-800'
             >
               <Scan className='h-5 w-5' />
-              Scan
+              {t('actions.scan')}
             </Button>
           </div>
         </div>

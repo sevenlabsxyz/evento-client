@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
+import { useTranslations } from 'next-intl';
 
 interface LocationActionsSheetProps {
   open: boolean;
@@ -18,6 +19,8 @@ export function LocationActionsSheet({
   fullAddress,
   destination,
 }: LocationActionsSheetProps) {
+  const t = useTranslations('event');
+  const tCommon = useTranslations('common');
   const encodedDestination = encodeURIComponent(destination);
   const googleMapsDirectionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodedDestination}&travelmode=driving`;
   const appleMapsUrl = `https://maps.apple.com/?daddr=${encodedDestination}&dirflg=d`;
@@ -31,18 +34,18 @@ export function LocationActionsSheet({
   const handleCopyAddress = async () => {
     try {
       await navigator.clipboard.writeText(fullAddress);
-      toast.success('Address copied');
+      toast.success(t('locationSheet.addressCopied'));
       onOpenChange(false);
     } catch (error) {
       logger.error('Failed to copy address', {
         error: error instanceof Error ? error.message : String(error),
       });
-      toast.error('Failed to copy address');
+      toast.error(t('locationSheet.copyFailed'));
     }
   };
 
   return (
-    <MasterScrollableSheet title='Open in Maps' open={open} onOpenChange={onOpenChange}>
+    <MasterScrollableSheet title={t('locationSheet.title')} open={open} onOpenChange={onOpenChange}>
       <div className='px-4 pb-6'>
         <p className='mb-5 text-sm text-gray-600 dark:text-neutral-400'>{fullAddress}</p>
 
@@ -53,7 +56,7 @@ export function LocationActionsSheet({
             className='h-14 w-full justify-start text-base font-medium'
             onClick={() => handleOpenMaps('apple')}
           >
-            Open in Apple Maps
+            {t('locationSheet.appleMaps')}
           </Button>
 
           <Button
@@ -62,7 +65,7 @@ export function LocationActionsSheet({
             className='h-14 w-full justify-start text-base font-medium'
             onClick={() => handleOpenMaps('google')}
           >
-            Open in Google Maps
+            {t('locationSheet.googleMaps')}
           </Button>
 
           <Button
@@ -71,7 +74,7 @@ export function LocationActionsSheet({
             className='h-14 w-full justify-start text-base font-medium'
             onClick={handleCopyAddress}
           >
-            Copy Address
+            {t('locationSheet.copyAddress')}
           </Button>
 
           <Button
@@ -80,7 +83,7 @@ export function LocationActionsSheet({
             className='mt-2 h-14 w-full text-base font-medium text-gray-600 dark:text-neutral-400'
             onClick={() => onOpenChange(false)}
           >
-            Cancel
+            {tCommon('actions.cancel')}
           </Button>
         </div>
       </div>

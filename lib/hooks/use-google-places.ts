@@ -1,6 +1,7 @@
 'use client';
 
 import { Env } from '@/lib/constants/env';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface LocationData {
@@ -132,7 +133,7 @@ export function useGooglePlaces(): UseGooglePlacesReturn {
     const apiKey = Env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
     if (!apiKey) {
-      setError('Google Maps API key not configured');
+      setError(translateHooks('places.apiKeyMissing'));
       return;
     }
 
@@ -185,7 +186,7 @@ export function useGooglePlaces(): UseGooglePlacesReturn {
           } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
             setPredictions([]);
           } else {
-            setError('Failed to fetch places');
+            setError(translateHooks('places.fetchFailed'));
             setPredictions([]);
           }
         });
@@ -252,7 +253,7 @@ export function useGooglePlaces(): UseGooglePlacesReturn {
 
   const getCurrentLocation = useCallback(async (): Promise<LocationData | null> => {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
+      setError(translateHooks('places.geolocationUnsupported'));
       return null;
     }
 
@@ -265,7 +266,7 @@ export function useGooglePlaces(): UseGooglePlacesReturn {
           const apiKey = Env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
           if (!apiKey) {
             resolve({
-              name: 'Current Location',
+              name: translateHooks('places.currentLocation'),
               address: '',
               city: '',
               country: '',
@@ -285,7 +286,9 @@ export function useGooglePlaces(): UseGooglePlacesReturn {
               const result = data.results[0];
               const addressComponents = parseAddressComponents(result.address_components);
               const resolvedName =
-                addressComponents.address || result.formatted_address || 'Current Location';
+                addressComponents.address ||
+                result.formatted_address ||
+                translateHooks('places.currentLocation');
 
               resolve({
                 name: resolvedName,
@@ -311,7 +314,7 @@ export function useGooglePlaces(): UseGooglePlacesReturn {
               });
             } else {
               resolve({
-                name: 'Current Location',
+                name: translateHooks('places.currentLocation'),
                 address: '',
                 city: '',
                 country: '',
@@ -321,7 +324,7 @@ export function useGooglePlaces(): UseGooglePlacesReturn {
             }
           } catch {
             resolve({
-              name: 'Current Location',
+              name: translateHooks('places.currentLocation'),
               address: '',
               city: '',
               country: '',
@@ -333,16 +336,16 @@ export function useGooglePlaces(): UseGooglePlacesReturn {
         (err) => {
           switch (err.code) {
             case err.PERMISSION_DENIED:
-              setError('Location permission denied');
+              setError(translateHooks('places.permissionDenied'));
               break;
             case err.POSITION_UNAVAILABLE:
-              setError('Location information unavailable');
+              setError(translateHooks('places.unavailable'));
               break;
             case err.TIMEOUT:
-              setError('Location request timed out');
+              setError(translateHooks('places.timeout'));
               break;
             default:
-              setError('Failed to get location');
+              setError(translateHooks('places.locationFailed'));
           }
           resolve(null);
         },

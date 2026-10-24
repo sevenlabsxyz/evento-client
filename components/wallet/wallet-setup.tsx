@@ -8,6 +8,7 @@ import { useWallet } from '@/lib/hooks/use-wallet';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, Key, Loader2, Wallet } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface WalletSetupProps {
@@ -18,6 +19,8 @@ interface WalletSetupProps {
 type Step = 'create-pin' | 'confirm-pin' | 'creating' | 'error';
 
 export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
+  const t = useTranslations('wallet');
+  const tCommon = useTranslations('common');
   const [step, setStep] = useState<Step>('create-pin');
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
@@ -45,7 +48,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
 
   const handleCreatePinNext = (pinToConfirm = pin) => {
     if (pinToConfirm.length < 6) {
-      toast.error('PIN must be at least 6 digits');
+      toast.error(t('pin.minLength'));
       return;
     }
     setStep('confirm-pin');
@@ -53,7 +56,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
 
   const handleConfirmAndCreate = async (confirmedPin = confirmPin) => {
     if (confirmedPin !== pin) {
-      toast.error('PINs do not match');
+      toast.error(t('pin.mismatch'));
       setConfirmPin('');
       return;
     }
@@ -93,7 +96,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
         }
       }
 
-      toast.success('Wallet created successfully!');
+      toast.success(t('setup.success'));
       onComplete(mnemonic);
     } catch (err: any) {
       logger.error('Wallet creation error', {
@@ -101,12 +104,12 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
       });
 
       // Provide helpful error messages
-      let errorMessage = err.message || 'Failed to create wallet';
+      let errorMessage = err.message || t('setup.failed');
 
       if (err.message?.includes('API key')) {
-        errorMessage = 'Breez API key is missing. Please contact support.';
+        errorMessage = t('setup.missingApiKey');
       } else if (err.message?.includes('WASM') || err.message?.includes('defaultConfig')) {
-        errorMessage = 'Wallet initialization failed. Please refresh the page and try again.';
+        errorMessage = t('setup.initFailed');
       }
 
       setError(errorMessage);
@@ -145,16 +148,16 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60'>
             <AlertCircle className='h-8 w-8 text-red-600 dark:text-red-400' />
           </div>
-          <h2 className='text-2xl font-bold'>Setup Failed</h2>
+          <h2 className='text-2xl font-bold'>{t('setup.failedTitle')}</h2>
           <p className='mt-2 text-sm text-muted-foreground'>{error}</p>
         </div>
         <div className='flex gap-3'>
           <Button onClick={handleRetry} variant='default' size='lg'>
-            Try Again
+            {tCommon('actions.tryAgain')}
           </Button>
           {onCancel && (
             <Button onClick={onCancel} variant='outline' size='lg'>
-              Go Back
+              {t('setup.goBack')}
             </Button>
           )}
         </div>
@@ -170,8 +173,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-950/40'>
             <Loader2 className='h-8 w-8 animate-spin text-orange-600 dark:text-orange-400' />
           </div>
-          <h2 className='text-2xl font-bold'>Creating Wallet</h2>
-          <p className='mt-2 text-sm text-muted-foreground'>Setting up your wallet...</p>
+          <h2 className='text-2xl font-bold'>{t('setup.creatingTitle')}</h2>
+          <p className='mt-2 text-sm text-muted-foreground'>{t('setup.creatingDescription')}</p>
         </div>
       </div>
     );
@@ -185,10 +188,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-950/40'>
             <Wallet className='h-8 w-8 text-orange-600 dark:text-orange-400' />
           </div>
-          <h2 className='text-2xl font-bold'>Create a PIN</h2>
-          <p className='mt-2 text-sm text-muted-foreground'>
-            Set a 6-digit PIN to protect your wallet
-          </p>
+          <h2 className='text-2xl font-bold'>{t('pin.createTitle')}</h2>
+          <p className='mt-2 text-sm text-muted-foreground'>{t('setup.createPinDescription')}</p>
         </div>
 
         <div className='space-y-4'>
@@ -207,10 +208,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
             <div className='flex items-start gap-2'>
               <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400' />
               <div className='text-sm text-amber-900 dark:text-amber-400'>
-                <p className='font-medium'>Important</p>
-                <p className='mt-1'>
-                  Remember this PIN! You&apos;ll need it to access your wallet.
-                </p>
+                <p className='font-medium'>{t('setup.important')}</p>
+                <p className='mt-1'>{t('setup.rememberPin')}</p>
               </div>
             </div>
           </div>
@@ -221,12 +220,12 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
             size='lg'
             disabled={pin.length < 6}
           >
-            Next
+            {tCommon('actions.next')}
           </Button>
 
           {onCancel && (
             <Button onClick={onCancel} variant='ghost' className='w-full'>
-              Cancel
+              {tCommon('actions.cancel')}
             </Button>
           )}
         </div>
@@ -242,8 +241,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900'>
             <Key className='h-8 w-8 text-black dark:text-neutral-100' />
           </div>
-          <h2 className='text-2xl font-bold'>Confirm Your PIN</h2>
-          <p className='mt-2 text-sm text-muted-foreground'>Enter your PIN again to confirm</p>
+          <h2 className='text-2xl font-bold'>{t('pin.confirmTitle')}</h2>
+          <p className='mt-2 text-sm text-muted-foreground'>{t('pin.confirmDescription')}</p>
         </div>
 
         <div className='space-y-4'>
@@ -264,7 +263,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
             size='lg'
             disabled={confirmPin.length < 6}
           >
-            Create Wallet
+            {t('setup.createWallet')}
           </Button>
 
           <Button
@@ -275,7 +274,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
             variant='ghost'
             className='w-full'
           >
-            Back
+            {tCommon('actions.back')}
           </Button>
         </div>
       </div>

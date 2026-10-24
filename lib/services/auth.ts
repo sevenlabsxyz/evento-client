@@ -1,4 +1,5 @@
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { logger } from '@/lib/utils/logger';
 import { apiClient } from '../api/client';
 import { createClient } from '../supabase/client';
@@ -87,7 +88,7 @@ export const authService = {
       const session = await response.json().catch(() => null);
 
       if (!response.ok || !session?.access_token || !session?.refresh_token) {
-        throw new Error(session?.error || 'Invalid code. Please try again.');
+        throw new Error(session?.error || translateHooks('auth.invalidCode'));
       }
 
       const { data: sessionData, error: sessionError } = await supabase.auth.setSession({

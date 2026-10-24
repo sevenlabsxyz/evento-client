@@ -63,6 +63,18 @@ describe('getManageNavSections', () => {
     expect(find(3)?.badge).toBe(3);
     expect(find(0)?.badge).toBeUndefined();
   });
+
+  it('exposes translation keys instead of English labels', () => {
+    const sections = getManageNavSections({
+      id: 'evt_test123',
+      type: 'ticketed',
+      status: 'published',
+    });
+    const guests = sections.find((section) => section.id === 'people');
+
+    expect(guests?.labelKey).toBe('guests');
+    expect(guests?.items.find((item) => item.id === 'guests')?.labelKey).toBe('guestList');
+  });
 });
 
 describe('getActiveManageNavItemId', () => {

@@ -16,6 +16,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, ArrowLeft, ChevronRight, EyeOff, Lock, Shield, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -30,12 +31,14 @@ export default function WalletSettingsPage() {
   const [showBetaSheet, setShowBetaSheet] = useState(false);
   const [showBackupChoiceSheet, setShowBackupChoiceSheet] = useState(false);
   const isDesktop = useWalletDesktopLayout();
+  const t = useTranslations('wallet');
+  const tCommon = useTranslations('common');
 
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Wallet Settings',
-      badge: 'Beta',
+      title: t('settings.topBarTitle'),
+      badge: t('settings.beta'),
       onBadgeClick: () => setShowBetaSheet(true),
       leftMode: 'back',
       desktopHidden: true,
@@ -44,11 +47,11 @@ export default function WalletSettingsPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
+  }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute, t]);
 
   const handleLockWallet = () => {
     lockWallet();
-    toast.success('Wallet locked');
+    toast.success(t('settings.locked'));
     router.push('/e/wallet');
   };
 
@@ -56,7 +59,7 @@ export default function WalletSettingsPage() {
     // Clear all wallet data
     WalletStorageService.clearWalletData();
     await resetWalletInitialization({ disconnect: true, resetStore: true });
-    toast.success('Wallet deleted');
+    toast.success(t('settings.deleted'));
     router.push('/e/wallet');
 
     // Reload to reset state
@@ -83,19 +86,19 @@ export default function WalletSettingsPage() {
             className='inline-flex items-center gap-1.5 rounded-full text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-neutral-400 dark:hover:text-neutral-100'
           >
             <ArrowLeft className='h-4 w-4' />
-            Wallet
+            {t('page.title')}
           </Link>
           <WalletDesktopPageHeader
             className='mt-4'
-            title='Wallet settings'
-            description='Security, privacy, and device options for your Evento wallet.'
+            title={t('settings.title')}
+            description={t('settings.description')}
             actions={
               <button
                 type='button'
                 onClick={() => setShowBetaSheet(true)}
                 className='rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
               >
-                Beta
+                {t('settings.beta')}
               </button>
             }
           />
@@ -104,9 +107,11 @@ export default function WalletSettingsPage() {
 
       {/* Security Section */}
       <div className='space-y-4 md:grid md:grid-cols-[12rem_minmax(0,1fr)] md:grid-rows-[auto_1fr] md:gap-x-10 md:gap-y-1 md:space-y-0 md:border-t md:border-gray-200 md:pt-8 md:dark:border-neutral-800'>
-        <h2 className='text-lg font-semibold md:col-start-1 md:row-start-1'>Security</h2>
+        <h2 className='text-lg font-semibold md:col-start-1 md:row-start-1'>
+          {t('settings.security')}
+        </h2>
         <p className='hidden text-sm text-gray-500 dark:text-neutral-500 md:col-start-1 md:row-start-2 md:block'>
-          Locking, backups, and what stays visible on screen.
+          {t('settings.securityDescription')}
         </p>
 
         <div className='space-y-3 md:col-start-2 md:row-span-2 md:row-start-1'>
@@ -120,8 +125,10 @@ export default function WalletSettingsPage() {
               <Lock className='h-5 w-5 text-blue-600 dark:text-blue-400' />
             </div>
             <div className='flex-1'>
-              <div className='font-medium'>Lock Wallet</div>
-              <div className='text-sm text-muted-foreground'>Require password to access</div>
+              <div className='font-medium'>{t('settings.lockWallet')}</div>
+              <div className='text-sm text-muted-foreground'>
+                {t('settings.lockWalletDescription')}
+              </div>
             </div>
             <CircledIconButton icon={ChevronRight} className='bg-white dark:bg-neutral-900' />
           </button>
@@ -144,12 +151,14 @@ export default function WalletSettingsPage() {
               />
             </div>
             <div className='flex-1'>
-              <div className='font-medium'>Backup Status</div>
+              <div className='font-medium'>{t('settings.backupStatus')}</div>
               <div className='text-sm text-muted-foreground'>
                 {walletState.hasBackup ? (
-                  <span className='text-green-600 dark:text-green-400'>Backed up</span>
+                  <span className='text-green-600 dark:text-green-400'>{t('page.backedUp')}</span>
                 ) : (
-                  <span className='text-amber-600 dark:text-amber-400'>Not backed up</span>
+                  <span className='text-amber-600 dark:text-amber-400'>
+                    {t('page.notBackedUp')}
+                  </span>
                 )}
               </div>
             </div>
@@ -161,9 +170,9 @@ export default function WalletSettingsPage() {
               <EyeOff className='h-5 w-5 text-gray-700 dark:text-neutral-300' />
             </div>
             <div className='flex-1'>
-              <div className='font-medium'>Hide balance and values</div>
+              <div className='font-medium'>{t('settings.hideBalance')}</div>
               <div className='text-sm text-muted-foreground'>
-                Keep wallet amounts hidden across the wallet.
+                {t('settings.hideBalanceDescription')}
               </div>
             </div>
             <Switch checked={balanceHidden} onCheckedChange={setBalanceHidden} />
@@ -174,21 +183,18 @@ export default function WalletSettingsPage() {
       {/* Danger Zone */}
       <div className='space-y-4 md:grid md:grid-cols-[12rem_minmax(0,1fr)] md:grid-rows-[auto_1fr] md:gap-x-10 md:gap-y-1 md:space-y-0 md:border-t md:border-gray-200 md:pt-8 md:dark:border-neutral-800'>
         <h2 className='text-lg font-semibold text-red-600 dark:text-red-400 md:col-start-1 md:row-start-1'>
-          Danger Zone
+          {t('settings.dangerZone')}
         </h2>
         <p className='hidden text-sm text-gray-500 dark:text-neutral-500 md:col-start-1 md:row-start-2 md:block'>
-          Irreversible actions for this device.
+          {t('settings.dangerZoneDescription')}
         </p>
 
         <div className='rounded-3xl border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/40 md:col-start-2 md:row-span-2 md:row-start-1 md:p-5'>
           <div className='mb-4 flex items-start gap-3'>
             <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400' />
             <div className='text-sm text-red-900 dark:text-red-400'>
-              <p className='font-medium'>Delete Wallet</p>
-              <p className='mt-1'>
-                This will permanently delete your wallet from this device. Make sure you have backed
-                up your wallet before proceeding.
-              </p>
+              <p className='font-medium'>{t('settings.deleteWallet')}</p>
+              <p className='mt-1'>{t('settings.deleteWalletDescription')}</p>
             </div>
           </div>
 
@@ -198,7 +204,7 @@ export default function WalletSettingsPage() {
             className='w-full md:w-auto md:px-6'
           >
             <Trash2 className='mr-2 h-4 w-4' />
-            Delete Wallet
+            {t('settings.deleteWallet')}
           </Button>
         </div>
       </div>
@@ -217,7 +223,7 @@ export default function WalletSettingsPage() {
 
       {/* Delete Wallet Confirmation Sheet */}
       <MasterScrollableSheet
-        title='Delete Wallet'
+        title={t('settings.deleteWallet')}
         open={showDeleteSheet}
         onOpenChange={setShowDeleteSheet}
       >
@@ -225,21 +231,18 @@ export default function WalletSettingsPage() {
           <div className='flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/40'>
             <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400' />
             <div className='text-sm text-red-900 dark:text-red-400'>
-              <p className='font-medium'>This action cannot be undone</p>
-              <p className='mt-1'>
-                Your wallet will be permanently deleted from this device. Make sure you have backed
-                up your recovery phrase before proceeding.
-              </p>
+              <p className='font-medium'>{t('settings.cannotUndo')}</p>
+              <p className='mt-1'>{t('settings.deleteConfirmDescription')}</p>
             </div>
           </div>
 
           <div className='space-y-3'>
             <Button onClick={handleDeleteWallet} variant='destructive' className='w-full'>
               <Trash2 className='mr-2 h-4 w-4' />
-              Yes, Delete Wallet
+              {t('settings.confirmDelete')}
             </Button>
             <Button onClick={() => setShowDeleteSheet(false)} variant='outline' className='w-full'>
-              Cancel
+              {tCommon('actions.cancel')}
             </Button>
           </div>
         </div>

@@ -15,7 +15,7 @@ import { UserList } from '@/lib/types/api';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { toast } from '@/lib/utils/toast';
 import { Loader2 } from 'lucide-react';
-import { formatEventCount } from './list-utils';
+import { useTranslations } from 'next-intl';
 
 interface DeleteListDialogProps {
   list: UserList | null;
@@ -37,6 +37,8 @@ export function DeleteListDialog({
   onDeleteStart,
   onDeleteSettled,
 }: DeleteListDialogProps) {
+  const t = useTranslations('lists.deleteDialog');
+  const tCommon = useTranslations('common');
   const deleteList = useDeleteList();
 
   const handleDelete = async () => {
@@ -44,11 +46,11 @@ export function DeleteListDialog({
     onDeleteStart?.();
     try {
       await deleteList.mutateAsync(list.id);
-      toast.success(`"${list.name}" was deleted.`, 'List deleted');
+      toast.success(t('toastMessage', { name: list.name }), t('toastTitle'));
       onOpenChange(false);
       onDeleteSettled?.(true);
     } catch (error) {
-      toast.error(getErrorMessage(error), 'Couldn’t delete list');
+      toast.error(getErrorMessage(error), t('failed'));
       onDeleteSettled?.(false);
     }
   };
@@ -63,13 +65,12 @@ export function DeleteListDialog({
       <AlertDialogContent className='max-w-md rounded-2xl sm:rounded-2xl'>
         <AlertDialogHeader>
           <AlertDialogTitle className='text-gray-900 dark:text-neutral-100'>
-            Delete “{list?.name}”?
+            {t('title', { name: list?.name ?? '' })}
           </AlertDialogTitle>
           <AlertDialogDescription className='text-gray-600 dark:text-neutral-400'>
             {eventCount && eventCount > 0
-              ? `This removes the list along with the ${formatEventCount(eventCount)} saved in it.`
-              : 'This removes the list.'}{' '}
-            The events themselves aren’t affected. This can’t be undone.
+              ? t('descriptionWithCount', { count: eventCount })
+              : t('description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className='gap-2 sm:space-x-0'>
@@ -77,7 +78,7 @@ export function DeleteListDialog({
             disabled={deleteList.isPending}
             className='mt-0 rounded-full dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800'
           >
-            Cancel
+            {tCommon('actions.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={(clickEvent) => {
@@ -91,10 +92,10 @@ export function DeleteListDialog({
             {deleteList.isPending ? (
               <>
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' aria-hidden='true' />
-                Deleting…
+                {tCommon('states.deleting')}
               </>
             ) : (
-              'Delete list'
+              t('confirm')
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

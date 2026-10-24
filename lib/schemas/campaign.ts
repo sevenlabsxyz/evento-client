@@ -1,3 +1,4 @@
+import { validationMessage } from '@/lib/schemas/validation-message';
 import { z } from 'zod';
 
 /**
@@ -5,12 +6,15 @@ import { z } from 'zod';
  * Used by the event manage crowdfunding page for create/update flows.
  */
 export const campaignFormSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(200, 'Title must be 200 characters or fewer'),
+  title: z
+    .string()
+    .min(1, validationMessage('validation.titleRequired'))
+    .max(200, validationMessage('validation.titleTooLong')),
   description: z.string().optional(),
   goal_sats: z
     .number()
-    .int('Goal must be a whole number')
-    .positive('Goal must be a positive number')
+    .int(validationMessage('validation.goalWholeNumber'))
+    .positive(validationMessage('validation.goalPositive'))
     .optional()
     .nullable(),
   visibility: z.enum(['public', 'private']),

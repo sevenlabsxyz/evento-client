@@ -4,30 +4,16 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import type { EventRSVP, RSVPStatus, UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { Loader2, Users, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { formatGuestDate } from './format-guest-date';
 
 export type GuestRole = 'creator' | 'cohost' | null;
 
-const STATUS_BADGES: Record<RSVPStatus, { label: string; className: string }> = {
-  yes: {
-    label: 'Going',
-    className: 'bg-green-100 text-green-700 dark:bg-green-950/60 dark:text-green-300',
-  },
-  maybe: {
-    label: 'Maybe',
-    className: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300',
-  },
-  no: {
-    label: 'Not going',
-    className: 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400',
-  },
-};
-
-const EMPTY_TAB_COPY: Record<RSVPStatus, string> = {
-  yes: "No guests have confirmed they're going yet.",
-  no: 'No guests have declined yet.',
-  maybe: 'No guests have responded with maybe yet.',
+const STATUS_BADGE_CLASSES: Record<RSVPStatus, string> = {
+  yes: 'bg-green-100 text-green-700 dark:bg-green-950/60 dark:text-green-300',
+  maybe: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300',
+  no: 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400',
 };
 
 interface RsvpGuestListProps {
@@ -51,6 +37,9 @@ export function RsvpGuestList({
   onRemove,
   onSelectUser,
 }: RsvpGuestListProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
+
   if (guests.length === 0) {
     return (
       <div className='rounded-2xl border border-dashed border-gray-200 bg-white px-4 py-12 text-center dark:border-neutral-800 dark:bg-neutral-900'>
@@ -58,10 +47,12 @@ export function RsvpGuestList({
           <Users className='h-6 w-6 text-gray-400 dark:text-neutral-400' />
         </div>
         <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-          {hasSearchQuery ? 'No guests match' : 'No Guests'}
+          {hasSearchQuery ? t('rsvpGuestList.noMatchTitle') : t('rsvpGuestList.noGuests')}
         </h3>
         <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-          {hasSearchQuery ? 'Try a different name, username, or email.' : EMPTY_TAB_COPY[activeTab]}
+          {hasSearchQuery
+            ? t('rsvpGuestList.noMatchBody')
+            : t(`rsvpGuestList.emptyTab.${activeTab}`)}
         </p>
       </div>
     );
@@ -77,20 +68,21 @@ export function RsvpGuestList({
         <div className='flex flex-col items-end gap-1'>
           {layout === 'card' ? (
             <span className='rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-950/60 dark:text-amber-400'>
-              {guestRole === 'creator' ? 'Creator' : 'Co-host'}
+              {guestRole === 'creator' ? t('rsvpGuestList.creator') : t('rsvpGuestList.cohost')}
             </span>
           ) : null}
           <Link
             href={hostsHref}
             className='text-[11px] text-gray-500 underline-offset-2 hover:underline dark:text-neutral-400'
           >
-            Manage in Hosts
+            {t('rsvpGuestList.manageInHosts')}
           </Link>
         </div>
       );
     }
 
-    const displayName = guest.user_details?.name || guest.user_details?.username || 'guest';
+    const displayName =
+      guest.user_details?.name || guest.user_details?.username || t('rsvpGuestList.guestFallback');
     const isRemoving = removingUserId === guest.user_id;
 
     return (
@@ -102,10 +94,10 @@ export function RsvpGuestList({
           'flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-200 hover:text-red-500 disabled:opacity-50 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-red-400',
           layout === 'card' ? 'h-8 w-8' : 'ml-auto h-8 gap-1.5 px-3 text-sm font-medium'
         )}
-        aria-label={`Remove ${displayName}`}
+        aria-label={t('rsvpGuestList.removeLabel', { name: displayName })}
       >
         {isRemoving ? <Loader2 className='h-4 w-4 animate-spin' /> : <X className='h-4 w-4' />}
-        {layout === 'table' ? <span>Remove</span> : null}
+        {layout === 'table' ? <span>{tCommon('actions.remove')}</span> : null}
       </button>
     );
   };
@@ -143,7 +135,7 @@ export function RsvpGuestList({
                 </p>
                 {rsvpDate ? (
                   <p className='mt-0.5 text-xs text-gray-400 dark:text-neutral-500'>
-                    RSVP&apos;d {rsvpDate}
+                    {t('rsvpGuestList.rsvpDate', { date: rsvpDate })}
                   </p>
                 ) : null}
               </div>
@@ -159,23 +151,22 @@ export function RsvpGuestList({
           <thead className='border-b border-gray-100 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-neutral-800 dark:text-neutral-400'>
             <tr>
               <th scope='col' className='px-4 py-2.5 font-medium'>
-                Guest
+                {t('rsvpGuestList.columns.guest')}
               </th>
               <th scope='col' className='px-4 py-2.5 font-medium'>
-                Status
+                {t('rsvpGuestList.columns.status')}
               </th>
               <th scope='col' className='px-4 py-2.5 font-medium'>
-                RSVP date
+                {t('rsvpGuestList.columns.rsvpDate')}
               </th>
               <th scope='col' className='px-4 py-2.5 text-right font-medium'>
-                <span className='sr-only'>Actions</span>
+                <span className='sr-only'>{t('rsvpGuestList.columns.actions')}</span>
               </th>
             </tr>
           </thead>
           <tbody className='divide-y divide-gray-100 dark:divide-neutral-800'>
             {guests.map((guest) => {
               const guestRole = getGuestRole(guest.user_id);
-              const status = STATUS_BADGES[guest.status];
 
               return (
                 <tr key={guest.id}>
@@ -207,14 +198,16 @@ export function RsvpGuestList({
                       <span
                         className={cn(
                           'rounded-full px-2 py-0.5 text-xs font-medium',
-                          status.className
+                          STATUS_BADGE_CLASSES[guest.status]
                         )}
                       >
-                        {status.label}
+                        {t(`rsvpGuestList.status.${guest.status}`)}
                       </span>
                       {guestRole ? (
                         <span className='rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-950/60 dark:text-amber-400'>
-                          {guestRole === 'creator' ? 'Creator' : 'Co-host'}
+                          {guestRole === 'creator'
+                            ? t('rsvpGuestList.creator')
+                            : t('rsvpGuestList.cohost')}
                         </span>
                       ) : null}
                     </div>

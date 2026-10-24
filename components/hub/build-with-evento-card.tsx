@@ -1,9 +1,11 @@
 import { Bot, Code2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 
 export function BuildWithEventoCard() {
+  const t = useTranslations('hub');
   return (
     <section className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
       <div className='flex items-start gap-3'>
@@ -12,10 +14,10 @@ export function BuildWithEventoCard() {
         </div>
         <div className='min-w-0'>
           <h2 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-            Build with Evento
+            {t('build.title')}
           </h2>
           <p className='mt-0.5 text-xs text-gray-500 dark:text-neutral-400'>
-            Public API, embeds, and an MCP server for AI agents.
+            {t('build.description')}
           </p>
         </div>
       </div>

@@ -1,0 +1,183 @@
+{
+  "page": {
+    "title": "Evento Hub",
+    "loadErrorTitle": "Couldn't load your hub",
+    "loadErrorFallback": "Something went wrong while loading your hub data.",
+    "tryAgain": "Try Again"
+  },
+  "greeting": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening",
+    "morningName": "Good morning, {name}",
+    "afternoonName": "Good afternoon, {name}",
+    "eveningName": "Good evening, {name}",
+    "eventsThisWeek": "{count, plural, one {# event this week} other {# events this week}}",
+    "nothingThisWeekUpcoming": "Nothing on your calendar this week · {count} upcoming",
+    "nothingThisWeek": "Nothing on your calendar this week",
+    "findEvents": "Find events",
+    "create": "Create"
+  },
+  "build": {
+    "title": "Build with Evento",
+    "description": "Public API, embeds, and an MCP server for AI agents."
+  },
+  "blog": {
+    "railTitle": "From the blog",
+    "allPosts": "All posts",
+    "galleryTitle": "Latest from Evento",
+    "previous": "Previous posts",
+    "next": "Next posts"
+  },
+  "getStarted": {
+    "title": "Get started",
+    "subtitle": "A few steps to make Evento yours",
+    "progress": "{completed} of {total}",
+    "progressLabel": "Get started progress",
+    "completedLabel": "{title} (completed)",
+    "steps": {
+      "create": {
+        "title": "Create your first event",
+        "description": "Host a meetup, party or class"
+      },
+      "follow": {
+        "title": "Follow hosts",
+        "description": "See their events in your feed"
+      },
+      "wallet": {
+        "title": "Set up your wallet",
+        "description": "Send and receive sats"
+      },
+      "profile": {
+        "title": "Complete your profile",
+        "description": "Add a photo and a bio"
+      }
+    }
+  },
+  "myEvents": {
+    "title": "My Events",
+    "searchAria": "Search my events",
+    "loadError": "Could not load upcoming events",
+    "viewAll": "View All Events",
+    "viewAllCount": "View All Events ({count})",
+    "tabs": {
+      "upcoming": "Upcoming",
+      "hosting": "Hosting",
+      "drafts": "Drafts",
+      "past": "Past"
+    },
+    "empty": {
+      "upcoming": {
+        "title": "No upcoming events",
+        "description": "RSVP to events or create your own",
+        "cta": "Find events"
+      },
+      "hosting": {
+        "title": "No events you're hosting",
+        "description": "Create an event to get started",
+        "cta": "Create event"
+      },
+      "drafts": {
+        "title": "No draft events",
+        "description": "Your draft events will appear here",
+        "cta": "Create event"
+      },
+      "past": {
+        "title": "No past events",
+        "description": "Events you hosted or attended will appear here"
+      }
+    }
+  },
+  "discover": {
+    "title": "Discover",
+    "viewAll": "View all",
+    "viewAllCount": "View all ({count})",
+    "loadError": "Could not load events",
+    "tryAgain": "Try again",
+    "sheetEmpty": "No events to show yet.",
+    "filters": {
+      "featured": {
+        "title": "Featured",
+        "description": "Hand-picked events and what’s coming up next",
+        "sheetTitle": "Discover Feed"
+      },
+      "week": {
+        "title": "This week",
+        "description": "Starting in the next 7 days",
+        "sheetTitle": "This Week"
+      },
+      "following": {
+        "title": "Following",
+        "description": "Upcoming events from hosts you follow",
+        "sheetTitle": "Follow Feed"
+      }
+    },
+    "empty": {
+      "week": {
+        "title": "Nothing starting this week",
+        "description": "None of the events we’re highlighting start in the next 7 days. Check Featured or search for something nearby.",
+        "seeFeatured": "See featured"
+      },
+      "following": {
+        "title": "Follow hosts to see their events here",
+        "description": "When people you follow publish events, they’ll show up in this feed.",
+        "findHosts": "Find hosts"
+      },
+      "featured": {
+        "title": "No featured events right now",
+        "description": "Check back soon, or search for events and hosts on Evento."
+      },
+      "searchEvents": "Search events"
+    }
+  },
+  "upNext": {
+    "label": "Up next",
+    "noUpcoming": "No upcoming events",
+    "browse": "Browse what's on",
+    "happeningNow": "Happening now",
+    "today": "Today",
+    "todayAt": "Today {time}",
+    "tomorrow": "Tomorrow",
+    "tomorrowAt": "Tomorrow {time}",
+    "view": "View",
+    "manage": "Manage",
+    "directions": "Directions"
+  },
+  "needsResponse": {
+    "title": "Needs your response",
+    "seeAll": "See all",
+    "someone": "Someone",
+    "eventUnavailable": "Event details unavailable",
+    "cohostInvite": "Cohost invite",
+    "eventInvite": "Event invite",
+    "redirecting": "Redirecting",
+    "redirectingMessage": "Taking you to this event now",
+    "accept": "Accept",
+    "decline": "Decline",
+    "rsvp": "RSVP",
+    "view": "View",
+    "cohostError": "Cohost invitations are temporarily unavailable.",
+    "eventError": "Event invites are temporarily unavailable."
+  },
+  "invites": {
+    "sheetTitle": "Event Invites",
+    "waiting": "Waiting ({count})",
+    "archive": "Archive",
+    "pendingError": "Couldn't load pending invites",
+    "noPending": "No pending invites",
+    "caughtUp": "You're all caught up!",
+    "noResponded": "No responded invites",
+    "respondedHint": "Invites you respond to will appear here",
+    "detailTitle": "Event Invite",
+    "invitedYou": "invited you to an event on {date} at {time}",
+    "tbd": "TBD",
+    "rsvp": "RSVP",
+    "view": "View",
+    "viewEvent": "View Event",
+    "response": {
+      "going": "Going",
+      "maybe": "Maybe",
+      "notGoing": "Not Going"
+    }
+  }
+}

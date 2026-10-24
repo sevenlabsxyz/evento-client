@@ -4,15 +4,18 @@ export interface LegalSection {
   bullets?: string[];
 }
 
+export type LegalDocumentId = 'terms' | 'privacy';
+
+/** Chrome (title, link labels) is translated via `misc.legal`; body text stays English. */
 export interface LegalDocument {
-  title: string;
+  id: LegalDocumentId;
   summary: string;
   effectiveDate: string;
   lastUpdated: string;
   intro: string[];
   sections: LegalSection[];
   closing: string[];
-  relatedLinks?: Array<{ label: string; href: string }>;
+  relatedLinks?: Array<{ id: LegalDocumentId | 'security'; href: string }>;
 }
 
 const legalProfile = {
@@ -31,7 +34,7 @@ const legalProfile = {
 } as const;
 
 const termsOfService: LegalDocument = {
-  title: 'Terms of Service',
+  id: 'terms',
   summary:
     'These Terms govern your access to and use of Evento, including all websites, applications, APIs, open-source repositories, and related services operated by Seven Labs LLC.',
   effectiveDate: 'February 25, 2026',
@@ -274,13 +277,13 @@ const termsOfService: LegalDocument = {
     'If any required legal wording for your jurisdiction differs, local mandatory law will control to that extent.',
   ],
   relatedLinks: [
-    { label: 'Read Privacy Policy', href: '/privacy' },
-    { label: 'Read Security overview', href: '/e/security' },
+    { id: 'privacy', href: '/privacy' },
+    { id: 'security', href: '/e/security' },
   ],
 };
 
 const privacyPolicy: LegalDocument = {
-  title: 'Privacy Policy',
+  id: 'privacy',
   summary:
     'This Privacy Policy explains how Seven Labs LLC collects, uses, discloses, and protects personal information in connection with Evento and related services.',
   effectiveDate: 'February 25, 2026',
@@ -463,8 +466,8 @@ const privacyPolicy: LegalDocument = {
     'This Privacy Policy is intended to be transparent and practical, but it is not legal advice for your independent business obligations.',
   ],
   relatedLinks: [
-    { label: 'Read Terms of Service', href: '/terms' },
-    { label: 'Read Security overview', href: '/e/security' },
+    { id: 'terms', href: '/terms' },
+    { id: 'security', href: '/e/security' },
   ],
 };
 

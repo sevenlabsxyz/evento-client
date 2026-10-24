@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { GhostAuthor } from '@/lib/types/ghost';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface BlogAuthorCardProps {
   author: GhostAuthor;
@@ -17,6 +18,7 @@ function getInitials(name: string): string {
 }
 
 export function BlogAuthorCard({ author, className }: BlogAuthorCardProps) {
+  const t = useTranslations('blog');
   const name = author.name.trim();
   const bio = author.bio?.trim();
 
@@ -26,7 +28,7 @@ export function BlogAuthorCard({ author, className }: BlogAuthorCardProps) {
 
   return (
     <section
-      aria-label='About the author'
+      aria-label={t('author.aboutLabel')}
       className={cn(
         'flex items-start gap-4 rounded-2xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900 md:p-6',
         className
@@ -40,7 +42,7 @@ export function BlogAuthorCard({ author, className }: BlogAuthorCardProps) {
       </Avatar>
       <div className='min-w-0 flex-1'>
         <p className='text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-neutral-500'>
-          Written by
+          {t('author.writtenBy')}
         </p>
         <p className='mt-0.5 text-base font-semibold text-gray-900 dark:text-neutral-100'>{name}</p>
         {bio && (

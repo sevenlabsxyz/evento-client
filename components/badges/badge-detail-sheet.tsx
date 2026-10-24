@@ -1,8 +1,9 @@
 'use client';
 
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { UserBadge } from '@/lib/types/badges';
-import { format } from 'date-fns';
+import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 
 interface BadgeDetailSheetProps {
@@ -12,9 +13,17 @@ interface BadgeDetailSheetProps {
 }
 
 export function BadgeDetailSheet({ badge, isOpen, onClose }: BadgeDetailSheetProps) {
+  const t = useTranslations('profile');
+  const locale = useLocale();
   if (!badge) return null;
 
-  const earnedDate = badge.earned_at ? format(new Date(badge.earned_at), 'MMMM d, yyyy') : null;
+  const earnedDate = badge.earned_at
+    ? new Date(badge.earned_at).toLocaleDateString(getIntlLocale(locale), {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : null;
 
   return (
     <MasterScrollableSheet
@@ -56,7 +65,7 @@ export function BadgeDetailSheet({ badge, isOpen, onClose }: BadgeDetailSheetPro
         {/* Earned Date */}
         {earnedDate && (
           <div className='rounded-xl bg-gray-100 px-4 py-3 text-center dark:bg-neutral-800'>
-            <p className='text-sm text-gray-500 dark:text-neutral-400'>Earned on</p>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('badges.earnedOn')}</p>
             <p className='font-medium text-gray-900 dark:text-neutral-100'>{earnedDate}</p>
           </div>
         )}

@@ -1,0 +1,321 @@
+{
+  "toast": {
+    "success": "Success",
+    "error": "Error",
+    "info": "Info",
+    "warning": "Warning"
+  },
+  "apiKeys": {
+    "created": "API key created successfully",
+    "createFailed": "Failed to create API key",
+    "revoked": "API key revoked successfully",
+    "revokeFailed": "Failed to revoke API key"
+  },
+  "cohostInvites": {
+    "sent": "{count, plural, one {Sent # cohost invite} other {Sent # cohost invites}}",
+    "invitesSent": "Invites sent",
+    "sendFailed": "Failed to send cohost invites",
+    "acceptFailed": "Failed to accept invite",
+    "declined": "Invitation declined",
+    "declineFailed": "Failed to decline invite",
+    "cancelled": "Invite cancelled",
+    "cancelFailed": "Failed to cancel invite"
+  },
+  "eventInvites": {
+    "noInvitees": "No invitees selected",
+    "sent": "{count, plural, one {Sent # invite} other {Sent # invites}}",
+    "invitesSent": "Invites sent",
+    "sendFailed": "Failed to send invites"
+  },
+  "upload": {
+    "unsupportedType": "File type {type} is not supported",
+    "fileTooLarge": "File size ({size}MB) exceeds limit of {limit}MB",
+    "tooManyFiles": "Cannot select more than {max} files",
+    "invalidFiles": "Invalid files:\n{files}",
+    "alreadySelected": "Some files were already selected",
+    "selectedPhotos": "{count, plural, one {Selected # photo} other {Selected # photos}}",
+    "processingError": "Error processing some files",
+    "uploadFailed": "Upload failed",
+    "uploadedPhotos": "{count, plural, one {Successfully uploaded # photo} other {Successfully uploaded # photos}}",
+    "failedPhotos": "{count, plural, one {Failed to upload # photo} other {Failed to upload # photos}}",
+    "uploadFailedStatus": "Upload failed with status {status}"
+  },
+  "walletInvite": {
+    "notifyFailed": "Failed to send notification",
+    "notified": "We've let them know!",
+    "notifyBatchFailed": "Failed to send wallet notifications"
+  },
+  "galleryLikes": {
+    "unableToLike": "Unable to like this image",
+    "updateFailed": "Failed to update like. Please try again."
+  },
+  "earnPartners": {
+    "zbd": "Earn Bitcoin by playing games and completing tasks",
+    "fold": "Earn Bitcoin rewards on everyday purchases with the Fold debit card",
+    "stackerNews": "Earn Bitcoin by sharing and engaging with content",
+    "lolli": "Earn Bitcoin when you shop at 1,000+ top stores online",
+    "visit": "Visit"
+  },
+  "exchanges": {
+    "cashApp": "Buy and sell Bitcoin easily",
+    "river": "Bitcoin-only financial institution",
+    "strike": "Buy Bitcoin instantly with no fees",
+    "flash": "Neobank for Bitcoin in Jamaica",
+    "kraken": "Advanced trading platform",
+    "coinbase": "Trusted cryptocurrency exchange"
+  },
+  "covers": {
+    "coverTitle": "{category} Cover {number}",
+    "categories": {
+      "featured": "Featured",
+      "gifs": "GIFs",
+      "party": "Party",
+      "social": "Social",
+      "classic": "Classic",
+      "tech": "Tech"
+    }
+  },
+  "lists": {
+    "addEventFailed": "Failed to add event to list",
+    "createFailed": "Failed to create list",
+    "deleteFailed": "Failed to delete list",
+    "fetchEventsFailed": "Failed to fetch list events",
+    "fetchFailed": "Failed to fetch user lists",
+    "updateFailed": "Failed to update list",
+    "fetchSavedStatusFailed": "Failed to fetch saved status",
+    "removeEventFailed": "Failed to remove event from list"
+  },
+  "events": {
+    "createFailed": "Failed to create event",
+    "duplicateFailed": "Failed to duplicate event",
+    "fetchUserEventsFailed": "Failed to fetch user events",
+    "generateDescriptionFailed": "Failed to generate description",
+    "fetchDraftsFailed": "Failed to fetch draft events",
+    "invalidPassword": "Invalid password",
+    "updateFailed": "Failed to update event",
+    "dashboardLoadFailed": "Failed to load event dashboard"
+  },
+  "gallery": {
+    "deleteFailed": "Failed to delete photo"
+  },
+  "discountCodes": {
+    "createFailed": "Failed to create discount code",
+    "updateFailed": "Failed to update discount code"
+  },
+  "emailBlasts": {
+    "createFailed": "Failed to create email blast",
+    "updateFailed": "Failed to update email blast",
+    "cancelFailed": "Failed to cancel email blast",
+    "noSubject": "No subject",
+    "recipients": {
+      "all": "All RSVPs",
+      "yes": "RSVP: Yes",
+      "yesAndMaybe": "RSVP: Yes & Maybe",
+      "no": "RSVP: No",
+      "maybe": "RSVP: Maybe",
+      "invited": "Invited",
+      "allRecipients": "All Recipients"
+    }
+  },
+  "attendees": {
+    "loadFailed": "Failed to load attendees",
+    "checkInFailed": "Check-in failed",
+    "undoCheckInFailed": "Failed to undo check-in"
+  },
+  "subEvents": {
+    "unlinkFailed": "Failed to remove sub event",
+    "linkFailed": "Failed to link sub event"
+  },
+  "rsvp": {
+    "updateFailed": "Failed to update RSVP"
+  },
+  "sales": {
+    "loadFailed": "Failed to load sales data",
+    "exportFailed": "Failed to export attendees (status {status})"
+  },
+  "tickets": {
+    "createFailed": "Failed to create ticket type",
+    "updateFailed": "Failed to update ticket type"
+  },
+  "support": {
+    "sendFailed": "Failed to send message"
+  },
+  "wakeLock": {
+    "failed": "Failed to keep screen awake"
+  },
+  "places": {
+    "apiKeyMissing": "Google Maps API key not configured",
+    "fetchFailed": "Failed to fetch places",
+    "geolocationUnsupported": "Geolocation is not supported by your browser",
+    "currentLocation": "Current Location",
+    "permissionDenied": "Location permission denied",
+    "unavailable": "Location information unavailable",
+    "timeout": "Location request timed out",
+    "locationFailed": "Failed to get location"
+  },
+  "username": {
+    "tooShort": "Username must be at least 3 characters",
+    "tooLong": "Username must be less than 20 characters",
+    "invalidChars": "Username can only contain letters, numbers, and underscores",
+    "checkFailed": "Unable to check username availability"
+  },
+  "reminders": {
+    "maxReached": "You can select up to {max} reminders",
+    "invalidOffset": "Only 1h, 2h, 3h, 8h, 1d, and 3d reminders are allowed"
+  },
+  "auth": {
+    "emailRequiredResend": "Email is required to resend code",
+    "emailRequiredVerify": "Email is required for verification",
+    "invalidCode": "Invalid code. Please try again."
+  },
+  "validation": {
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email address",
+    "emailTooLong": "Email must be less than 100 characters",
+    "codeRequired": "Verification code is required",
+    "codeLength": "Code must be exactly 6 digits",
+    "codeNumbersOnly": "Code must contain only numbers",
+    "usernameRequired": "Username is required",
+    "usernameAlphanumeric": "Username can only contain letters and numbers",
+    "nameRequired": "Name is required",
+    "nameTooLong50": "Name must be less than 50 characters",
+    "nameTooLong100": "Name must be less than 100 characters",
+    "bioTooLong": "Bio must be less than 280 characters",
+    "urlInvalid": "Please enter a valid URL",
+    "httpUrlInvalid": "Please enter a valid http(s) URL",
+    "xHandleTooLong": "X handle must be less than 50 characters",
+    "instagramHandleTooLong": "Instagram handle must be less than 50 characters",
+    "lightningAddressEmailFormat": "Lightning address must be a valid email format",
+    "nip05EmailFormat": "NIP-05 identifier must be a valid email format",
+    "lightningAddressInvalid": "Please enter a valid Lightning address",
+    "nip05Invalid": "Please enter a valid NIP-05 identifier",
+    "imageUrlInvalid": "Please enter a valid image URL",
+    "searchRequired": "Search query is required",
+    "searchTooLong": "Search query must be less than 100 characters",
+    "profileInvalid": "Invalid profile data",
+    "titleRequired": "Title is required",
+    "titleTooLong": "Title must be 200 characters or fewer",
+    "goalWholeNumber": "Goal must be a whole number",
+    "goalPositive": "Goal must be a positive number",
+    "timezoneRequired": "Timezone is required",
+    "spotifyUrlInvalid": "Spotify URL must be a valid open.spotify.com link",
+    "wavlakeUrlInvalid": "Wavlake URL must be a valid wavlake link"
+  },
+  "dates": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "noDateSet": "No date set",
+    "unknownLocation": "Unknown Location"
+  },
+  "breez": {
+    "network": "Network connection issue. Please check your internet and try again.",
+    "timeout": "Request timed out. Please try again.",
+    "connection": "Unable to connect to the Lightning network. Please try again later.",
+    "offline": "You appear to be offline. Please check your internet connection.",
+    "insufficient": "Insufficient balance to complete this payment.",
+    "invoiceExpired": "This invoice has expired. Please request a new one.",
+    "invoiceAlreadyPaid": "This invoice has already been paid.",
+    "paymentFailed": "Payment failed. Please try again or contact support if the issue persists.",
+    "noRoute": "Unable to find a payment route. The recipient may be offline or unreachable.",
+    "routeNotFound": "Unable to find a payment route. Please try again later.",
+    "amountTooLow": "Payment amount is too low. Please increase the amount.",
+    "amountTooHigh": "Payment amount exceeds the maximum allowed. Please reduce the amount.",
+    "amountOutOfRange": "Payment amount is outside the acceptable range.",
+    "invalidInput": "Invalid input. Please check your entry and try again.",
+    "malformed": "Invalid format. Please check your entry and try again.",
+    "notFound": "Resource not found. Please verify the information and try again.",
+    "sdkNotConnected": "Wallet not connected. Please unlock your wallet and try again.",
+    "sdkInitialization": "Wallet initialization failed. Please refresh the page and try again.",
+    "provider": "Our payment provider reported an error. Please try again later.",
+    "serviceUnavailable": "Service temporarily unavailable. Please try again in a few moments.",
+    "rateLimit": "Too many requests. Please wait a moment and try again.",
+    "invalidLightningAddress": "Invalid Lightning address. Please check the address and try again.",
+    "lightningAddressTaken": "This Lightning address is already taken. Please choose a different one.",
+    "feeTooHigh": "Transaction fee is too high. Please try again later when fees are lower.",
+    "claimFailed": "Failed to claim deposit. Please try again or contact support.",
+    "unexpected": "An unexpected error occurred. Please try again.",
+    "sdkInitFailedRefresh": "Breez SDK initialization failed. Please refresh the page and try again. If the issue persists, check that the Breez SDK package is properly installed.",
+    "contexts": {
+      "createInvoice": "Failed to create invoice. Please try again.",
+      "preparePayment": "Failed to prepare payment. Please try again.",
+      "sendPayment": "Failed to send payment. Please try again.",
+      "fetchPaymentHistory": "Failed to fetch payment history. Please try again.",
+      "sendZap": "Failed to send zap. Please try again.",
+      "loadLightningAddress": "Failed to load Lightning address. Please try again.",
+      "checkLightningAddressAvailability": "Failed to check Lightning address availability. Please try again.",
+      "registerLightningAddress": "Failed to register Lightning address. Please try again.",
+      "deleteLightningAddress": "Failed to delete Lightning address. Please try again.",
+      "listContacts": "Failed to list contacts. Please try again.",
+      "addContact": "Failed to add contact. Please try again.",
+      "updateContact": "Failed to update contact. Please try again.",
+      "deleteContact": "Failed to delete contact. Please try again.",
+      "createWallet": "Failed to create wallet. Please try again.",
+      "restoreWallet": "Failed to restore wallet. Please try again.",
+      "unlockWallet": "Failed to unlock wallet. Please try again.",
+      "lockWallet": "Failed to lock wallet. Please try again.",
+      "refreshBalance": "Failed to refresh balance. Please try again.",
+      "connectToWallet": "Failed to connect to wallet. Please try again.",
+      "disconnectWallet": "Failed to disconnect wallet. Please try again.",
+      "fetchBalance": "Failed to fetch balance. Please try again.",
+      "generatePaymentMethod": "Failed to generate payment method. Please try again.",
+      "waitForPayment": "Failed to wait for payment. Please try again.",
+      "prepareSendAllPayment": "Failed to prepare send-all payment. Please try again.",
+      "parseInput": "Failed to parse input. Please try again.",
+      "prepareLightningAddressPayment": "Failed to prepare Lightning address payment. Please try again.",
+      "sendLightningAddressPayment": "Failed to send Lightning address payment. Please try again.",
+      "receiveLnurlWithdraw": "Failed to receive LNURL withdraw. Please try again.",
+      "fetchWalletInfo": "Failed to fetch wallet info. Please try again.",
+      "fetchLightningAddress": "Failed to fetch Lightning address. Please try again.",
+      "fetchUnclaimedDeposits": "Failed to fetch unclaimed deposits. Please try again.",
+      "claimDeposit": "Failed to claim deposit. Please try again.",
+      "refundDeposit": "Failed to refund deposit. Please try again.",
+      "startCashAppPurchase": "Failed to start Cash App purchase. Please try again.",
+      "parsePaymentInput": "Failed to parse payment input. Please try again.",
+      "prepareBitcoinPayment": "Failed to prepare Bitcoin payment. Please try again.",
+      "loadIncomingFunds": "Failed to load incoming funds. Please try again."
+    }
+  },
+  "wallet": {
+    "satsReceived": "+{amount} sats received",
+    "paymentReceivedTitle": "Payment Received",
+    "paymentReceivedBody": "You received {amount} sats",
+    "notConnected": "Wallet not connected",
+    "failedToRefreshBalance": "Failed to refresh balance",
+    "failedToLoad": "Failed to load wallet",
+    "invalidPassword": "Invalid password",
+    "unlockToast": {
+      "title": "Wallet action needed",
+      "unlockAction": "Unlock wallet",
+      "createAction": "Create wallet",
+      "unlockDescription": "Please unlock your Wallet to continue.",
+      "createDescription": "Please create your Wallet to continue."
+    },
+    "paymentDisplay": {
+      "noDescription": "No description",
+      "lightningReceived": "Lightning payment received",
+      "lightning": "Lightning payment",
+      "spark": "Spark payment",
+      "token": "Token payment",
+      "withdrawal": "Withdrawal",
+      "deposit": "Deposit",
+      "payment": "Payment"
+    }
+  },
+  "batchZap": {
+    "noEligibleGuests": "There are no guests eligible to receive this batch zap.",
+    "chooseAmountMode": "Choose whether the amount is per person or split across the total.",
+    "wholeNumber": "Enter a whole number of sats greater than zero.",
+    "validAmount": "Enter a valid amount to continue.",
+    "perPersonMinimum": "Each guest must receive at least {min} sats.",
+    "totalSplitMinimum": "This total splits to less than {min} sats per guest.",
+    "invalidLightningAddress": "Invalid Lightning address",
+    "failedToSendPayment": "Failed to send payment",
+    "walletDisconnectedSkipped": "Wallet disconnected before this payment could be sent."
+  },
+  "contacts": {
+    "added": "Contact added",
+    "updated": "Contact updated",
+    "deleted": "Contact deleted",
+    "alreadyExists": "Contact already exists with this Lightning address"
+  }
+}

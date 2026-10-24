@@ -7,6 +7,7 @@ import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import ProgressiveImage from '@/components/ui/progressive-image';
 import { CoverImage, coverImageCategories } from '@/lib/data/cover-images';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
+import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 import CoverUploader from './cover-uploader';
 
@@ -21,7 +22,17 @@ export default function ImageSelectionSheet({
   onClose,
   onImageSelect,
 }: ImageSelectionSheetProps) {
+  const t = useTranslations('createEvent');
   const [activeTab, setActiveTab] = useState('featured');
+
+  const categoryLabels: Record<string, string> = {
+    featured: t('coverPicker.categories.featured'),
+    giphy: t('coverPicker.categories.giphy'),
+    party: t('coverPicker.categories.party'),
+    social: t('coverPicker.categories.social'),
+    classic: t('coverPicker.categories.classic'),
+    tech: t('coverPicker.categories.tech'),
+  };
 
   const activeCategory = coverImageCategories.find((cat) => cat.id === activeTab);
   const images = activeCategory?.images || [];
@@ -47,10 +58,10 @@ export default function ImageSelectionSheet({
   // Custom header with title and subtitle
   const headerContent = (
     <div className='flex flex-col'>
-      <h2 className='text-xl font-semibold text-gray-900 dark:text-neutral-100'>Add Cover Image</h2>
-      <p className='text-sm text-gray-500 dark:text-neutral-400'>
-        Choose from our curated collection
-      </p>
+      <h2 className='text-xl font-semibold text-gray-900 dark:text-neutral-100'>
+        {t('coverPicker.title')}
+      </h2>
+      <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('coverPicker.subtitle')}</p>
     </div>
   );
 
@@ -72,7 +83,9 @@ export default function ImageSelectionSheet({
               }`}
             >
               <IconComponent className='h-6 w-6' />
-              <span className='text-center text-xs font-medium leading-tight'>{category.name}</span>
+              <span className='text-center text-xs font-medium leading-tight'>
+                {categoryLabels[category.id] ?? category.name}
+              </span>
               {isActive && (
                 <div className='absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-gray-900 dark:bg-neutral-100' />
               )}
@@ -89,14 +102,14 @@ export default function ImageSelectionSheet({
       <CoverUploader
         onCoverUploaded={handleCoverUploaded}
         className='w-full rounded-full py-4 font-semibold'
-        buttonText='Upload Custom Image'
+        buttonText={t('coverPicker.uploadCustom')}
         buttonVariant='default'
       />
     ) : undefined;
 
   return (
     <MasterScrollableSheet
-      title='Add Cover Image'
+      title={t('coverPicker.title')}
       open={isOpen}
       onOpenChange={(open) => !open && onClose()}
       headerLeft={headerContent}
@@ -118,7 +131,7 @@ export default function ImageSelectionSheet({
             >
               <ProgressiveImage
                 src={getCoverImageUrl500x500(image.url)}
-                alt={image.title || 'Cover image'}
+                alt={image.title || t('coverPicker.imageAlt')}
                 fill
                 className='object-cover'
               />

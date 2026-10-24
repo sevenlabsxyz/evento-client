@@ -2,7 +2,6 @@
 
 import {
   SECURITY_FACTS,
-  SECURITY_LAST_UPDATED,
   SECURITY_LAST_UPDATED_ISO,
   SECURITY_SECTIONS,
 } from '@/components/security/security-content';
@@ -10,6 +9,7 @@ import { SecurityGlanceGrid } from '@/components/security/security-glance-grid';
 import { SecuritySection } from '@/components/security/security-section';
 import { SecuritySectionNav } from '@/components/security/security-section-nav';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { useFormatter, useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 
 const SECURITY_PATHNAME = '/e/security';
@@ -17,20 +17,28 @@ const PAGE_BACKGROUND_CLASS = 'min-h-full w-full bg-white dark:bg-neutral-900';
 const PAGE_CONTAINER_CLASS = 'mx-auto w-full max-w-6xl px-4 pb-40 pt-6 md:px-8 md:pb-16 md:pt-10';
 
 function SecurityPageHeader() {
+  const t = useTranslations('security');
+  const format = useFormatter();
+  const lastUpdated = format.dateTime(new Date(`${SECURITY_LAST_UPDATED_ISO}T00:00:00Z`), {
+    dateStyle: 'long',
+    timeZone: 'UTC',
+  });
+
   return (
     <header className='border-b border-gray-200 pb-8 dark:border-neutral-800'>
       <div className='max-w-2xl'>
         <p className='text-xs font-semibold uppercase tracking-wider text-red-600 dark:text-red-400'>
-          Security
+          {t('header.eyebrow')}
         </p>
         <h1 className='mt-2 text-balance text-3xl font-bold tracking-tight text-gray-900 dark:text-neutral-100 md:text-4xl'>
-          How Evento protects you
+          {t('header.title')}
         </h1>
-        <p className='mt-3 text-base text-gray-600 dark:text-neutral-400'>
-          How we secure your account, wallet, events, and data, and how to report a vulnerability.
-        </p>
+        <p className='mt-3 text-base text-gray-600 dark:text-neutral-400'>{t('header.subtitle')}</p>
         <p className='mt-4 text-sm text-gray-500 dark:text-neutral-500'>
-          Last updated <time dateTime={SECURITY_LAST_UPDATED_ISO}>{SECURITY_LAST_UPDATED}</time>
+          {t.rich('header.lastUpdated', {
+            date: lastUpdated,
+            time: (chunks) => <time dateTime={SECURITY_LAST_UPDATED_ISO}>{chunks}</time>,
+          })}
         </p>
       </div>
     </header>
@@ -38,13 +46,14 @@ function SecurityPageHeader() {
 }
 
 export default function SecurityPageClient() {
+  const t = useTranslations('security');
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
   useEffect(() => {
     applyRouteConfig(SECURITY_PATHNAME);
 
     setTopBarForRoute(SECURITY_PATHNAME, {
-      title: 'Security',
+      title: t('topBarTitle'),
       subtitle: '',
       leftMode: 'menu',
       centerMode: 'title',
@@ -58,7 +67,7 @@ export default function SecurityPageClient() {
     return () => {
       clearRoute(SECURITY_PATHNAME);
     };
-  }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
+  }, [applyRouteConfig, setTopBarForRoute, clearRoute, t]);
 
   return (
     <div className={PAGE_BACKGROUND_CLASS}>

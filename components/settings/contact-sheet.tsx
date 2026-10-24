@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { toast } from '@/lib/utils/toast';
 import { Upload, X } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 
 interface ContactSheetProps {
@@ -19,6 +20,9 @@ export function ContactSheet({
   prefilledTitle = '',
   prefilledMessage = '',
 }: ContactSheetProps) {
+  const t = useTranslations('settings');
+  const tCommon = useTranslations('common');
+  const format = useFormatter();
   const [formData, setFormData] = useState({
     title: '',
     message: '',
@@ -53,7 +57,7 @@ export function ContactSheet({
     e.preventDefault();
 
     if (!formData.title.trim() || !formData.message.trim()) {
-      toast.error('Please fill in all required fields');
+      toast.error(t('contact.requiredFields'));
       return;
     }
 
@@ -65,15 +69,15 @@ export function ContactSheet({
       const success = Math.random() > 0.2;
 
       if (success) {
-        toast.success("Message sent successfully! We'll get back to you soon.");
+        toast.success(t('contact.success'));
         onOpenChange(false);
         setFormData({ title: '', message: '' });
         setAttachedFile(null);
       } else {
-        toast.error('Failed to send message. Please try again.');
+        toast.error(t('contact.failed'));
       }
     } catch (error) {
-      toast.error('Something went wrong. Please try again.');
+      toast.error(tCommon('states.errorTryAgain'));
     } finally {
       setIsLoading(false);
     }
@@ -96,11 +100,9 @@ export function ContactSheet({
               </div>
               <div>
                 <h2 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-                  Contact Us
+                  {t('contact.title')}
                 </h2>
-                <p className='text-gray-600 dark:text-neutral-400'>
-                  Send us a message and we&apos;ll get back to you
-                </p>
+                <p className='text-gray-600 dark:text-neutral-400'>{t('contact.subtitle')}</p>
               </div>
             </div>
 
@@ -111,13 +113,13 @@ export function ContactSheet({
                     {/* Title Field */}
                     <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                       <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                        Subject *
+                        {t('contact.subjectLabel')}
                       </label>
                       <input
                         type='text'
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        placeholder="What's this about?"
+                        placeholder={t('contact.subjectPlaceholder')}
                         className='w-full border-none bg-transparent text-lg font-medium text-gray-900 outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500'
                         required
                       />
@@ -126,12 +128,12 @@ export function ContactSheet({
                     {/* Message Field */}
                     <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                       <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                        Message *
+                        {t('contact.messageLabel')}
                       </label>
                       <textarea
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        placeholder='Tell us more about your issue or question...'
+                        placeholder={t('contact.messagePlaceholder')}
                         rows={6}
                         className='w-full resize-none border-none bg-transparent text-gray-900 outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500'
                         required
@@ -141,7 +143,7 @@ export function ContactSheet({
                     {/* File Upload */}
                     <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                       <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                        Attachment (optional)
+                        {t('contact.attachmentLabel')}
                       </label>
 
                       {attachedFile ? (
@@ -155,7 +157,12 @@ export function ContactSheet({
                                 {attachedFile.name}
                               </p>
                               <p className='text-xs text-gray-500 dark:text-neutral-400'>
-                                {(attachedFile.size / 1024).toFixed(1)} KB
+                                {t('contact.fileSize', {
+                                  size: format.number(attachedFile.size / 1024, {
+                                    minimumFractionDigits: 1,
+                                    maximumFractionDigits: 1,
+                                  }),
+                                })}
                               </p>
                             </div>
                           </div>
@@ -165,6 +172,7 @@ export function ContactSheet({
                             size='icon'
                             className='h-8 w-8'
                             onClick={removeFile}
+                            aria-label={t('contact.removeAttachment')}
                           >
                             <X className='h-4 w-4' />
                           </Button>
@@ -181,10 +189,10 @@ export function ContactSheet({
                             <div className='text-center'>
                               <Upload className='mx-auto mb-2 h-8 w-8 text-gray-400 dark:text-neutral-500' />
                               <p className='text-sm text-gray-600 dark:text-neutral-400'>
-                                Click to upload a file or screenshot
+                                {t('contact.uploadPrompt')}
                               </p>
                               <p className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
-                                PNG, JPG, PDF, DOC up to 10MB
+                                {t('contact.uploadHint')}
                               </p>
                             </div>
                           </div>
@@ -202,10 +210,10 @@ export function ContactSheet({
                         {isLoading ? (
                           <div className='flex items-center gap-2'>
                             <div className='h-4 w-4 animate-spin rounded-full border-b-2 border-white'></div>
-                            Sending...
+                            {t('contact.sending')}
                           </div>
                         ) : (
-                          'Send Message'
+                          t('contact.submit')
                         )}
                       </Button>
                     </div>

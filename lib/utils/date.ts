@@ -1,3 +1,5 @@
+import { getIntlLocale } from '@/lib/i18n/active-locale';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { logger } from './logger';
 import { getTimezoneAbbreviationSync } from './timezone';
 
@@ -119,20 +121,21 @@ export function formatEventDate(isoString: string, timezone?: string) {
   const timeZoneOptions = getIntlTimeZoneOptions(timezone);
 
   // Format date as "Sep 20, 2025"
-  const formattedDate = date.toLocaleDateString('en-US', {
+  const formattedDate = date.toLocaleDateString(getIntlLocale(), {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
     ...timeZoneOptions,
   });
 
-  // Format time as "7:00 PM"
-  const formattedTime = date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    ...timeZoneOptions,
-  });
+  // Format time as "7:00 PM" (en) / "19:00" (pt-BR, es): the locale's own clock
+  const formattedTime = normalizeTimeSpacing(
+    date.toLocaleTimeString(getIntlLocale(), {
+      hour: 'numeric',
+      minute: '2-digit',
+      ...timeZoneOptions,
+    })
+  );
 
   // Format time with timezone if provided
   let timeWithTz = formattedTime;
@@ -142,31 +145,31 @@ export function formatEventDate(isoString: string, timezone?: string) {
   }
 
   // Day of week
-  const dayOfWeek = date.toLocaleDateString('en-US', {
+  const dayOfWeek = date.toLocaleDateString(getIntlLocale(), {
     weekday: 'short',
     ...timeZoneOptions,
   });
 
   // Short date format "Sep 20"
-  const shortDate = date.toLocaleDateString('en-US', {
+  const shortDate = date.toLocaleDateString(getIntlLocale(), {
     month: 'short',
     day: 'numeric',
     ...timeZoneOptions,
   });
 
   const monthShort = date
-    .toLocaleDateString('en-US', {
+    .toLocaleDateString(getIntlLocale(), {
       month: 'short',
       ...timeZoneOptions,
     })
-    .toUpperCase();
+    .toLocaleUpperCase(getIntlLocale());
 
-  const dayOfMonth = date.toLocaleDateString('en-US', {
+  const dayOfMonth = date.toLocaleDateString(getIntlLocale(), {
     day: 'numeric',
     ...timeZoneOptions,
   });
 
-  const longDate = date.toLocaleDateString('en-US', {
+  const longDate = date.toLocaleDateString(getIntlLocale(), {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -189,19 +192,19 @@ function getEventDateRangeParts(date: Date, timezone?: string): EventDateRangePa
   const timeZoneOptions = getIntlTimeZoneOptions(timezone);
 
   return {
-    day: date.toLocaleDateString('en-US', {
+    day: date.toLocaleDateString(getIntlLocale(), {
       day: 'numeric',
       ...timeZoneOptions,
     }),
-    month: date.toLocaleDateString('en-US', {
+    month: date.toLocaleDateString(getIntlLocale(), {
       month: 'long',
       ...timeZoneOptions,
     }),
-    weekdayShort: date.toLocaleDateString('en-US', {
+    weekdayShort: date.toLocaleDateString(getIntlLocale(), {
       weekday: 'short',
       ...timeZoneOptions,
     }),
-    year: date.toLocaleDateString('en-US', {
+    year: date.toLocaleDateString(getIntlLocale(), {
       year: 'numeric',
       ...timeZoneOptions,
     }),
@@ -292,6 +295,14 @@ function isValidDateParts(
   return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
 }
 
+/**
+ * Newer ICU data separates the day period with a narrow no-break space
+ * ("7:00\u202fPM"); keep the plain space the UI and tests expect.
+ */
+export function normalizeTimeSpacing(value: string): string {
+  return value.replace(/\u202f/g, ' ');
+}
+
 function formatTimeFromParts(hours?: number | null, minutes?: number | null): string {
   if (
     hours === null ||
@@ -308,10 +319,12 @@ function formatTimeFromParts(hours?: number | null, minutes?: number | null): st
     return '';
   }
 
-  const period = hours >= 12 ? 'PM' : 'AM';
-  const hour12 = hours % 12 === 0 ? 12 : hours % 12;
-
-  return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+  return normalizeTimeSpacing(
+    new Date(2000, 0, 1, hours, minutes).toLocaleTimeString(getIntlLocale(), {
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+  );
 }
 
 function hasValidTimeParts(hours?: number | null, minutes?: number | null): boolean {
@@ -345,7 +358,7 @@ export function formatEventDateFromParts({
   timezone,
   fallbackIso,
 }: EventDatePartsInput): EventDateDisplay {
-  const cacheKey = `${year ?? 'n'}|${month ?? 'n'}|${day ?? 'n'}|${hours ?? 'n'}|${minutes ?? 'n'}|${timezone ?? ''}|${fallbackIso ?? ''}`;
+  const cacheKey = `${getIntlLocale()}|${year ?? 'n'}|${month ?? 'n'}|${day ?? 'n'}|${hours ?? 'n'}|${minutes ?? 'n'}|${timezone ?? ''}|${fallbackIso ?? ''}`;
   const cached = datePartsDisplayCache.get(cacheKey);
   if (cached) {
     return { ...cached };
@@ -373,7 +386,7 @@ export function formatEventDateFromParts({
   const timezoneAbbreviation = timezone ? getTimezoneAbbreviationSync(timezone) : '';
 
   const display = {
-    date: localDate.toLocaleDateString('en-US', {
+    date: localDate.toLocaleDateString(getIntlLocale(), {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -383,22 +396,22 @@ export function formatEventDateFromParts({
       formattedTime && timezoneAbbreviation
         ? `${formattedTime} ${timezoneAbbreviation}`
         : formattedTime,
-    dayOfWeek: localDate.toLocaleDateString('en-US', {
+    dayOfWeek: localDate.toLocaleDateString(getIntlLocale(), {
       weekday: 'short',
     }),
-    shortDate: localDate.toLocaleDateString('en-US', {
+    shortDate: localDate.toLocaleDateString(getIntlLocale(), {
       month: 'short',
       day: 'numeric',
     }),
     monthShort: localDate
-      .toLocaleDateString('en-US', {
+      .toLocaleDateString(getIntlLocale(), {
         month: 'short',
       })
-      .toUpperCase(),
-    dayOfMonth: localDate.toLocaleDateString('en-US', {
+      .toLocaleUpperCase(getIntlLocale()),
+    dayOfMonth: localDate.toLocaleDateString(getIntlLocale(), {
       day: 'numeric',
     }),
-    longDate: localDate.toLocaleDateString('en-US', {
+    longDate: localDate.toLocaleDateString(getIntlLocale(), {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
@@ -475,7 +488,7 @@ export function getRelativeTime(isoString: string): string {
  */
 export function formatDateHeader(date?: string | null): string {
   if (!date || date === UNDATED_DATE_KEY) {
-    return 'No date set';
+    return translateHooks('dates.noDateSet');
   }
 
   const today = toLocalDateKey(new Date());
@@ -483,24 +496,24 @@ export function formatDateHeader(date?: string | null): string {
   tomorrow.setDate(tomorrow.getDate() + 1);
   const tomorrowStr = toLocalDateKey(tomorrow);
 
-  if (date === today) return 'Today';
-  if (date === tomorrowStr) return 'Tomorrow';
+  if (date === today) return translateHooks('dates.today');
+  if (date === tomorrowStr) return translateHooks('dates.tomorrow');
 
   const parsedDate = parseDateOnlyString(date);
   if (!parsedDate) {
     const fallbackDate = new Date(date);
     if (Number.isNaN(fallbackDate.getTime())) {
-      return 'No date set';
+      return translateHooks('dates.noDateSet');
     }
 
-    return fallbackDate.toLocaleDateString('en-US', {
+    return fallbackDate.toLocaleDateString(getIntlLocale(), {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
     });
   }
 
-  return parsedDate.toLocaleDateString('en-US', {
+  return parsedDate.toLocaleDateString(getIntlLocale(), {
     weekday: 'long',
     month: 'long',
     day: 'numeric',

@@ -48,6 +48,7 @@ import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useScreenWakeLock } from '@/lib/hooks/use-screen-wake-lock';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { usePaymentHistory } from '@/lib/hooks/use-wallet-payments';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -71,6 +72,7 @@ import {
   Settings,
   Shield,
 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -122,6 +124,9 @@ export default function WalletPage() {
   const { payments, isLoading: isLoadingPayments, fetchPayments } = usePaymentHistory();
   const { address, checkAvailability, registerAddress } = useLightningAddress();
   const { isCashAppEligible } = useFundingRegion();
+  const t = useTranslations('wallet');
+  const tCommon = useTranslations('common');
+  const locale = getIntlLocale(useLocale());
 
   const [step, setStep] = useState<WalletStep>('welcome');
   const [mnemonic, setMnemonic] = useState<string | null>(null);
@@ -280,7 +285,7 @@ export default function WalletPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Wallet',
+      title: t('page.title'),
       hideMobileBreadcrumb: true,
       desktopHidden: true,
       centerMode: 'title',
@@ -291,13 +296,15 @@ export default function WalletPage() {
               id: 'wake-lock',
               icon: showWakeLockEnabledIndicator ? Check : Gamepad2,
               onClick: handleWakeLockEnable,
-              label: showWakeLockEnabledIndicator ? 'Wake lock enabled' : 'Keep screen awake',
+              label: showWakeLockEnabledIndicator
+                ? t('page.wakeLockEnabled')
+                : t('page.keepScreenAwake'),
             },
             {
               id: 'settings',
               icon: Settings,
               onClick: () => router.push('/e/wallet/settings'),
-              label: 'Settings',
+              label: tCommon('labels.settings'),
             },
           ]
         : [],
@@ -314,6 +321,8 @@ export default function WalletPage() {
     handleWakeLockEnable,
     walletState.isConnected,
     showWakeLockEnabledIndicator,
+    t,
+    tCommon,
   ]);
 
   // Determine initial step based on wallet state
@@ -358,9 +367,7 @@ export default function WalletPage() {
     if (!walletState.isConnected) {
       if (!hasShownUnlockRedirectHint) {
         toast.info(
-          walletState.isInitialized
-            ? "Unlock your wallet and we'll bring you back automatically."
-            : "Create your wallet and we'll bring you back automatically."
+          walletState.isInitialized ? t('page.unlockRedirectHint') : t('page.createRedirectHint')
         );
         setHasShownUnlockRedirectHint(true);
       }
@@ -376,7 +383,7 @@ export default function WalletPage() {
       pendingReturnPath.startsWith('/e/wallet#');
 
     if (!isWalletRoute) {
-      toast.info('Wallet unlocked. Bringing you back...');
+      toast.info(t('page.unlockedRedirecting'));
       router.push(pendingReturnPath);
     }
   }, [
@@ -385,6 +392,7 @@ export default function WalletPage() {
     router,
     walletState.isConnected,
     walletState.isInitialized,
+    t,
   ]);
 
   // Automatically register Lightning address if wallet is connected but no address exists
@@ -455,22 +463,20 @@ export default function WalletPage() {
       if (event.type === 'claimedDeposits') {
         const deposits = (event as any).claimedDeposits || [];
         const totalAmount = deposits.reduce((sum: number, d: any) => sum + (d.amountSats || 0), 0);
-        toast.success(
-          `Deposit claimed! ${totalAmount.toLocaleString()} sats added to your balance`
-        );
+        toast.success(t('page.depositClaimed', { amount: totalAmount.toLocaleString(locale) }));
         // Refresh unclaimed deposits count
         void loadUnclaimedDeposits();
       } else if (event.type === 'unclaimedDeposits') {
         const deposits = (event as any).unclaimedDeposits || [];
         setUnclaimedDepositsCount(deposits.length);
         if (deposits.length > 0) {
-          toast.info('Tap "Speed It Up" below to claim your funds now.', 'Onchain funds received');
+          toast.info(t('page.onchainReceivedBody'), t('page.onchainReceivedTitle'));
         }
       }
     });
 
     return () => unsubscribe();
-  }, [walletState.isConnected, router]);
+  }, [walletState.isConnected, router, t, locale]);
 
   useEffect(() => {
     if (!walletState.isConnected || step !== 'main') {
@@ -552,7 +558,7 @@ export default function WalletPage() {
     if (mnemonic) {
       setStep('backup');
     } else {
-      toast.error('Unable to retrieve seed phrase. Please contact support.');
+      toast.error(t('page.seedUnavailable'));
     }
   };
 
@@ -626,7 +632,7 @@ export default function WalletPage() {
       openDrawer('send');
     } catch (error) {
       // Invalid QR code
-      toast.error('Cannot read this QR code type');
+      toast.error(t('page.unsupportedQr'));
       closeDrawer('scan');
     }
   };
@@ -736,7 +742,7 @@ export default function WalletPage() {
 
   const quickTools = (
     <QuickToolsSection
-      buySellLabel={isCashAppEligible ? 'Buy Bitcoin' : 'Buy / Sell'}
+      buySellLabel={isCashAppEligible ? t('page.buyBitcoin') : t('page.buySell')}
       onToolClick={(toolId) => {
         openDrawer(toolId);
       }}
@@ -749,7 +755,7 @@ export default function WalletPage() {
       <div className='mb-1 flex items-center justify-between gap-3'>
         <div className='flex flex-row items-center gap-1'>
           <ChevronsRight className='h-7 w-7 text-amber-600 dark:text-amber-400' />
-          <div className='text-lg font-semibold'>Money Incoming</div>
+          <div className='text-lg font-semibold'>{t('page.moneyIncoming')}</div>
         </div>
         <motion.button
           onClick={() => setShowOnchainEducationalSheet(true)}
@@ -766,11 +772,7 @@ export default function WalletPage() {
       </div>
 
       {/* Description */}
-      <p className='mb-6 pr-16 text-sm text-muted-foreground'>
-        {
-          "You've received onchain funds. Tap below to pay a small fee and claim them to your wallet instantly."
-        }
-      </p>
+      <p className='mb-6 pr-16 text-sm text-muted-foreground'>{t('page.incomingDescription')}</p>
 
       {/* Action Button */}
       <Button
@@ -779,7 +781,7 @@ export default function WalletPage() {
         size='lg'
         className='h-12 w-full rounded-full border-amber-200 bg-white hover:bg-amber-100 dark:border-amber-900 dark:bg-neutral-900 dark:hover:bg-amber-950/60'
       >
-        Speed It Up!
+        {t('page.speedItUp')}
       </Button>
     </div>
   );
@@ -794,8 +796,8 @@ export default function WalletPage() {
       {isDesktop ? (
         <div className='mx-auto w-full max-w-2xl px-8 pb-16 pt-8 lg:max-w-6xl'>
           <WalletDesktopPageHeader
-            title='Wallet'
-            description='Send, receive, and keep track of your bitcoin.'
+            title={t('page.title')}
+            description={t('page.description')}
             actions={
               walletState.isConnected && (
                 <>
@@ -806,7 +808,9 @@ export default function WalletPage() {
                     className='h-10 rounded-full bg-white px-4 dark:bg-neutral-900'
                   >
                     {showWakeLockEnabledIndicator ? <Check /> : <Gamepad2 />}
-                    {showWakeLockEnabledIndicator ? 'Wake lock enabled' : 'Keep screen awake'}
+                    {showWakeLockEnabledIndicator
+                      ? t('page.wakeLockEnabled')
+                      : t('page.keepScreenAwake')}
                   </Button>
                   <Button
                     type='button'
@@ -815,7 +819,7 @@ export default function WalletPage() {
                     className='h-10 rounded-full bg-white px-4 dark:bg-neutral-900'
                   >
                     <Settings />
-                    Settings
+                    {tCommon('labels.settings')}
                   </Button>
                 </>
               )
@@ -829,22 +833,22 @@ export default function WalletPage() {
               {backupCallout}
               {incomingFundsAlert}
 
-              <WalletDesktopCard title='Bitcoin tools' bodyClassName='pt-3'>
+              <WalletDesktopCard title={t('page.bitcoinTools')} bodyClassName='pt-3'>
                 {quickTools}
               </WalletDesktopCard>
 
               <WalletDesktopCard
-                title='Contacts'
+                title={t('page.contacts')}
                 actions={
                   <>
                     <CircledIconButton
                       icon={Plus}
-                      ariaLabel='Add contact'
+                      ariaLabel={t('page.addContact')}
                       onClick={() => setShowAddContactSheet(true)}
                     />
                     <CircledIconButton
                       icon={ContactIcon}
-                      ariaLabel='All contacts'
+                      ariaLabel={t('page.allContacts')}
                       onClick={() => setShowContactsSheet(true)}
                     />
                   </>
@@ -861,11 +865,14 @@ export default function WalletPage() {
                   variant='outline'
                   className='h-11 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
                 >
-                  View All Contacts
+                  {t('page.viewAllContacts')}
                 </Button>
               </WalletDesktopCard>
 
-              <WalletDesktopCard title='Security' bodyClassName='space-y-1 px-2 pb-2 pt-2'>
+              <WalletDesktopCard
+                title={t('page.security')}
+                bodyClassName='space-y-1 px-2 pb-2 pt-2'
+              >
                 <button
                   type='button'
                   onClick={() => setShowBackupChoiceSheet(true)}
@@ -890,7 +897,7 @@ export default function WalletPage() {
                   </span>
                   <span className='min-w-0 flex-1'>
                     <span className='block font-medium text-gray-900 dark:text-neutral-100'>
-                      Backup
+                      {t('page.backup')}
                     </span>
                     <span
                       className={cn(
@@ -900,7 +907,7 @@ export default function WalletPage() {
                           : 'text-amber-600 dark:text-amber-400'
                       )}
                     >
-                      {walletState.hasBackup ? 'Backed up' : 'Not backed up'}
+                      {walletState.hasBackup ? t('page.backedUp') : t('page.notBackedUp')}
                     </span>
                   </span>
                   <ChevronRight className='h-4 w-4 shrink-0 text-gray-400 dark:text-neutral-500' />
@@ -915,10 +922,10 @@ export default function WalletPage() {
                   </span>
                   <span className='min-w-0 flex-1'>
                     <span className='block font-medium text-gray-900 dark:text-neutral-100'>
-                      Wallet settings
+                      {t('page.walletSettings')}
                     </span>
                     <span className='block text-sm text-gray-500 dark:text-neutral-500'>
-                      Lock, privacy, and backup options
+                      {t('page.walletSettingsDescription')}
                     </span>
                   </span>
                   <ChevronRight className='h-4 w-4 shrink-0 text-gray-400 dark:text-neutral-500' />
@@ -928,7 +935,7 @@ export default function WalletPage() {
 
             {/* Right column: transaction history, education */}
             <div className='space-y-6'>
-              <WalletDesktopCard title='Transactions' bodyClassName='px-3 pb-3 pt-3'>
+              <WalletDesktopCard title={t('page.transactions')} bodyClassName='px-3 pb-3 pt-3'>
                 <div className='max-h-[36rem] overflow-y-auto overscroll-contain px-2 pb-2'>
                   <TransactionHistory
                     payments={payments}
@@ -963,7 +970,7 @@ export default function WalletPage() {
               <div className='space-y-6'>
                 {/* Recent Transactions Preview */}
                 <div className='mt-6 space-y-3 md:mt-4'>
-                  <h3 className='text-sm font-semibold'>Recent Transactions</h3>
+                  <h3 className='text-sm font-semibold'>{t('page.recentTransactions')}</h3>
                   <TransactionHistory
                     payments={payments.slice(0, 5)}
                     isLoading={isLoadingPayments}
@@ -978,7 +985,7 @@ export default function WalletPage() {
                 {/* Contacts Preview */}
                 <div className='mt-6 space-y-3 md:mt-4'>
                   <div className='flex items-center justify-between'>
-                    <h3 className='text-sm font-semibold'>Wallet Contacts</h3>
+                    <h3 className='text-sm font-semibold'>{t('page.walletContacts')}</h3>
                     <div className='flex items-center gap-2'>
                       <CircledIconButton icon={Plus} onClick={() => setShowAddContactSheet(true)} />
                       <CircledIconButton
@@ -997,7 +1004,7 @@ export default function WalletPage() {
                     variant='outline'
                     className='font-lg h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
                   >
-                    View All Contacts
+                    {t('page.viewAllContacts')}
                   </Button>
                 </div>
 
@@ -1135,7 +1142,7 @@ export default function WalletPage() {
             setSelectedContact(null);
           }
         }}
-        title='Contacts'
+        title={t('page.contacts')}
       >
         <div className='space-y-4 p-4'>
           <Button
@@ -1146,7 +1153,7 @@ export default function WalletPage() {
               setShowAddContactSheet(true);
             }}
           >
-            New Contact
+            {t('page.newContact')}
           </Button>
 
           <ContactsList

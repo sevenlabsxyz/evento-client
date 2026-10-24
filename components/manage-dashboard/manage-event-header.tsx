@@ -14,6 +14,7 @@ import { getEventCoverDisplayUrl } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { ExternalLink, Globe, Lock, Rocket, Share2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { type ReactNode, useState } from 'react';
@@ -22,33 +23,12 @@ type DashboardEvent = EventDashboard['event'];
 
 type EventLifecycleStatus = 'cancelled' | 'draft' | 'live' | 'ended' | 'upcoming';
 
-const LIFECYCLE_BADGES: Record<EventLifecycleStatus, { label: string; className: string }> = {
-  cancelled: {
-    label: 'Cancelled',
-    className: 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400',
-  },
-  draft: {
-    label: 'Draft',
-    className: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400',
-  },
-  live: {
-    label: 'Live now',
-    className: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400',
-  },
-  ended: {
-    label: 'Ended',
-    className: 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-300',
-  },
-  upcoming: {
-    label: 'Upcoming',
-    className: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400',
-  },
-};
-
-const TYPE_LABELS: Record<DashboardEvent['type'], string> = {
-  rsvp: 'RSVP',
-  registration: 'Registration',
-  ticketed: 'Ticketed',
+const LIFECYCLE_BADGE_CLASSES: Record<EventLifecycleStatus, string> = {
+  cancelled: 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400',
+  draft: 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400',
+  live: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400',
+  ended: 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-300',
+  upcoming: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400',
 };
 
 const NEUTRAL_BADGE_CLASS = 'bg-gray-100 text-gray-700 dark:bg-neutral-800 dark:text-neutral-300';
@@ -81,15 +61,16 @@ function getLifecycleStatus(event: DashboardEvent, now: number): EventLifecycleS
   return now <= end ? 'live' : 'ended';
 }
 
-function formatScheduleLabel(event: DashboardEvent): string {
+/** Returns null when the event has no usable start date. */
+function formatScheduleLabel(event: DashboardEvent): string | null {
   if (!event.computed_start_date) {
-    return 'Date not set';
+    return null;
   }
 
   const timezone = event.timezone ?? undefined;
   const start = formatEventDate(event.computed_start_date, timezone);
   if (!start.date) {
-    return 'Date not set';
+    return null;
   }
 
   const end = event.computed_end_date ? formatEventDate(event.computed_end_date, timezone) : null;
@@ -122,13 +103,15 @@ interface ManageEventHeaderProps {
 }
 
 export function ManageEventHeader({ event }: ManageEventHeaderProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
   const queryClient = useQueryClient();
   const publishEvent = usePublishEvent();
   const [showPublishSheet, setShowPublishSheet] = useState(false);
 
   const lifecycle = getLifecycleStatus(event, Date.now());
-  const lifecycleBadge = LIFECYCLE_BADGES[lifecycle];
-  const scheduleLabel = formatScheduleLabel(event);
+  const lifecycleBadgeClass = LIFECYCLE_BADGE_CLASSES[lifecycle];
+  const scheduleLabel = formatScheduleLabel(event) ?? t('header.dateNotSet');
   const isDraft = event.status === 'draft';
   const VisibilityIcon = event.visibility === 'private' ? Lock : Globe;
 
@@ -144,18 +127,21 @@ export function ManageEventHeader({ event }: ManageEventHeaderProps) {
         }
       }
     }
-    await copyEventLink(event.id);
+    await copyEventLink(event.id, {
+      success: t('moreMenu.linkCopied'),
+      error: t('moreMenu.linkCopyFailed'),
+    });
   };
 
   const handlePublish = () => {
     publishEvent.mutate(event.id, {
       onSuccess: () => {
-        toast.success('Event published successfully');
+        toast.success(t('header.published'));
         setShowPublishSheet(false);
         queryClient.invalidateQueries({ queryKey: queryKeys.eventDashboard(event.id) });
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error) || 'Failed to publish event');
+        toast.error(getErrorMessage(error) || t('header.publishFailed'));
       },
     });
   };
@@ -176,21 +162,25 @@ export function ManageEventHeader({ event }: ManageEventHeaderProps) {
         </div>
         <div className='min-w-0 flex-1'>
           <h2 className='truncate text-lg font-semibold text-gray-900 dark:text-neutral-100 md:text-2xl'>
-            {event.title || 'Untitled event'}
+            {event.title || t('header.untitled')}
           </h2>
           <p className='truncate text-sm text-gray-500 dark:text-neutral-400'>{scheduleLabel}</p>
           <div className='mt-1.5 flex flex-wrap items-center gap-1.5'>
-            <HeaderBadge className={lifecycleBadge.className}>
+            <HeaderBadge className={lifecycleBadgeClass}>
               {lifecycle === 'live' && (
                 <span className='h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500 dark:bg-emerald-400' />
               )}
-              {lifecycleBadge.label}
+              {t(`header.lifecycle.${lifecycle}`)}
             </HeaderBadge>
             <HeaderBadge className={NEUTRAL_BADGE_CLASS}>
               <VisibilityIcon className='h-3 w-3' aria-hidden='true' />
-              {event.visibility === 'private' ? 'Private' : 'Public'}
+              {event.visibility === 'private'
+                ? tCommon('labels.private')
+                : tCommon('labels.public')}
             </HeaderBadge>
-            <HeaderBadge className={NEUTRAL_BADGE_CLASS}>{TYPE_LABELS[event.type]}</HeaderBadge>
+            <HeaderBadge className={NEUTRAL_BADGE_CLASS}>
+              {t(`header.type.${event.type}`)}
+            </HeaderBadge>
           </div>
         </div>
       </div>
@@ -204,7 +194,7 @@ export function ManageEventHeader({ event }: ManageEventHeaderProps) {
         >
           <Link href={`/e/${event.id}`}>
             <ExternalLink className='mr-1.5 hidden h-4 w-4 sm:block' aria-hidden='true' />
-            View event
+            {t('header.viewEvent')}
           </Link>
         </Button>
         <Button
@@ -214,7 +204,7 @@ export function ManageEventHeader({ event }: ManageEventHeaderProps) {
           onClick={() => void handleShare()}
         >
           <Share2 className='mr-1.5 hidden h-4 w-4 sm:block' aria-hidden='true' />
-          Share
+          {tCommon('actions.share')}
         </Button>
         {isDraft && (
           <Button
@@ -223,7 +213,7 @@ export function ManageEventHeader({ event }: ManageEventHeaderProps) {
             onClick={() => setShowPublishSheet(true)}
           >
             <Rocket className='mr-1.5 hidden h-4 w-4 sm:block' aria-hidden='true' />
-            Publish
+            {t('header.publish')}
           </Button>
         )}
         <ManageMoreMenu event={event} />
@@ -231,7 +221,7 @@ export function ManageEventHeader({ event }: ManageEventHeaderProps) {
 
       {isDraft && (
         <MasterScrollableSheet
-          title='Publish Event'
+          title={t('header.publishSheet.title')}
           open={showPublishSheet}
           onOpenChange={setShowPublishSheet}
           footer={
@@ -242,20 +232,22 @@ export function ManageEventHeader({ event }: ManageEventHeaderProps) {
                 onClick={() => setShowPublishSheet(false)}
                 disabled={publishEvent.isPending}
               >
-                Cancel
+                {tCommon('actions.cancel')}
               </Button>
               <Button
                 className='h-11 flex-1'
                 onClick={handlePublish}
                 disabled={publishEvent.isPending}
               >
-                {publishEvent.isPending ? 'Publishing...' : 'Yes, Publish'}
+                {publishEvent.isPending
+                  ? t('header.publishSheet.publishing')
+                  : t('header.publishSheet.confirm')}
               </Button>
             </div>
           }
         >
           <div className='px-4 pb-4 text-sm text-gray-600 dark:text-neutral-400'>
-            Are you sure you want to publish this event? It will be visible in feeds and discovery.
+            {t('header.publishSheet.description')}
           </div>
         </MasterScrollableSheet>
       )}

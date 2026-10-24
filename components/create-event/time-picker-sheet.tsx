@@ -2,6 +2,7 @@
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { formatSelectedTimezone } from '@/lib/utils/timezone';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TimezoneSheet from './timezone-sheet';
 
@@ -167,6 +168,8 @@ export default function TimePickerSheet({
   timezone,
   title,
 }: TimePickerSheetProps) {
+  const t = useTranslations('createEvent');
+  const tCommon = useTranslations('common');
   const [hour, setHour] = useState(selectedTime?.hour ?? 9);
   const [minute, setMinute] = useState(selectedTime?.minute ?? 45);
   const [period, setPeriod] = useState<'AM' | 'PM'>(selectedTime?.period ?? 'AM');
@@ -221,7 +224,7 @@ export default function TimePickerSheet({
                     onClick={onClose}
                     className='font-medium text-red-500 dark:text-red-400'
                   >
-                    Cancel
+                    {tCommon('actions.cancel')}
                   </button>
                   <div className='text-center'>
                     <h2 className='text-lg font-semibold'>{title}</h2>
@@ -236,7 +239,7 @@ export default function TimePickerSheet({
                     onClick={handleSave}
                     className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white dark:bg-red-600'
                   >
-                    Save
+                    {tCommon('actions.save')}
                   </button>
                 </div>
               </div>
@@ -299,7 +302,7 @@ export default function TimePickerSheet({
                   onClick={() => setShowTimezoneSheet(true)}
                   className='w-full rounded-xl bg-red-100 p-3 font-medium text-red-600 dark:bg-red-950/60 dark:text-red-400'
                 >
-                  Timezone: {formatSelectedTimezone(timezone)}
+                  {t('timePicker.timezone', { timezone: formatSelectedTimezone(timezone) })}
                 </button>
               </div>
 
@@ -310,7 +313,7 @@ export default function TimePickerSheet({
                   onClick={handleClear}
                   className='w-full py-3 font-medium text-red-500 dark:text-red-400'
                 >
-                  Clear Time
+                  {t('timePicker.clearTime')}
                 </button>
               </div>
             </div>

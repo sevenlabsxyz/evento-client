@@ -16,6 +16,7 @@ import { toast } from '@/lib/utils/toast';
 import { getWalletPaymentDisplayData } from '@/lib/utils/wallet-payment-display';
 import type { Payment } from '@breeztech/breez-sdk-spark/ssr';
 import { ArrowDownLeft, ArrowUpRight, Check, Clock, Copy, Info, XCircle } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface TransactionDetailsSheetProps {
@@ -29,6 +30,8 @@ export function TransactionDetailsSheet({
   onOpenChange,
   payment,
 }: TransactionDetailsSheetProps) {
+  const t = useTranslations('wallet');
+  const locale = useLocale();
   const [amountUSD, setAmountUSD] = useState<number>(0);
   const [feesUSD, setFeesUSD] = useState<number>(0);
   const { satsToUSD } = useAmountConverter();
@@ -59,7 +62,7 @@ export function TransactionDetailsSheet({
   // Format timestamp
   const formatTimestamp = (timestamp: number) => {
     const date = new Date(timestamp * 1000);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(locale, {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -72,7 +75,7 @@ export function TransactionDetailsSheet({
 
   // Get payment type label
   const getTypeLabel = () => {
-    return payment.paymentType === 'receive' ? 'Received' : 'Sent';
+    return payment.paymentType === 'receive' ? t('details.received') : t('details.sent');
   };
 
   // Get status info
@@ -80,19 +83,19 @@ export function TransactionDetailsSheet({
     const status = payment.status;
     if (status === 'completed') {
       return {
-        label: 'Completed',
+        label: t('details.status.completed'),
         icon: <Check className='h-4 w-4 text-green-600 dark:text-green-400' />,
         color: 'text-green-600 dark:text-green-400',
       };
     } else if (status === 'pending') {
       return {
-        label: 'Pending',
+        label: t('details.status.pending'),
         icon: <Clock className='h-4 w-4 text-amber-600 dark:text-amber-400' />,
         color: 'text-amber-600 dark:text-amber-400',
       };
     } else {
       return {
-        label: 'Failed',
+        label: t('details.status.failed'),
         icon: <XCircle className='h-4 w-4 text-red-600 dark:text-red-400' />,
         color: 'text-red-600 dark:text-red-400',
       };
@@ -149,9 +152,9 @@ export function TransactionDetailsSheet({
   const handleCopy = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success(`${label} copied!`);
+      toast.success(t('details.copied', { label }));
     } catch (error) {
-      toast.error('Failed to copy');
+      toast.error(t('details.copyFailed'));
     }
   };
 
@@ -162,28 +165,32 @@ export function TransactionDetailsSheet({
   const destinationPubkey = getDestinationPubkey();
   const detailRows = [
     displayData.senderComment
-      ? { label: 'Sender Comment', value: displayData.senderComment, copyable: false }
+      ? { label: t('details.senderComment'), value: displayData.senderComment, copyable: false }
       : null,
     displayData.description && displayData.description !== displayData.senderComment
-      ? { label: 'Description', value: displayData.description, copyable: false }
+      ? { label: t('details.description'), value: displayData.description, copyable: false }
       : null,
-    contact ? { label: 'Saved Contact', value: contact.name, copyable: false } : null,
+    contact ? { label: t('details.savedContact'), value: contact.name, copyable: false } : null,
   ].filter((row): row is { label: string; value: string; copyable: boolean } => Boolean(row));
   const advancedRows = [
     displayData.lightningUsername
-      ? { label: 'Username', value: displayData.lightningUsername, copyable: true }
+      ? { label: t('details.username'), value: displayData.lightningUsername, copyable: true }
       : null,
     displayData.lightningAddress
-      ? { label: 'Lightning Address', value: displayData.lightningAddress, copyable: true }
+      ? {
+          label: t('details.lightningAddress'),
+          value: displayData.lightningAddress,
+          copyable: true,
+        }
       : null,
     displayData.lightningDomain
-      ? { label: 'Provider', value: displayData.lightningDomain, copyable: true }
+      ? { label: t('details.provider'), value: displayData.lightningDomain, copyable: true }
       : null,
   ].filter((row): row is { label: string; value: string; copyable: boolean } => Boolean(row));
 
   return (
     <MasterScrollableSheet
-      title='Transaction Details'
+      title={t('details.title')}
       open={open}
       onOpenChange={onOpenChange}
       className='md:!max-w-[500px]'
@@ -222,9 +229,9 @@ export function TransactionDetailsSheet({
           <div className='text-center'>
             <div className='flex items-baseline justify-center gap-2'>
               <span className='text-5xl font-semibold tracking-tight text-gray-900 dark:text-neutral-100'>
-                {Number(payment.amount).toLocaleString()}
+                {Number(payment.amount).toLocaleString(locale)}
               </span>
-              <InfoTooltip text='Satoshis (sats) are the smallest unit of Bitcoin. 100,000,000 sats = 1 Bitcoin.'>
+              <InfoTooltip text={t('details.satsTooltip')}>
                 <span className='text-lg font-medium text-gray-500 dark:text-neutral-400'>
                   sats
                 </span>
@@ -240,7 +247,9 @@ export function TransactionDetailsSheet({
         <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm dark:border-neutral-800 dark:bg-neutral-950'>
           {/* Time */}
           <div className='flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-neutral-800'>
-            <span className='text-sm font-medium text-gray-600 dark:text-neutral-400'>Time</span>
+            <span className='text-sm font-medium text-gray-600 dark:text-neutral-400'>
+              {t('details.time')}
+            </span>
             <span className='text-sm text-gray-900 dark:text-neutral-100'>
               {formatTimestamp(payment.timestamp)}
             </span>
@@ -248,13 +257,17 @@ export function TransactionDetailsSheet({
 
           {/* Type */}
           <div className='flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-neutral-800'>
-            <span className='text-sm font-medium text-gray-600 dark:text-neutral-400'>Type</span>
+            <span className='text-sm font-medium text-gray-600 dark:text-neutral-400'>
+              {t('details.type')}
+            </span>
             <span className='text-sm text-gray-900 dark:text-neutral-100'>{getTypeLabel()}</span>
           </div>
 
           {/* Status */}
           <div className='flex items-center justify-between px-4 py-3'>
-            <span className='text-sm font-medium text-gray-600 dark:text-neutral-400'>Status</span>
+            <span className='text-sm font-medium text-gray-600 dark:text-neutral-400'>
+              {t('details.statusLabel')}
+            </span>
             <div className='flex items-center gap-2'>
               {statusInfo.icon}
               <span className={`text-sm font-medium ${statusInfo.color}`}>{statusInfo.label}</span>
@@ -269,18 +282,18 @@ export function TransactionDetailsSheet({
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-1'>
                   <span className='text-sm font-medium text-gray-600 dark:text-neutral-400'>
-                    Total Fees
+                    {t('details.totalFees')}
                   </span>
-                  <InfoTooltip text='Network fees paid to process this Lightning transaction.'>
+                  <InfoTooltip text={t('details.feesTooltip')}>
                     <Info className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
                   </InfoTooltip>
                 </div>
                 <div className='text-right'>
                   <div className='flex items-center gap-1'>
                     <span className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-                      {Number(payment.fees).toLocaleString()}
+                      {Number(payment.fees).toLocaleString(locale)}
                     </span>
-                    <InfoTooltip text='Satoshis (sats) are the smallest unit of Bitcoin. 100,000,000 sats = 1 Bitcoin.'>
+                    <InfoTooltip text={t('details.satsTooltip')}>
                       <span className='text-sm text-gray-600 dark:text-neutral-400'>sats</span>
                     </InfoTooltip>
                   </div>
@@ -331,9 +344,9 @@ export function TransactionDetailsSheet({
               <div className='px-4 py-3'>
                 <div className='mb-2 flex items-center gap-1'>
                   <span className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-                    Invoice
+                    {t('details.invoice')}
                   </span>
-                  <InfoTooltip text='A Lightning invoice is a payment request that contains the amount, destination, and other payment details.'>
+                  <InfoTooltip text={t('details.invoiceTooltip')}>
                     <Info className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
                   </InfoTooltip>
                 </div>
@@ -342,7 +355,7 @@ export function TransactionDetailsSheet({
                     {invoice}
                   </code>
                   <Button
-                    onClick={() => handleCopy(invoice, 'Invoice')}
+                    onClick={() => handleCopy(invoice, t('details.invoice'))}
                     variant='ghost'
                     size='sm'
                     className='h-11 w-11 flex-shrink-0 p-0'
@@ -361,7 +374,7 @@ export function TransactionDetailsSheet({
             <AccordionItem value='advanced' className='border-none'>
               <AccordionTrigger className='h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 shadow-sm hover:bg-gray-100 hover:no-underline dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'>
                 <span className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-                  Advanced Details
+                  {t('details.advanced')}
                 </span>
               </AccordionTrigger>
               <AccordionContent className='pt-4'>
@@ -400,9 +413,9 @@ export function TransactionDetailsSheet({
                     >
                       <div className='mb-2 flex items-center gap-1'>
                         <span className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-                          Payment Hash
+                          {t('details.paymentHash')}
                         </span>
-                        <InfoTooltip text='A unique identifier for this Lightning payment, derived from the preimage.'>
+                        <InfoTooltip text={t('details.paymentHashTooltip')}>
                           <Info className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
                         </InfoTooltip>
                       </div>
@@ -411,7 +424,7 @@ export function TransactionDetailsSheet({
                           {paymentHash}
                         </code>
                         <Button
-                          onClick={() => handleCopy(paymentHash, 'Payment hash')}
+                          onClick={() => handleCopy(paymentHash, t('details.paymentHashCopy'))}
                           variant='ghost'
                           size='sm'
                           className='h-11 w-11 flex-shrink-0 p-0'
@@ -429,9 +442,9 @@ export function TransactionDetailsSheet({
                     >
                       <div className='mb-2 flex items-center gap-1'>
                         <span className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-                          Preimage
+                          {t('details.preimage')}
                         </span>
-                        <InfoTooltip text="The secret value that proves this payment was completed. It's the cryptographic proof of payment.">
+                        <InfoTooltip text={t('details.preimageTooltip')}>
                           <Info className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
                         </InfoTooltip>
                       </div>
@@ -440,7 +453,7 @@ export function TransactionDetailsSheet({
                           {preimage}
                         </code>
                         <Button
-                          onClick={() => handleCopy(preimage, 'Preimage')}
+                          onClick={() => handleCopy(preimage, t('details.preimage'))}
                           variant='ghost'
                           size='sm'
                           className='h-11 w-11 flex-shrink-0 p-0'
@@ -458,9 +471,9 @@ export function TransactionDetailsSheet({
                     >
                       <div className='mb-2 flex items-center gap-1'>
                         <span className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-                          Destination Node
+                          {t('details.destinationNode')}
                         </span>
-                        <InfoTooltip text='The public key of the Lightning node that received this payment.'>
+                        <InfoTooltip text={t('details.destinationTooltip')}>
                           <Info className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
                         </InfoTooltip>
                       </div>
@@ -469,7 +482,9 @@ export function TransactionDetailsSheet({
                           {destinationPubkey}
                         </code>
                         <Button
-                          onClick={() => handleCopy(destinationPubkey, 'Destination node')}
+                          onClick={() =>
+                            handleCopy(destinationPubkey, t('details.destinationNodeCopy'))
+                          }
                           variant='ghost'
                           size='sm'
                           className='h-11 w-11 flex-shrink-0 p-0'
@@ -484,9 +499,9 @@ export function TransactionDetailsSheet({
                   <div className='px-4 py-3'>
                     <div className='mb-2 flex items-center gap-1'>
                       <span className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-                        Transaction ID
+                        {t('details.transactionId')}
                       </span>
-                      <InfoTooltip text='The unique identifier for this transaction in your wallet.'>
+                      <InfoTooltip text={t('details.transactionIdTooltip')}>
                         <Info className='h-3 w-3 text-gray-400 dark:text-neutral-500' />
                       </InfoTooltip>
                     </div>
@@ -495,7 +510,7 @@ export function TransactionDetailsSheet({
                         {payment.id}
                       </code>
                       <Button
-                        onClick={() => handleCopy(payment.id, 'Transaction ID')}
+                        onClick={() => handleCopy(payment.id, t('details.transactionId'))}
                         variant='ghost'
                         size='sm'
                         className='h-11 w-11 flex-shrink-0 p-0'

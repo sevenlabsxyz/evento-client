@@ -2,10 +2,11 @@
 
 import { ListEvent, UserList } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { ListActionsMenu } from './list-actions-menu';
 import { ListCoverMosaic } from './list-cover-mosaic';
-import { formatEventCount, formatRelativeTime, getListLastActivity } from './list-utils';
+import { formatRelativeTime, getListLastActivity } from './list-utils';
 
 interface ListCardProps {
   list: UserList;
@@ -25,6 +26,7 @@ export function ListCard({
   onRename,
   onDelete,
 }: ListCardProps) {
+  const t = useTranslations('lists');
   const updatedLabel = formatRelativeTime(getListLastActivity(list, events));
 
   return (
@@ -51,7 +53,7 @@ export function ListCard({
           </h3>
           {isDefault && (
             <span className='shrink-0 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-600 dark:bg-red-950/50 dark:text-red-400'>
-              Default
+              {t('card.default')}
             </span>
           )}
         </div>
@@ -65,7 +67,7 @@ export function ListCard({
         <p className='mt-auto flex min-w-0 items-center gap-1.5 pt-1 text-sm text-gray-500 dark:text-neutral-500'>
           {events ? (
             <span className='shrink-0 whitespace-nowrap font-medium text-gray-700 dark:text-neutral-300'>
-              {formatEventCount(events.length)}
+              {t('eventCount', { count: events.length })}
             </span>
           ) : isLoadingEvents ? (
             <span
@@ -80,7 +82,7 @@ export function ListCard({
                   ·
                 </span>
               )}
-              <span className='min-w-0 truncate'>Updated {updatedLabel}</span>
+              <span className='min-w-0 truncate'>{t('updated', { time: updatedLabel })}</span>
             </>
           )}
         </p>

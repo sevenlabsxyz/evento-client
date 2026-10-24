@@ -10,6 +10,7 @@ import {
   UserList,
 } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface AddEventToListResponse {
   id: string;
@@ -35,6 +36,7 @@ interface AddEventToListContext {
 
 export function useAddEventToList() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation<AddEventToListResponse, Error, AddEventToListVariables, AddEventToListContext>(
     {
@@ -49,7 +51,7 @@ export function useAddEventToList() {
           return response.data;
         }
 
-        throw new Error('Failed to add event to list');
+        throw new Error(t('lists.addEventFailed'));
       },
       onMutate: async ({ listId, eventId, restore }) => {
         const statusKey = queryKeys.eventSavedStatus(eventId);

@@ -11,6 +11,7 @@ import { logger } from '@/lib/utils/logger';
 import type { Editor } from '@tiptap/core';
 import DOMPurify from 'dompurify';
 import { BrainCircuit, CheckCircle, Loader2, MessageCircle, Sparkles } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { LoadingLogo } from '../ui/loading-logo';
 
@@ -36,32 +37,13 @@ interface AIDescriptionGeneratorSheetProps {
 
 // Define tone options
 const toneOptions = [
-  {
-    value: 'professional',
-    label: 'Professional',
-    icon: <BrainCircuit className='h-4 w-4' />,
-    description: 'Formal and polished',
-  },
-  {
-    value: 'casual',
-    label: 'Casual',
-    icon: <MessageCircle className='h-4 w-4' />,
-    description: 'Relaxed and friendly',
-  },
-  {
-    value: 'exciting',
-    label: 'Exciting',
-    icon: <Sparkles className='h-4 w-4' />,
-    description: 'Energetic and enthusiastic',
-  },
-];
+  { value: 'professional', icon: <BrainCircuit className='h-4 w-4' /> },
+  { value: 'casual', icon: <MessageCircle className='h-4 w-4' /> },
+  { value: 'exciting', icon: <Sparkles className='h-4 w-4' /> },
+] as const;
 
 // Define length options
-const lengthOptions = [
-  { value: 'short', label: 'Short', description: '2-3 sentences' },
-  { value: 'medium', label: 'Medium', description: '4-6 sentences' },
-  { value: 'long', label: 'Long', description: '7-10 sentences' },
-];
+const lengthOptions = [{ value: 'short' }, { value: 'medium' }, { value: 'long' }] as const;
 
 export function AIDescriptionGeneratorSheet({
   event,
@@ -69,6 +51,8 @@ export function AIDescriptionGeneratorSheet({
   onClose,
   editor,
 }: AIDescriptionGeneratorSheetProps) {
+  const t = useTranslations('createEvent');
+  const tCommon = useTranslations('common');
   // State for selected options
   const [selectedLength, setSelectedLength] = useState('short');
   const [selectedTone, setSelectedTone] = useState('professional');
@@ -120,7 +104,7 @@ export function AIDescriptionGeneratorSheet({
       setGeneratedContent(result.description);
     } catch (err) {
       logger.error('Error generating description', { error: err });
-      setError('Failed to generate description. Please try again.');
+      setError(t('aiGenerator.error'));
     }
   };
 
@@ -158,23 +142,23 @@ export function AIDescriptionGeneratorSheet({
                   onClick={onClose}
                   className='font-medium text-red-600 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-400'
                 >
-                  Cancel
+                  {tCommon('actions.cancel')}
                 </button>
                 <h1 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-                  AI Description
+                  {t('aiGenerator.title')}
                 </h1>
                 <button
                   onClick={onClose}
                   className='text-gray-500 opacity-0 transition-colors hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                 >
-                  Cancel
+                  {tCommon('actions.cancel')}
                 </button>
               </div>
 
               {/* Title Warning */}
               {!hasTitleField && (
                 <div className='flex items-center gap-1 bg-amber-50 px-4 py-2 text-sm text-amber-600 dark:bg-amber-950/40 dark:text-amber-400'>
-                  <p>Please add an event title before generating a description</p>
+                  <p>{t('aiGenerator.titleWarning')}</p>
                 </div>
               )}
 
@@ -184,7 +168,7 @@ export function AIDescriptionGeneratorSheet({
                   <div className='flex items-center gap-1'>
                     <Sparkles className='h-4 w-4 text-red-600 dark:text-red-400' />
                     <span className='text-sm font-medium dark:text-neutral-300'>
-                      AI-powered description generator
+                      {t('aiGenerator.toolbarLabel')}
                     </span>
                   </div>
                 </div>
@@ -196,7 +180,7 @@ export function AIDescriptionGeneratorSheet({
               <div className='absolute inset-0 z-10 flex flex-col items-center justify-center bg-white bg-opacity-90 p-4 text-center dark:bg-neutral-900'>
                 <LoadingLogo size='lg' className='mb-4 text-red-600 dark:text-red-400' />
                 <p className='text-sm text-gray-600 dark:text-neutral-400'>
-                  Creating the perfect description for your event...
+                  {t('aiGenerator.loading')}
                 </p>
               </div>
             )}
@@ -211,10 +195,10 @@ export function AIDescriptionGeneratorSheet({
                         {/* Custom Prompt */}
                         <div className='mb-6'>
                           <h2 className='mb-2 text-base font-medium dark:text-neutral-100'>
-                            Custom Prompt (Optional)
+                            {t('aiGenerator.customPrompt')}
                           </h2>
                           <p className='mb-2 text-sm text-gray-500 dark:text-neutral-400'>
-                            Add specific details you&apos;d like to include in your description
+                            {t('aiGenerator.customPromptHint')}
                           </p>
                           <textarea
                             className={cn(
@@ -223,7 +207,7 @@ export function AIDescriptionGeneratorSheet({
                                 ? 'border-gray-200 bg-gray-50 text-gray-400 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-500'
                                 : 'border-gray-200 focus:border-red-600 focus:ring focus:ring-red-100 focus:ring-opacity-50 dark:border-neutral-800 dark:text-neutral-100 dark:focus:ring-red-900'
                             )}
-                            placeholder='e.g. Include information about food, dress code, or parking...'
+                            placeholder={t('aiGenerator.customPromptPlaceholder')}
                             rows={3}
                             value={customPrompt}
                             onChange={(e) => setCustomPrompt(e.target.value)}
@@ -234,7 +218,7 @@ export function AIDescriptionGeneratorSheet({
                         {/* Description Length Selection */}
                         <div className='mb-6'>
                           <h2 className='mb-2 text-base font-medium dark:text-neutral-100'>
-                            Description Length
+                            {t('aiGenerator.lengthHeading')}
                           </h2>
                           <div className='grid grid-cols-3 gap-3'>
                             {lengthOptions.map((option) => (
@@ -249,9 +233,11 @@ export function AIDescriptionGeneratorSheet({
                                 onClick={() => setSelectedLength(option.value)}
                                 disabled={generateDescriptionMutation.isPending || !hasTitleField}
                               >
-                                <span className='font-medium'>{option.label}</span>
+                                <span className='font-medium'>
+                                  {t(`aiGenerator.lengths.${option.value}.label`)}
+                                </span>
                                 <span className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
-                                  {option.description}
+                                  {t(`aiGenerator.lengths.${option.value}.description`)}
                                 </span>
                               </button>
                             ))}
@@ -261,7 +247,7 @@ export function AIDescriptionGeneratorSheet({
                         {/* Tone Selection */}
                         <div className='mb-6'>
                           <h2 className='mb-2 text-base font-medium dark:text-neutral-100'>
-                            Tone & Style
+                            {t('aiGenerator.toneHeading')}
                           </h2>
                           <div className='grid grid-cols-3 gap-3'>
                             {toneOptions.map((option) => (
@@ -277,9 +263,11 @@ export function AIDescriptionGeneratorSheet({
                                 disabled={generateDescriptionMutation.isPending || !hasTitleField}
                               >
                                 <div className='mb-1'>{option.icon}</div>
-                                <span className='font-medium'>{option.label}</span>
+                                <span className='font-medium'>
+                                  {t(`aiGenerator.tones.${option.value}.label`)}
+                                </span>
                                 <span className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
-                                  {option.description}
+                                  {t(`aiGenerator.tones.${option.value}.description`)}
                                 </span>
                               </button>
                             ))}
@@ -301,19 +289,19 @@ export function AIDescriptionGeneratorSheet({
                             {generateDescriptionMutation.isPending ? (
                               <>
                                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                                Generating...
+                                {t('aiGenerator.generating')}
                               </>
                             ) : (
                               <>
                                 <Sparkles className='mr-2 h-4 w-4' />
-                                Generate Description
+                                {t('aiGenerator.generate')}
                               </>
                             )}
                           </Button>
 
                           {!hasTitleField && (
                             <p className='mt-2 text-center text-sm text-gray-500 dark:text-neutral-400'>
-                              Add an event title to enable description generation
+                              {t('aiGenerator.titleRequired')}
                             </p>
                           )}
                         </div>
@@ -331,7 +319,9 @@ export function AIDescriptionGeneratorSheet({
                         <div className='mb-5'>
                           <div className='mb-3 flex items-center gap-2 text-green-600 dark:text-green-400'>
                             <CheckCircle className='h-5 w-5' />
-                            <span className='text-base font-medium'>Description Generated!</span>
+                            <span className='text-base font-medium'>
+                              {t('aiGenerator.generated')}
+                            </span>
                           </div>
                           <div className='prose prose-sm max-w-none rounded-md border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
                             <div
@@ -352,13 +342,13 @@ export function AIDescriptionGeneratorSheet({
                             }}
                             className='flex-1 border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-950'
                           >
-                            Edit Options
+                            {t('aiGenerator.editOptions')}
                           </Button>
                           <Button
                             onClick={insertGeneratedContent}
                             className='flex-1 bg-red-600 text-white hover:bg-red-700'
                           >
-                            Use This Description
+                            {t('aiGenerator.useDescription')}
                           </Button>
                         </div>
                       </>

@@ -2,6 +2,7 @@
 
 import { apiClient } from '@/lib/api/client';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 export interface NotifyWalletInviteBatchArgs {
   recipientUsernames: string[];
@@ -90,6 +91,8 @@ function normalizeBatchResponse(
 }
 
 export function useNotifyWalletInviteBatch() {
+  const t = useTranslations('hooks');
+
   return useMutation<NotifyWalletInviteBatchResponse, Error, NotifyWalletInviteBatchArgs>({
     mutationFn: async ({ recipientUsernames }) => {
       const response = await apiClient.post<NotifyWalletInviteBatchApiResponse>(
@@ -100,7 +103,7 @@ export function useNotifyWalletInviteBatch() {
       );
 
       if (!response?.success) {
-        throw new Error(response?.message || 'Failed to send wallet notifications');
+        throw new Error(response?.message || t('walletInvite.notifyBatchFailed'));
       }
 
       return normalizeBatchResponse(response);

@@ -1,3 +1,4 @@
+import { validationMessage } from '@/lib/schemas/validation-message';
 import { z } from 'zod';
 
 /**
@@ -45,10 +46,10 @@ export type LocationObject = z.infer<typeof locationObjectSchema>;
  */
 export const eventFormSchema = z.object({
   // Required fields
-  title: z.string().min(1, 'Title is required').max(200),
+  title: z.string().min(1, validationMessage('validation.titleRequired')).max(200),
   description: z.string(),
   location: locationObjectSchema.nullable(),
-  timezone: z.string().min(1, 'Timezone is required'),
+  timezone: z.string().min(1, validationMessage('validation.timezoneRequired')),
 
   // Cover image
   cover: z.string().nullable().optional(),
@@ -77,13 +78,16 @@ export const eventFormSchema = z.object({
     .string()
     .refine(
       (url) => url.startsWith('https://open.spotify.com/'),
-      'Spotify URL must be a valid open.spotify.com link'
+      validationMessage('validation.spotifyUrlInvalid')
     )
     .optional()
     .or(z.literal('')),
   wavlake_url: z
     .string()
-    .refine((url) => url.startsWith('https://wavlake.'), 'Wavlake URL must be a valid wavlake link')
+    .refine(
+      (url) => url.startsWith('https://wavlake.'),
+      validationMessage('validation.wavlakeUrlInvalid')
+    )
     .optional()
     .or(z.literal('')),
 
@@ -157,13 +161,16 @@ export const updateEventSchema = z.object({
     .string()
     .refine(
       (url) => url.startsWith('https://open.spotify.com/'),
-      'Spotify URL must be a valid open.spotify.com link'
+      validationMessage('validation.spotifyUrlInvalid')
     )
     .optional()
     .or(z.literal('')),
   wavlake_url: z
     .string()
-    .refine((url) => url.startsWith('https://wavlake.'), 'Wavlake URL must be a valid wavlake link')
+    .refine(
+      (url) => url.startsWith('https://wavlake.'),
+      validationMessage('validation.wavlakeUrlInvalid')
+    )
     .optional()
     .or(z.literal('')),
 

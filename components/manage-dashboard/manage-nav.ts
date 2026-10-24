@@ -20,9 +20,35 @@ import {
   Users,
 } from 'lucide-react';
 
+/** Key under `manage.nav.*`, translated at render time. */
+export type ManageNavLabelKey =
+  | 'overview'
+  | 'guests'
+  | 'guestList'
+  | 'registrations'
+  | 'registrationForm'
+  | 'checkIn'
+  | 'ticketsMoney'
+  | 'tickets'
+  | 'sales'
+  | 'contributions'
+  | 'crowdfunding'
+  | 'communications'
+  | 'emailBlasts'
+  | 'reminders'
+  | 'content'
+  | 'eventDetails'
+  | 'subEvents'
+  | 'music'
+  | 'commentsPhotos'
+  | 'team'
+  | 'cohosts'
+  | 'settings'
+  | 'securityPrivacy';
+
 export interface ManageNavItem {
   id: string;
-  label: string;
+  labelKey: ManageNavLabelKey;
   href: string;
   icon: LucideIcon;
   badge?: number;
@@ -31,7 +57,7 @@ export interface ManageNavItem {
 
 export interface ManageNavSection {
   id: string;
-  label: string;
+  labelKey: ManageNavLabelKey;
   items: ManageNavItem[];
 }
 
@@ -57,11 +83,11 @@ export function getManageNavSections(
   const sections: ManageNavSection[] = [
     {
       id: 'overview',
-      label: 'Overview',
+      labelKey: 'overview',
       items: [
         {
           id: 'overview',
-          label: 'Overview',
+          labelKey: 'overview',
           href: base,
           icon: LayoutDashboard,
           match: 'exact',
@@ -70,21 +96,21 @@ export function getManageNavSections(
     },
     {
       id: 'people',
-      label: 'Guests',
+      labelKey: 'guests',
       items: [
-        { id: 'guests', label: 'Guest list', href: `${base}/guests`, icon: Users },
+        { id: 'guests', labelKey: 'guestList', href: `${base}/guests`, icon: Users },
         ...(hasRegistration
           ? [
               {
                 id: 'registrations',
-                label: 'Registrations',
+                labelKey: 'registrations' as const,
                 href: `${base}/registration/submissions`,
                 icon: ClipboardList,
                 badge: pendingRegistrations > 0 ? pendingRegistrations : undefined,
               },
               {
                 id: 'registration-form',
-                label: 'Registration form',
+                labelKey: 'registrationForm' as const,
                 href: `${base}/registration`,
                 icon: FileText,
                 match: 'exact' as const,
@@ -92,29 +118,41 @@ export function getManageNavSections(
             ]
           : []),
         ...(isTicketed
-          ? [{ id: 'check-in', label: 'Check-in', href: `${base}/check-in`, icon: ScanLine }]
+          ? [
+              {
+                id: 'check-in',
+                labelKey: 'checkIn' as const,
+                href: `${base}/check-in`,
+                icon: ScanLine,
+              },
+            ]
           : []),
       ],
     },
     {
       id: 'sales',
-      label: 'Tickets & money',
+      labelKey: 'ticketsMoney',
       items: [
         ...(isTicketed
           ? [
-              { id: 'tickets', label: 'Tickets', href: `${base}/tickets`, icon: Ticket },
-              { id: 'sales', label: 'Sales', href: `${base}/sales`, icon: TrendingUp },
+              {
+                id: 'tickets',
+                labelKey: 'tickets' as const,
+                href: `${base}/tickets`,
+                icon: Ticket,
+              },
+              { id: 'sales', labelKey: 'sales' as const, href: `${base}/sales`, icon: TrendingUp },
             ]
           : []),
         {
           id: 'contributions',
-          label: 'Contributions',
+          labelKey: 'contributions',
           href: `${base}/contributions`,
           icon: HandCoins,
         },
         {
           id: 'crowdfunding',
-          label: 'Crowdfunding',
+          labelKey: 'crowdfunding',
           href: `${base}/crowdfunding`,
           icon: PiggyBank,
         },
@@ -122,22 +160,27 @@ export function getManageNavSections(
     },
     {
       id: 'communications',
-      label: 'Communications',
+      labelKey: 'communications',
       items: [
-        { id: 'email-blast', label: 'Email blasts', href: `${base}/email-blast`, icon: Megaphone },
-        { id: 'reminders', label: 'Reminders', href: `${base}/reminders`, icon: Bell },
+        {
+          id: 'email-blast',
+          labelKey: 'emailBlasts',
+          href: `${base}/email-blast`,
+          icon: Megaphone,
+        },
+        { id: 'reminders', labelKey: 'reminders', href: `${base}/reminders`, icon: Bell },
       ],
     },
     {
       id: 'content',
-      label: 'Content',
+      labelKey: 'content',
       items: [
-        { id: 'details', label: 'Event details', href: `${base}/details`, icon: PencilLine },
-        { id: 'sub-events', label: 'Sub-events', href: `${base}/sub-events`, icon: Layers },
-        { id: 'music', label: 'Music', href: `${base}/music`, icon: Music },
+        { id: 'details', labelKey: 'eventDetails', href: `${base}/details`, icon: PencilLine },
+        { id: 'sub-events', labelKey: 'subEvents', href: `${base}/sub-events`, icon: Layers },
+        { id: 'music', labelKey: 'music', href: `${base}/music`, icon: Music },
         {
           id: 'moderation',
-          label: 'Comments & photos',
+          labelKey: 'commentsPhotos',
           href: `${base}/moderation`,
           icon: MessagesSquare,
         },
@@ -145,14 +188,14 @@ export function getManageNavSections(
     },
     {
       id: 'team',
-      label: 'Team',
-      items: [{ id: 'hosts', label: 'Cohosts', href: `${base}/hosts`, icon: UserPlus }],
+      labelKey: 'team',
+      items: [{ id: 'hosts', labelKey: 'cohosts', href: `${base}/hosts`, icon: UserPlus }],
     },
     {
       id: 'settings',
-      label: 'Settings',
+      labelKey: 'settings',
       items: [
-        { id: 'security', label: 'Security & privacy', href: `${base}/security`, icon: Shield },
+        { id: 'security', labelKey: 'securityPrivacy', href: `${base}/security`, icon: Shield },
       ],
     },
   ];

@@ -1,6 +1,7 @@
 'use client';
 
 import apiClient from '@/lib/api/client';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { queryKeys } from '@/lib/query-client';
 import { ApiResponse, ListEvent } from '@/lib/types/api';
 import { queryOptions, useQueries, useQuery } from '@tanstack/react-query';
@@ -25,7 +26,7 @@ export function listEventsQueryOptions(listId: string) {
         return response.data;
       }
 
-      throw new Error('Failed to fetch list events');
+      throw new Error(translateHooks('lists.fetchEventsFailed'));
     },
     staleTime: LIST_EVENTS_STALE_TIME,
   });

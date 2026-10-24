@@ -1,6 +1,7 @@
 'use client';
 
 import { Modal } from '@/components/ui/modal';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import type { EventWithUser } from '@/lib/types/api';
 import {
   type SubEventCalendarModel,
@@ -8,6 +9,7 @@ import {
 } from '@/lib/utils/sub-event-calendar';
 import { formatTimezoneDisplay } from '@/lib/utils/timezone';
 import { Clock3 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 
 const HOUR_HEIGHT_PX = 72;
 const DATE_COLUMN_WIDTH_PX = 224;
@@ -20,14 +22,14 @@ interface SubEventCalendarModalProps {
   onSelectEvent: (eventId: string) => void;
 }
 
-function formatDateKey(dateKey: string): { weekday: string; date: string } {
+function formatDateKey(dateKey: string, locale: string): { weekday: string; date: string } {
   const date = new Date(`${dateKey}T12:00:00.000Z`);
   return {
-    weekday: new Intl.DateTimeFormat('en-US', {
+    weekday: new Intl.DateTimeFormat(locale, {
       weekday: 'short',
       timeZone: 'UTC',
     }).format(date),
-    date: new Intl.DateTimeFormat('en-US', {
+    date: new Intl.DateTimeFormat(locale, {
       month: 'short',
       day: 'numeric',
       timeZone: 'UTC',
@@ -35,8 +37,8 @@ function formatDateKey(dateKey: string): { weekday: string; date: string } {
   };
 }
 
-function formatAccessibleDateKey(dateKey: string): string {
-  return new Intl.DateTimeFormat('en-US', {
+function formatAccessibleDateKey(dateKey: string, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -45,21 +47,28 @@ function formatAccessibleDateKey(dateKey: string): string {
   }).format(new Date(`${dateKey}T12:00:00.000Z`));
 }
 
-function formatMinute(minute: number): string {
+function formatMinute(minute: number, locale: string): string {
   const normalizedMinute = minute === 1440 ? 0 : minute;
   const hours = Math.floor(normalizedMinute / 60);
   const minutes = normalizedMinute % 60;
-  const period = hours >= 12 ? 'PM' : 'AM';
-  const displayHour = hours % 12 || 12;
-  return `${displayHour}:${minutes.toString().padStart(2, '0')} ${period}`;
+  return new Intl.DateTimeFormat(locale, {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'UTC',
+  })
+    .format(new Date(Date.UTC(1970, 0, 1, hours, minutes)))
+    .replace(/\u202f/g, ' ');
 }
 
-function getEventTimeLabel(segment: SubEventCalendarSegment<EventWithUser>): string {
-  const start = formatMinute(segment.eventStartMinute);
+function getEventTimeLabel(
+  segment: SubEventCalendarSegment<EventWithUser>,
+  locale: string
+): string {
+  const start = formatMinute(segment.eventStartMinute, locale);
   if (!segment.hasValidEnd || segment.eventEndMinute === null) {
     return start;
   }
-  return `${start}–${formatMinute(segment.eventEndMinute)}`;
+  return `${start}–${formatMinute(segment.eventEndMinute, locale)}`;
 }
 
 function EventBlock({
@@ -71,16 +80,18 @@ function EventBlock({
   startHour: number;
   onSelectEvent: (eventId: string) => void;
 }) {
+  const t = useTranslations('event');
+  const locale = getIntlLocale(useLocale());
   const pixelsPerMinute = HOUR_HEIGHT_PX / 60;
   const top = (segment.startMinute - startHour * 60) * pixelsPerMinute;
   const height = Math.max(18, (segment.layoutEndMinute - segment.startMinute) * pixelsPerMinute);
   const laneWidth = 100 / segment.laneCount;
   const left = segment.lane * laneWidth;
-  const timeLabel = getEventTimeLabel(segment);
-  const dateLabel = formatAccessibleDateKey(segment.columnKey);
+  const timeLabel = getEventTimeLabel(segment, locale);
+  const dateLabel = formatAccessibleDateKey(segment.columnKey, locale);
   const continuationLabel = [
-    segment.continuesBefore ? 'Continues from the previous day.' : '',
-    segment.continuesAfter ? 'Continues into the next day.' : '',
+    segment.continuesBefore ? t('subEventCalendar.continuesBefore') : '',
+    segment.continuesAfter ? t('subEventCalendar.continuesAfter') : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -88,7 +99,12 @@ function EventBlock({
   return (
     <button
       type='button'
-      aria-label={`${segment.title}, ${dateLabel}, ${timeLabel}. ${continuationLabel}`.trim()}
+      aria-label={t('subEventCalendar.blockLabel', {
+        title: segment.title,
+        date: dateLabel,
+        time: timeLabel,
+        continuation: continuationLabel,
+      }).trim()}
       title={`${segment.title} · ${timeLabel}`}
       className='absolute overflow-hidden rounded-2xl border border-gray-900/10 bg-gray-900 px-2 py-1 text-left text-white shadow-sm transition-colors hover:bg-gray-800 focus-visible:z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 dark:border-neutral-200/10 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:focus-visible:ring-neutral-200'
       style={{
@@ -115,6 +131,8 @@ export function SubEventCalendarModal({
   calendar: model,
   onSelectEvent,
 }: SubEventCalendarModalProps) {
+  const t = useTranslations('event');
+  const locale = getIntlLocale(useLocale());
   const hourCount = model.endHour - model.startHour;
   const gridHeight = hourCount * HOUR_HEIGHT_PX;
   const hourMarkers = Array.from({ length: hourCount + 1 }, (_, index) => model.startHour + index);
@@ -125,8 +143,8 @@ export function SubEventCalendarModal({
     <Modal
       open={open}
       setOpen={setOpen}
-      title='Sub-Events Calendar'
-      description={`All times in ${timezoneLabel}`}
+      title={t('subEventCalendar.title')}
+      description={t('subEventCalendar.allTimesIn', { timezone: timezoneLabel })}
       isWideDialog
       isMobileFullScreen
       actionCloseButton
@@ -150,7 +168,7 @@ export function SubEventCalendarModal({
                 style={{ width: TIME_RAIL_WIDTH_PX }}
               />
               {model.dates.map((date) => {
-                const label = formatDateKey(date.key);
+                const label = formatDateKey(date.key, locale);
                 return (
                   <div
                     key={date.key}
@@ -179,7 +197,7 @@ export function SubEventCalendarModal({
                     className='absolute right-2 -translate-y-2 text-[10px] font-medium text-gray-500 dark:text-neutral-400'
                     style={{ top: index * HOUR_HEIGHT_PX }}
                   >
-                    {formatMinute((hour % 24) * 60)}
+                    {formatMinute((hour % 24) * 60, locale)}
                   </span>
                 ))}
               </div>
@@ -216,14 +234,14 @@ export function SubEventCalendarModal({
           <div className='shrink-0 border-t border-gray-200 bg-gray-50 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950'>
             <div className='mb-2 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
               <Clock3 className='h-4 w-4 text-gray-500 dark:text-neutral-400' />
-              Time TBD
+              {t('subEventCalendar.timeTbd')}
             </div>
             <div className='flex gap-2 overflow-x-auto pb-1'>
               {model.unscheduled.map((event) => (
                 <button
                   key={event.id}
                   type='button'
-                  aria-label={`${event.title}, time to be determined`}
+                  aria-label={t('subEventCalendar.tbdLabel', { title: event.title })}
                   className='max-w-56 shrink-0 truncate rounded-full border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800'
                   onClick={() => onSelectEvent(event.id)}
                 >

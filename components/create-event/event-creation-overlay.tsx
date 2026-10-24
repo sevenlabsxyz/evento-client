@@ -1,17 +1,18 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 const LOADING_MESSAGES = [
-  'Creating your event...',
-  'Setting up the details...',
-  'Almost there...',
-  'Making it perfect...',
-  'Finalizing everything...',
-  'Just a moment...',
-];
+  'creating',
+  'details',
+  'almostThere',
+  'perfect',
+  'finalizing',
+  'moment',
+] as const;
 
 const MESSAGE_DURATION = 2500; // 2.5 seconds per message
 
@@ -20,6 +21,7 @@ interface EventCreationOverlayProps {
 }
 
 export function EventCreationOverlay({ isVisible }: EventCreationOverlayProps) {
+  const t = useTranslations('createEvent');
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
   useEffect(() => {
@@ -81,7 +83,7 @@ export function EventCreationOverlay({ isVisible }: EventCreationOverlayProps) {
             >
               <Image
                 src='/assets/img/evento-sublogo.svg'
-                alt='Evento Logo'
+                alt={t('overlay.logoAlt')}
                 width={80}
                 height={80}
                 className='dark:invert'
@@ -99,7 +101,7 @@ export function EventCreationOverlay({ isVisible }: EventCreationOverlayProps) {
                   transition={{ duration: 0.3 }}
                   className='absolute inset-0 text-center text-lg font-medium text-gray-900 dark:text-neutral-100'
                 >
-                  {LOADING_MESSAGES[currentMessageIndex]}
+                  {t(`overlay.messages.${LOADING_MESSAGES[currentMessageIndex]}`)}
                 </motion.p>
               </AnimatePresence>
             </div>

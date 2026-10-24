@@ -2,6 +2,7 @@ import { Env } from '@/lib/constants/env';
 import { sanitizeUploadFileName } from '@/lib/utils/file';
 import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import { apiClient } from '../api/client';
 import { authService, UnauthenticatedError } from '../services/auth';
@@ -106,6 +107,7 @@ export function useUpdateUserProfile() {
  */
 export function useUploadProfileImage() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (file: File) => {
@@ -127,8 +129,10 @@ export function useUploadProfileImage() {
       );
 
       if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: 'Upload failed' }));
-        throw new Error(error.message || `Upload failed with status ${response.status}`);
+        const error = await response.json().catch(() => ({ message: t('upload.uploadFailed') }));
+        throw new Error(
+          error.message || t('upload.uploadFailedStatus', { status: response.status })
+        );
       }
 
       const result = await response.json();

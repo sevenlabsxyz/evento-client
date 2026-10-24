@@ -1,0 +1,255 @@
+{
+  "aiGenerator": {
+    "error": "Failed to generate description. Please try again.",
+    "title": "AI Description",
+    "titleWarning": "Please add an event title before generating a description",
+    "toolbarLabel": "AI-powered description generator",
+    "loading": "Creating the perfect description for your event...",
+    "customPrompt": "Custom Prompt (Optional)",
+    "customPromptHint": "Add specific details you'd like to include in your description",
+    "customPromptPlaceholder": "e.g. Include information about food, dress code, or parking...",
+    "lengthHeading": "Description Length",
+    "lengths": {
+      "short": {
+        "label": "Short",
+        "description": "2-3 sentences"
+      },
+      "medium": {
+        "label": "Medium",
+        "description": "4-6 sentences"
+      },
+      "long": {
+        "label": "Long",
+        "description": "7-10 sentences"
+      }
+    },
+    "toneHeading": "Tone & Style",
+    "tones": {
+      "professional": {
+        "label": "Professional",
+        "description": "Formal and polished"
+      },
+      "casual": {
+        "label": "Casual",
+        "description": "Relaxed and friendly"
+      },
+      "exciting": {
+        "label": "Exciting",
+        "description": "Energetic and enthusiastic"
+      }
+    },
+    "generating": "Generating...",
+    "generate": "Generate Description",
+    "titleRequired": "Add an event title to enable description generation",
+    "generated": "Description Generated!",
+    "editOptions": "Edit Options",
+    "useDescription": "Use This Description"
+  },
+  "toolbar": {
+    "aiDescription": "AI Description",
+    "link": "Link",
+    "insertElements": "Insert elements",
+    "divider": "Divider",
+    "textStyles": "Text styles",
+    "normalText": "Normal Text",
+    "normalTextAria": "Normal text",
+    "heading1": "Heading 1",
+    "heading2": "Heading 2",
+    "heading3": "Heading 3",
+    "lists": "Lists",
+    "bulletList": "Bullet list",
+    "bold": "Bold",
+    "italic": "Italic",
+    "moreFormatting": "More formatting",
+    "strikethrough": "Strikethrough",
+    "code": "Code",
+    "clearFormatting": "Clear formatting"
+  },
+  "music": {
+    "enterUrl": "Please enter a URL"
+  },
+  "wavlake": {
+    "invalidUrl": "Please enter a valid Wavlake URL",
+    "title": "Add Wavlake Track or Playlist",
+    "urlLabel": "Wavlake URL",
+    "hint": "Paste a link to any Wavlake track or playlist"
+  },
+  "attachment": {
+    "title": "Add Music",
+    "editSpotify": "Edit Spotify",
+    "addSpotify": "Add Spotify",
+    "modifySpotifyDescription": "Modify Spotify track or playlist",
+    "addSpotifyDescription": "Add Spotify track or playlist",
+    "editWavlake": "Edit Wavlake",
+    "addWavlake": "Add Wavlake",
+    "modifyWavlakeDescription": "Modify Wavlake track or playlist",
+    "addWavlakeDescription": "Add Wavlake track or playlist"
+  },
+  "capacityConfirm": {
+    "title": "Turn Off Capacity?",
+    "turnOff": "Turn Off",
+    "question": "Are you sure you want to turn off capacity limits for this event?",
+    "current": "Your current capacity is set to {capacity} attendees.",
+    "description": "This action will remove all capacity restrictions. You can always set a new capacity later."
+  },
+  "capacity": {
+    "required": "Please enter a capacity number",
+    "invalid": "Please enter a valid number greater than 0",
+    "title": "Set Event Capacity",
+    "label": "Maximum number of attendees",
+    "placeholder": "Enter capacity"
+  },
+  "cover": {
+    "selectedGifAlt": "Selected GIF cover",
+    "selectedAlt": "Selected cover image",
+    "defaultAlt": "Default event cover",
+    "noImage": "No image selected. Please try again.",
+    "tooLarge": "File is too large, please select a file less than 10MB.",
+    "invalidType": "Please select a valid image file (PNG, GIF, JPG, JPEG).",
+    "gifTooLarge": "GIFs must be smaller than 5MB. Please choose a smaller file.",
+    "uploaded": "Cover image uploaded successfully!",
+    "uploadFailed": "Could not upload image. Please try again.",
+    "uploading": "Uploading...",
+    "uploadPhoto": "Upload Photo"
+  },
+  "description": {
+    "placeholder": "Add a description...",
+    "title": "Edit Description"
+  },
+  "created": {
+    "draftTitle": "Draft Created!",
+    "eventTitle": "Event Created!",
+    "draftHint": "Great work. Next up, complete setup and publish when you are ready.",
+    "dateTime": "{date} at {time} PDT",
+    "opening": "Opening...",
+    "continueSetup": "Continue Setup",
+    "viewEventPage": "View Event Page",
+    "inviteGuests": "Invite Guests"
+  },
+  "overlay": {
+    "logoAlt": "Evento Logo",
+    "messages": {
+      "creating": "Creating your event...",
+      "details": "Setting up the details...",
+      "almostThere": "Almost there...",
+      "perfect": "Making it perfect...",
+      "finalizing": "Finalizing everything...",
+      "moment": "Just a moment..."
+    }
+  },
+  "eventType": {
+    "title": "Event Type",
+    "rsvp": "RSVP",
+    "rsvpDescription": "Guests RSVP directly.",
+    "registration": "Registration",
+    "registrationDescription": "Guests submit registration before attending."
+  },
+  "visibility": {
+    "title": "Event Visibility",
+    "publicDescription": "Anyone can find and join this event",
+    "privateDescription": "Only people with the link can join"
+  },
+  "coverPicker": {
+    "title": "Add Cover Image",
+    "subtitle": "Choose from our curated collection",
+    "uploadCustom": "Upload Custom Image",
+    "imageAlt": "Cover image",
+    "categories": {
+      "featured": "Featured",
+      "giphy": "GIFs",
+      "party": "Party",
+      "social": "Social",
+      "classic": "Classic",
+      "tech": "Tech"
+    }
+  },
+  "sheets": {
+    "insertElements": "Insert Elements",
+    "moreFormatting": "More Formatting",
+    "textStyles": "Text Styles"
+  },
+  "linkEdit": {
+    "invalidUrl": "Please enter a valid URL",
+    "title": "Edit Link",
+    "urlPlaceholder": "Paste a link (https://...)",
+    "displayText": "Display text (optional)",
+    "displayTextPlaceholder": "Text to display",
+    "openInNewTab": "Open in new tab",
+    "insert": "Insert"
+  },
+  "location": {
+    "searchPlaceholder": "Search for a place or address",
+    "title": "Choose Location",
+    "selectedAddress": "Selected address",
+    "gettingLocation": "Getting location...",
+    "useCurrentLocation": "Use current location",
+    "gpsHint": "We'll use your current GPS location",
+    "loadingDetails": "Loading place details...",
+    "searching": "Searching...",
+    "addCustom": "Add \"{query}\"",
+    "useAsCustom": "Use as custom location",
+    "emptyHint": "Type to search for places or add a custom location"
+  },
+  "password": {
+    "required": "Please enter a password",
+    "tooShort": "Password must be at least 4 characters",
+    "title": "Password Protection",
+    "subtitle": "Require a password to view event details",
+    "protected": "Protected",
+    "notProtected": "Not Protected",
+    "protectedDescription": "Password required to view",
+    "notProtectedDescription": "Anyone with link can view",
+    "label": "Event Password",
+    "placeholder": "Enter password",
+    "show": "Show password",
+    "hide": "Hide password",
+    "note": "<strong>Note:</strong> Hosts, co-hosts, and guests who have already RSVP'd \"Yes\" will automatically bypass the password."
+  },
+  "spotify": {
+    "invalidUrl": "Please enter a valid Spotify URL",
+    "title": "Add Spotify Track or Playlist",
+    "urlLabel": "Spotify URL",
+    "hint": "Paste a link to any Spotify track or playlist"
+  },
+  "timePicker": {
+    "timezone": "Timezone: {timezone}",
+    "clearTime": "Clear Time"
+  },
+  "timezone": {
+    "title": "Select Timezone",
+    "searchPlaceholder": "Search for a timezone",
+    "common": "Common",
+    "all": "All Timezones",
+    "noResults": "No timezones found"
+  },
+  "page": {
+    "createSubEvent": "Create Sub Event",
+    "createEvent": "Create Event",
+    "goToTicketSetup": "Go to Ticket Setup",
+    "goToRegistrationSetup": "Go to Registration Setup",
+    "draftCreatedToast": "Draft created successfully!",
+    "eventCreatedToast": "Event created successfully!",
+    "createFailed": "Failed to create event",
+    "subEventBanner": "This event will be created as a sub event.",
+    "subEventBannerWithParent": "This event will be created as a sub event of <strong>{title}</strong>.",
+    "eventTitle": "Event Title",
+    "eventTitlePlaceholder": "Enter event name",
+    "starts": "Starts",
+    "ends": "Ends",
+    "address": "Address",
+    "chooseAddress": "Choose address",
+    "ticketed": "Ticketed",
+    "capacityValue": "Capacity {capacity}",
+    "setCapacity": "Set Capacity",
+    "maxAttendees": "Maximum attendees: {capacity}",
+    "showCapacityCount": "Show capacity count",
+    "showCapacityCountDescription": "Display spots remaining to guests",
+    "description": "Description",
+    "descriptionPlaceholder": "Add description about this event...",
+    "submit": "Create Event",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "startTime": "Start Time",
+    "endTime": "End Time"
+  }
+}

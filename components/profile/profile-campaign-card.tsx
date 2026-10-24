@@ -2,8 +2,10 @@
 
 import { Progress } from '@/components/ui/progress';
 import { useProfileCampaign } from '@/lib/hooks/use-profile-campaign';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { cn } from '@/lib/utils';
 import { Zap } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ProfileCampaignPledgeSheet } from './campaign-pledge-sheet';
 
@@ -13,14 +15,14 @@ interface ProfileCampaignCardProps {
   className?: string;
 }
 
-function formatSats(sats: number): string {
+function formatSats(sats: number, locale: string): string {
   if (sats >= 1_000_000) {
     return `${(sats / 1_000_000).toFixed(1)}M`;
   }
   if (sats >= 1_000) {
     return `${(sats / 1_000).toFixed(sats >= 10_000 ? 0 : 1)}k`;
   }
-  return sats.toLocaleString();
+  return sats.toLocaleString(getIntlLocale(locale));
 }
 
 export default function ProfileCampaignCard({
@@ -28,6 +30,8 @@ export default function ProfileCampaignCard({
   hasCampaign,
   className,
 }: ProfileCampaignCardProps) {
+  const t = useTranslations('profile');
+  const locale = useLocale();
   const campaignQueryEnabled = hasCampaign !== false;
   const { data: campaign, isLoading } = useProfileCampaign(userId, {
     enabled: campaignQueryEnabled,
@@ -54,7 +58,7 @@ export default function ProfileCampaignCard({
         <div className='mb-3 flex items-center gap-2'>
           <Zap className='h-4 w-4 text-amber-500 dark:text-amber-400' />
           <span className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-            {campaign.title || 'Crowdfunding'}
+            {campaign.title || t('campaign.card.defaultTitle')}
           </span>
           <span
             className={cn(
@@ -64,7 +68,7 @@ export default function ProfileCampaignCard({
                 : 'bg-gray-100 text-gray-500 dark:bg-neutral-800 dark:text-neutral-400'
             )}
           >
-            {isActive ? 'Active' : 'Paused'}
+            {isActive ? t('campaign.card.active') : t('campaign.card.paused')}
           </span>
         </div>
 
@@ -77,14 +81,18 @@ export default function ProfileCampaignCard({
         {/* Raised / Goal stats */}
         <div className='mb-2 flex items-baseline gap-1'>
           <span className='text-2xl font-bold tabular-nums text-gray-900 dark:text-neutral-100'>
-            {formatSats(campaign.raised_sats)}
+            {formatSats(campaign.raised_sats, locale)}
           </span>
-          <span className='text-sm text-gray-500 dark:text-neutral-400'>sats raised</span>
+          <span className='text-sm text-gray-500 dark:text-neutral-400'>
+            {t('campaign.card.satsRaised')}
+          </span>
           {hasGoal && (
             <>
-              <span className='text-sm text-gray-400 dark:text-neutral-500'>of</span>
+              <span className='text-sm text-gray-400 dark:text-neutral-500'>
+                {t('campaign.card.of')}
+              </span>
               <span className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                {formatSats(campaign.goal_sats!)} goal
+                {t('campaign.card.goal', { amount: formatSats(campaign.goal_sats!, locale) })}
               </span>
             </>
           )}
@@ -102,14 +110,14 @@ export default function ProfileCampaignCard({
 
         {/* Pledge count */}
         <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>
-          {campaign.pledge_count} {campaign.pledge_count === 1 ? 'contribution' : 'contributions'}
+          {t('campaign.card.contributions', { count: campaign.pledge_count })}
         </p>
 
         {/* CTA */}
         {isPaused ? (
           <div className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-200 px-4 py-3 text-sm font-semibold text-gray-400 dark:bg-neutral-700 dark:text-neutral-500'>
             <Zap className='h-4 w-4' />
-            Campaign paused
+            {t('campaign.card.campaignPaused')}
           </div>
         ) : (
           <button
@@ -118,7 +126,7 @@ export default function ProfileCampaignCard({
             className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:active:bg-neutral-300'
           >
             <Zap className='h-4 w-4' />
-            Contribute sats
+            {t('campaign.card.contributeSats')}
           </button>
         )}
       </div>

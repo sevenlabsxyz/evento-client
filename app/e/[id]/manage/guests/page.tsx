@@ -39,6 +39,7 @@ import {
   XCircle,
   Zap,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -46,11 +47,11 @@ type GuestTab = RSVPStatus | 'invited';
 
 const GUEST_TABS: GuestTab[] = ['yes', 'maybe', 'no', 'invited'];
 
-const RSVP_TAB_LABELS: Record<RSVPStatus, string> = {
-  yes: 'Going',
-  maybe: 'Maybe',
-  no: 'Not going',
-};
+const RSVP_TAB_LABEL_KEYS = {
+  yes: 'going',
+  maybe: 'maybe',
+  no: 'notGoing',
+} as const satisfies Record<RSVPStatus, string>;
 
 function parseGuestTab(value: string | null): GuestTab {
   return GUEST_TABS.find((tab) => tab === value) ?? 'yes';
@@ -65,6 +66,8 @@ export default function GuestListPage() {
   const { user } = useAuth();
   const { walletState, isLoading: isWalletLoading } = useWallet();
   const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
   const eventId = params.id as string;
 
   // Get existing event data from API
@@ -146,11 +149,11 @@ export default function GuestListPage() {
 
   const handleExportCSV = async () => {
     if (!existingEvent || !guests.length) {
-      toast.error('No guest data available to export');
+      toast.error(t('guests.toasts.noDataToExport'));
       return;
     }
 
-    toast.info('Exporting guest list...');
+    toast.info(t('guests.toasts.exporting'));
 
     try {
       const { filename, csv } = await exportGuestsCsvAction({
@@ -166,9 +169,9 @@ export default function GuestListPage() {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      toast.success('Guest list exported successfully');
+      toast.success(t('guests.toasts.exported'));
     } catch {
-      toast.error('Failed to export guest list. Please try again');
+      toast.error(t('guests.toasts.exportFailed'));
     }
   };
 
@@ -182,7 +185,7 @@ export default function GuestListPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Guest List',
+      title: t('guests.topBarTitle'),
       leftMode: 'back',
       centerMode: 'title',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
@@ -192,7 +195,7 @@ export default function GuestListPage() {
           id: 'export',
           icon: Share2,
           onClick: () => void exportCsvRef.current(),
-          label: 'Export CSV',
+          label: t('guests.exportCsv'),
         },
       ],
     });
@@ -200,7 +203,7 @@ export default function GuestListPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [applyRouteConfig, clearRoute, eventId, pathname, router, setTopBarForRoute]);
+  }, [applyRouteConfig, clearRoute, eventId, pathname, router, setTopBarForRoute, t]);
 
   if (isLoading) {
     return <GuestListSkeleton />;
@@ -211,16 +214,16 @@ export default function GuestListPage() {
       <div className='py-4 md:py-6'>
         <div className='rounded-2xl border border-gray-200 bg-white px-6 py-10 text-center dark:border-neutral-800 dark:bg-neutral-900'>
           <h2 className='mb-2 text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-            Event Not Found
+            {t('guests.notFound.title')}
           </h2>
           <p className='mb-4 text-sm text-gray-600 dark:text-neutral-400'>
-            The event you&apos;re trying to manage doesn&apos;t exist.
+            {t('guests.notFound.description')}
           </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
-            Go Back
+            {tCommon('actions.goBack')}
           </button>
         </div>
       </div>
@@ -266,11 +269,11 @@ export default function GuestListPage() {
         eventId,
         userId: guestToRemove.user_id,
       });
-      toast.success('Guest removed from guest list');
+      toast.success(t('guests.toasts.removed'));
       setGuestToRemove(null);
       queryClient.invalidateQueries({ queryKey: queryKeys.eventDashboard(eventId) });
     } catch {
-      toast.error('Failed to remove guest');
+      toast.error(t('guests.toasts.removeFailed'));
     } finally {
       setRemovingUserId(null);
     }
@@ -291,16 +294,14 @@ export default function GuestListPage() {
         <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
           <div>
             <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-              Guest list
+              {t('guests.heading')}
             </h2>
-            <p className='text-sm text-gray-500 dark:text-neutral-400'>
-              See who&apos;s coming, track the invites you&apos;ve sent, and manage RSVPs.
-            </p>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('guests.subheading')}</p>
           </div>
           <div className='flex flex-wrap items-center gap-2'>
             <Button type='button' size='sm' onClick={() => setIsInviteOpen(true)}>
               <UserPlus />
-              Invite guests
+              {t('guests.inviteGuests')}
             </Button>
             <Button
               type='button'
@@ -311,7 +312,7 @@ export default function GuestListPage() {
               onClick={handleOpenBatchZap}
             >
               <Zap className='h-4 w-4' />
-              Zap All
+              {t('guests.zapAll')}
             </Button>
             <Button
               type='button'
@@ -321,7 +322,7 @@ export default function GuestListPage() {
               onClick={() => void handleExportCSV()}
             >
               <Download className='h-4 w-4' />
-              Export CSV
+              {t('guests.exportCsv')}
             </Button>
           </div>
         </div>
@@ -334,22 +335,37 @@ export default function GuestListPage() {
             expanded
             tabs={[
               {
-                title: `${RSVP_TAB_LABELS.yes} (${getGuestCount('yes')})`,
+                title: t('guests.tabs.withCount', {
+                  label: t(`guests.tabs.${RSVP_TAB_LABEL_KEYS.yes}`),
+                  count: getGuestCount('yes'),
+                }),
                 icon: CheckCircle,
                 onClick: () => handleTabChange('yes'),
               },
               {
-                title: `${RSVP_TAB_LABELS.maybe} (${getGuestCount('maybe')})`,
+                title: t('guests.tabs.withCount', {
+                  label: t(`guests.tabs.${RSVP_TAB_LABEL_KEYS.maybe}`),
+                  count: getGuestCount('maybe'),
+                }),
                 icon: CircleHelp,
                 onClick: () => handleTabChange('maybe'),
               },
               {
-                title: `${RSVP_TAB_LABELS.no} (${getGuestCount('no')})`,
+                title: t('guests.tabs.withCount', {
+                  label: t(`guests.tabs.${RSVP_TAB_LABEL_KEYS.no}`),
+                  count: getGuestCount('no'),
+                }),
                 icon: XCircle,
                 onClick: () => handleTabChange('no'),
               },
               {
-                title: invitedCount === undefined ? 'Invited' : `Invited (${invitedCount})`,
+                title:
+                  invitedCount === undefined
+                    ? t('guests.tabs.invited')
+                    : t('guests.tabs.withCount', {
+                        label: t('guests.tabs.invited'),
+                        count: invitedCount,
+                      }),
                 icon: Mail,
                 onClick: () => handleTabChange('invited'),
               },
@@ -371,8 +387,8 @@ export default function GuestListPage() {
               <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400 dark:text-neutral-400' />
               <input
                 type='text'
-                placeholder='Search event guests...'
-                aria-label='Search event guests'
+                placeholder={t('guests.searchPlaceholder')}
+                aria-label={t('guests.searchLabel')}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className='w-full rounded-xl border-none bg-gray-100 py-3 pl-10 pr-4 text-gray-900 placeholder-gray-500 outline-none dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-400'
@@ -381,8 +397,7 @@ export default function GuestListPage() {
 
             {activeTab === 'yes' && (
               <div className='rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400'>
-                Creator and co-hosts cannot be removed from this list. Remove co-host access in
-                Hosts to remove them from the guest list.
+                {t('guests.hostsNotice')}
               </div>
             )}
 
@@ -403,9 +418,12 @@ export default function GuestListPage() {
 
             {/* Summary Footer */}
             <div className='flex items-center justify-between text-sm text-gray-600 dark:text-neutral-400'>
-              <span>Total Guests: {guests.length}</span>
+              <span>{t('guests.footer.total', { count: guests.length })}</span>
               <span>
-                {RSVP_TAB_LABELS[activeTab]}: {filteredGuests.length}
+                {t('guests.footer.statusCount', {
+                  label: t(`guests.tabs.${RSVP_TAB_LABEL_KEYS[activeTab]}`),
+                  count: filteredGuests.length,
+                })}
               </span>
             </div>
           </>
@@ -434,16 +452,20 @@ export default function GuestListPage() {
                 </div>
 
                 <h2 className='mb-2 text-xl font-semibold text-gray-900 dark:text-neutral-100'>
-                  Remove guest?
+                  {t('guests.removeSheet.title')}
                 </h2>
                 <p className='mb-6 text-sm text-gray-600 dark:text-neutral-400'>
-                  Remove{' '}
-                  <span className='font-medium text-gray-900 dark:text-neutral-100'>
-                    {guestToRemove?.user_details?.name ||
+                  {t.rich('guests.removeSheet.description', {
+                    name:
+                      guestToRemove?.user_details?.name ||
                       guestToRemove?.user_details?.username ||
-                      'this user'}
-                  </span>{' '}
-                  from the approved guest list? They will lose guest-list access.
+                      t('guests.removeSheet.thisUser'),
+                    strong: (chunks) => (
+                      <span className='font-medium text-gray-900 dark:text-neutral-100'>
+                        {chunks}
+                      </span>
+                    ),
+                  })}
                 </p>
 
                 <div className='flex flex-col gap-3 sm:flex-row'>
@@ -452,14 +474,16 @@ export default function GuestListPage() {
                     disabled={removeGuest.isPending}
                     className='w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-950'
                   >
-                    Cancel
+                    {tCommon('actions.cancel')}
                   </button>
                   <button
                     onClick={handleConfirmRemoveGuest}
                     disabled={removeGuest.isPending}
                     className='w-full rounded-lg bg-red-500 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:opacity-50 dark:bg-red-600 dark:hover:bg-red-700'
                   >
-                    {removeGuest.isPending ? 'Removing...' : 'Remove guest'}
+                    {removeGuest.isPending
+                      ? t('guests.removeSheet.removing')
+                      : t('guests.removeSheet.confirm')}
                   </button>
                 </div>
               </div>
@@ -482,8 +506,9 @@ export default function GuestListPage() {
 }
 
 function GuestRowsSkeleton() {
+  const t = useTranslations('manageLegacy');
   return (
-    <div className='space-y-3' aria-busy='true' aria-label='Loading guests'>
+    <div className='space-y-3' aria-busy='true' aria-label={t('guests.loadingGuests')}>
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}

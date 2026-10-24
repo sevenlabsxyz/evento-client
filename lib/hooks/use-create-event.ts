@@ -3,6 +3,7 @@ import { CreateEventData, createEventSchema } from '@/lib/schemas/event';
 import { ApiResponse } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
 interface CreateEventResponse {
@@ -12,6 +13,7 @@ interface CreateEventResponse {
 }
 
 export function useCreateEvent() {
+  const t = useTranslations('hooks');
   const router = useRouter();
 
   return useMutation({
@@ -31,7 +33,7 @@ export function useCreateEvent() {
         return response.data[0];
       }
 
-      throw new Error('Failed to create event');
+      throw new Error(t('events.createFailed'));
     },
     onSuccess: (data) => {
       if (data.status === 'draft') {
@@ -58,6 +60,7 @@ export function useCreateEvent() {
  * Useful when you need to handle success differently
  */
 export function useCreateEventWithCallbacks() {
+  const t = useTranslations('hooks');
   return useMutation({
     mutationFn: async (data: CreateEventData) => {
       // Validate data
@@ -75,7 +78,7 @@ export function useCreateEventWithCallbacks() {
         return response.data[0];
       }
 
-      throw new Error('Failed to create event');
+      throw new Error(t('events.createFailed'));
     },
   });
 }

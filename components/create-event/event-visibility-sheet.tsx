@@ -2,6 +2,7 @@
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { Globe, Lock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface EventVisibilitySheetProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ export default function EventVisibilitySheet({
   onVisibilitySelect,
   currentVisibility,
 }: EventVisibilitySheetProps) {
+  const t = useTranslations('createEvent');
+  const tCommon = useTranslations('common');
   const handleVisibilitySelect = (visibility: 'public' | 'private') => {
     onVisibilitySelect(visibility);
     onClose();
@@ -38,7 +41,7 @@ export default function EventVisibilitySheet({
 
               {/* Header */}
               <div className='mb-6'>
-                <h2 className='text-center text-xl font-semibold'>Event Visibility</h2>
+                <h2 className='text-center text-xl font-semibold'>{t('visibility.title')}</h2>
               </div>
 
               {/* Visibility Options */}
@@ -70,7 +73,7 @@ export default function EventVisibilitySheet({
                             : 'text-gray-900 dark:text-neutral-100'
                         }`}
                       >
-                        Public
+                        {tCommon('labels.public')}
                       </h3>
                       <p
                         className={`text-sm ${
@@ -79,7 +82,7 @@ export default function EventVisibilitySheet({
                             : 'text-gray-600 dark:text-neutral-400'
                         }`}
                       >
-                        Anyone can find and join this event
+                        {t('visibility.publicDescription')}
                       </p>
                     </div>
                     {currentVisibility === 'public' && (
@@ -117,7 +120,7 @@ export default function EventVisibilitySheet({
                             : 'text-gray-900 dark:text-neutral-100'
                         }`}
                       >
-                        Private
+                        {tCommon('labels.private')}
                       </h3>
                       <p
                         className={`text-sm ${
@@ -126,7 +129,7 @@ export default function EventVisibilitySheet({
                             : 'text-gray-600 dark:text-neutral-400'
                         }`}
                       >
-                        Only people with the link can join
+                        {t('visibility.privateDescription')}
                       </p>
                     </div>
                     {currentVisibility === 'private' && (

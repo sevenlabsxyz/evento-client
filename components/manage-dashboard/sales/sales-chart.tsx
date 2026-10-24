@@ -7,19 +7,14 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import type { EventSales } from '@/lib/types/manage';
 import { BarChart3 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, type ReactNode } from 'react';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
-
-const chartConfig = {
-  orders: {
-    label: 'Orders',
-    color: 'hsl(var(--chart-1))',
-  },
-} satisfies ChartConfig;
 
 interface ChartPoint {
   date: string;
@@ -50,13 +45,13 @@ function fillDailySeries(points: EventSales['salesOverTime']): ChartPoint[] {
   return series;
 }
 
-function formatDay(date: string, options: Intl.DateTimeFormatOptions): string {
+function formatDay(date: string, locale: string, options: Intl.DateTimeFormatOptions): string {
   const time = Date.parse(`${date}T00:00:00Z`);
   if (Number.isNaN(time)) {
     return date;
   }
 
-  return new Date(time).toLocaleDateString(undefined, { ...options, timeZone: 'UTC' });
+  return new Date(time).toLocaleDateString(locale, { ...options, timeZone: 'UTC' });
 }
 
 interface SalesChartProps {
@@ -64,6 +59,18 @@ interface SalesChartProps {
 }
 
 export function SalesChart({ salesOverTime }: SalesChartProps) {
+  const t = useTranslations('manage');
+  const intlLocale = getIntlLocale(useLocale());
+  const chartConfig = useMemo(
+    () =>
+      ({
+        orders: {
+          label: t('salesChart.ordersLabel'),
+          color: 'hsl(var(--chart-1))',
+        },
+      }) satisfies ChartConfig,
+    [t]
+  );
   const series = useMemo(() => fillDailySeries(salesOverTime), [salesOverTime]);
   const totalOrders = useMemo(
     () => salesOverTime.reduce((sum, point) => sum + point.tickets, 0),
@@ -75,15 +82,13 @@ export function SalesChart({ salesOverTime }: SalesChartProps) {
       <div className='mb-4 flex items-start justify-between gap-3'>
         <div>
           <h2 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-            Orders per day
+            {t('salesChart.title')}
           </h2>
-          <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            Paid orders grouped by payment date (UTC)
-          </p>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('salesChart.subtitle')}</p>
         </div>
         {series.length > 0 && (
           <span className='shrink-0 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium tabular-nums text-gray-700 dark:bg-neutral-800 dark:text-neutral-300'>
-            {totalOrders.toLocaleString()} total
+            {t('salesChart.total', { count: totalOrders.toLocaleString(intlLocale) })}
           </span>
         )}
       </div>
@@ -92,10 +97,10 @@ export function SalesChart({ salesOverTime }: SalesChartProps) {
         <div className='flex h-56 flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 text-center dark:border-neutral-700'>
           <BarChart3 className='mb-2 h-6 w-6 text-gray-400 dark:text-neutral-500' />
           <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-            No paid orders yet
+            {t('salesChart.emptyTitle')}
           </p>
           <p className='mt-1 max-w-xs text-xs text-gray-500 dark:text-neutral-400'>
-            Daily sales will appear here once guests complete checkout.
+            {t('salesChart.emptyDescription')}
           </p>
         </div>
       ) : (
@@ -109,7 +114,7 @@ export function SalesChart({ salesOverTime }: SalesChartProps) {
               tickMargin={8}
               minTickGap={24}
               tickFormatter={(value: string) =>
-                formatDay(value, { month: 'short', day: 'numeric' })
+                formatDay(value, intlLocale, { month: 'short', day: 'numeric' })
               }
             />
             <YAxis
@@ -131,7 +136,11 @@ export function SalesChart({ salesOverTime }: SalesChartProps) {
                   activeIndex={props.activeIndex}
                   labelFormatter={(value: ReactNode) =>
                     typeof value === 'string'
-                      ? formatDay(value, { weekday: 'short', month: 'short', day: 'numeric' })
+                      ? formatDay(value, intlLocale, {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                        })
                       : value
                   }
                 />

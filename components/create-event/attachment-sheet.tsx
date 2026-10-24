@@ -4,6 +4,7 @@ import { SpotifySVGImage } from '@/components/icons/spotify';
 import { WavlakeSVGImage } from '@/components/icons/wavlake';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import SpotifySheet from './spotify-sheet';
 import WavlakeSheet from './wavlake-sheet';
@@ -23,6 +24,7 @@ export default function AttachmentSheet({
   spotifyUrl = '',
   wavlakeUrl = '',
 }: AttachmentSheetProps) {
+  const t = useTranslations('createEvent');
   const [showSpotifySheet, setShowSpotifySheet] = useState(false);
   const [showWavlakeSheet, setShowWavlakeSheet] = useState(false);
 
@@ -54,22 +56,22 @@ export default function AttachmentSheet({
   const options = [
     {
       type: 'spotify' as const,
-      label: hasSpotify ? 'Edit Spotify' : 'Add Spotify',
+      label: hasSpotify ? t('attachment.editSpotify') : t('attachment.addSpotify'),
       icon: <SpotifySVGImage className='h-6 w-6' />,
       description: hasSpotify
-        ? 'Modify Spotify track or playlist'
-        : 'Add Spotify track or playlist',
+        ? t('attachment.modifySpotifyDescription')
+        : t('attachment.addSpotifyDescription'),
       filled: hasSpotify,
       disabled: false,
       onClick: handleSpotifyClick,
     },
     {
       type: 'wavlake' as const,
-      label: hasWavlake ? 'Edit Wavlake' : 'Add Wavlake',
+      label: hasWavlake ? t('attachment.editWavlake') : t('attachment.addWavlake'),
       icon: <WavlakeSVGImage className='h-6 w-6 dark:fill-white' />,
       description: hasWavlake
-        ? 'Modify Wavlake track or playlist'
-        : 'Add Wavlake track or playlist',
+        ? t('attachment.modifyWavlakeDescription')
+        : t('attachment.addWavlakeDescription'),
       filled: hasWavlake,
       disabled: false,
       onClick: handleWavlakeClick,
@@ -94,7 +96,7 @@ export default function AttachmentSheet({
 
               {/* Header */}
               <div className='mb-6'>
-                <h2 className='text-center text-xl font-semibold'>Add Music</h2>
+                <h2 className='text-center text-xl font-semibold'>{t('attachment.title')}</h2>
               </div>
 
               {/* Options */}

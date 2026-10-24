@@ -1,6 +1,7 @@
 import { resetWalletInitialization } from '@/lib/hooks/use-wallet';
 import { clearAllAppStorage } from '@/lib/utils/logout-cleanup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { authService, UnauthenticatedError } from '../services/auth';
@@ -141,12 +142,13 @@ export function useLogin() {
  * Hook for resending verification code
  */
 export function useResendCode() {
+  const t = useTranslations('hooks');
   const { email } = useAuthStore();
 
   const mutation = useMutation({
     mutationFn: () => {
       if (!email) {
-        throw new Error('Email is required to resend code');
+        throw new Error(t('auth.emailRequiredResend'));
       }
       return authService.sendLoginCode(email);
     },
@@ -165,6 +167,7 @@ export function useResendCode() {
  * Hook for verifying TOTP code
  */
 export function useVerifyCode() {
+  const t = useTranslations('hooks');
   const router = useRouter();
   const queryClient = useQueryClient();
   const { email, setUser, clearEmail } = useAuthStore();
@@ -173,7 +176,7 @@ export function useVerifyCode() {
   const mutation = useMutation({
     mutationFn: ({ code }: { code: string }) => {
       if (!email) {
-        throw new Error('Email is required for verification');
+        throw new Error(t('auth.emailRequiredVerify'));
       }
       return authService.verifyCode(email, code);
     },

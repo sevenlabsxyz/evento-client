@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface BitrefillPaymentStatusSheetProps {
   open: boolean;
@@ -20,6 +21,8 @@ export function BitrefillPaymentStatusSheet({
   deliveryStatus,
   onClose,
 }: BitrefillPaymentStatusSheetProps) {
+  const t = useTranslations('walletFlows');
+  const tCommon = useTranslations('common');
   // Determine title and message based on status
   const getContent = () => {
     switch (status) {
@@ -34,15 +37,15 @@ export function BitrefillPaymentStatusSheet({
             </motion.div>
           ),
           iconBg: 'bg-blue-100 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900',
-          title: 'Processing Payment',
-          message: 'Your payment is being processed. This usually takes just a few seconds.',
+          title: t('bitrefillPaymentStatusSheet.processing.title'),
+          message: t('bitrefillPaymentStatusSheet.processing.message'),
           showButton: false,
         };
       case 'success':
         return {
           icon: <CheckCircle2 className='h-10 w-10 text-green-500 dark:text-green-400' />,
           iconBg: 'bg-green-100 dark:bg-green-950/60 border border-green-200 dark:border-green-900',
-          title: 'Purchase Complete!',
+          title: t('bitrefillPaymentStatusSheet.success.title'),
           message: getSuccessMessage(deliveryStatus),
           showButton: true,
         };
@@ -50,7 +53,7 @@ export function BitrefillPaymentStatusSheet({
         return {
           icon: <XCircle className='h-10 w-10 text-red-500 dark:text-red-400' />,
           iconBg: 'bg-red-100 dark:bg-red-950/60 border border-red-200 dark:border-red-900',
-          title: 'Payment Failed',
+          title: t('bitrefillPaymentStatusSheet.error.title'),
           message: getErrorMessage(deliveryStatus),
           showButton: true,
         };
@@ -60,21 +63,21 @@ export function BitrefillPaymentStatusSheet({
   const getSuccessMessage = (delivery: typeof deliveryStatus) => {
     switch (delivery) {
       case 'all_delivered':
-        return 'Your gift card has been delivered successfully. Instructions were sent to your email but you can also read them now by clicking below.';
+        return t('bitrefillPaymentStatusSheet.success.allDelivered');
       case 'partial_delivery':
-        return 'Some items were delivered. Please check Bitrefill for more details about remaining items.';
+        return t('bitrefillPaymentStatusSheet.success.partialDelivery');
       case 'all_error':
-        return 'There was an issue with delivery. A refund will be processed automatically.';
+        return t('bitrefillPaymentStatusSheet.success.deliveryIssue');
       default:
-        return 'Your payment was successful. Your purchase will be delivered shortly.';
+        return t('bitrefillPaymentStatusSheet.success.default');
     }
   };
 
   const getErrorMessage = (delivery: typeof deliveryStatus) => {
     if (delivery === 'all_error') {
-      return "We couldn't complete your purchase. Don't worry - a refund will be processed automatically to your wallet.";
+      return t('bitrefillPaymentStatusSheet.error.refund');
     }
-    return 'Something went wrong with your payment. Please try again or contact support if the issue persists.';
+    return t('bitrefillPaymentStatusSheet.error.generic');
   };
 
   const content = getContent();
@@ -138,7 +141,7 @@ export function BitrefillPaymentStatusSheet({
                   transition={{ delay: 0.3 }}
                 >
                   <Button onClick={onClose} className='h-12 w-full rounded-full'>
-                    {status === 'success' ? 'Done' : 'Close'}
+                    {status === 'success' ? tCommon('actions.done') : tCommon('actions.close')}
                   </Button>
                 </motion.div>
               )}

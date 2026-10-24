@@ -1,0 +1,243 @@
+{
+  "meta": {
+    "title": "Segurança — Evento",
+    "description": "Como o Evento protege contas, a carteira autocustodial, pagamentos, eventos e dados — e como relatar uma vulnerabilidade."
+  },
+  "topBarTitle": "Segurança",
+  "header": {
+    "eyebrow": "Segurança",
+    "title": "Como o Evento protege você",
+    "subtitle": "Como protegemos sua conta, carteira, eventos e dados, e como relatar uma vulnerabilidade.",
+    "lastUpdated": "Atualizado em <time>{date}</time>"
+  },
+  "glance": {
+    "heading": "Visão geral"
+  },
+  "nav": {
+    "onThisPage": "Nesta página",
+    "foundIssue": "Encontrou um problema?",
+    "reportPrivately": "Relate de forma privada para <link>{email}</link>."
+  },
+  "facts": {
+    "signIn": {
+      "title": "Login sem senha",
+      "description": "Códigos de uso único por e-mail ou Google, gerenciados pelo Supabase Auth."
+    },
+    "selfCustody": {
+      "title": "Carteira autocustodial",
+      "description": "Sua frase de recuperação é criada no seu dispositivo. O Evento nunca a recebe."
+    },
+    "seedEncryption": {
+      "title": "Criptografia AES-256 da seed",
+      "description": "Protegida com seu PIN via PBKDF2-SHA256 com 1.000.000 de iterações."
+    },
+    "eventPasswords": {
+      "title": "Senhas de eventos com hash",
+      "description": "Armazenadas como hashes scrypt com salt e verificadas em tempo constante."
+    },
+    "transport": {
+      "title": "HTTPS em todo lugar",
+      "description": "HSTS, uma Content Security Policy e bloqueio de frames em todas as páginas."
+    },
+    "publicApi": {
+      "title": "API pública somente leitura",
+      "description": "Chaves emitidas pelo Unkey, 1.000 requisições por dia, apenas eventos públicos."
+    }
+  },
+  "sections": {
+    "accounts": {
+      "navLabel": "Contas e login",
+      "title": "Contas e login",
+      "summary": "Sem senhas de conta para vazar ou reutilizar."
+    },
+    "wallet": {
+      "navLabel": "Carteira",
+      "title": "Carteira",
+      "summary": "Carteira Lightning autocustodial construída com o Breez SDK (Spark)."
+    },
+    "payments": {
+      "navLabel": "Pagamentos",
+      "title": "Pagamentos",
+      "summary": "Bitcoin via Lightning, enviado da sua própria carteira."
+    },
+    "events": {
+      "navLabel": "Eventos e privacidade",
+      "title": "Eventos e privacidade",
+      "summary": "Os anfitriões decidem quem vê o quê, e a API garante isso."
+    },
+    "data": {
+      "navLabel": "Seus dados",
+      "title": "Seus dados",
+      "summary": "Armazenados no Supabase, criptografados em trânsito."
+    },
+    "platform": {
+      "navLabel": "Proteções da plataforma",
+      "title": "Proteções da plataforma",
+      "summary": "Defesas integradas ao app e à API."
+    },
+    "developers": {
+      "navLabel": "Desenvolvedores e chaves de API",
+      "title": "Desenvolvedores e chaves de API",
+      "summary": "Chaves com escopo e revogáveis para acesso somente leitura."
+    },
+    "disclosure": {
+      "navLabel": "Relatar uma vulnerabilidade",
+      "title": "Relatar uma vulnerabilidade",
+      "summary": "Encontrou um problema de segurança? Conte para nós de forma privada."
+    }
+  },
+  "points": {
+    "emailOrGoogle": {
+      "title": "Códigos por e-mail ou Google",
+      "body": "Entre com um código de uso único enviado para seu e-mail ou com sua conta Google. Ambos passam pelo Supabase Auth."
+    },
+    "cookieSessions": {
+      "title": "Sessões em cookies",
+      "body": "Sua sessão fica em cookies definidos pelo Supabase Auth e é renovada a cada requisição."
+    },
+    "serverVerified": {
+      "title": "Verificado no servidor",
+      "body": "Requisições autenticadas à API são revalidadas com o Supabase Auth no servidor, usando seu cookie de sessão ou um token Bearer."
+    },
+    "compromisedAccount": {
+      "title": "Conta comprometida",
+      "body": "Se você acha que outra pessoa tem acesso, envie um e-mail para {email} imediatamente."
+    },
+    "keysOnDevice": {
+      "title": "Chaves criadas no seu dispositivo",
+      "body": "Sua frase de recuperação BIP39 de 12 palavras é gerada no seu navegador. Ela nunca é enviada aos servidores do Evento."
+    },
+    "encryptedAtRest": {
+      "title": "Criptografada em repouso",
+      "body": "A frase é criptografada com AES-256-GCM usando uma chave derivada do seu PIN de 6 dígitos (PBKDF2-SHA256, 1.000.000 de iterações, salt aleatório) pela Web Crypto API do navegador e depois salva no armazenamento local deste navegador."
+    },
+    "shortLivedMemory": {
+      "title": "Pouco tempo na memória",
+      "body": "Depois que você desbloqueia, a frase descriptografada fica apenas na memória e é apagada quando você bloqueia a carteira ou após 30 minutos."
+    },
+    "backupsStayWithYou": {
+      "title": "Os backups ficam com você",
+      "body": "Exporte um arquivo de backup criptografado com seu PIN ou revele sua frase de recuperação depois de digitar o PIN novamente. O Evento não armazena nenhum dos dois."
+    },
+    "whatEventoCantDo": {
+      "title": "O que o Evento não pode fazer",
+      "body": "Não podemos ver sua frase, redefinir seu PIN nem restaurar sua carteira. Se você perder o dispositivo e o backup, os fundos não poderão ser recuperados."
+    },
+    "lightningAddress": {
+      "title": "Endereço Lightning",
+      "body": "Seu endereço @evento.cash é registrado pela Breez e salvo no seu perfil público para que as pessoas possam pagar você."
+    },
+    "signedNotices": {
+      "title": "Avisos de pagamento assinados",
+      "body": "Quando seu endereço recebe um pagamento, a Breez envia ao Evento um webhook assinado com HMAC-SHA256 para que possamos enviar um e-mail a você. Guardamos o hash do pagamento, o valor e o comentário de quem enviou."
+    },
+    "ticketsPayHost": {
+      "title": "Ingressos pagam o anfitrião diretamente",
+      "body": "As faturas dos ingressos vêm do endereço Lightning do anfitrião. O Evento verifica se o valor da fatura corresponde ao pedido e confirma o pagamento comparando a pré-imagem com o hash do pagamento."
+    },
+    "orderStorage": {
+      "title": "O que armazenamos nos pedidos",
+      "body": "Hash do pagamento, URL de verificação e pré-imagem como comprovante de pagamento. As faturas expiram após 10 minutos."
+    },
+    "privateByDefault": {
+      "title": "Privado por padrão",
+      "body": "Novos eventos são privados, a menos que você os torne públicos. Eventos privados só chegam a quem tem o link e ficam fora do feed de outras pessoas."
+    },
+    "passwordProtected": {
+      "title": "Eventos protegidos por senha",
+      "body": "As senhas de eventos passam por hash com scrypt e um salt aleatório de 16 bytes, e são verificadas em tempo constante. Local, descrição e dados de pagamento ficam ocultos até que a senha correta seja digitada."
+    },
+    "signedAccessCookie": {
+      "title": "Cookie de acesso assinado",
+      "body": "Uma senha correta define um cookie HttpOnly assinado com HMAC, restrito a esse evento por 7 dias. Anfitriões e convidados confirmados não precisam dele."
+    },
+    "hiddenUntilApproved": {
+      "title": "Oculto até a aprovação",
+      "body": "Eventos com inscrição ocultam o local e a lista de convidados de quem ainda não foi aprovado, por padrão. Os anfitriões também podem ocultar a descrição."
+    },
+    "guestList": {
+      "title": "Lista de convidados",
+      "body": "Os anfitriões podem ocultar a lista de convidados de todos."
+    },
+    "whereItLives": {
+      "title": "Onde ficam",
+      "body": "Os dados de conta, perfil e eventos são armazenados no Supabase e acessados pela API do Evento."
+    },
+    "encryptedInTransit": {
+      "title": "Criptografados em trânsito",
+      "body": "Todo o tráfego usa HTTPS. O HSTS instrui os navegadores a sempre usar HTTPS por dois anos, incluindo subdomínios, e requisições inseguras são convertidas."
+    },
+    "whatWeCollect": {
+      "title": "O que coletamos",
+      "body": "Os dados de perfil que você nos fornece, sua atividade em eventos e dados de dispositivo e uso."
+    },
+    "yourRights": {
+      "title": "Seus direitos",
+      "body": "Solicite acesso, correção ou exclusão em privacy@evento.so."
+    },
+    "rateLimits": {
+      "title": "Limites de requisições",
+      "body": "Endpoints sujeitos a abuso têm limites, por exemplo e-mails de convite (20 por dia por usuário), descrições com IA (10 por minuto) e verificação de códigos de desconto (30 por minuto por IP)."
+    },
+    "sanitizedRichText": {
+      "title": "Texto formatado sanitizado",
+      "body": "Descrições de eventos, posts do blog e disparos de e-mail passam pelo DOMPurify com uma lista restrita de tags e atributos permitidos. Links que abrem em nova aba recebem rel=\"noopener noreferrer\"."
+    },
+    "securityHeaders": {
+      "title": "Cabeçalhos de segurança",
+      "body": "Uma Content Security Policy define quais scripts, frames e conexões de rede são permitidos. Outros sites não podem incorporar o Evento em frames, e nosniff, uma política de referrer restrita e uma Permissions-Policy (microfone desativado) valem para todas as páginas."
+    },
+    "openSource": {
+      "title": "Código aberto",
+      "body": "O cliente web tem código aberto sob a licença GPL-3.0, então qualquer pessoa pode auditá-lo."
+    },
+    "readOnlyApi": {
+      "title": "API pública somente leitura",
+      "body": "Apenas endpoints GET, que retornam eventos públicos publicados, suas listas de convidados e listas de eventos de usuários."
+    },
+    "unkeyKeys": {
+      "title": "Chaves emitidas pelo Unkey",
+      "body": "As chaves têm apenas a permissão events:read e são enviadas no cabeçalho x-evento-api-key."
+    },
+    "shownOnce": {
+      "title": "Exibida uma vez, revogável",
+      "body": "A chave é exibida uma única vez ao ser criada. O Evento armazena apenas o ID da chave no Unkey, e você pode revogar chaves a qualquer momento (até 10 por conta)."
+    },
+    "apiRateLimited": {
+      "title": "Com limite de requisições",
+      "body": "1.000 requisições por dia por chave. Requisições acima do limite recebem HTTP 429."
+    },
+    "embedApi": {
+      "title": "API de incorporação",
+      "body": "Não precisa de chave e retorna apenas eventos públicos publicados."
+    },
+    "howToReport": {
+      "title": "Como relatar",
+      "body": "Envie um e-mail para {email} com “Security report” no assunto. Se você estiver conectado, também pode usar Ajuda e suporte. Não abra issues públicas no GitHub para vulnerabilidades."
+    },
+    "whatToInclude": {
+      "title": "O que incluir",
+      "body": "A URL ou o endpoint afetado, os passos para reproduzir, o impacto observado e como entrar em contato com você."
+    },
+    "inScope": {
+      "title": "Dentro do escopo",
+      "body": "O app web do Evento, a API do Evento e o cliente web de código aberto."
+    },
+    "outOfScope": {
+      "title": "Fora do escopo",
+      "body": "Serviços de terceiros (Supabase, Breez, Google, Unkey), testes de negação de serviço ou de volume, spam, engenharia social e ataques que exigem um dispositivo já comprometido."
+    },
+    "groundRules": {
+      "title": "Regras básicas",
+      "body": "Use suas próprias contas e dados de teste, não acesse dados de outras pessoas e nos dê um prazo razoável para corrigir o problema antes de divulgá-lo."
+    }
+  },
+  "links": {
+    "privacyPolicy": "Política de Privacidade",
+    "viewOnGithub": "Ver no GitHub",
+    "apiDocs": "Documentação da API",
+    "manageApiKeys": "Gerenciar chaves de API",
+    "emailReport": "Enviar relatório por e-mail",
+    "helpSupport": "Ajuda e suporte"
+  }
+}

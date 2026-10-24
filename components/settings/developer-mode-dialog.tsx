@@ -10,6 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useTranslations } from 'next-intl';
 
 interface DeveloperModeDialogProps {
   open: boolean;
@@ -18,28 +19,28 @@ interface DeveloperModeDialogProps {
 }
 
 export function DeveloperModeDialog({ open, onOpenChange, onConfirm }: DeveloperModeDialogProps) {
+  const t = useTranslations('settings');
+  const tCommon = useTranslations('common');
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Enable Developer Mode?</AlertDialogTitle>
+          <AlertDialogTitle>{t('developerModeDialog.title')}</AlertDialogTitle>
           <AlertDialogDescription className='space-y-2'>
-            <span className='block'>
-              Developer Mode is intended for advanced users building integrations with Evento.
-            </span>
+            <span className='block'>{t('developerModeDialog.intro')}</span>
             <span className='block font-medium text-amber-600 dark:text-amber-400'>
-              Enabling this will grant access to API keys and technical settings. Make sure you
-              understand the security implications of managing API credentials.
+              {t('developerModeDialog.warning')}
             </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{tCommon('actions.cancel')}</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             className='bg-amber-600 hover:bg-amber-700 focus:ring-amber-600'
           >
-            Enable Developer Mode
+            {t('developerModeDialog.confirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -10,7 +10,9 @@ import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import { formatDistanceToNowStrict } from 'date-fns';
+import { enUS, es, ptBR } from 'date-fns/locale';
 import { AlertTriangle, ArrowRight, Check, Loader2, Users, X } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -19,6 +21,7 @@ import { EventInviteDetailSheet } from './event-invite-detail-sheet';
 import { EventInvitesSheet } from './event-invites-sheet';
 
 const MAX_VISIBLE_INVITES = 6;
+const DATE_FNS_LOCALES = { en: enUS, 'pt-BR': ptBR, es } as const;
 const INVITE_CARD_CLASS =
   'flex h-full flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm dark:border-neutral-800 dark:bg-neutral-900';
 const INVITE_SLOT_CLASS = 'w-[85%] max-w-[340px] flex-none snap-start md:w-auto md:max-w-none';
@@ -40,8 +43,14 @@ interface InviteCardBodyProps {
 }
 
 function InviteCardBody({ kind, title, event, inviter, invitedAt }: InviteCardBodyProps) {
-  const invitedAgo = formatDistanceToNowStrict(new Date(invitedAt), { addSuffix: true });
-  const inviterName = inviter?.name || (inviter?.username ? `@${inviter.username}` : 'Someone');
+  const t = useTranslations('hub');
+  const locale = useLocale();
+  const invitedAgo = formatDistanceToNowStrict(new Date(invitedAt), {
+    addSuffix: true,
+    locale: DATE_FNS_LOCALES[locale as keyof typeof DATE_FNS_LOCALES] ?? enUS,
+  });
+  const inviterName =
+    inviter?.name || (inviter?.username ? `@${inviter.username}` : t('needsResponse.someone'));
   const cover =
     event?.cover && isGif(event.cover)
       ? event.cover
@@ -98,19 +107,20 @@ function InviteCardBody({ kind, title, event, inviter, invitedAt }: InviteCardBo
 
 function CohostInviteResponseCard({ invite }: { invite: CohostInvite }) {
   const router = useRouter();
+  const t = useTranslations('hub');
   const acceptMutation = useAcceptCohostInvite();
   const rejectMutation = useRejectCohostInvite();
   const isPending = acceptMutation.isPending || rejectMutation.isPending;
 
   const event = invite.events;
   const eventId = event?.id || invite.event_id;
-  const title = event?.title || 'Event details unavailable';
+  const title = event?.title || t('needsResponse.eventUnavailable');
 
   return (
     <article className={INVITE_CARD_CLASS}>
       <Link href={`/e/${eventId}`} className='block rounded-xl'>
         <InviteCardBody
-          kind='Cohost invite'
+          kind={t('needsResponse.cohostInvite')}
           title={title}
           event={event}
           inviter={invite.inviter}
@@ -125,14 +135,14 @@ function CohostInviteResponseCard({ invite }: { invite: CohostInvite }) {
           onClick={() =>
             acceptMutation.mutate(invite.id, {
               onSuccess: () => {
-                toast.info('Taking you to this event now', 'Redirecting');
+                toast.info(t('needsResponse.redirectingMessage'), t('needsResponse.redirecting'));
                 router.push(`/e/${eventId}`);
               },
             })
           }
         >
           {acceptMutation.isPending ? <Loader2 className='animate-spin' /> : <Check />}
-          Accept
+          {t('needsResponse.accept')}
         </Button>
         <Button
           size='sm'
@@ -142,7 +152,7 @@ function CohostInviteResponseCard({ invite }: { invite: CohostInvite }) {
           onClick={() => rejectMutation.mutate(invite.id)}
         >
           {rejectMutation.isPending ? <Loader2 className='animate-spin' /> : <X />}
-          Decline
+          {t('needsResponse.decline')}
         </Button>
       </div>
     </article>
@@ -156,13 +166,14 @@ interface EventInviteResponseCardProps {
 }
 
 function EventInviteResponseCard({ invite, onOpen, onRSVP }: EventInviteResponseCardProps) {
+  const t = useTranslations('hub');
   const event = invite.events;
 
   return (
     <article className={INVITE_CARD_CLASS}>
       <button type='button' onClick={onOpen} className='block w-full rounded-xl text-left'>
         <InviteCardBody
-          kind='Event invite'
+          kind={t('needsResponse.eventInvite')}
           title={event.title}
           event={event}
           inviter={event.user_details}
@@ -172,10 +183,10 @@ function EventInviteResponseCard({ invite, onOpen, onRSVP }: EventInviteResponse
       <div className='mt-auto flex gap-2'>
         <Button size='sm' className='flex-1' onClick={onRSVP}>
           <Users />
-          RSVP
+          {t('needsResponse.rsvp')}
         </Button>
         <Button asChild size='sm' variant='outline' className='flex-1'>
-          <Link href={`/e/${invite.event_id}`}>View</Link>
+          <Link href={`/e/${invite.event_id}`}>{t('needsResponse.view')}</Link>
         </Button>
       </div>
     </article>
@@ -200,6 +211,7 @@ export function NeedsResponseSection({
   eventInvitesTotalCount,
   eventInvitesError,
 }: NeedsResponseSectionProps) {
+  const t = useTranslations('hub');
   const [showInvitesSheet, setShowInvitesSheet] = useState(false);
   const [rsvpEventId, setRsvpEventId] = useState<string | null>(null);
   const [detailInvite, setDetailInvite] = useState<EventInvite | null>(null);
@@ -234,7 +246,7 @@ export function NeedsResponseSection({
             id='needs-response-title'
             className='text-base font-semibold text-gray-900 dark:text-neutral-100 sm:text-lg'
           >
-            Needs your response
+            {t('needsResponse.title')}
           </h2>
           {totalCount > 0 && (
             <span className='rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white dark:bg-red-500'>
@@ -249,7 +261,7 @@ export function NeedsResponseSection({
             onClick={() => setShowInvitesSheet(true)}
             className='shrink-0 text-gray-700 hover:bg-red-100/70 dark:text-neutral-300 dark:hover:bg-red-950/40'
           >
-            See all
+            {t('needsResponse.seeAll')}
             <ArrowRight />
           </Button>
         )}
@@ -258,16 +270,10 @@ export function NeedsResponseSection({
       {(cohostInvitesError || eventInvitesError) && (
         <div className={cn('space-y-2', hasCards && 'mb-3')}>
           {cohostInvitesError && (
-            <SectionErrorNote
-              title='Cohost invitations are temporarily unavailable.'
-              message={cohostInvitesError}
-            />
+            <SectionErrorNote title={t('needsResponse.cohostError')} message={cohostInvitesError} />
           )}
           {eventInvitesError && (
-            <SectionErrorNote
-              title='Event invites are temporarily unavailable.'
-              message={eventInvitesError}
-            />
+            <SectionErrorNote title={t('needsResponse.eventError')} message={eventInvitesError} />
           )}
         </div>
       )}

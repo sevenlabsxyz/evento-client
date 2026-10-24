@@ -10,6 +10,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Check, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -28,6 +29,7 @@ interface EventMusic {
 
 export default function MusicManagementPage() {
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
+  const t = useTranslations('manageLegacy');
   const params = useParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -92,7 +94,7 @@ export default function MusicManagementPage() {
 
   const handleAddSpotify = () => {
     if (!validateSpotifyUrl(spotifyUrl)) {
-      toast.error('Please enter a valid Spotify URL');
+      toast.error(t('music.toasts.invalidSpotify'));
       return;
     }
 
@@ -107,12 +109,12 @@ export default function MusicManagementPage() {
 
     setMusicData(newMusicData);
     setSpotifyUrl('');
-    toast.success('Spotify track added! Click Save to update the event.');
+    toast.success(t('music.toasts.spotifyAdded'));
   };
 
   const handleAddWavlake = () => {
     if (!validateWavlakeUrl(wavlakeUrl)) {
-      toast.error('Please enter a valid Wavlake URL');
+      toast.error(t('music.toasts.invalidWavlake'));
       return;
     }
 
@@ -127,21 +129,21 @@ export default function MusicManagementPage() {
 
     setMusicData(newMusicData);
     setWavlakeUrl('');
-    toast.success('Wavlake track added! Click Save to update the event.');
+    toast.success(t('music.toasts.wavlakeAdded'));
   };
 
   const handleRemoveSpotify = () => {
     const newMusicData = { ...musicData };
     delete newMusicData.spotify;
     setMusicData(newMusicData);
-    toast.success('Spotify track removed! Click Save to update the event.');
+    toast.success(t('music.toasts.spotifyRemoved'));
   };
 
   const handleRemoveWavlake = () => {
     const newMusicData = { ...musicData };
     delete newMusicData.wavlake;
     setMusicData(newMusicData);
-    toast.success('Wavlake track removed! Click Save to update the event.');
+    toast.success(t('music.toasts.wavlakeRemoved'));
   };
 
   const handleSave = useCallback(async () => {
@@ -185,28 +187,28 @@ export default function MusicManagementPage() {
 
       await updateEventMutationRef.current.mutateAsync(updateData, {
         onSuccess: () => {
-          toast.success('Music settings updated successfully!');
+          toast.success(t('music.toasts.updated'));
           router.push(`/e/${eventId}/manage`);
         },
         onError: () => {
-          toast.error('Failed to update music settings');
+          toast.error(t('music.toasts.updateFailed'));
         },
       });
     } catch (error) {
       logger.error('Failed to save music settings', {
         error: error instanceof Error ? error.message : String(error),
       });
-      toast.error('Failed to update music settings');
+      toast.error(t('music.toasts.updateFailed'));
     } finally {
       setIsSubmitting(false);
     }
-  }, [eventId, router]);
+  }, [eventId, router, t]);
 
   // Configure TopBar
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Music',
+      title: t('music.title'),
       leftMode: 'back',
       centerMode: 'title',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
@@ -216,7 +218,7 @@ export default function MusicManagementPage() {
           id: 'save-music',
           icon: Check,
           onClick: () => void handleSave(),
-          label: 'Save',
+          label: t('music.save'),
           disabled: isSubmitting,
         },
       ],
@@ -234,6 +236,7 @@ export default function MusicManagementPage() {
     handleSave,
     router,
     eventId,
+    t,
   ]);
 
   if (isLoading) {
@@ -288,16 +291,16 @@ export default function MusicManagementPage() {
       <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h2 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-            Event Not Found
+            {t('music.notFound.title')}
           </h2>
           <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            The event you&apos;re trying to manage doesn&apos;t exist.
+            {t('music.notFound.description')}
           </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
-            Go Back
+            {t('music.notFound.goBack')}
           </button>
         </div>
       </div>
@@ -307,10 +310,10 @@ export default function MusicManagementPage() {
   return (
     <div className='space-y-4 py-4 md:py-6'>
       <div>
-        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Music</h2>
-        <p className='text-sm text-gray-500 dark:text-neutral-400'>
-          Add music tracks to your event that guests can discover and listen to.
-        </p>
+        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+          {t('music.title')}
+        </h2>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('music.subtitle')}</p>
       </div>
 
       <div className='max-w-2xl space-y-4'>
@@ -323,7 +326,7 @@ export default function MusicManagementPage() {
             <div>
               <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Spotify</h3>
               <p className='text-sm text-gray-600 dark:text-neutral-400'>
-                Add a Spotify track or playlist
+                {t('music.spotify.description')}
               </p>
             </div>
           </div>
@@ -359,7 +362,7 @@ export default function MusicManagementPage() {
                 disabled={!spotifyUrl}
                 className='w-full rounded-xl bg-gray-900 py-3 text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-neutral-800 dark:disabled:text-neutral-500'
               >
-                Add Spotify Track
+                {t('music.spotify.add')}
               </button>
             </div>
           )}
@@ -373,7 +376,9 @@ export default function MusicManagementPage() {
             </div>
             <div>
               <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Wavlake</h3>
-              <p className='text-sm text-gray-600 dark:text-neutral-400'>Add a Wavlake track</p>
+              <p className='text-sm text-gray-600 dark:text-neutral-400'>
+                {t('music.wavlake.description')}
+              </p>
             </div>
           </div>
 
@@ -408,7 +413,7 @@ export default function MusicManagementPage() {
                 disabled={!wavlakeUrl}
                 className='w-full rounded-xl bg-gray-900 py-3 text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-neutral-800 dark:disabled:text-neutral-500'
               >
-                Add Wavlake Track
+                {t('music.wavlake.add')}
               </button>
             </div>
           )}
@@ -417,12 +422,9 @@ export default function MusicManagementPage() {
         {/* Information Section */}
         <div className='rounded-2xl bg-blue-50 p-4 dark:bg-blue-950/40'>
           <h4 className='mb-2 font-medium text-blue-900 dark:text-blue-400'>
-            About Music Integration
+            {t('music.info.title')}
           </h4>
-          <p className='text-sm text-blue-700 dark:text-blue-300'>
-            Music tracks you add here will be displayed on your event page, allowing guests to
-            discover and listen to music related to your event.
-          </p>
+          <p className='text-sm text-blue-700 dark:text-blue-300'>{t('music.info.description')}</p>
         </div>
       </div>
     </div>

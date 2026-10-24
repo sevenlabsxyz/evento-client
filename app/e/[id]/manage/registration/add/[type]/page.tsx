@@ -20,6 +20,7 @@ import {
   Type,
   Youtube,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -40,6 +41,8 @@ export default function AddQuestionPage() {
   const router = useRouter();
   const eventId = params.id as string;
   const questionType = params.type as RegistrationQuestionType;
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
 
   const createQuestion = useCreateRegistrationQuestion();
 
@@ -50,8 +53,8 @@ export default function AddQuestionPage() {
   const questionConfigs: Record<RegistrationQuestionType, QuestionConfig> = {
     text: {
       type: 'text',
-      label: 'Text',
-      description: 'Collect a short, single-line answer',
+      label: t('registration.questionTypes.text'),
+      description: t('registration.questionDescriptions.text'),
       defaultQuestion: '',
       icon: <Type className='h-6 w-6' />,
       iconBg: 'bg-red-100 dark:bg-red-950/60',
@@ -59,8 +62,8 @@ export default function AddQuestionPage() {
     },
     long_text: {
       type: 'long_text',
-      label: 'Long Text',
-      description: 'Collect a longer, multi-line answer',
+      label: t('registration.questionTypes.longText'),
+      description: t('registration.questionDescriptions.longText'),
       defaultQuestion: '',
       icon: <FileText className='h-6 w-6' />,
       iconBg: 'bg-red-100 dark:bg-red-950/60',
@@ -68,8 +71,8 @@ export default function AddQuestionPage() {
     },
     single_select: {
       type: 'single_select',
-      label: 'Single Select',
-      description: 'Let guests choose one option from a list',
+      label: t('registration.questionTypes.singleSelect'),
+      description: t('registration.questionDescriptions.singleSelect'),
       defaultQuestion: '',
       icon: <List className='h-6 w-6' />,
       iconBg: 'bg-blue-100 dark:bg-blue-950/60',
@@ -78,8 +81,8 @@ export default function AddQuestionPage() {
     },
     multi_select: {
       type: 'multi_select',
-      label: 'Multi Select',
-      description: 'Let guests choose multiple options from a list',
+      label: t('registration.questionTypes.multiSelect'),
+      description: t('registration.questionDescriptions.multiSelect'),
       defaultQuestion: '',
       icon: <CheckSquare className='h-6 w-6' />,
       iconBg: 'bg-blue-100 dark:bg-blue-950/60',
@@ -89,7 +92,7 @@ export default function AddQuestionPage() {
     url: {
       type: 'url',
       label: 'URL',
-      description: 'Collect a website or link',
+      description: t('registration.questionDescriptions.url'),
       defaultQuestion: '',
       icon: <Link className='h-6 w-6' />,
       iconBg: 'bg-purple-100 dark:bg-purple-950/60',
@@ -97,17 +100,17 @@ export default function AddQuestionPage() {
     },
     phone: {
       type: 'phone',
-      label: 'Phone Number',
-      description: 'Collect a phone number',
-      defaultQuestion: 'What is your phone number?',
+      label: t('registration.questionTypes.phone'),
+      description: t('registration.questionDescriptions.phone'),
+      defaultQuestion: t('registrationAdd.defaultQuestions.phone'),
       icon: <Phone className='h-6 w-6' />,
       iconBg: 'bg-green-100 dark:bg-green-950/60',
       iconColor: 'text-green-600 dark:text-green-400',
     },
     checkbox: {
       type: 'checkbox',
-      label: 'Checkbox',
-      description: 'Get a yes/no or agree/disagree response',
+      label: t('registration.questionTypes.checkbox'),
+      description: t('registration.questionDescriptions.checkbox'),
       defaultQuestion: '',
       icon: <Square className='h-6 w-6' />,
       iconBg: 'bg-yellow-100 dark:bg-yellow-950/60',
@@ -116,8 +119,8 @@ export default function AddQuestionPage() {
     instagram: {
       type: 'instagram',
       label: 'Instagram',
-      description: "Get the guest's Instagram username",
-      defaultQuestion: 'What is your Instagram profile?',
+      description: t('registration.questionDescriptions.instagram'),
+      defaultQuestion: t('registrationAdd.defaultQuestions.instagram'),
       icon: <Instagram className='h-6 w-6' />,
       iconBg: 'bg-pink-100 dark:bg-pink-950/60',
       iconColor: 'text-pink-600 dark:text-pink-400',
@@ -125,8 +128,8 @@ export default function AddQuestionPage() {
     twitter: {
       type: 'twitter',
       label: 'X (Twitter)',
-      description: "Get the guest's X (Twitter) handle",
-      defaultQuestion: 'What is your X (Twitter) handle?',
+      description: t('registration.questionDescriptions.twitter'),
+      defaultQuestion: t('registrationAdd.defaultQuestions.twitter'),
       icon: <Twitter className='h-6 w-6' />,
       iconBg: 'bg-gray-100 dark:bg-neutral-800',
       iconColor: 'text-gray-600 dark:text-neutral-400',
@@ -134,8 +137,8 @@ export default function AddQuestionPage() {
     youtube: {
       type: 'youtube',
       label: 'YouTube',
-      description: "Get the guest's YouTube channel",
-      defaultQuestion: 'What is your YouTube channel?',
+      description: t('registration.questionDescriptions.youtube'),
+      defaultQuestion: t('registrationAdd.defaultQuestions.youtube'),
       icon: <Youtube className='h-6 w-6' />,
       iconBg: 'bg-red-100 dark:bg-red-950/60',
       iconColor: 'text-red-600 dark:text-red-400',
@@ -143,21 +146,21 @@ export default function AddQuestionPage() {
     linkedin: {
       type: 'linkedin',
       label: 'LinkedIn',
-      description: "Get the guest's LinkedIn profile",
-      defaultQuestion: 'What is your LinkedIn profile?',
+      description: t('registration.questionDescriptions.linkedin'),
+      defaultQuestion: t('registrationAdd.defaultQuestions.linkedin'),
       icon: <Linkedin className='h-6 w-6' />,
       iconBg: 'bg-blue-100 dark:bg-blue-950/60',
       iconColor: 'text-blue-600 dark:text-blue-400',
     },
     company: {
       type: 'company',
-      label: 'Company',
-      description: 'Get the company the guest works for',
-      defaultQuestion: 'What company do you work for?',
+      label: t('registration.questionTypes.company'),
+      description: t('registration.questionDescriptions.company'),
+      defaultQuestion: t('registrationAdd.defaultQuestions.company'),
       icon: <Building className='h-6 w-6' />,
       iconBg: 'bg-blue-100 dark:bg-blue-950/60',
       iconColor: 'text-blue-600 dark:text-blue-400',
-      autoNote: "We'll automatically pull this information if they've entered it on Evento before.",
+      autoNote: t('registration.companyAutoNote'),
     },
   };
 
@@ -180,10 +183,10 @@ export default function AddQuestionPage() {
         options: config?.hasOptions ? filteredOptions : undefined,
         is_required: isRequired,
       });
-      toast.success('Question created');
+      toast.success(t('registrationAdd.toasts.created'));
       router.push(`/e/${eventId}/manage/registration`);
     } catch {
-      toast.error('Failed to create question');
+      toast.error(t('registrationAdd.toasts.createFailed'));
     }
   };
 
@@ -209,16 +212,16 @@ export default function AddQuestionPage() {
       <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-            Invalid Question Type
+            {t('registration.invalidType.title')}
           </h1>
           <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            The question type you&apos;re trying to add doesn&apos;t exist.
+            {t('registrationAdd.invalidTypeDescription')}
           </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
-            Go Back
+            {t('registration.invalidType.goBack')}
           </button>
         </div>
       </div>
@@ -237,7 +240,7 @@ export default function AddQuestionPage() {
             <ArrowLeft className='h-5 w-5' />
           </button>
           <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-            Add Question
+            {t('registrationAdd.title')}
           </h2>
         </div>
         <Button
@@ -252,10 +255,10 @@ export default function AddQuestionPage() {
           {createQuestion.isPending ? (
             <>
               <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-              Saving...
+              {tCommon('states.saving')}
             </>
           ) : (
-            'Save'
+            tCommon('actions.save')
           )}
         </Button>
       </div>
@@ -278,13 +281,13 @@ export default function AddQuestionPage() {
         {/* Question Label Input */}
         <div className='space-y-2'>
           <label className='block text-sm font-medium text-gray-700 dark:text-neutral-300'>
-            Question Label
+            {t('registration.form.questionLabel')}
           </label>
           <input
             type='text'
             value={questionLabel}
             onChange={(e) => setQuestionLabel(e.target.value)}
-            placeholder='Enter your question'
+            placeholder={t('registration.form.questionPlaceholder')}
             className='w-full rounded-xl border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:caret-neutral-100 dark:placeholder:text-neutral-500'
           />
         </div>
@@ -300,7 +303,7 @@ export default function AddQuestionPage() {
         {config.hasOptions && (
           <div className='space-y-3'>
             <label className='block text-sm font-medium text-gray-700 dark:text-neutral-300'>
-              Options
+              {t('registration.form.options')}
             </label>
             {options.map((option, index) => (
               <div key={index} className='flex gap-2'>
@@ -308,7 +311,7 @@ export default function AddQuestionPage() {
                   type='text'
                   value={option}
                   onChange={(e) => handleOptionChange(index, e.target.value)}
-                  placeholder={`Option ${index + 1}`}
+                  placeholder={t('registration.form.optionPlaceholder', { number: index + 1 })}
                   className='flex-1 rounded-lg border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:caret-neutral-100 dark:placeholder:text-neutral-500'
                 />
                 {options.length > 1 && (
@@ -316,7 +319,7 @@ export default function AddQuestionPage() {
                     onClick={() => handleRemoveOption(index)}
                     className='rounded-lg px-3 py-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40'
                   >
-                    Remove
+                    {tCommon('actions.remove')}
                   </button>
                 )}
               </div>
@@ -325,7 +328,7 @@ export default function AddQuestionPage() {
               onClick={handleAddOption}
               className='w-full rounded-lg border-2 border-dashed border-gray-300 p-3 text-gray-500 hover:border-gray-400 hover:text-gray-600 dark:border-neutral-700 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-neutral-300'
             >
-              + Add Option
+              {t('registration.form.addOption')}
             </button>
           </div>
         )}
@@ -333,9 +336,11 @@ export default function AddQuestionPage() {
         {/* Required Toggle */}
         <div className='flex items-center justify-between rounded-xl bg-gray-50 p-4 dark:bg-neutral-800'>
           <div>
-            <h3 className='font-medium text-gray-900 dark:text-neutral-100'>Required</h3>
+            <h3 className='font-medium text-gray-900 dark:text-neutral-100'>
+              {t('registration.form.required')}
+            </h3>
             <p className='text-sm text-gray-500 dark:text-neutral-400'>
-              Guests must answer this question to register
+              {t('registration.form.requiredDescription')}
             </p>
           </div>
           <button

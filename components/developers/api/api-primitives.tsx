@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
 interface ApiSectionHeaderProps {
@@ -43,6 +44,8 @@ export function ApiSectionHeader({
 }
 
 export function DocsTextLink({ href, children }: { href: string; children: ReactNode }) {
+  const t = useTranslations('developers.api');
+
   return (
     <a
       href={href}
@@ -57,7 +60,7 @@ export function DocsTextLink({ href, children }: { href: string; children: React
       >
         →
       </span>
-      <span className='sr-only'>(opens in a new tab)</span>
+      <span className='sr-only'>{t('opensInNewTab')}</span>
     </a>
   );
 }

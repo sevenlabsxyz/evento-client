@@ -18,11 +18,13 @@ import { getErrorMessage } from '@/lib/utils/error-message';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, BarChart3, Download, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 export default function EventSalesPage() {
+  const t = useTranslations('manage');
   const params = useParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -34,7 +36,7 @@ export default function EventSalesPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Sales',
+      title: t('salesPage.title'),
       leftMode: 'back',
       centerMode: 'title',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
@@ -45,7 +47,7 @@ export default function EventSalesPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
+  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute, t]);
 
   if (isLoading) {
     return <SalesPageSkeleton />;
@@ -60,8 +62,8 @@ export default function EventSalesPage() {
     return (
       <div className='py-4 md:py-6'>
         <ErrorCard
-          title='Sales unavailable'
-          message={error ? getErrorMessage(error) : "We couldn't load this event."}
+          title={t('salesPage.unavailable')}
+          message={error ? getErrorMessage(error) : t('salesPage.eventLoadError')}
           onRetry={() => refetch()}
           isRetrying={isRefetching}
         />
@@ -77,18 +79,18 @@ export default function EventSalesPage() {
             <BarChart3 className='h-6 w-6 text-gray-500 dark:text-neutral-400' />
           </div>
           <h2 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-            Sales are for ticketed events
+            {t('salesPage.notTicketedTitle')}
           </h2>
           <p className='mx-auto mt-2 max-w-sm text-sm text-gray-500 dark:text-neutral-400'>
-            Revenue, orders, and ticket breakdowns appear here when guests buy tickets. This event
-            uses {dashboard.event.type === 'rsvp' ? 'RSVPs' : 'registration'}, so there are no sales
-            to report. Use the guest list to see who&apos;s coming.
+            {dashboard.event.type === 'rsvp'
+              ? t('salesPage.notTicketedRsvp')
+              : t('salesPage.notTicketedRegistration')}
           </p>
           <Link
             href={`/e/${eventId}/manage/guests`}
             className='mt-5 inline-flex h-10 items-center justify-center rounded-full bg-gray-900 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
           >
-            View guest list
+            {t('salesPage.viewGuestList')}
           </Link>
         </div>
       </div>
@@ -105,6 +107,7 @@ interface TicketedSalesProps {
 }
 
 function TicketedSales({ eventId, pathname, tickets }: TicketedSalesProps) {
+  const t = useTranslations('manage');
   const { setTopBarForRoute } = useTopBar();
   const { data: sales, isLoading, error, refetch, isRefetching } = useEventSales(eventId);
   const [isExporting, setIsExporting] = useState(false);
@@ -113,22 +116,22 @@ function TicketedSales({ eventId, pathname, tickets }: TicketedSalesProps) {
     setIsExporting(true);
     try {
       await downloadAttendeesCsv(eventId);
-      toast.success('Attendee list downloaded');
+      toast.success(t('salesPage.exportSuccess'));
     } catch (exportError) {
       const message = getErrorMessage(exportError);
-      toast.error(message || 'Failed to export attendees');
+      toast.error(message || t('salesPage.exportFailed'));
       logger.error('Failed to export attendees CSV', { eventId, error: message });
     } finally {
       setIsExporting(false);
     }
-  }, [eventId]);
+  }, [eventId, t]);
 
   useEffect(() => {
     setTopBarForRoute(pathname, {
       textButtons: [
         {
           id: 'export-sales-csv',
-          label: isExporting ? 'Exporting…' : 'Export CSV',
+          label: isExporting ? t('salesPage.exporting') : t('salesPage.exportCsv'),
           icon: Download,
           onClick: () => {
             void handleExport();
@@ -138,7 +141,7 @@ function TicketedSales({ eventId, pathname, tickets }: TicketedSalesProps) {
         },
       ],
     });
-  }, [pathname, setTopBarForRoute, handleExport, isExporting]);
+  }, [pathname, setTopBarForRoute, handleExport, isExporting, t]);
 
   if (isLoading) {
     return <SalesPageSkeleton />;
@@ -148,8 +151,8 @@ function TicketedSales({ eventId, pathname, tickets }: TicketedSalesProps) {
     return (
       <div className='py-4 md:py-6'>
         <ErrorCard
-          title='Sales unavailable'
-          message={error ? getErrorMessage(error) : "We couldn't load sales for this event."}
+          title={t('salesPage.unavailable')}
+          message={error ? getErrorMessage(error) : t('salesPage.salesLoadError')}
           onRetry={() => refetch()}
           isRetrying={isRefetching}
         />
@@ -178,6 +181,7 @@ interface ErrorCardProps {
 }
 
 function ErrorCard({ title, message, onRetry, isRetrying }: ErrorCardProps) {
+  const tCommon = useTranslations('common');
   return (
     <div className='rounded-2xl border border-gray-200 bg-white px-6 py-10 text-center dark:border-neutral-800 dark:bg-neutral-900'>
       <div className='mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40'>
@@ -187,7 +191,7 @@ function ErrorCard({ title, message, onRetry, isRetrying }: ErrorCardProps) {
       <p className='mx-auto mt-2 max-w-sm text-sm text-gray-500 dark:text-neutral-400'>{message}</p>
       <Button variant='outline' className='mt-5' onClick={onRetry} disabled={isRetrying}>
         {isRetrying && <Loader2 className='animate-spin' />}
-        Try again
+        {tCommon('actions.tryAgain')}
       </Button>
     </div>
   );

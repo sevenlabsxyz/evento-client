@@ -1,6 +1,7 @@
 'use client';
 
 import { LucideIcon, Moon, Sun } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
@@ -9,9 +10,9 @@ import { cn } from '@/lib/utils';
 
 type ThemeOption = 'light' | 'dark';
 
-const THEME_OPTIONS: { value: ThemeOption; label: string; icon: LucideIcon }[] = [
-  { value: 'light', label: 'Light', icon: Sun },
-  { value: 'dark', label: 'Dark', icon: Moon },
+const THEME_OPTIONS: { value: ThemeOption; icon: LucideIcon }[] = [
+  { value: 'light', icon: Sun },
+  { value: 'dark', icon: Moon },
 ];
 
 /**
@@ -21,6 +22,7 @@ const THEME_OPTIONS: { value: ThemeOption; label: string; icon: LucideIcon }[] =
  * markup always matches the first client render.
  */
 export function NavTheme() {
+  const t = useTranslations('nav');
   const { resolvedTheme, setTheme } = useTheme();
   const { state, isMobile } = useSidebar();
   const [mounted, setMounted] = useState(false);
@@ -38,7 +40,7 @@ export function NavTheme() {
 
   if (isCollapsed) {
     const isDark = activeTheme === 'dark';
-    const label = isDark ? 'Switch to light theme' : 'Switch to dark theme';
+    const label = isDark ? t('theme.switchToLight') : t('theme.switchToDark');
 
     return (
       <SidebarMenuItem>
@@ -48,7 +50,7 @@ export function NavTheme() {
           onClick={() => setTheme(isDark ? 'light' : 'dark')}
         >
           {isDark ? <Sun /> : <Moon />}
-          <span>{isDark ? 'Light theme' : 'Dark theme'}</span>
+          <span>{isDark ? t('theme.lightTheme') : t('theme.darkTheme')}</span>
         </SidebarMenuButton>
       </SidebarMenuItem>
     );
@@ -58,10 +60,10 @@ export function NavTheme() {
     <SidebarMenuItem>
       <div
         role='radiogroup'
-        aria-label='Theme'
+        aria-label={t('theme.label')}
         className='grid h-9 grid-cols-2 gap-1 rounded-lg border border-sidebar-border bg-sidebar-accent p-1 dark:border-neutral-800'
       >
-        {THEME_OPTIONS.map(({ value, label, icon: Icon }) => {
+        {THEME_OPTIONS.map(({ value, icon: Icon }) => {
           const isActive = activeTheme === value;
 
           return (
@@ -79,7 +81,7 @@ export function NavTheme() {
               )}
             >
               <Icon className='size-3.5' aria-hidden='true' />
-              {label}
+              {t(`theme.${value}`)}
             </button>
           );
         })}

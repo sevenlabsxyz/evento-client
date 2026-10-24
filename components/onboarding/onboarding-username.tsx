@@ -4,6 +4,7 @@ import { useUserByUsername, useUserProfile } from '@/lib/hooks/use-user-profile'
 import { updateUserProfileSchema } from '@/lib/schemas/user';
 import { motion } from 'framer-motion';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { OnboardingHeader } from './onboarding-header';
@@ -24,6 +25,7 @@ export const OnboardingUsername = ({
   onUsernameChange,
   onEnterPress,
 }: OnboardingUsernameProps) => {
+  const t = useTranslations('onboarding.username');
   const [validationError, setValidationError] = useState<string>('');
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
@@ -53,18 +55,18 @@ export const OnboardingUsername = ({
 
       // Check if username is reserved
       if (RESERVED_USERNAMES.includes(username.toLowerCase())) {
-        setValidationError('This username is reserved and cannot be used');
+        setValidationError(t('reserved'));
         setIsAvailable(null);
         return;
       }
       setValidationError('');
     } catch (error) {
       if (error instanceof z.ZodError) {
-        setValidationError(error.issues?.[0]?.message || 'Invalid username');
+        setValidationError(error.issues?.[0]?.message || t('invalid'));
         setIsAvailable(null);
       }
     }
-  }, [username]);
+  }, [username, t]);
 
   // Check availability when debounced username changes
   useEffect(() => {
@@ -102,10 +104,7 @@ export const OnboardingUsername = ({
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <OnboardingHeader
-        title='Choose a username'
-        description='This will be your unique Evento identifier. You can change your @username anytime in your Profile Settings.'
-      />
+      <OnboardingHeader title={t('title')} description={t('description')} />
 
       <div className='mt-6'>
         <div className='relative'>
@@ -140,11 +139,9 @@ export const OnboardingUsername = ({
             {validationError ? (
               <p className='text-red-500 dark:text-red-400'>{validationError}</p>
             ) : isAvailable === false ? (
-              <p className='text-red-500 dark:text-red-400'>This username is already taken</p>
+              <p className='text-red-500 dark:text-red-400'>{t('taken')}</p>
             ) : isAvailable === true ? (
-              <p className='text-green-500 dark:text-green-400'>
-                Great! This username is available
-              </p>
+              <p className='text-green-500 dark:text-green-400'>{t('available')}</p>
             ) : null}
           </div>
         )}

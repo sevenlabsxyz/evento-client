@@ -5,6 +5,7 @@ import { BTCPriceService } from '@/lib/services/btc-price';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Copy, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 type BTCConverterSheetProps = {
@@ -28,6 +29,8 @@ const parseNumericValue = (value: string): string => {
 };
 
 export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps) {
+  const t = useTranslations('walletFlows');
+  const tCommon = useTranslations('common');
   const [usdValue, setUsdValue] = useState<string>('10');
   const [btcValue, setBtcValue] = useState<string>('0');
   const [satsValue, setSatsValue] = useState<string>('0');
@@ -96,27 +99,27 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
   const handleCopyUsd = async () => {
     try {
       await navigator.clipboard.writeText(usdValue);
-      toast.success('USD value copied!');
+      toast.success(t('btcConverterSheet.usdCopied'));
     } catch (error) {
-      toast.error('Failed to copy');
+      toast.error(tCommon('toasts.copyFailed'));
     }
   };
 
   const handleCopyBtc = async () => {
     try {
       await navigator.clipboard.writeText(btcValue);
-      toast.success('BTC value copied!');
+      toast.success(t('btcConverterSheet.btcCopied'));
     } catch (error) {
-      toast.error('Failed to copy');
+      toast.error(tCommon('toasts.copyFailed'));
     }
   };
 
   const handleCopySats = async () => {
     try {
       await navigator.clipboard.writeText(satsValue);
-      toast.success('SATS value copied!');
+      toast.success(t('btcConverterSheet.satsCopied'));
     } catch (error) {
-      toast.error('Failed to copy');
+      toast.error(tCommon('toasts.copyFailed'));
     }
   };
 
@@ -141,7 +144,7 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
                         $<NumberTicker value={btcPrice} />
                       </div>
                       <div className='text-sm text-gray-500 dark:text-neutral-400'>
-                        Current BTC Price
+                        {t('btcConverterSheet.currentPrice')}
                       </div>
                     </div>
                     <div className='flex items-center gap-3'>
@@ -157,7 +160,7 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
                     {isLoading ? (
                       <div className='flex items-center justify-center py-12'>
                         <div className='text-gray-500 dark:text-neutral-400'>
-                          Loading BTC price...
+                          {t('btcConverterSheet.loadingPrice')}
                         </div>
                       </div>
                     ) : (
@@ -219,7 +222,7 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
                         {/* SATS Input */}
                         <div className='space-y-2'>
                           <label className='block text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                            Satoshis (sats)
+                            {t('btcConverterSheet.satsLabel')}
                           </label>
                           <div className='relative'>
                             <input

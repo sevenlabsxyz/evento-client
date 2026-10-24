@@ -1,6 +1,7 @@
 'use client';
 
 import { useContacts } from '@/lib/hooks/use-contacts';
+import { useTranslations } from 'next-intl';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
 
@@ -35,6 +36,7 @@ function extractSuggestedName(lightningAddress: string): string {
  * ```
  */
 export function useSaveContactPrompt() {
+  const t = useTranslations('walletFlows');
   const { findContactByAddress, addContactAsync } = useContacts();
 
   const showSaveContactPrompt = useCallback(
@@ -50,10 +52,10 @@ export function useSaveContactPrompt() {
       const contactName = suggestedName?.trim() || fallbackName;
 
       // Show toast with Save and Skip actions
-      toast(`Save ${contactName} as contact?`, {
-        description: `Add ${lightningAddress} to your contacts for easy future payments.`,
+      toast(t('saveContactPrompt.title', { name: contactName }), {
+        description: t('saveContactPrompt.description', { address: lightningAddress }),
         action: {
-          label: 'Save',
+          label: t('saveContactPrompt.save'),
           onClick: async () => {
             try {
               await addContactAsync({
@@ -67,7 +69,7 @@ export function useSaveContactPrompt() {
           },
         },
         cancel: {
-          label: 'Skip',
+          label: t('saveContactPrompt.skip'),
           onClick: () => {
             // Just dismiss - no action needed
           },
@@ -75,7 +77,7 @@ export function useSaveContactPrompt() {
         duration: 10000, // 10 seconds to give user time to decide
       });
     },
-    [findContactByAddress, addContactAsync]
+    [findContactByAddress, addContactAsync, t]
   );
 
   return { showSaveContactPrompt };

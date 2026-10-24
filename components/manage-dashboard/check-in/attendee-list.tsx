@@ -3,25 +3,29 @@
 import { Input } from '@/components/ui/input';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useCheckIn, useUndoCheckIn } from '@/lib/hooks/use-event-attendees';
+import type { Translator } from '@/lib/i18n/types';
 import type { EventAttendee } from '@/lib/types/manage';
 import { cn } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Check, Loader2, Search, Undo2, Users } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { formatCheckInTime } from './check-in-result-card';
 
 type AttendeeFilter = 'all' | 'checked-in' | 'not-checked-in';
 
-const FILTERS: Array<{ id: AttendeeFilter; label: string }> = [
-  { id: 'all', label: 'All' },
-  { id: 'checked-in', label: 'Checked in' },
-  { id: 'not-checked-in', label: 'Not checked in' },
+type ManageT = Translator<'manage'>;
+
+const FILTERS: Array<{ id: AttendeeFilter }> = [
+  { id: 'all' },
+  { id: 'checked-in' },
+  { id: 'not-checked-in' },
 ];
 
-function getDisplayName(attendee: EventAttendee): string {
-  return attendee.name || attendee.email || 'Guest';
+function getDisplayName(attendee: EventAttendee, t: ManageT): string {
+  return attendee.name || attendee.email || t('attendeeList.guestFallback');
 }
 
 interface AttendeeListProps {
@@ -30,6 +34,8 @@ interface AttendeeListProps {
 }
 
 export function AttendeeList({ eventId, attendees }: AttendeeListProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
   const { mutateAsync: checkInAsync } = useCheckIn(eventId);
   const { mutateAsync: undoCheckInAsync } = useUndoCheckIn(eventId);
   const [search, setSearch] = useState('');
@@ -79,12 +85,12 @@ export function AttendeeList({ eventId, attendees }: AttendeeListProps) {
     try {
       const result = await checkInAsync({ ticketId: attendee.ticketId });
       if (result.valid) {
-        toast.success(`${getDisplayName(attendee)} checked in`);
+        toast.success(t('attendeeList.toastCheckedIn', { name: getDisplayName(attendee, t) }));
       } else {
-        toast.error(result.error || 'Unable to check in this ticket');
+        toast.error(result.error || t('attendeeList.checkInFailed'));
       }
     } catch (error) {
-      toast.error(getErrorMessage(error) || 'Unable to check in this ticket');
+      toast.error(getErrorMessage(error) || t('attendeeList.checkInFailed'));
       logger.error('Manual check-in failed', {
         ticketId: attendee.ticketId,
         error: getErrorMessage(error),
@@ -100,9 +106,9 @@ export function AttendeeList({ eventId, attendees }: AttendeeListProps) {
     setTicketPending(attendee.ticketId, true);
     try {
       await undoCheckInAsync({ ticketId: attendee.ticketId });
-      toast.success(`Check-in undone for ${getDisplayName(attendee)}`);
+      toast.success(t('attendeeList.toastUndone', { name: getDisplayName(attendee, t) }));
     } catch (error) {
-      toast.error(getErrorMessage(error) || 'Unable to undo check-in');
+      toast.error(getErrorMessage(error) || t('attendeeList.undoFailed'));
       logger.error('Undo check-in failed', {
         ticketId: attendee.ticketId,
         error: getErrorMessage(error),
@@ -119,10 +125,10 @@ export function AttendeeList({ eventId, attendees }: AttendeeListProps) {
           <Users className='h-5 w-5 text-gray-500 dark:text-neutral-400' />
         </div>
         <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-          No tickets issued yet
+          {t('attendeeList.emptyTitle')}
         </p>
         <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-          Attendees will appear here as soon as tickets are purchased.
+          {t('attendeeList.emptyBody')}
         </p>
       </div>
     );
@@ -130,7 +136,7 @@ export function AttendeeList({ eventId, attendees }: AttendeeListProps) {
 
   return (
     <section
-      aria-label='Attendees'
+      aria-label={t('attendeeList.sectionLabel')}
       className='overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
     >
       <div className='space-y-3 border-b border-gray-100 p-4 dark:border-neutral-800'>
@@ -140,13 +146,17 @@ export function AttendeeList({ eventId, attendees }: AttendeeListProps) {
             type='search'
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder='Search by name or email'
-            aria-label='Search attendees'
+            placeholder={t('attendeeList.searchPlaceholder')}
+            aria-label={t('attendeeList.searchLabel')}
             className='h-10 rounded-xl bg-gray-50 pl-9 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-500'
           />
         </div>
 
-        <div role='tablist' aria-label='Filter attendees' className='flex gap-2 overflow-x-auto'>
+        <div
+          role='tablist'
+          aria-label={t('attendeeList.filterLabel')}
+          className='flex gap-2 overflow-x-auto'
+        >
           {FILTERS.map((option) => {
             const isActive = filter === option.id;
 
@@ -164,7 +174,11 @@ export function AttendeeList({ eventId, attendees }: AttendeeListProps) {
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
                 )}
               >
-                {option.label}
+                {option.id === 'all'
+                  ? tCommon('labels.all')
+                  : option.id === 'checked-in'
+                    ? t('attendeeList.filters.checkedIn')
+                    : t('attendeeList.filters.notCheckedIn')}
                 <span
                   className={cn(
                     'text-xs tabular-nums',
@@ -184,17 +198,17 @@ export function AttendeeList({ eventId, attendees }: AttendeeListProps) {
       {visibleAttendees.length === 0 ? (
         <div className='px-4 py-10 text-center'>
           <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-            No attendees match
+            {t('attendeeList.noMatchTitle')}
           </p>
           <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-            Try a different name, email, or filter.
+            {t('attendeeList.noMatchBody')}
           </p>
         </div>
       ) : (
         <ul className='divide-y divide-gray-100 dark:divide-neutral-800'>
           {visibleAttendees.map((attendee) => {
             const isPending = pendingTicketIds.has(attendee.ticketId);
-            const displayName = getDisplayName(attendee);
+            const displayName = getDisplayName(attendee, t);
             const checkedInTime =
               attendee.status === 'used' && attendee.checkedInAt
                 ? formatCheckInTime(attendee.checkedInAt)
@@ -225,15 +239,17 @@ export function AttendeeList({ eventId, attendees }: AttendeeListProps) {
                     ) : null}
                     {attendee.status === 'used' ? (
                       <span className='rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'>
-                        {checkedInTime ? `Checked in ${checkedInTime}` : 'Checked in'}
+                        {checkedInTime
+                          ? t('attendeeList.checkedInAt', { time: checkedInTime })
+                          : t('attendeeList.checkedIn')}
                       </span>
                     ) : attendee.status === 'cancelled' ? (
                       <span className='rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-950/60 dark:text-red-300'>
-                        Cancelled
+                        {t('attendeeList.cancelled')}
                       </span>
                     ) : (
                       <span className='rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'>
-                        Not checked in
+                        {t('attendeeList.notCheckedIn')}
                       </span>
                     )}
                   </div>
@@ -244,7 +260,7 @@ export function AttendeeList({ eventId, attendees }: AttendeeListProps) {
                     type='button'
                     onClick={() => handleCheckIn(attendee)}
                     disabled={isPending}
-                    aria-label={`Check in ${displayName}`}
+                    aria-label={t('attendeeList.checkInLabel', { name: displayName })}
                     className='flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-gray-900 px-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
                   >
                     {isPending ? (
@@ -252,14 +268,14 @@ export function AttendeeList({ eventId, attendees }: AttendeeListProps) {
                     ) : (
                       <Check className='h-4 w-4' />
                     )}
-                    Check in
+                    {t('attendeeList.checkIn')}
                   </button>
                 ) : attendee.status === 'used' ? (
                   <button
                     type='button'
                     onClick={() => handleUndo(attendee)}
                     disabled={isPending}
-                    aria-label={`Undo check-in for ${displayName}`}
+                    aria-label={t('attendeeList.undoLabel', { name: displayName })}
                     className='flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-gray-200 px-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800'
                   >
                     {isPending ? (
@@ -267,7 +283,7 @@ export function AttendeeList({ eventId, attendees }: AttendeeListProps) {
                     ) : (
                       <Undo2 className='h-4 w-4' />
                     )}
-                    Undo
+                    {t('attendeeList.undo')}
                   </button>
                 ) : null}
               </li>

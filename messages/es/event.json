@@ -1,0 +1,248 @@
+{
+  "page": {
+    "twoHosts": "{first} y {second}",
+    "manyHosts": "{first} y {count, plural, one {# persona más} other {# personas más}}",
+    "rsvpGoing": "¡Asistirás!",
+    "rsvpMaybe": "Marcado como quizás",
+    "rsvpNotGoing": "No asistirás",
+    "rsvpFailed": "No se pudo actualizar tu asistencia. Inténtalo de nuevo.",
+    "saveEvent": "Guardar evento",
+    "notFoundTitle": "Evento no encontrado",
+    "notFoundDescription": "El evento que buscas no existe o ya no está disponible.",
+    "goBack": "Volver",
+    "exploreEvents": "Explorar eventos",
+    "hiddenUntilApproved": "Algunos detalles del evento están ocultos hasta que se apruebe tu registro.",
+    "hiddenUntilRsvp": "Algunos detalles del evento están ocultos hasta que confirmes tu asistencia.",
+    "music": "Música",
+    "hostedBy": "Organizado por",
+    "goingCount": "<strong>{count}</strong> {count, plural, one {asistirá} other {asistirán}}",
+    "sectionsNav": "Secciones del evento",
+    "tabs": {
+      "details": "Detalles",
+      "comments": "Comentarios",
+      "gallery": "Galería"
+    },
+    "photos": "Fotos",
+    "metaDescription": "Eventos con un toque social -- evento.so"
+  },
+  "info": {
+    "types": {
+      "rsvp": "Confirmación de asistencia",
+      "registration": "Registro",
+      "ticketed": "Con entrada"
+    },
+    "rsvpButton": {
+      "going": "Asistirás",
+      "noSpots": "SIN CUPOS",
+      "maybe": "Quizás",
+      "notGoing": "No asistiré",
+      "rsvp": "Confirmar asistencia"
+    },
+    "pendingToast": "Tu registro está pendiente de aprobación del anfitrión",
+    "deniedToast": "Tu registro no fue aprobado. Contacta al anfitrión para más detalles.",
+    "icsLocationHidden": "Ubicación oculta hasta que se apruebe el registro",
+    "icsDescriptionHidden": "Descripción oculta hasta que se apruebe el registro",
+    "dateTimeCopied": "Fecha y hora copiadas",
+    "dateTimeCopyFailed": "No se pudo copiar la fecha y hora",
+    "chips": {
+      "hosting": "Anfitrión",
+      "pendingApproval": "Pendiente de aprobación",
+      "going": "Asistiré",
+      "cancelled": "Cancelado"
+    },
+    "status": {
+      "hosting": "Eres anfitrión de este evento",
+      "waitingApproval": "Esperando la aprobación del anfitrión",
+      "notApproved": "Registro no aprobado",
+      "registrationRequired": "Registro obligatorio",
+      "ticketed": "Evento con entrada"
+    },
+    "noMoreSpots": "No quedan más cupos",
+    "spotsLeft": "{count, plural, one {Queda # cupo} other {Quedan # cupos}}",
+    "pending": "Pendiente",
+    "denied": "Rechazado"
+  },
+  "rsvpSheet": {
+    "capacityReached": "Este evento alcanzó su capacidad máxima.",
+    "signInToRsvp": "Inicia sesión para confirmar tu asistencia.",
+    "yes": "Sí",
+    "maybe": "Quizás",
+    "no": "No",
+    "markedMaybe": "Marcado como quizás",
+    "notGoing": "No asistiré",
+    "registrationApproved": "Tu registro fue aprobado. Actualiza tu asistencia a continuación.",
+    "checkingSession": "Verificando sesión...",
+    "requiresRegistration": "Este evento requiere registro. Al hacer clic en \"Sí\" se abrirá el formulario de registro.",
+    "updating": "Actualizando asistencia...",
+    "verifyEmail": "Verifica tu correo",
+    "registerTitle": "Registrarse en el evento",
+    "title": "Confirmar asistencia",
+    "codeSentTo": "Código enviado a <strong>{email}</strong>"
+  },
+  "registrationForm": {
+    "errors": {
+      "nameRequired": "El nombre es obligatorio",
+      "emailRequired": "El correo es obligatorio",
+      "emailInvalid": "Ingresa un correo electrónico válido",
+      "emailMismatch": "El correo debe coincidir con el de tu cuenta",
+      "fieldRequired": "Este campo es obligatorio"
+    },
+    "toasts": {
+      "registered": "¡Te registraste! Asistirás al evento.",
+      "submitted": "Registro enviado. Esperando la aprobación del anfitrión.",
+      "submitFailed": "No se pudo enviar el registro. Inténtalo de nuevo.",
+      "sendCodeFailed": "No se pudo enviar el código de verificación. Inténtalo de nuevo.",
+      "invalidCode": "Código de verificación inválido. Inténtalo de nuevo.",
+      "codeSent": "¡Código de verificación enviado!",
+      "resendFailed": "No se pudo reenviar el código. Inténtalo de nuevo."
+    },
+    "placeholders": {
+      "enterField": "Ingresa {field}",
+      "agree": "Acepto",
+      "username": "nombre de usuario",
+      "youtube": "URL del canal o nombre de usuario",
+      "linkedin": "URL del perfil o nombre de usuario",
+      "company": "Nombre de la empresa",
+      "fullName": "Tu nombre completo",
+      "email": "tu@correo.com"
+    },
+    "completingTitle": "Completando tu registro...",
+    "completingDescription": "Espera mientras finalizamos tu cuenta y tu asistencia.",
+    "usingAccountEmail": "Usando el correo de tu cuenta",
+    "verificationHint": "Enviaremos un código de verificación a este correo",
+    "sendingCode": "Enviando código...",
+    "submitting": "Enviando...",
+    "register": "Registrarse"
+  },
+  "registrationStatus": {
+    "pendingTitle": "Registro pendiente",
+    "pendingDescription": "¡Estás en la lista! Estamos esperando que el anfitrión apruebe tu registro.",
+    "approvedTitle": "¡Estás registrado!",
+    "approvedDescription": "Tu registro fue aprobado.",
+    "deniedTitle": "Registro no aprobado",
+    "deniedReason": "Motivo: {reason}",
+    "deniedDescription": "Lamentablemente, tu registro no fue aprobado.",
+    "registeredAgo": "Registrado {time}",
+    "approvedAgo": "Aprobado {time}",
+    "updateRsvp": "Actualizar asistencia",
+    "contactHost": "Si crees que se trata de un error, contacta al anfitrión del evento."
+  },
+  "otp": {
+    "verifying": "Verificando...",
+    "verifyAndRegister": "Verificar y registrarse",
+    "sending": "Enviando...",
+    "resendIn": "Reenviar código en {seconds}s",
+    "resend": "¿No recibiste el código? Reenviar"
+  },
+  "passwordGate": {
+    "enterPassword": "Ingresa la contraseña del evento",
+    "accessGranted": "¡Acceso concedido!",
+    "incorrect": "Contraseña incorrecta. Inténtalo de nuevo.",
+    "verifyFailed": "No se pudo verificar la contraseña. Inténtalo de nuevo.",
+    "hostAndMore": "{host} + {count} más",
+    "privateEvent": "Evento privado",
+    "hostedBy": "Organizado por <strong>{host}</strong>",
+    "protectedDescription": "Este evento está protegido con contraseña. Ingresa la contraseña para ver los detalles.",
+    "passwordLabel": "Contraseña del evento",
+    "passwordPlaceholder": "Ingresa la contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "showPassword": "Mostrar contraseña",
+    "verifying": "Verificando...",
+    "enterEvent": "Entrar al evento",
+    "invitedFooter": "Te invitaron a un evento. Ingresa la contraseña para acceder a los detalles."
+  },
+  "saveSheet": {
+    "removedFrom": "Eliminado de {list}.",
+    "removedTitle": "Eliminado",
+    "savedTo": "Guardado en {list}.",
+    "updateFailedTitle": "No se pudo actualizar la lista",
+    "createdAndSaved": "Se creó {list} y se guardó este evento en ella.",
+    "createdNotAdded": "Se creó {list}, pero el evento no se agregó: {error}",
+    "saveFailedTitle": "No se pudo guardar el evento",
+    "loadFailed": "No se pudieron cargar tus listas",
+    "newList": "Nueva lista",
+    "namePlaceholder": "p. ej., Verano en Lisboa",
+    "creating": "Creando…",
+    "createAndSave": "Crear y guardar",
+    "yourLists": "Tus listas",
+    "default": "Predeterminada",
+    "title": "Guardar evento",
+    "description": "Elige las listas donde guardar este evento."
+  },
+  "ownerButtons": {
+    "eventLinkToast": "Enlace del evento: {url}",
+    "linkCopied": "¡Enlace del evento copiado!",
+    "blasts": "Envíos",
+    "eventLink": "Enlace del evento",
+    "copyEventLink": "Copiar enlace del evento"
+  },
+  "header": {
+    "imageAlt": "{title} - Imagen {index}",
+    "showImage": "Mostrar imagen {index}"
+  },
+  "dateTimeSheet": {
+    "title": "Fecha y hora",
+    "addToCalendar": "Agregar al calendario",
+    "copyDateTime": "Copiar fecha/hora"
+  },
+  "locationSheet": {
+    "addressCopied": "Dirección copiada",
+    "copyFailed": "No se pudo copiar la dirección",
+    "title": "Abrir en mapas",
+    "appleMaps": "Abrir en Apple Maps",
+    "googleMaps": "Abrir en Google Maps",
+    "copyAddress": "Copiar dirección"
+  },
+  "subEventCalendar": {
+    "continuesBefore": "Continúa desde el día anterior.",
+    "continuesAfter": "Continúa al día siguiente.",
+    "blockLabel": "{title}, {date}, {time}. {continuation}",
+    "title": "Calendario de subeventos",
+    "allTimesIn": "Todos los horarios en {timezone}",
+    "timeTbd": "Hora por definir",
+    "tbdLabel": "{title}, hora por definir"
+  },
+  "guests": {
+    "loadFailed": "No se pudieron cargar los invitados.",
+    "viewDetails": "Ver detalles de {name}",
+    "guest": "invitado",
+    "guestTitle": "Invitado",
+    "openFullList": "Abrir la lista completa de invitados"
+  },
+  "guestsSheet": {
+    "title": "Lista de invitados",
+    "searchPlaceholder": "Buscar invitados",
+    "zapAll": "Zap a todos",
+    "noMatches": "No hay invitados que coincidan",
+    "noneGoing": "Ningún invitado marcó Asistiré",
+    "noneMaybe": "Ningún invitado marcó Quizás",
+    "noneNotGoing": "Ningún invitado marcó No asistiré",
+    "noMatchesHint": "Prueba con otro nombre o nombre de usuario, o borra tu búsqueda.",
+    "emptyHint": "Cuando los invitados respondan, aparecerán aquí.",
+    "clearSearch": "Borrar búsqueda",
+    "openProfile": "Abrir el perfil de @{username}"
+  },
+  "description": {
+    "title": "Acerca de"
+  },
+  "location": {
+    "mapTitle": "Mapa de {name}",
+    "mapAria": "Mapa que muestra {name}",
+    "directionsAria": "Abrir indicaciones a {name} en Google Maps"
+  },
+  "weather": {
+    "title": "Clima actual",
+    "fahrenheit": "Fahrenheit",
+    "celsius": "Celsius",
+    "feelsLike": "Sensación térmica",
+    "humidity": "Humedad",
+    "wind": "Viento",
+    "disclaimer": "<strong>Nota:</strong> Esto muestra el clima actual en la ubicación del evento, no el clima de la fecha del evento."
+  },
+  "subEvents": {
+    "title": "Subeventos",
+    "viewCalendar": "Ver calendario",
+    "manage": "Gestionar subeventos",
+    "empty": "Aún no hay subeventos."
+  }
+}

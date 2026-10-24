@@ -1,12 +1,15 @@
 'use client';
 
+import { enUS, es, ptBR } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLocale } from 'next-intl';
 import * as React from 'react';
 import { DayPicker } from 'react-day-picker';
 
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+const DATE_FNS_LOCALES = { en: enUS, 'pt-BR': ptBR, es } as const;
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 function Calendar({
@@ -16,6 +19,9 @@ function Calendar({
   components: userComponents,
   ...props
 }: CalendarProps) {
+  const appLocale = useLocale();
+  const dateFnsLocale =
+    DATE_FNS_LOCALES[appLocale as keyof typeof DATE_FNS_LOCALES] ?? DATE_FNS_LOCALES.en;
   const defaultClassNames = {
     months: 'relative flex flex-col sm:flex-row gap-4',
     month: 'w-full',
@@ -74,6 +80,7 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
+      locale={dateFnsLocale}
       className={cn('w-fit', className)}
       classNames={mergedClassNames}
       components={mergedComponents}

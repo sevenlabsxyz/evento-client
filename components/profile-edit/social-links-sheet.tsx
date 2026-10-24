@@ -9,6 +9,7 @@ import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Globe, Instagram, Loader2, X as XIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface SocialLinksSheetProps {
@@ -28,6 +29,8 @@ export default function SocialLinksSheet({
   onSave,
   currentLinks,
 }: SocialLinksSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const [instagram, setInstagram] = useState('');
   const [xHandle, setXHandle] = useState('');
   const [website, setWebsite] = useState('');
@@ -74,20 +77,20 @@ export default function SocialLinksSheet({
     // Validate Instagram
     const cleanedInstagram = cleanHandle(instagram);
     if (cleanedInstagram && !/^[a-zA-Z0-9_.]+$/.test(cleanedInstagram)) {
-      newErrors.instagram = 'Invalid Instagram username';
+      newErrors.instagram = t('edit.social.invalidInstagram');
       hasError = true;
     }
 
     // Validate X handle
     const cleanedX = cleanHandle(xHandle);
     if (cleanedX && !/^[a-zA-Z0-9_]+$/.test(cleanedX)) {
-      newErrors.x = 'Invalid X username';
+      newErrors.x = t('edit.social.invalidX');
       hasError = true;
     }
 
     // Validate website
     if (website && !validateWebsite(website)) {
-      newErrors.website = 'Invalid website URL';
+      newErrors.website = t('edit.social.invalidWebsite');
       hasError = true;
     }
 
@@ -116,13 +119,13 @@ export default function SocialLinksSheet({
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
-        toast.error(validation.error || 'Invalid social links data');
+        toast.error(validation.error || t('edit.social.invalidData'));
         return;
       }
 
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
-      toast.success('Social links updated successfully');
+      toast.success(t('edit.social.updated'));
 
       // Close sheet
       onClose();
@@ -130,7 +133,7 @@ export default function SocialLinksSheet({
       logger.error('Failed to update social links', {
         error: error instanceof Error ? error.message : String(error),
       });
-      toast.error('Failed to update social links');
+      toast.error(t('edit.social.updateFailed'));
     }
   };
 
@@ -163,7 +166,7 @@ export default function SocialLinksSheet({
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='flex items-center justify-between'>
-                <h2 className='text-xl font-semibold'>Social Links</h2>
+                <h2 className='text-xl font-semibold'>{t('edit.social.title')}</h2>
                 <button
                   onClick={handleCancel}
                   className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
@@ -212,7 +215,7 @@ export default function SocialLinksSheet({
                       <div className='flex h-4 w-4 items-center justify-center rounded-sm bg-black text-xs font-bold text-white dark:bg-neutral-100 dark:text-neutral-900'>
                         𝕏
                       </div>
-                      X (formerly Twitter)
+                      {t('edit.social.xLabel')}
                     </Label>
                     <div className='relative'>
                       <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-neutral-500'>
@@ -239,7 +242,7 @@ export default function SocialLinksSheet({
                   <div>
                     <Label htmlFor='website' className='mb-2 flex items-center gap-2'>
                       <Globe className='h-4 w-4' />
-                      Website
+                      {t('sheets.website.title')}
                     </Label>
                     <Input
                       id='website'
@@ -249,7 +252,7 @@ export default function SocialLinksSheet({
                         setWebsite(e.target.value);
                         setErrors({ ...errors, website: '' });
                       }}
-                      placeholder='yourwebsite.com'
+                      placeholder={t('edit.social.websitePlaceholder')}
                     />
                     {errors.website && (
                       <p className='mt-1 text-sm text-red-500 dark:text-red-400'>
@@ -260,9 +263,7 @@ export default function SocialLinksSheet({
 
                   {/* Info text */}
                   <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                    Add your social media profiles to help others connect with you outside of
-                    Evento. Add your social media profiles to help others connect with you outside
-                    of Evento.
+                    {t('edit.social.info')}
                   </p>
 
                   {/* Save/Cancel Buttons */}
@@ -275,14 +276,14 @@ export default function SocialLinksSheet({
                       {isSaving ? (
                         <>
                           <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                          Saving...
+                          {t('saving')}
                         </>
                       ) : (
-                        'Save'
+                        tCommon('actions.save')
                       )}
                     </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
-                      Cancel
+                      {tCommon('actions.cancel')}
                     </Button>
                   </div>
                 </SheetWithDetentFull.ScrollContent>

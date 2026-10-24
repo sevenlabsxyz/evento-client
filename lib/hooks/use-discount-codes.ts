@@ -9,6 +9,7 @@ import type {
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 export type UpdateDiscountCodeVariables = { codeId: string } & UpdateDiscountCodeInput;
 
@@ -36,6 +37,7 @@ export function useDiscountCodes(eventId: string) {
 
 export function useCreateDiscountCode(eventId: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (input: CreateDiscountCodeInput): Promise<DiscountCode> => {
@@ -48,7 +50,7 @@ export function useCreateDiscountCode(eventId: string) {
         return response.data;
       }
 
-      throw new Error('Failed to create discount code');
+      throw new Error(t('discountCodes.createFailed'));
     },
     onSuccess: () => {
       invalidateDiscountCodeQueries(queryClient, eventId);
@@ -61,6 +63,7 @@ export function useCreateDiscountCode(eventId: string) {
 
 export function useUpdateDiscountCode(eventId: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async ({
@@ -76,7 +79,7 @@ export function useUpdateDiscountCode(eventId: string) {
         return response.data;
       }
 
-      throw new Error('Failed to update discount code');
+      throw new Error(t('discountCodes.updateFailed'));
     },
     onSuccess: () => {
       invalidateDiscountCodeQueries(queryClient, eventId);

@@ -1,7 +1,10 @@
 import { GhostPost } from '@/lib/types/ghost';
 import { ArrowRight } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 
 const RAIL_POST_LIMIT = 3;
 
@@ -9,9 +12,13 @@ interface HubBlogRailProps {
   posts: GhostPost[];
 }
 
-function getPostMeta(post: GhostPost): string | null {
+function getPostMeta(
+  post: GhostPost,
+  formatReadingTime: (minutes: number) => string,
+  locale: string
+): string | null {
   if (post.reading_time > 0) {
-    return `${post.reading_time} min read`;
+    return formatReadingTime(post.reading_time);
   }
   if (!post.published_at) {
     return null;
@@ -20,10 +27,18 @@ function getPostMeta(post: GhostPost): string | null {
   if (Number.isNaN(published.getTime())) {
     return null;
   }
-  return published.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  return published.toLocaleDateString(getIntlLocale(locale), {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }
 
 export function HubBlogRail({ posts }: HubBlogRailProps) {
+  const t = useTranslations('hub');
+  const tCommon = useTranslations('common');
+  const locale = useLocale();
+
   if (posts.length === 0) {
     return null;
   }
@@ -31,19 +46,25 @@ export function HubBlogRail({ posts }: HubBlogRailProps) {
   return (
     <section className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
       <div className='mb-3 flex items-center justify-between'>
-        <h2 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>From the blog</h2>
+        <h2 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+          {t('blog.railTitle')}
+        </h2>
         <Link
           href='/e/blog'
           className='inline-flex items-center gap-1 text-xs font-medium text-gray-500 transition-colors hover:text-gray-900 dark:text-neutral-400 dark:hover:text-neutral-100'
         >
-          All posts
+          {t('blog.allPosts')}
           <ArrowRight className='h-3 w-3' />
         </Link>
       </div>
 
       <ul className='space-y-1'>
         {posts.slice(0, RAIL_POST_LIMIT).map((post) => {
-          const meta = getPostMeta(post);
+          const meta = getPostMeta(
+            post,
+            (minutes) => tCommon('counts.minRead', { count: minutes }),
+            locale
+          );
           return (
             <li key={post.id}>
               <Link

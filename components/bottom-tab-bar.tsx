@@ -5,6 +5,7 @@ import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion, type Transition } from 'framer-motion';
 import { Calendar1, type LucideIcon, Plus, Search, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -45,7 +46,7 @@ const barTransition: Transition = { type: 'spring', damping: 26, stiffness: 300 
 // ── Tab definitions ──────────────────────────────────────────────────────────
 
 interface NavTab {
-  title: string;
+  labelKey: 'events' | 'wallet' | 'create' | 'search' | 'profile';
   icon: LucideIcon;
   path: string;
   isCreate?: boolean;
@@ -53,12 +54,12 @@ interface NavTab {
 }
 
 const NAV_ITEMS: NavTab[] = [
-  { title: 'Events', icon: Calendar1, path: '/e/hub' },
-  { title: 'Wallet', icon: Zap, path: '/e/wallet' },
-  { title: 'Create', icon: Plus, path: '/e/create', isCreate: true },
-  { title: 'Search', icon: Search, path: '/e/search' },
+  { labelKey: 'events', icon: Calendar1, path: '/e/hub' },
+  { labelKey: 'wallet', icon: Zap, path: '/e/wallet' },
+  { labelKey: 'create', icon: Plus, path: '/e/create', isCreate: true },
+  { labelKey: 'search', icon: Search, path: '/e/search' },
   // icon unused — avatar renders instead
-  { title: 'Profile', icon: Plus, path: '/e/profile', isProfile: true },
+  { labelKey: 'profile', icon: Plus, path: '/e/profile', isProfile: true },
 ];
 
 const PATH_TO_INDEX: Record<string, number> = {
@@ -76,6 +77,7 @@ interface BottomTabBarProps {
 }
 
 export function BottomTabBar({ className }: BottomTabBarProps) {
+  const t = useTranslations('nav');
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useUserProfile();
@@ -111,12 +113,14 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
           >
             {NAV_ITEMS.map((tab, index) => {
               const isSelected = selected === index;
+              const title = t(`bottomTabs.${tab.labelKey}`);
 
               // Create button — always prominent, no expanding label
               if (tab.isCreate) {
                 return (
                   <motion.button
-                    key={tab.title}
+                    key={tab.path}
+                    aria-label={title}
                     onClick={() => router.push(tab.path)}
                     whileTap={{ scale: 0.92 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
@@ -131,7 +135,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
               if (tab.isProfile) {
                 return (
                   <motion.button
-                    key={tab.title}
+                    key={tab.path}
                     variants={buttonVariants}
                     initial={false}
                     animate='animate'
@@ -146,7 +150,10 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                     )}
                   >
                     <Avatar className='h-7 w-7'>
-                      <AvatarImage src={user?.image} alt={user?.name || 'Me'} />
+                      <AvatarImage
+                        src={user?.image}
+                        alt={user?.name || t('bottomTabs.avatarAlt')}
+                      />
                       <AvatarFallback className='bg-muted dark:bg-neutral-700'>
                         <Image
                           src='/assets/img/evento-sublogo.svg'
@@ -167,7 +174,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                           transition={transition}
                           className='overflow-hidden whitespace-nowrap'
                         >
-                          {tab.title}
+                          {title}
                         </motion.span>
                       )}
                     </AnimatePresence>
@@ -179,7 +186,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
               const Icon = tab.icon;
               return (
                 <motion.button
-                  key={tab.title}
+                  key={tab.path}
                   variants={buttonVariants}
                   initial={false}
                   animate='animate'
@@ -204,7 +211,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                         transition={transition}
                         className='overflow-hidden whitespace-nowrap'
                       >
-                        {tab.title}
+                        {title}
                       </motion.span>
                     )}
                   </AnimatePresence>

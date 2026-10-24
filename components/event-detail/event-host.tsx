@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { UserDetails } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
 import { Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface EventHostProps {
@@ -16,6 +17,7 @@ interface EventHostProps {
 }
 
 export default function EventHost({ event }: EventHostProps) {
+  const t = useTranslations('event');
   const { user: loggedInUser } = useAuth();
   const [selectedHost, setSelectedHost] = useState<UserDetails | null>(null);
 
@@ -37,7 +39,7 @@ export default function EventHost({ event }: EventHostProps) {
 
   return (
     <>
-      <EventSection title='Hosted by'>
+      <EventSection title={t('page.hostedBy')}>
         <ul className='-my-1 divide-y divide-gray-100 dark:divide-neutral-800'>
           {event.hosts.map((host) => (
             <li key={host.id} className='flex items-center justify-between gap-3 py-2'>

@@ -1,3 +1,5 @@
+import { getIntlLocale } from '@/lib/i18n/active-locale';
+import { normalizeTimeSpacing } from '@/lib/utils/date';
 /**
  * Utilities for converting between UI date/time formats and API format
  */
@@ -142,7 +144,7 @@ export function isEndAfterStart(
  * Format date for display
  */
 export function formatDateForDisplay(date: Date): string {
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString(getIntlLocale(), {
     weekday: 'short',
     month: 'short',
     day: '2-digit',
@@ -154,9 +156,13 @@ export function formatDateForDisplay(date: Date): string {
  * Format time for display
  */
 export function formatTimeForDisplay(time: TimeFormat): string {
-  return `${time.hour.toString().padStart(2, '0')}:${time.minute
-    .toString()
-    .padStart(2, '0')} ${time.period}`;
+  const { hours, minutes } = timeToApiFormat(time);
+  return normalizeTimeSpacing(
+    new Date(2000, 0, 1, hours, minutes).toLocaleTimeString(getIntlLocale(), {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  );
 }
 
 /**

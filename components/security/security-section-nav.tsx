@@ -6,6 +6,7 @@ import {
   type SecuritySectionContent,
 } from '@/components/security/security-content';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import { type MouseEvent, useEffect, useMemo, useState } from 'react';
 
 /**
@@ -63,6 +64,7 @@ interface SecuritySectionNavProps {
 }
 
 export function SecuritySectionNav({ sections, className }: SecuritySectionNavProps) {
+  const t = useTranslations('security');
   const sectionIds = useMemo(() => sections.map((section) => section.id), [sections]);
   const activeId = useActiveSectionId(sectionIds);
 
@@ -78,9 +80,9 @@ export function SecuritySectionNav({ sections, className }: SecuritySectionNavPr
 
   return (
     <div className={cn('space-y-6', className)}>
-      <nav aria-label='On this page' className='text-sm'>
+      <nav aria-label={t('nav.onThisPage')} className='text-sm'>
         <p className='mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-neutral-500'>
-          On this page
+          {t('nav.onThisPage')}
         </p>
         <ol className='space-y-0.5 border-l border-gray-200 dark:border-neutral-800'>
           {sections.map((section) => {
@@ -98,7 +100,7 @@ export function SecuritySectionNav({ sections, className }: SecuritySectionNavPr
                       : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-900 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-neutral-100'
                   )}
                 >
-                  {section.navLabel}
+                  {t(`sections.${section.key}.navLabel`)}
                 </a>
               </li>
             );
@@ -107,16 +109,21 @@ export function SecuritySectionNav({ sections, className }: SecuritySectionNavPr
       </nav>
 
       <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-800'>
-        <p className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Found an issue?</p>
+        <p className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+          {t('nav.foundIssue')}
+        </p>
         <p className='mt-1 text-sm text-gray-600 dark:text-neutral-400'>
-          Report it privately to{' '}
-          <a
-            href={SECURITY_REPORT_MAILTO}
-            className='break-all font-medium text-red-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40 dark:text-red-400'
-          >
-            {SECURITY_CONTACT_EMAIL}
-          </a>
-          .
+          {t.rich('nav.reportPrivately', {
+            email: SECURITY_CONTACT_EMAIL,
+            link: (chunks) => (
+              <a
+                href={SECURITY_REPORT_MAILTO}
+                className='break-all font-medium text-red-600 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40 dark:text-red-400'
+              >
+                {chunks}
+              </a>
+            ),
+          })}
         </p>
       </div>
     </div>

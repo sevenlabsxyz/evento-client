@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useEventDashboard } from '@/lib/hooks/use-event-dashboard';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { CircleAlert, SearchX } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { type ReactNode, useEffect, useMemo } from 'react';
@@ -25,8 +26,9 @@ const SHELL_CLASS = 'min-h-full bg-white dark:bg-neutral-950';
 const CONTAINER_CLASS = 'mx-auto w-full max-w-6xl px-4 md:px-6';
 
 function ManageShellSkeleton() {
+  const t = useTranslations('manage');
   return (
-    <div className={SHELL_CLASS} aria-busy='true' aria-label='Loading event dashboard'>
+    <div className={SHELL_CLASS} aria-busy='true' aria-label={t('layout.loadingAria')}>
       <div className={CONTAINER_CLASS}>
         <div className='flex items-center gap-3 py-4 md:gap-4 md:py-6'>
           <Skeleton className='h-14 w-14 shrink-0 rounded-xl md:h-16 md:w-16' />
@@ -87,6 +89,7 @@ function ManageStateCard({
 }
 
 export default function ManageLayout({ children, params }: ManageLayoutProps) {
+  const t = useTranslations('manage');
   const eventId = params.id;
   const router = useRouter();
   const pathname = usePathname();
@@ -131,11 +134,11 @@ export default function ManageLayout({ children, params }: ManageLayoutProps) {
       return (
         <ManageStateCard
           icon={<SearchX className='h-6 w-6 text-gray-500 dark:text-neutral-400' />}
-          title='Event not found'
-          description='This event may have been deleted or the link is incorrect.'
+          title={t('layout.notFoundTitle')}
+          description={t('layout.notFoundDescription')}
           action={
             <Button asChild variant='outline' size='sm' className='dark:bg-neutral-900'>
-              <Link href='/e/hub'>Back to hub</Link>
+              <Link href='/e/hub'>{t('layout.backToHub')}</Link>
             </Button>
           }
         />
@@ -145,11 +148,11 @@ export default function ManageLayout({ children, params }: ManageLayoutProps) {
     return (
       <ManageStateCard
         icon={<CircleAlert className='h-6 w-6 text-red-500 dark:text-red-400' />}
-        title='Could not load the dashboard'
-        description={error ? getErrorMessage(error) : 'Something went wrong. Please try again.'}
+        title={t('layout.loadErrorTitle')}
+        description={error ? getErrorMessage(error) : t('layout.loadErrorDescription')}
         action={
           <Button size='sm' onClick={() => void refetch()} disabled={isRefetching}>
-            {isRefetching ? 'Retrying...' : 'Try again'}
+            {isRefetching ? t('layout.retrying') : t('layout.tryAgain')}
           </Button>
         }
       />

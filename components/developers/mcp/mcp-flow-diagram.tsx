@@ -4,41 +4,26 @@ import { DOCS_MCP_ARCHITECTURE_URL } from '@/lib/constants/external-links';
 import { cn } from '@/lib/utils';
 import { motion, type Transition } from 'framer-motion';
 import { Bot, Database, LucideIcon, Server } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { MCP_EXECUTION_STEPS } from './mcp-content';
 import { McpDocsLink, McpSectionHeader } from './mcp-section-header';
 
 interface FlowNode {
   icon: LucideIcon;
-  kicker: string;
-  title: string;
-  detail: string;
+  /** Kicker, title and detail live under `developers.mcp.flow.nodes.<key>`. */
+  key: 'client' | 'server' | 'api';
   highlighted?: boolean;
 }
 
 const FLOW_NODES: FlowNode[] = [
-  {
-    icon: Bot,
-    kicker: 'MCP client',
-    title: 'Your agent',
-    detail: 'Claude Desktop, Cursor, or any client that supports stdio servers.',
-  },
-  {
-    icon: Server,
-    kicker: 'Runs on your machine',
-    title: 'Evento MCP server',
-    detail: 'Validates tool arguments, injects your API key, retries and normalizes responses.',
-    highlighted: true,
-  },
-  {
-    icon: Database,
-    kicker: 'Authenticated',
-    title: 'Evento public API',
-    detail: 'Each tool maps to a /public/v1 route. No direct database access, nothing persisted.',
-  },
+  { icon: Bot, key: 'client' },
+  { icon: Server, key: 'server', highlighted: true },
+  { icon: Database, key: 'api' },
 ];
 
-const CONNECTOR_LABELS = ['stdio · tools/call', 'API request + your key'] as const;
+/** Keys under `developers.mcp.flow.connectors`. */
+const CONNECTOR_LABELS = ['stdio', 'apiRequest'] as const;
 
 const PULSE_TRANSITION: Transition = {
   duration: 2.4,
@@ -84,6 +69,7 @@ function FlowConnector({ label, delay }: { label: string; delay: number }) {
 }
 
 function FlowNodeCard({ node }: { node: FlowNode }) {
+  const t = useTranslations('developers.mcp.flow.nodes');
   const Icon = node.icon;
 
   return (
@@ -106,37 +92,41 @@ function FlowNodeCard({ node }: { node: FlowNode }) {
         <Icon className='h-5 w-5' aria-hidden='true' />
       </span>
       <p className='mt-4 text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-neutral-500'>
-        {node.kicker}
+        {t(`${node.key}.kicker`)}
       </p>
       <h3 className='mt-1 text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-        {node.title}
+        {t(`${node.key}.title`)}
       </h3>
-      <p className='mt-1.5 text-sm text-gray-600 dark:text-neutral-400'>{node.detail}</p>
+      <p className='mt-1.5 text-sm text-gray-600 dark:text-neutral-400'>
+        {t(`${node.key}.detail`)}
+      </p>
     </li>
   );
 }
 
 export function McpFlowDiagram() {
+  const t = useTranslations('developers.mcp.flow');
+
   return (
     <section aria-labelledby='mcp-flow-heading'>
       <McpSectionHeader
         id='mcp-flow-heading'
-        eyebrow='How it works'
-        title='A thin bridge between your agent and Evento'
-        description='The server is an MCP adapter over stdio. It turns tool calls into authenticated public API requests — no hosted MCP layer in between.'
-        action={<McpDocsLink href={DOCS_MCP_ARCHITECTURE_URL}>Architecture</McpDocsLink>}
+        eyebrow={t('eyebrow')}
+        title={t('title')}
+        description={t('description')}
+        action={<McpDocsLink href={DOCS_MCP_ARCHITECTURE_URL}>{t('architecture')}</McpDocsLink>}
       />
 
       <div className='mt-8 rounded-3xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950 md:p-6'>
         <ol className='flex flex-col lg:flex-row lg:items-stretch'>
           {FLOW_NODES.map((node, index) => (
-            <FlowStep key={node.title} node={node} index={index} />
+            <FlowStep key={node.key} node={node} index={index} />
           ))}
         </ol>
 
         <div className='mt-6 border-t border-gray-200 pt-6 dark:border-neutral-800'>
           <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-            What happens on each call
+            {t('eachCall')}
           </h3>
           <ol className='mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5'>
             {MCP_EXECUTION_STEPS.map((step, index) => (
@@ -147,7 +137,7 @@ export function McpFlowDiagram() {
                 <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-semibold tabular-nums text-white dark:bg-neutral-100 dark:text-neutral-900'>
                   {index + 1}
                 </span>
-                {step}
+                {t(`steps.${step}`)}
               </li>
             ))}
           </ol>
@@ -158,7 +148,9 @@ export function McpFlowDiagram() {
 }
 
 function FlowStep({ node, index }: { node: FlowNode; index: number }) {
-  const connectorLabel = CONNECTOR_LABELS[index - 1];
+  const t = useTranslations('developers.mcp.flow.connectors');
+  const connectorKey = CONNECTOR_LABELS[index - 1];
+  const connectorLabel = connectorKey ? t(connectorKey) : undefined;
 
   return (
     <>

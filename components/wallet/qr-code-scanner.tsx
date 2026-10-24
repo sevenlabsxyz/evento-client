@@ -2,6 +2,7 @@
 
 import { logger } from '@/lib/utils/logger';
 import { Html5Qrcode } from 'html5-qrcode';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
 interface CameraScannerProps {
@@ -9,6 +10,7 @@ interface CameraScannerProps {
 }
 
 export function CameraScanner({ onScanSuccess }: CameraScannerProps) {
+  const t = useTranslations('wallet');
   const [isScanning, setIsScanning] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const hasStarted = useRef(false);
@@ -103,7 +105,7 @@ export function CameraScanner({ onScanSuccess }: CameraScannerProps) {
         <div className='absolute inset-0 flex items-center justify-center bg-black'>
           <div className='flex flex-col items-center gap-4'>
             <div className='h-11 w-11 animate-spin rounded-full border-[3px] border-white/20 border-t-white' />
-            <p className='text-[17px] font-semibold text-white'>Starting Camera...</p>
+            <p className='text-[17px] font-semibold text-white'>{t('scanner.startingCamera')}</p>
           </div>
         </div>
       )}

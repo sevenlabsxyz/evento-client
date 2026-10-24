@@ -2,6 +2,7 @@ import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { VisuallyHidden } from '@silk-hq/components';
 import type { Editor } from '@tiptap/core';
 import { Minus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface InsertElementsSheetProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface InsertElementsSheetProps {
 }
 
 export default function InsertElementsSheet({ isOpen, onClose, editor }: InsertElementsSheetProps) {
+  const t = useTranslations('createEvent');
   return (
     <DetachedSheet.Root
       presented={isOpen}
@@ -24,11 +26,11 @@ export default function InsertElementsSheet({ isOpen, onClose, editor }: InsertE
               <DetachedSheet.Handle className='InsertSheet-handle' />
             </div>
             <VisuallyHidden.Root asChild>
-              <DetachedSheet.Title>Insert Elements</DetachedSheet.Title>
+              <DetachedSheet.Title>{t('sheets.insertElements')}</DetachedSheet.Title>
             </VisuallyHidden.Root>
 
             <div className='InsertSheet-container'>
-              <h3 className='InsertSheet-title'>Insert Elements</h3>
+              <h3 className='InsertSheet-title'>{t('sheets.insertElements')}</h3>
 
               <div className='InsertSheet-options'>
                 <button
@@ -39,7 +41,7 @@ export default function InsertElementsSheet({ isOpen, onClose, editor }: InsertE
                   className='InsertSheet-option'
                 >
                   <Minus className='mr-2 h-4 w-4' />
-                  <span className='grow'>Divider</span>
+                  <span className='grow'>{t('toolbar.divider')}</span>
                 </button>
               </div>
             </div>

@@ -4,7 +4,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { Switch } from '@/components/ui/switch';
 import {
-  FOURTH_REMINDER_ERROR,
   toggleReminderOffset,
   useEventReminders,
   useUpdateEventReminders,
@@ -12,7 +11,6 @@ import {
 import { useTopBar } from '@/lib/stores/topbar-store';
 import {
   EVENT_REMINDER_OFFSETS,
-  EVENT_REMINDER_OFFSET_LABELS,
   MAX_EVENT_REMINDERS,
   type ApiError,
   type EventReminderOffset,
@@ -21,6 +19,7 @@ import { getErrorMessage } from '@/lib/utils/error-message';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Bell } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
@@ -32,7 +31,18 @@ function offsetsMatch(left: EventReminderOffset[], right: EventReminderOffset[])
   return left.every((offset, index) => offset === right[index]);
 }
 
+const OFFSET_LABEL_KEYS = {
+  '1h': 'reminders.offsets.oneHour',
+  '2h': 'reminders.offsets.twoHours',
+  '3h': 'reminders.offsets.threeHours',
+  '8h': 'reminders.offsets.eightHours',
+  '1d': 'reminders.offsets.oneDay',
+  '3d': 'reminders.offsets.threeDays',
+} as const satisfies Record<EventReminderOffset, string>;
+
 export default function EventRemindersPage() {
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
   const params = useParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -46,7 +56,7 @@ export default function EventRemindersPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Reminders',
+      title: t('reminders.topBarTitle'),
       leftMode: 'back',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
       centerMode: 'title',
@@ -56,7 +66,7 @@ export default function EventRemindersPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute, router, eventId]);
+  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute, router, eventId, t]);
 
   // Only seed local state on first load. Background refetches must not
   // overwrite toggles the host has not saved yet.
@@ -90,7 +100,7 @@ export default function EventRemindersPage() {
     const result = toggleReminderOffset(selectedOffsets, offset);
 
     if (result.error) {
-      toast.error(result.error);
+      toast.error(t('reminders.maxReached', { max: MAX_EVENT_REMINDERS }));
       return;
     }
 
@@ -102,16 +112,16 @@ export default function EventRemindersPage() {
       await updateReminders.mutateAsync(selectedOffsets);
       toast.success(
         selectedOffsets.length === 0
-          ? 'Guest reminders turned off'
-          : 'Guest reminders updated successfully'
+          ? t('reminders.toasts.turnedOff')
+          : t('reminders.toasts.updated')
       );
       router.push(`/e/${eventId}/manage`);
     } catch (saveError) {
       const status = (saveError as ApiError)?.status;
       const message =
         status === 404
-          ? 'Guest reminders are not available yet. Please try again later.'
-          : getErrorMessage(saveError) || 'Failed to update guest reminders';
+          ? t('reminders.toasts.notAvailable')
+          : getErrorMessage(saveError) || t('reminders.toasts.updateFailed');
 
       toast.error(message);
       logger.error('Failed to update guest reminders', {
@@ -150,16 +160,16 @@ export default function EventRemindersPage() {
       <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-            Reminders unavailable
+            {t('reminders.error.title')}
           </h1>
           <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            We couldn&apos;t load reminder settings for this event.
+            {t('reminders.error.description')}
           </p>
           <button
             onClick={() => router.push(`/e/${eventId}/manage`)}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
-            Go Back
+            {t('reminders.goBack')}
           </button>
         </div>
       </div>
@@ -171,16 +181,16 @@ export default function EventRemindersPage() {
       <div data-testid='reminders-unavailable' className='flex items-center justify-center py-16'>
         <div className='max-w-sm text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-            Reminders coming soon
+            {t('reminders.unavailable.title')}
           </h1>
           <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            Guest reminders aren&apos;t available for this event yet. Please check back later.
+            {t('reminders.unavailable.description')}
           </p>
           <button
             onClick={() => router.push(`/e/${eventId}/manage`)}
             className='rounded-lg bg-gray-900 px-4 py-2 text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
           >
-            Go Back
+            {t('reminders.goBack')}
           </button>
         </div>
       </div>
@@ -190,10 +200,10 @@ export default function EventRemindersPage() {
   return (
     <div className='space-y-4 py-4 md:py-6'>
       <div>
-        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Reminders</h2>
-        <p className='text-sm text-gray-500 dark:text-neutral-400'>
-          Choose when guests get automatic email reminders before the event.
-        </p>
+        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+          {t('reminders.heading')}
+        </h2>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('reminders.subtitle')}</p>
       </div>
 
       <div className='max-w-2xl space-y-4'>
@@ -204,16 +214,18 @@ export default function EventRemindersPage() {
             </div>
             <div>
               <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                Guest reminders
+                {t('reminders.guestReminders.title')}
               </h3>
               <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-                Automatically email guests who RSVP&apos;d Yes before the event starts. Choose up to{' '}
-                {MAX_EVENT_REMINDERS} times. Times are relative to the event start.
+                {t('reminders.guestReminders.description', { max: MAX_EVENT_REMINDERS })}
               </p>
             </div>
           </div>
           <p className='text-xs text-gray-400 dark:text-neutral-400'>
-            {selectedOffsets.length} of {MAX_EVENT_REMINDERS} reminders selected
+            {t('reminders.selectedCount', {
+              count: selectedOffsets.length,
+              max: MAX_EVENT_REMINDERS,
+            })}
           </p>
         </div>
 
@@ -223,10 +235,10 @@ export default function EventRemindersPage() {
             className='rounded-2xl border border-dashed border-gray-200 bg-white px-4 py-8 text-center dark:border-neutral-800 dark:bg-neutral-900'
           >
             <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-              No reminders scheduled
+              {t('reminders.empty.title')}
             </p>
             <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-              Guests who RSVP Yes will not receive automatic reminder emails until you turn one on.
+              {t('reminders.empty.description')}
             </p>
           </div>
         ) : null}
@@ -234,6 +246,7 @@ export default function EventRemindersPage() {
         <div className='overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
           {EVENT_REMINDER_OFFSETS.map((offset, index) => {
             const checked = selectedOffsets.includes(offset);
+            const label = t(OFFSET_LABEL_KEYS[offset]);
 
             return (
               <div key={offset}>
@@ -242,12 +255,12 @@ export default function EventRemindersPage() {
                 ) : null}
                 <div className='flex items-center justify-between p-4'>
                   <span className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-                    {EVENT_REMINDER_OFFSET_LABELS[offset]}
+                    {label}
                   </span>
                   <Switch
                     checked={checked}
                     onCheckedChange={(nextChecked) => handleToggle(offset, nextChecked)}
-                    aria-label={EVENT_REMINDER_OFFSET_LABELS[offset]}
+                    aria-label={label}
                   />
                 </div>
               </div>
@@ -255,7 +268,9 @@ export default function EventRemindersPage() {
           })}
         </div>
 
-        <p className='px-1 text-xs text-gray-400 dark:text-neutral-400'>{FOURTH_REMINDER_ERROR}.</p>
+        <p className='px-1 text-xs text-gray-400 dark:text-neutral-400'>
+          {t('reminders.maxHint', { max: MAX_EVENT_REMINDERS })}
+        </p>
       </div>
 
       <div className='sticky bottom-0 z-30 -mx-4 border-t border-gray-200 bg-white px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4 dark:border-neutral-800 dark:bg-neutral-950 md:mx-0 md:px-0'>
@@ -265,7 +280,7 @@ export default function EventRemindersPage() {
             disabled={!hasChanges || updateReminders.isPending}
             loading={updateReminders.isPending}
           >
-            Save
+            {tCommon('actions.save')}
           </SubmitButton>
         </div>
       </div>

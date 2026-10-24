@@ -3,6 +3,7 @@ import { UpdateEventData, updateEventSchema } from '@/lib/schemas/event';
 import { ApiResponse } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface UpdateEventResponse {
   id: string;
@@ -12,6 +13,7 @@ interface UpdateEventResponse {
 
 export function useUpdateEvent() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (data: UpdateEventData) => {
@@ -30,7 +32,7 @@ export function useUpdateEvent() {
         }
       }
 
-      throw new Error('Failed to update event');
+      throw new Error(t('events.updateFailed'));
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
@@ -48,6 +50,7 @@ export function useUpdateEvent() {
 
 export function useUpdateEventWithCallbacks() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (data: UpdateEventData) => {
@@ -66,7 +69,7 @@ export function useUpdateEventWithCallbacks() {
         }
       }
 
-      throw new Error('Failed to update event');
+      throw new Error(t('events.updateFailed'));
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({

@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useCallback, useState } from 'react';
 
@@ -31,6 +32,7 @@ export default function ProgressiveImage({
   onLoad,
   onError,
 }: ProgressiveImageProps) {
+  const t = useTranslations('zap.ui');
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
@@ -73,7 +75,7 @@ export default function ProgressiveImage({
         )}
         style={!fill ? { width, height } : undefined}
       >
-        Failed to load
+        {t('failedToLoad')}
       </div>
     );
   }

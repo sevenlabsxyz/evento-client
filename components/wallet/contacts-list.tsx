@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useContacts } from '@/lib/hooks/use-contacts';
 import type { Contact } from '@/lib/types/wallet';
 import { UserPlus, Users } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { type ReactNode, useMemo } from 'react';
 import { ContactItem } from './contact-item';
 
@@ -37,6 +38,7 @@ export function ContactsList({
   className,
   renderContactRightContent,
 }: ContactsListProps) {
+  const t = useTranslations('walletFlows');
   const { contacts, isLoading } = useContacts();
 
   // Sort contacts alphabetically by name
@@ -65,16 +67,14 @@ export function ContactsList({
           <EmptyMedia variant='soft-circle'>
             <Users className='h-8 w-8' />
           </EmptyMedia>
-          <EmptyTitle className='text-lg sm:text-lg'>No contacts yet</EmptyTitle>
-          <EmptyDescription>
-            Add contacts to quickly send payments to friends and family
-          </EmptyDescription>
+          <EmptyTitle className='text-lg sm:text-lg'>{t('contactsList.emptyTitle')}</EmptyTitle>
+          <EmptyDescription>{t('contactsList.emptyDescription')}</EmptyDescription>
         </EmptyHeader>
         {showAddButton && onAddContact && (
           <EmptyContent>
             <Button onClick={onAddContact} className='h-11'>
               <UserPlus className='mr-2 h-4 w-4' />
-              Add Contact
+              {t('contactsList.addContact')}
             </Button>
           </EmptyContent>
         )}

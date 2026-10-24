@@ -15,6 +15,7 @@ import { getContributionMethods } from '@/lib/utils/event-transform';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Check, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ContributionPaymentSheet from './contribution-payment-sheet';
@@ -33,6 +34,8 @@ interface RsvpSheetProps {
 }
 
 export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpSheetProps) {
+  const t = useTranslations('event');
+  const tCommon = useTranslations('common');
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const { clearAuth } = useAuthStore();
   const queryClient = useQueryClient();
@@ -163,10 +166,10 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     (status: RSVPStatus) => {
       const msg =
         status === 'yes'
-          ? "You're going"
+          ? t('page.rsvpGoing')
           : status === 'maybe'
-            ? 'Marked as maybe'
-            : 'You are not going';
+            ? t('page.rsvpMaybe')
+            : t('page.rsvpNotGoing');
       toast.success(msg);
       onClose();
 
@@ -174,7 +177,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
         setShowContributionSheet(true);
       }
     },
-    [hasContributions, onClose]
+    [hasContributions, onClose, t]
   );
 
   // Handle phase transitions after success
@@ -192,7 +195,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
   const handleAction = async (status: RSVPStatus) => {
     if (status === 'yes' && shouldDisableYes) {
-      toast.error('This event has reached its capacity.');
+      toast.error(t('rsvpSheet.capacityReached'));
       return;
     }
 
@@ -252,11 +255,10 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
           return;
         }
         if (error instanceof RSVPError && error.status === 401) {
-          redirectToLogin(status, 'Please sign in to RSVP.');
+          redirectToLogin(status, t('rsvpSheet.signInToRsvp'));
           return;
         }
-        const message =
-          error instanceof Error ? error.message : 'Failed to update RSVP. Please try again.';
+        const message = error instanceof Error ? error.message : t('page.rsvpFailed');
         toast.error(message);
         setRsvpPhase('idle');
         setSelectedStatus(null);
@@ -283,7 +285,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     () => [
       {
         key: 'yes' as const,
-        label: currentStatus === 'yes' ? "You're going" : 'Yes',
+        label: currentStatus === 'yes' ? t('info.rsvpButton.going') : t('rsvpSheet.yes'),
         classes:
           currentStatus === 'yes'
             ? 'bg-green-600 text-white hover:bg-green-700'
@@ -291,7 +293,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       },
       {
         key: 'maybe' as const,
-        label: currentStatus === 'maybe' ? 'Marked maybe' : 'Maybe',
+        label: currentStatus === 'maybe' ? t('rsvpSheet.markedMaybe') : t('rsvpSheet.maybe'),
         classes:
           currentStatus === 'maybe'
             ? 'bg-black dark:bg-neutral-100 text-white hover:bg-black dark:text-neutral-900 dark:hover:bg-neutral-200'
@@ -299,14 +301,14 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       },
       {
         key: 'no' as const,
-        label: currentStatus === 'no' ? 'Not going' : 'No',
+        label: currentStatus === 'no' ? t('rsvpSheet.notGoing') : t('rsvpSheet.no'),
         classes:
           currentStatus === 'no'
             ? 'bg-gray-400 dark:bg-neutral-500 text-white hover:bg-gray-400 dark:hover:bg-neutral-500'
             : 'bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-neutral-200 hover:bg-gray-300 dark:hover:bg-neutral-600',
       },
     ],
-    [currentStatus]
+    [currentStatus, t]
   );
 
   const renderButtonLabel = (s: RSVPStatus, label: string) => {
@@ -322,10 +324,10 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
   const rsvpStatusLabel =
     selectedStatus === 'yes'
-      ? "You're going"
+      ? t('info.rsvpButton.going')
       : selectedStatus === 'maybe'
-        ? 'Marked as maybe'
-        : 'Not going';
+        ? t('page.rsvpMaybe')
+        : t('rsvpSheet.notGoing');
 
   const renderRsvpButtons = () => {
     const isBusy = rsvpPhase !== 'idle';
@@ -349,7 +351,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               hasExistingRegistration &&
               existingRegistration?.approval_status === 'approved' && (
                 <div className='mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700 dark:bg-green-950/40 dark:text-green-400'>
-                  Your registration has been approved. Update your attendance below.
+                  {t('rsvpSheet.registrationApproved')}
                 </div>
               )}
 
@@ -359,7 +361,9 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               disabled={isYesDisabled}
               onClick={() => handleAction('yes')}
             >
-              {shouldDisableYes ? 'NO SPOTS LEFT' : renderButtonLabel('yes', buttons[0].label)}
+              {shouldDisableYes
+                ? t('info.rsvpButton.noSpots')
+                : renderButtonLabel('yes', buttons[0].label)}
             </button>
             <button
               type='button'
@@ -380,14 +384,13 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
             {!authResolved && !needsRegistration && (
               <p className='mt-4 text-center text-sm text-gray-500 dark:text-neutral-400'>
-                Checking session...
+                {t('rsvpSheet.checkingSession')}
               </p>
             )}
 
             {registrationRequired && !hasExistingRegistration && (
               <p className='mt-4 text-center text-sm text-gray-500 dark:text-neutral-400'>
-                This event requires registration. Clicking &quot;Yes&quot; will open the
-                registration form.
+                {t('rsvpSheet.requiresRegistration')}
               </p>
             )}
 
@@ -397,8 +400,8 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               (!isEventFull || isYesRsvp) && (
                 <p className='text-center text-sm text-gray-500 dark:text-neutral-400'>
                   {isEventFull && isYesRsvp
-                    ? 'No more spots left'
-                    : `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`}
+                    ? t('info.noMoreSpots')
+                    : t('info.spotsLeft', { count: spotsRemaining })}
                 </p>
               )}
           </div>
@@ -413,7 +416,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
           >
             <Loader2 className='h-8 w-8 animate-spin text-gray-500 dark:text-neutral-400' />
             <p className='mt-3 text-sm font-medium text-gray-500 dark:text-neutral-400'>
-              Updating RSVP...
+              {t('rsvpSheet.updating')}
             </p>
           </div>
         )}
@@ -485,7 +488,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               onClick={onClose}
               className='mt-4 w-full rounded-xl bg-gray-200 px-4 py-3 text-center font-medium text-gray-800 hover:bg-gray-300 dark:bg-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-600'
             >
-              Close
+              {tCommon('actions.close')}
             </button>
           </>
         );
@@ -503,9 +506,9 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
         title={
           currentView === 'registration-form'
             ? registrationStep === 'otp'
-              ? 'Verify your email'
-              : 'Register for Event'
-            : 'RSVP'
+              ? t('rsvpSheet.verifyEmail')
+              : t('rsvpSheet.registerTitle')
+            : t('rsvpSheet.title')
         }
         open={isOpen}
         onOpenChange={handleSheetOpenChange}
@@ -522,14 +525,20 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               </button>
               <div className='min-w-0'>
                 <h2 className='truncate text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-                  {registrationStep === 'otp' ? 'Verify your email' : 'Register for Event'}
+                  {registrationStep === 'otp'
+                    ? t('rsvpSheet.verifyEmail')
+                    : t('rsvpSheet.registerTitle')}
                 </h2>
                 {registrationStep === 'otp' && (
                   <p className='truncate text-sm text-gray-500 dark:text-neutral-400'>
-                    Code sent to{' '}
-                    <span className='font-medium text-gray-700 dark:text-neutral-300'>
-                      {registrationEmail}
-                    </span>
+                    {t.rich('rsvpSheet.codeSentTo', {
+                      email: registrationEmail,
+                      strong: (chunks) => (
+                        <span className='font-medium text-gray-700 dark:text-neutral-300'>
+                          {chunks}
+                        </span>
+                      ),
+                    })}
                   </p>
                 )}
               </div>

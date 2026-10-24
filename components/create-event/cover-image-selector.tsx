@@ -5,6 +5,7 @@ import { DEFAULT_EVENT_COVER_URL } from '@/lib/constants/event-cover';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
 import { isGif } from '@/lib/utils/image';
 import { Camera } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface CoverImageSelectorProps {
   selectedImage?: string;
@@ -15,6 +16,7 @@ export default function CoverImageSelector({
   selectedImage,
   onImageClick,
 }: CoverImageSelectorProps) {
+  const t = useTranslations('createEvent');
   return (
     <div
       className='relative aspect-square w-full cursor-pointer overflow-hidden rounded-2xl bg-gradient-to-br from-pink-300 to-pink-400 dark:from-pink-500 dark:to-pink-700'
@@ -26,7 +28,7 @@ export default function CoverImageSelector({
             // For GIFs, use a regular img tag to ensure they play automatically
             <img
               src={selectedImage}
-              alt='Selected GIF cover'
+              alt={t('cover.selectedGifAlt')}
               className='h-full w-full object-cover'
               loading='lazy'
             />
@@ -34,7 +36,7 @@ export default function CoverImageSelector({
             // For regular images, use the ProgressiveImage component
             <ProgressiveImage
               src={getCoverImageUrl500x500(selectedImage)}
-              alt='Selected cover image'
+              alt={t('cover.selectedAlt')}
               fill
               className='object-cover'
             />
@@ -44,7 +46,7 @@ export default function CoverImageSelector({
         <div className='h-full w-full'>
           <ProgressiveImage
             src={getCoverImageUrl500x500(DEFAULT_EVENT_COVER_URL)}
-            alt='Default event cover'
+            alt={t('cover.defaultAlt')}
             fill
             className='object-cover'
           />

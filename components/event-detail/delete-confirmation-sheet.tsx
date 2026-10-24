@@ -2,6 +2,7 @@
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { AlertTriangle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { Button } from '../ui/button';
 
 interface DeleteConfirmationSheetProps {
@@ -28,6 +29,8 @@ export default function DeleteConfirmationSheet({
   confirmLabel,
   loadingLabel,
 }: DeleteConfirmationSheetProps) {
+  const t = useTranslations('eventSocial');
+  const tCommon = useTranslations('common');
   const handleConfirm = () => {
     onConfirm();
   };
@@ -53,22 +56,19 @@ export default function DeleteConfirmationSheet({
                   <AlertTriangle className='h-5 w-5 text-red-500 dark:text-red-400' />
                 </div>
                 <h2 className='text-xl font-semibold dark:text-neutral-100'>
-                  {title ?? `Delete ${itemType}`}
+                  {title ?? t('deleteSheet.title', { itemType })}
                 </h2>
               </div>
 
               {/* Body */}
               <div className='mb-8 text-gray-600 dark:text-neutral-400'>
-                <p>
-                  {description ??
-                    `Are you sure you want to delete this ${itemType}? This action cannot be undone.`}
-                </p>
+                <p>{description ?? t('deleteSheet.description', { itemType })}</p>
               </div>
 
               {/* Actions */}
               <div className='flex flex-col gap-3 sm:flex-row'>
                 <Button onClick={onClose} variant='outline' className='w-full'>
-                  Cancel
+                  {tCommon('actions.cancel')}
                 </Button>
                 <Button
                   onClick={handleConfirm}
@@ -77,8 +77,8 @@ export default function DeleteConfirmationSheet({
                   disabled={isLoading}
                 >
                   {isLoading
-                    ? (loadingLabel ?? 'Deleting...')
-                    : (confirmLabel ?? `Delete ${itemType}`)}
+                    ? (loadingLabel ?? t('deleteSheet.deleting'))
+                    : (confirmLabel ?? t('deleteSheet.title', { itemType }))}
                 </Button>
               </div>
             </div>

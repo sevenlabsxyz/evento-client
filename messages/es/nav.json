@@ -1,0 +1,60 @@
+{
+  "sidebar": {
+    "createEvent": "Crear evento",
+    "developers": "Desarrolladores",
+    "items": {
+      "events": "Eventos",
+      "search": "Buscar",
+      "lists": "Listas",
+      "wallet": "Billetera",
+      "api": "API",
+      "mcp": "MCP para agentes de IA",
+      "apiKeys": "Claves de API",
+      "blog": "Blog",
+      "security": "Seguridad",
+      "store": "Tienda",
+      "settings": "Configuración"
+    },
+    "hideSidebar": "Ocultar barra lateral",
+    "showSidebar": "Mostrar barra lateral",
+    "opensInNewTab": "(se abre en una pestaña nueva)"
+  },
+  "sidebarRight": {
+    "calendar": "Calendario"
+  },
+  "theme": {
+    "label": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "lightTheme": "Tema claro",
+    "darkTheme": "Tema oscuro",
+    "switchToLight": "Cambiar al tema claro",
+    "switchToDark": "Cambiar al tema oscuro"
+  },
+  "user": {
+    "fallbackName": "Usuario de Evento",
+    "avatarAlt": "Usuario",
+    "welcome": "Te damos la bienvenida a Evento",
+    "logOut": "Cerrar sesión"
+  },
+  "bottomTabs": {
+    "events": "Eventos",
+    "wallet": "Billetera",
+    "create": "Crear",
+    "search": "Buscar",
+    "profile": "Perfil",
+    "avatarAlt": "Yo"
+  },
+  "logout": {
+    "title": "Cerrar sesión",
+    "walletWarningTitle": "Atención: datos de la billetera",
+    "walletOnDevice": "Tienes una billetera configurada en este dispositivo.",
+    "walletDeleteWarning": "Cerrar sesión eliminará de forma permanente los datos de tu billetera de este dispositivo, incluida tu frase de recuperación cifrada.",
+    "backupReminder": "¡Asegúrate de tener un respaldo!",
+    "backupLoss": "Sin un respaldo, perderás el acceso a tus fondos para siempre.",
+    "confirmMessage": "¿Seguro que quieres cerrar sesión? Tendrás que iniciar sesión de nuevo para acceder a tu cuenta.",
+    "backUpFirst": "Respaldar la billetera primero",
+    "loggingOut": "Cerrando sesión...",
+    "confirm": "Cerrar sesión"
+  }
+}

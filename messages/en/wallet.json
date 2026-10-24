@@ -1,0 +1,354 @@
+{
+  "page": {
+    "title": "Wallet",
+    "description": "Send, receive, and keep track of your bitcoin.",
+    "wakeLockEnabled": "Wake lock enabled",
+    "keepScreenAwake": "Keep screen awake",
+    "unlockRedirectHint": "Unlock your wallet and we'll bring you back automatically.",
+    "createRedirectHint": "Create your wallet and we'll bring you back automatically.",
+    "unlockedRedirecting": "Wallet unlocked. Bringing you back...",
+    "depositClaimed": "Deposit claimed! {amount} sats added to your balance",
+    "onchainReceivedTitle": "Onchain funds received",
+    "onchainReceivedBody": "Tap \"Speed It Up\" below to claim your funds now.",
+    "seedUnavailable": "Unable to retrieve seed phrase. Please contact support.",
+    "unsupportedQr": "Cannot read this QR code type",
+    "buyBitcoin": "Buy Bitcoin",
+    "buySell": "Buy / Sell",
+    "moneyIncoming": "Money Incoming",
+    "incomingDescription": "You've received onchain funds. Tap below to pay a small fee and claim them to your wallet instantly.",
+    "speedItUp": "Speed It Up!",
+    "bitcoinTools": "Bitcoin tools",
+    "contacts": "Contacts",
+    "addContact": "Add contact",
+    "allContacts": "All contacts",
+    "viewAllContacts": "View All Contacts",
+    "security": "Security",
+    "backup": "Backup",
+    "backedUp": "Backed up",
+    "notBackedUp": "Not backed up",
+    "walletSettings": "Wallet settings",
+    "walletSettingsDescription": "Lock, privacy, and backup options",
+    "transactions": "Transactions",
+    "recentTransactions": "Recent Transactions",
+    "walletContacts": "Wallet Contacts",
+    "newContact": "New Contact"
+  },
+  "settings": {
+    "topBarTitle": "Wallet Settings",
+    "beta": "Beta",
+    "locked": "Wallet locked",
+    "deleted": "Wallet deleted",
+    "title": "Wallet settings",
+    "description": "Security, privacy, and device options for your Evento wallet.",
+    "security": "Security",
+    "securityDescription": "Locking, backups, and what stays visible on screen.",
+    "lockWallet": "Lock Wallet",
+    "lockWalletDescription": "Require password to access",
+    "backupStatus": "Backup Status",
+    "hideBalance": "Hide balance and values",
+    "hideBalanceDescription": "Keep wallet amounts hidden across the wallet.",
+    "dangerZone": "Danger Zone",
+    "dangerZoneDescription": "Irreversible actions for this device.",
+    "deleteWallet": "Delete Wallet",
+    "deleteWalletDescription": "This will permanently delete your wallet from this device. Make sure you have backed up your wallet before proceeding.",
+    "cannotUndo": "This action cannot be undone",
+    "deleteConfirmDescription": "Your wallet will be permanently deleted from this device. Make sure you have backed up your recovery phrase before proceeding.",
+    "confirmDelete": "Yes, Delete Wallet"
+  },
+  "balance": {
+    "registering": "Registering..."
+  },
+  "actions": {
+    "receive": "Receive",
+    "send": "Send",
+    "scan": "Scan"
+  },
+  "balanceDisplay": {
+    "available": "available"
+  },
+  "desktop": {
+    "eyebrow": "Evento Wallet",
+    "preWallet": {
+      "welcome": {
+        "title": "A Bitcoin wallet only you control",
+        "description": "Send and receive bitcoin over Lightning, right inside Evento. Your wallet lives on this device, and only you have access to it."
+      },
+      "setup": {
+        "title": "Set up your wallet",
+        "description": "Choose a PIN to protect your wallet on this device. Back it up afterwards so you can always recover your funds."
+      },
+      "restore": {
+        "title": "Restore your wallet",
+        "description": "Paste your encrypted backup or 12-word recovery phrase to regain access to your funds on this device."
+      },
+      "backup": {
+        "title": "Back up your wallet",
+        "description": "Your recovery phrase is the only way to recover your funds if you lose access to this device."
+      },
+      "unlock": {
+        "title": "Unlock your wallet",
+        "description": "Your wallet is locked on this device. Enter your PIN to continue."
+      }
+    },
+    "points": {
+      "selfCustodial": {
+        "title": "Self-custodial",
+        "description": "Evento doesn't store your wallet information. Only you have access to it."
+      },
+      "lightningAddress": {
+        "title": "Your own Lightning address",
+        "description": "Receive payments at a personal @evento.cash address."
+      },
+      "pinProtected": {
+        "title": "PIN protected",
+        "description": "Lock the wallet whenever you like and unlock it with your PIN."
+      },
+      "recoverable": {
+        "title": "Always recoverable",
+        "description": "Restore on any device with your encrypted backup or 12-word recovery phrase."
+      }
+    }
+  },
+  "education": {
+    "bitcoinBasics": "Bitcoin Basics"
+  },
+  "loading": {
+    "messages": {
+      "gettingReady": "Getting things ready for you...",
+      "preparingWallet": "Preparing your wallet...",
+      "almostThere": "Almost there...",
+      "makingMagic": "Making magic happen...",
+      "superpowers": "Setting up your financial superpowers...",
+      "futureOfMoney": "Connecting to the future of money...",
+      "wakingUp": "Your wallet is waking up...",
+      "brewing": "Brewing up something good...",
+      "justAMoment": "Just a moment...",
+      "digitalVault": "Loading your digital vault..."
+    },
+    "slowConnection": "This may take longer on slower connections.",
+    "doNotRefresh": "Do not refresh the page.",
+    "logoAlt": "Evento Logo"
+  },
+  "pin": {
+    "minLength": "PIN must be at least 6 digits",
+    "mismatch": "PINs do not match",
+    "createTitle": "Create a PIN",
+    "confirmTitle": "Confirm Your PIN",
+    "confirmDescription": "Enter your PIN again to confirm",
+    "enterTitle": "Enter Your PIN",
+    "enterPin": "Please enter your PIN",
+    "enterPassword": "Please enter your password",
+    "adminPasswordPlaceholder": "Enter admin password"
+  },
+  "restore": {
+    "invalidInput": "Please enter a valid backup string or 12-word seed phrase",
+    "success": "Wallet restored successfully!",
+    "invalidBackupOrPin": "Invalid backup or PIN",
+    "failed": "Failed to restore wallet",
+    "title": "Sign in to your wallet",
+    "intro": "Your wallet backup is what lets you open your Bitcoin wallet on a new device.",
+    "introPaste": "If you saved your backup code or 12-word phrase when you first created your Evento wallet, paste it here to regain access.",
+    "inputLabel": "Backup or Seed Phrase",
+    "inputPlaceholder": "Enter your encrypted backup or 12-word seed phrase",
+    "encryptedDetected": "Encrypted backup detected",
+    "seedDetected": "Seed phrase detected",
+    "invalidFormat": "Invalid format",
+    "enterPinDescription": "Enter the PIN you used to encrypt this backup",
+    "restoring": "Restoring...",
+    "restoreWallet": "Restore Wallet",
+    "createPinDescription": "Create a 6-digit PIN to protect your wallet",
+    "complete": "Complete"
+  },
+  "setup": {
+    "success": "Wallet created successfully!",
+    "failed": "Failed to create wallet",
+    "missingApiKey": "Breez API key is missing. Please contact support.",
+    "initFailed": "Wallet initialization failed. Please refresh the page and try again.",
+    "failedTitle": "Setup Failed",
+    "goBack": "Go Back",
+    "creatingTitle": "Creating Wallet",
+    "creatingDescription": "Setting up your wallet...",
+    "createPinDescription": "Set a 6-digit PIN to protect your wallet",
+    "important": "Important",
+    "rememberPin": "Remember this PIN! You'll need it to access your wallet.",
+    "createWallet": "Create Wallet"
+  },
+  "unlock": {
+    "failed": "Failed to unlock wallet",
+    "adminTitle": "Enter Admin Password",
+    "pinTitle": "Enter Wallet PIN",
+    "adminMode": "Admin mode enabled",
+    "unlocking": "Unlocking...",
+    "unlock": "Unlock",
+    "useDifferentWallet": "Use different wallet",
+    "startFreshTitle": "Start Fresh?",
+    "beforeContinue": "Before you continue...",
+    "removeInfo": "This will remove your wallet from this device. Make sure you have your backup phrase saved somewhere safe before continuing.",
+    "noRecovery": "Without your backup phrase, there's no way to recover your funds. Evento doesn't store your wallet information — only you have access to it.",
+    "understandContinue": "I understand, continue",
+    "areYouSure": "Are you sure?",
+    "cannotUndo": "This cannot be undone. Once removed, you'll need your backup phrase to access this wallet again.",
+    "removeWallet": "Remove Wallet"
+  },
+  "welcome": {
+    "mascotAlt": "Evento Mascot",
+    "title": "Evento Wallet",
+    "description": "Incredibly simple, secure, and private Bitcoin wallet for modern users.",
+    "createWallet": "Create wallet",
+    "haveWallet": "I already have a wallet"
+  },
+  "backupCallout": {
+    "title": "Secure your wallet",
+    "description": "Back up to protect your funds"
+  },
+  "seedBackup": {
+    "copied": "Recovery phrase copied to clipboard",
+    "copyFailed": "Failed to copy recovery phrase",
+    "confirmRequired": "Please confirm you have saved your recovery phrase",
+    "success": "Wallet backed up successfully!",
+    "title": "Your Recovery Phrase",
+    "description": "Write down these 12 words in order and store them safely",
+    "keepPrivate": "Keep this private",
+    "keepPrivateDescription": "Anyone with these words can access your wallet. Store them securely offline.",
+    "hide": "Hide",
+    "show": "Show",
+    "copiedButton": "Copied!",
+    "copyToClipboard": "Copy to Clipboard",
+    "savedConfirm": "I've saved my recovery phrase in a safe place"
+  },
+  "quickTools": {
+    "buySell": "Buy / Sell",
+    "spend": "Spend",
+    "earn": "Earn",
+    "converter": "Converter"
+  },
+  "scanner": {
+    "startingCamera": "Starting Camera..."
+  },
+  "beta": {
+    "title": "Beta Software",
+    "badge": "BETA",
+    "subtitle": "Important information about the Evento Wallet",
+    "riskTitle": "Use at Your Own Risk",
+    "riskBody": "The Evento Wallet is currently in beta testing. While we strive for reliability, there may be bugs or unexpected behavior.",
+    "whatIsBeta": "What is Beta?",
+    "whatIsBetaBody": "Beta software is feature-complete but still being tested. You may encounter bugs, performance issues, or unexpected behavior as we work to improve the wallet.",
+    "bestPractices": "Best Practices",
+    "practiceBackup": "Always backup your wallet and store your recovery phrase securely",
+    "practiceSmall": "Start with small amounts to test functionality",
+    "practiceReport": "Report any issues or bugs you encounter to help us improve",
+    "practiceUpdate": "Keep your app updated to the latest version",
+    "thanks": "Thank you for being an early tester! Your feedback helps us build a better wallet experience for everyone."
+  },
+  "history": {
+    "justNow": "Just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago",
+    "emptyTitle": "No transactions yet",
+    "emptyDescription": "Your transaction history will appear here",
+    "refresh": "Refresh",
+    "viewAll": "View All Transactions",
+    "sheetTitle": "Transaction History"
+  },
+  "incomingFunds": {
+    "swapCompleted": "Swap completed successfully!",
+    "claimSubmitted": "Claim submitted — it will complete automatically.",
+    "requiredFee": "required: {amount} sats",
+    "feeLimit": "limit: {amount} sats",
+    "feeExceeded": "Claim fee would exceed the selected max fee. It will be retried automatically within your fee limit.",
+    "feeExceededWithDetail": "Claim fee would exceed the selected max fee. It will be retried automatically within your fee limit. ({detail})",
+    "deferredWithMessage": "Claim deferred: {reason} ({message})",
+    "deferred": "Claim deferred: {reason}",
+    "title": "Incoming Funds",
+    "allSet": "All Set!",
+    "noPending": "No pending funds. We automatically swap Bitcoin to Lightning when fees are low.",
+    "onItsWay": "Your Bitcoin is on its way! It will be added to your balance automatically when the network clears up. Want it faster? Pay a small fee to get it now.",
+    "needsAction": "Needs action",
+    "pending": "Pending",
+    "swapping": "Swapping...",
+    "getItNow": "Get It Now",
+    "autoSwapDelayed": "Auto-swap delayed",
+    "feeExceedsLimit": "Network fee of {amount} sats exceeds auto-claim limit — claim manually or wait for lower fees",
+    "outputNotFound": "Transaction output not found",
+    "unknownError": "Unknown error"
+  },
+  "details": {
+    "received": "Received",
+    "sent": "Sent",
+    "status": {
+      "completed": "Completed",
+      "pending": "Pending",
+      "failed": "Failed"
+    },
+    "copied": "{label} copied!",
+    "copyFailed": "Failed to copy",
+    "senderComment": "Sender Comment",
+    "description": "Description",
+    "savedContact": "Saved Contact",
+    "username": "Username",
+    "lightningAddress": "Lightning Address",
+    "provider": "Provider",
+    "title": "Transaction Details",
+    "satsTooltip": "Satoshis (sats) are the smallest unit of Bitcoin. 100,000,000 sats = 1 Bitcoin.",
+    "time": "Time",
+    "type": "Type",
+    "statusLabel": "Status",
+    "totalFees": "Total Fees",
+    "feesTooltip": "Network fees paid to process this Lightning transaction.",
+    "invoice": "Invoice",
+    "invoiceTooltip": "A Lightning invoice is a payment request that contains the amount, destination, and other payment details.",
+    "advanced": "Advanced Details",
+    "paymentHash": "Payment Hash",
+    "paymentHashCopy": "Payment hash",
+    "paymentHashTooltip": "A unique identifier for this Lightning payment, derived from the preimage.",
+    "preimage": "Preimage",
+    "preimageTooltip": "The secret value that proves this payment was completed. It's the cryptographic proof of payment.",
+    "destinationNode": "Destination Node",
+    "destinationNodeCopy": "Destination node",
+    "destinationTooltip": "The public key of the Lightning node that received this payment.",
+    "transactionId": "Transaction ID",
+    "transactionIdTooltip": "The unique identifier for this transaction in your wallet."
+  },
+  "backupChoice": {
+    "invalidPassword": "Invalid password",
+    "invalidPin": "Invalid PIN",
+    "backupCopied": "Backup copied to clipboard",
+    "shareTitle": "Wallet Backup",
+    "backupShared": "Backup shared successfully",
+    "backupShareFailed": "Failed to share backup",
+    "backupDownloaded": "Backup downloaded",
+    "confirmBackupRequired": "Please confirm you have saved your backup",
+    "noWallet": "No wallet found",
+    "phraseShareTitle": "Recovery Phrase",
+    "phraseShared": "Recovery phrase shared successfully",
+    "phraseShareFailed": "Failed to share recovery phrase",
+    "phraseDownloaded": "Recovery phrase downloaded",
+    "titles": {
+      "choice": "Choose Backup Method",
+      "password": "Backup Your Wallet",
+      "backup": "Encrypted Backup",
+      "seedPin": "View Recovery Phrase",
+      "seedView": "Your Recovery Phrase"
+    },
+    "recommended": "Recommended",
+    "encryptedDescription": "PIN-protected backup that you can save to cloud storage.",
+    "advanced": "Advanced",
+    "phraseDescription": "Write down your 12-word recovery phrase (also known as seed phrase)",
+    "onlyWay": "Your backup is the only way to recover your funds if you lose access to this device.",
+    "phraseWarning": "If you choose the recovery phrase option and lose it, you will lose access to your funds.",
+    "exportPasswordPrompt": "Enter your admin password to export encrypted backup",
+    "exportPinPrompt": "Enter your PIN to export encrypted backup",
+    "verifying": "Verifying...",
+    "saveSecurely": "Save this encrypted backup to a secure location",
+    "encryptedLabel": "Encrypted Wallet Backup",
+    "copy": "Copy",
+    "save": "Save",
+    "whyBackup": "Why Backup?",
+    "whyBackupBody": "If you lose your device, forget your PIN, or need to restore your wallet on a new device, this encrypted backup is your only way to recover your funds. Keep it safe!",
+    "confirmEncrypted": "I have saved my encrypted backup to a secure location. I understand that I will need both this backup AND my PIN to restore my wallet.",
+    "savedBackup": "I've Saved My Backup",
+    "viewPasswordPrompt": "Enter your admin password to view your recovery phrase",
+    "viewPinPrompt": "Enter your PIN to view your recovery phrase"
+  }
+}

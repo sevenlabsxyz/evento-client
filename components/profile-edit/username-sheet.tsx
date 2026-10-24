@@ -10,6 +10,7 @@ import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AtSign, CheckCircle, Loader2, X, XCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface UsernameSheetProps {
@@ -25,6 +26,8 @@ export default function UsernameSheet({
   onSave,
   currentUsername = '',
 }: UsernameSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const [username, setUsername] = useState(currentUsername);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
 
@@ -63,7 +66,7 @@ export default function UsernameSheet({
     }
 
     if (!isAvailable) {
-      toast.error('Please choose an available username');
+      toast.error(t('edit.username.chooseAvailable'));
       return;
     }
 
@@ -79,13 +82,13 @@ export default function UsernameSheet({
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
-        toast.error(validation.error || 'Invalid username');
+        toast.error(validation.error || t('edit.username.invalid'));
         return;
       }
 
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
-      toast.success('Username updated successfully');
+      toast.success(t('edit.username.updated'));
 
       // Close sheet
       onClose();
@@ -93,7 +96,7 @@ export default function UsernameSheet({
       logger.error('Failed to update username', {
         error: error instanceof Error ? error.message : String(error),
       });
-      toast.error('Failed to update username');
+      toast.error(t('edit.username.updateFailed'));
     }
   };
 
@@ -120,7 +123,7 @@ export default function UsernameSheet({
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='flex items-center justify-between'>
-                <h2 className='text-xl font-semibold'>Username</h2>
+                <h2 className='text-xl font-semibold'>{t('edit.username.title')}</h2>
                 <button
                   onClick={handleCancel}
                   className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
@@ -143,7 +146,7 @@ export default function UsernameSheet({
                       type='text'
                       value={username}
                       onChange={(e) => setUsername(e.target.value.toLowerCase())}
-                      placeholder='username'
+                      placeholder={t('edit.username.placeholder')}
                       className='pl-10 pr-10'
                       autoFocus
                     />
@@ -170,21 +173,20 @@ export default function UsernameSheet({
                   {/* Success message */}
                   {isAvailable && username !== currentUsername && (
                     <p className='mb-4 text-sm text-green-500 dark:text-green-400'>
-                      Username is available!
+                      {t('edit.username.available')}
                     </p>
                   )}
 
                   {/* Error message */}
                   {!isAvailable && username !== currentUsername && (
                     <p className='mb-4 text-sm text-red-500 dark:text-red-400'>
-                      Username is not available.
+                      {t('edit.username.unavailable')}
                     </p>
                   )}
 
                   {/* Info text */}
                   <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
-                    Your username is unique and helps others find you on Evento. It can only contain
-                    letters, numbers, and underscores.
+                    {t('edit.username.info')}
                   </p>
 
                   {/* Save/Cancel Buttons */}
@@ -197,14 +199,14 @@ export default function UsernameSheet({
                       {isSaving ? (
                         <>
                           <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                          Saving...
+                          {t('saving')}
                         </>
                       ) : (
-                        'Save'
+                        tCommon('actions.save')
                       )}
                     </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
-                      Cancel
+                      {tCommon('actions.cancel')}
                     </Button>
                   </div>
                 </SheetWithDetentFull.ScrollContent>

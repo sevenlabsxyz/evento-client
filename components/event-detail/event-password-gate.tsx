@@ -9,6 +9,7 @@ import { PasswordProtectedEventResponse } from '@/lib/types/api';
 import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, Eye, EyeOff, KeyRound, Loader2, Lock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -18,6 +19,7 @@ interface EventPasswordGateProps {
 }
 
 export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateProps) {
+  const t = useTranslations('event');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
     setError(null);
 
     if (!password.trim()) {
-      setError('Please enter the event password');
+      setError(t('passwordGate.enterPassword'));
       return;
     }
 
@@ -38,14 +40,14 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
       {
         onSuccess: (isValid) => {
           if (isValid) {
-            toast.success('Access granted!');
+            toast.success(t('passwordGate.accessGranted'));
             onAccessGranted();
           } else {
-            setError('Incorrect password. Please try again.');
+            setError(t('passwordGate.incorrect'));
           }
         },
         onError: (err) => {
-          setError(err.message || 'Failed to verify password. Please try again.');
+          setError(err.message || t('passwordGate.verifyFailed'));
         },
       }
     );
@@ -59,7 +61,10 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
   const primaryHost = hosts[0];
   const hostLabel = primaryHost
     ? hosts.length > 1
-      ? `${primaryHost.name || `@${primaryHost.username}`} + ${hosts.length - 1} more`
+      ? t('passwordGate.hostAndMore', {
+          host: primaryHost.name || `@${primaryHost.username}`,
+          count: hosts.length - 1,
+        })
       : primaryHost.name || `@${primaryHost.username}`
     : null;
 
@@ -85,7 +90,7 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
         <div className='space-y-5 p-5'>
           <div className='space-y-1.5'>
             <p className='text-xs font-semibold uppercase tracking-wider text-red-600 dark:text-red-400'>
-              Private event
+              {t('passwordGate.privateEvent')}
             </p>
             <h1 className='text-2xl font-bold tracking-tight text-gray-900 dark:text-neutral-100'>
               {event.title}
@@ -101,15 +106,19 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
                   size='xs'
                 />
                 <p className='truncate text-sm text-gray-600 dark:text-neutral-400'>
-                  Hosted by{' '}
-                  <span className='font-medium text-gray-900 dark:text-neutral-100'>
-                    {hostLabel}
-                  </span>
+                  {t.rich('passwordGate.hostedBy', {
+                    host: hostLabel,
+                    strong: (chunks) => (
+                      <span className='font-medium text-gray-900 dark:text-neutral-100'>
+                        {chunks}
+                      </span>
+                    ),
+                  })}
                 </p>
               </div>
             )}
             <p className='pt-1 text-sm text-gray-500 dark:text-neutral-500'>
-              This event is password protected. Enter the password to view event details.
+              {t('passwordGate.protectedDescription')}
             </p>
           </div>
 
@@ -133,14 +142,14 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
                 htmlFor='password'
                 className='text-sm font-medium text-gray-900 dark:text-neutral-100'
               >
-                Event Password
+                {t('passwordGate.passwordLabel')}
               </label>
               <div className='relative'>
                 <KeyRound className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
                 <Input
                   id='password'
                   type={showPassword ? 'text' : 'password'}
-                  placeholder='Enter password'
+                  placeholder={t('passwordGate.passwordPlaceholder')}
                   className='h-11 rounded-xl border-gray-200 bg-gray-50 pl-10 pr-10 dark:border-neutral-800 dark:bg-neutral-800'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -148,7 +157,9 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
                 />
                 <button
                   type='button'
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={
+                    showPassword ? t('passwordGate.hidePassword') : t('passwordGate.showPassword')
+                  }
                   className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-neutral-300'
                   onClick={() => setShowPassword(!showPassword)}
                 >
@@ -165,10 +176,10 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
               {verifyPassword.isPending ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Verifying...
+                  {t('passwordGate.verifying')}
                 </>
               ) : (
-                'Enter Event'
+                t('passwordGate.enterEvent')
               )}
             </Button>
           </form>
@@ -176,7 +187,7 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
       </div>
 
       <p className='mx-auto my-4 w-full max-w-xs text-center text-xs text-gray-500 dark:text-neutral-500'>
-        You&apos;ve been invited to an evento. Enter the password to access event details.
+        {t('passwordGate.invitedFooter')}
       </p>
     </div>
   );

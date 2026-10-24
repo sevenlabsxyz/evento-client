@@ -2,6 +2,7 @@
 
 import type { ManageNavItem, ManageNavSection } from '@/components/manage-dashboard/manage-nav';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 
@@ -13,6 +14,7 @@ interface ManageSectionNavProps {
 }
 
 function NavBadge({ value, active }: { value: number; active: boolean }) {
+  const t = useTranslations('manage');
   return (
     <span
       className={cn(
@@ -23,12 +25,13 @@ function NavBadge({ value, active }: { value: number; active: boolean }) {
       )}
     >
       {value > 99 ? '99+' : value}
-      <span className='sr-only'> pending</span>
+      <span className='sr-only'> {t('sectionNav.pending')}</span>
     </span>
   );
 }
 
 function SidebarLink({ item, active }: { item: ManageNavItem; active: boolean }) {
+  const t = useTranslations('manage');
   const Icon = item.icon;
 
   return (
@@ -43,13 +46,14 @@ function SidebarLink({ item, active }: { item: ManageNavItem; active: boolean })
       )}
     >
       <Icon className='h-4 w-4 shrink-0' aria-hidden='true' />
-      <span className='truncate'>{item.label}</span>
+      <span className='truncate'>{t(`nav.${item.labelKey}`)}</span>
       {item.badge !== undefined && <NavBadge value={item.badge} active={active} />}
     </Link>
   );
 }
 
 function PillLink({ item, active }: { item: ManageNavItem; active: boolean }) {
+  const t = useTranslations('manage');
   const Icon = item.icon;
 
   return (
@@ -65,7 +69,7 @@ function PillLink({ item, active }: { item: ManageNavItem; active: boolean }) {
       )}
     >
       <Icon className='h-4 w-4 shrink-0' aria-hidden='true' />
-      {item.label}
+      {t(`nav.${item.labelKey}`)}
       {item.badge !== undefined && <NavBadge value={item.badge} active={active} />}
     </Link>
   );
@@ -77,6 +81,7 @@ export function ManageSectionNav({
   variant,
   className,
 }: ManageSectionNavProps) {
+  const t = useTranslations('manage');
   const scrollerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -96,7 +101,7 @@ export function ManageSectionNav({
     const items = sections.flatMap((section) => section.items);
 
     return (
-      <nav aria-label='Event management' className={className}>
+      <nav aria-label={t('sectionNav.ariaLabel')} className={className}>
         <div
           ref={scrollerRef}
           className='-mx-4 flex gap-2 overflow-x-auto px-4 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
@@ -110,7 +115,7 @@ export function ManageSectionNav({
   }
 
   return (
-    <nav aria-label='Event management' className={cn('space-y-5', className)}>
+    <nav aria-label={t('sectionNav.ariaLabel')} className={cn('space-y-5', className)}>
       {sections.map((section) => {
         const headingId = `manage-nav-${section.id}`;
 
@@ -121,7 +126,7 @@ export function ManageSectionNav({
                 id={headingId}
                 className='mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-500'
               >
-                {section.label}
+                {t(`nav.${section.labelKey}`)}
               </h3>
             )}
             <ul

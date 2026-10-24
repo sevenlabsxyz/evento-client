@@ -5,6 +5,7 @@ import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { sampleEmails } from '@/lib/data/sample-emails';
 import { isValidEmail } from '@/lib/utils/email-validation';
 import { AtSignIcon, Download, EyeIcon, FileIcon, Upload } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 
 interface CsvImportSheetProps {
@@ -18,34 +19,39 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
   const [emails, setEmails] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
 
-  const parseCsv = useCallback((file: File): Promise<string[]> => {
-    return new Promise((resolve, reject) => {
-      // Check file size (10MB = 10 * 1024 * 1024 bytes)
-      const maxSizeInBytes = 10 * 1024 * 1024;
-      if (file.size > maxSizeInBytes) {
-        reject('File size exceeds 10MB limit. Please use a smaller file.');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const text = e.target?.result as string;
-          const allEmails = text
-            .split(/[\r\n,]+/)
-            .map((e) => e.trim())
-            .filter(isValidEmail);
-          if (allEmails.length === 0) reject('No valid email addresses found');
-          else resolve([...new Set(allEmails)]);
-        } catch (err) {
-          reject('Error parsing CSV');
+  const parseCsv = useCallback(
+    (file: File): Promise<string[]> => {
+      return new Promise((resolve, reject) => {
+        // Check file size (10MB = 10 * 1024 * 1024 bytes)
+        const maxSizeInBytes = 10 * 1024 * 1024;
+        if (file.size > maxSizeInBytes) {
+          reject(t('csvImport.errors.tooLarge'));
+          return;
         }
-      };
-      reader.onerror = () => reject('Error reading file');
-      reader.readAsText(file);
-    });
-  }, []);
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const text = e.target?.result as string;
+            const allEmails = text
+              .split(/[\r\n,]+/)
+              .map((e) => e.trim())
+              .filter(isValidEmail);
+            if (allEmails.length === 0) reject(t('csvImport.errors.noValidEmails'));
+            else resolve([...new Set(allEmails)]);
+          } catch (err) {
+            reject(t('csvImport.errors.parse'));
+          }
+        };
+        reader.onerror = () => reject(t('csvImport.errors.read'));
+        reader.readAsText(file);
+      });
+    },
+    [t]
+  );
 
   const handleFileChange = async (file: File | null) => {
     if (!file) return;
@@ -81,9 +87,9 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='text-center'>
-                <h2 className='text-xl font-semibold'>Importing CSV Files</h2>
+                <h2 className='text-xl font-semibold'>{t('csvImport.title')}</h2>
                 <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-                  How to import contacts to Evento in CSV format.
+                  {t('csvImport.subtitle')}
                 </p>
               </div>
             </div>
@@ -95,9 +101,9 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                     <AtSignIcon size={16} />
                   </div>
                   <div>
-                    <h3 className='font-medium'>Emails Only</h3>
+                    <h3 className='font-medium'>{t('csvImport.emailsOnly.title')}</h3>
                     <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                      Ensure your CSV file contains only emails in 1 single list.
+                      {t('csvImport.emailsOnly.description')}
                     </p>
                   </div>
                 </div>
@@ -106,9 +112,9 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                     <EyeIcon size={16} />
                   </div>
                   <div>
-                    <h3 className='font-medium'>Header Item</h3>
+                    <h3 className='font-medium'>{t('csvImport.header.title')}</h3>
                     <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                      Ensure your CSV file contains a header item.
+                      {t('csvImport.header.description')}
                     </p>
                   </div>
                 </div>
@@ -117,9 +123,9 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                     <FileIcon size={16} />
                   </div>
                   <div>
-                    <h3 className='font-medium'>Use Our Template</h3>
+                    <h3 className='font-medium'>{t('csvImport.template.title')}</h3>
                     <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                      In case you face any problems importing CSVs, try using our demo below:
+                      {t('csvImport.template.description')}
                     </p>
                   </div>
                 </div>
@@ -129,14 +135,13 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                 <div className='my-6'>
                   <div className='mb-3 flex items-center justify-between'>
                     <h3 className='font-medium'>
-                      Found {emails.length} email
-                      {emails.length !== 1 ? 's' : ''}
+                      {t('csvImport.found', { count: emails.length })}
                     </h3>
                     <button
                       onClick={() => setEmails([])}
                       className='text-sm text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-400'
                     >
-                      Clear
+                      {tCommon('actions.clear')}
                     </button>
                   </div>
                   <div className='max-h-40 overflow-y-auto rounded-lg border'>
@@ -147,7 +152,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                     ))}
                     {emails.length > 10 && (
                       <div className='bg-gray-50 p-3 text-center text-xs text-gray-500 dark:bg-neutral-950 dark:text-neutral-400'>
-                        + {emails.length - 10} more emails
+                        {t('csvImport.moreEmails', { count: emails.length - 10 })}
                       </div>
                     )}
                   </div>
@@ -168,10 +173,12 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                 }`}
               >
                 <Upload className='mb-3 h-10 w-10 text-gray-400 dark:text-neutral-500' />
-                <h3 className='mb-1 text-lg font-medium'>Drag and drop your CSV file here</h3>
-                <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>or</p>
+                <h3 className='mb-1 text-lg font-medium'>{t('csvImport.dropzone')}</h3>
+                <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>
+                  {tCommon('labels.or')}
+                </p>
                 <label className='cursor-pointer rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'>
-                  Browse files
+                  {t('csvImport.browse')}
                   <input
                     type='file'
                     accept='.csv,text/csv'
@@ -180,7 +187,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                   />
                 </label>
                 <p className='mt-2 text-xs text-gray-500 dark:text-neutral-400'>
-                  CSV file with email addresses (max 10MB)
+                  {t('csvImport.fileHint')}
                 </p>
               </div>
 
@@ -194,7 +201,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                 <div className='mt-4 text-center'>
                   <div className='inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-red-500 dark:border-neutral-700 dark:border-t-red-500' />
                   <p className='mt-2 text-sm text-gray-500 dark:text-neutral-400'>
-                    Processing file...
+                    {t('csvImport.processing')}
                   </p>
                 </div>
               )}
@@ -219,7 +226,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                   disabled={isLoading}
                 >
                   <Download className='mr-2 h-4 w-4' />
-                  Download Example CSV
+                  {t('csvImport.downloadExample')}
                 </Button>
                 <Button
                   onClick={() => onImport(emails)}
@@ -227,7 +234,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                   disabled={emails.length === 0 || isLoading}
                 >
                   <Upload className='mr-2 h-4 w-4' />
-                  Import CSV
+                  {t('csvImport.import')}
                 </Button>
               </div>
             </div>

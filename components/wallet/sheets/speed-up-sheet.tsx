@@ -2,11 +2,13 @@
 
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { type DepositInfo } from '@/lib/services/breez-sdk';
 import { logger } from '@/lib/utils/logger';
 import { VisuallyHidden } from '@silk-hq/components';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Clock, Loader2, Rocket, Settings, Turtle, X } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 
 interface SpeedUpSheetProps {
@@ -52,6 +54,9 @@ export function SpeedUpSheet({
   onConfirm,
   isProcessing,
 }: SpeedUpSheetProps) {
+  const t = useTranslations('walletFlows');
+  const tCommon = useTranslations('common');
+  const intlLocale = getIntlLocale(useLocale());
   const [selectedSpeed, setSelectedSpeed] = useState<SpeedOption | null>(null);
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customFeeRate, setCustomFeeRate] = useState('');
@@ -100,7 +105,7 @@ export function SpeedUpSheet({
   }, [open]);
 
   const formatAmount = (sats: number) => {
-    return sats.toLocaleString();
+    return sats.toLocaleString(intlLocale);
   };
 
   const calculateFee = (feeRate: number) => {
@@ -211,13 +216,13 @@ export function SpeedUpSheet({
               <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
             </div>
             <VisuallyHidden.Root asChild>
-              <SheetWithDetentFull.Title>Speed It Up</SheetWithDetentFull.Title>
+              <SheetWithDetentFull.Title>{t('speedUpSheet.title')}</SheetWithDetentFull.Title>
             </VisuallyHidden.Root>
 
             <div className='flex flex-col'>
               {/* Header */}
               <div className='flex items-center justify-between px-4 pb-2'>
-                <h2 className='text-xl font-semibold'>Speed It Up</h2>
+                <h2 className='text-xl font-semibold'>{t('speedUpSheet.title')}</h2>
                 <button
                   onClick={() => onOpenChange(false)}
                   className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
@@ -229,26 +234,37 @@ export function SpeedUpSheet({
               {/* Amount Display */}
               <div className='px-4 pb-4'>
                 <p className='text-center text-gray-600 dark:text-neutral-400'>
-                  You have{' '}
-                  <span className='font-semibold text-gray-900 dark:text-neutral-100'>
-                    {formatAmount(deposit.amountSats)} sats
-                  </span>{' '}
-                  incoming
+                  {t.rich('speedUpSheet.incoming', {
+                    amount: formatAmount(deposit.amountSats),
+                    strong: (chunks) => (
+                      <span className='font-semibold text-gray-900 dark:text-neutral-100'>
+                        {chunks}
+                      </span>
+                    ),
+                  })}
                 </p>
                 {selectedSpeed && selectedSpeed !== 'custom' && selectedFeeRate && (
                   <p className='mt-2 text-center text-sm text-gray-500 dark:text-neutral-400'>
-                    You will receive{' '}
-                    <span className='font-semibold text-gray-700 dark:text-neutral-300'>
-                      {formatAmount(calculateReceiveAmount(selectedFeeRate))} sats
-                    </span>
+                    {t.rich('speedUpSheet.youWillReceive', {
+                      amount: formatAmount(calculateReceiveAmount(selectedFeeRate)),
+                      strong: (chunks) => (
+                        <span className='font-semibold text-gray-700 dark:text-neutral-300'>
+                          {chunks}
+                        </span>
+                      ),
+                    })}
                   </p>
                 )}
                 {selectedSpeed === 'custom' && customFeeRate && parseFloat(customFeeRate) > 0 && (
                   <p className='mt-2 text-center text-sm text-gray-500 dark:text-neutral-400'>
-                    You will receive{' '}
-                    <span className='font-semibold text-gray-700 dark:text-neutral-300'>
-                      {formatAmount(calculateReceiveAmount(parseFloat(customFeeRate)))} sats
-                    </span>
+                    {t.rich('speedUpSheet.youWillReceive', {
+                      amount: formatAmount(calculateReceiveAmount(parseFloat(customFeeRate))),
+                      strong: (chunks) => (
+                        <span className='font-semibold text-gray-700 dark:text-neutral-300'>
+                          {chunks}
+                        </span>
+                      ),
+                    })}
                   </p>
                 )}
               </div>
@@ -285,13 +301,17 @@ export function SpeedUpSheet({
                             </div>
                             <div className='flex-1'>
                               <div className='font-semibold text-gray-900 dark:text-neutral-100'>
-                                Fast
+                                {t('speedUpSheet.speeds.fast')}
                               </div>
                               <div className='text-sm text-gray-600 dark:text-neutral-400'>
-                                ~10 minutes •{' '}
                                 {feeEstimates
-                                  ? `~${formatAmount(calculateFee(feeEstimates.fastestFee))} sats fee`
-                                  : '...'}
+                                  ? t('speedUpSheet.optionDetail', {
+                                      eta: t('speedUpSheet.eta.fast'),
+                                      fee: formatAmount(calculateFee(feeEstimates.fastestFee)),
+                                    })
+                                  : t('speedUpSheet.optionDetailLoading', {
+                                      eta: t('speedUpSheet.eta.fast'),
+                                    })}
                               </div>
                             </div>
                             {selectedSpeed === 'fast' && (
@@ -315,13 +335,17 @@ export function SpeedUpSheet({
                             </div>
                             <div className='flex-1'>
                               <div className='font-semibold text-gray-900 dark:text-neutral-100'>
-                                Normal
+                                {t('speedUpSheet.speeds.normal')}
                               </div>
                               <div className='text-sm text-gray-600 dark:text-neutral-400'>
-                                ~1 hour •{' '}
                                 {feeEstimates
-                                  ? `~${formatAmount(calculateFee(feeEstimates.hourFee))} sats fee`
-                                  : '...'}
+                                  ? t('speedUpSheet.optionDetail', {
+                                      eta: t('speedUpSheet.eta.normal'),
+                                      fee: formatAmount(calculateFee(feeEstimates.hourFee)),
+                                    })
+                                  : t('speedUpSheet.optionDetailLoading', {
+                                      eta: t('speedUpSheet.eta.normal'),
+                                    })}
                               </div>
                             </div>
                             {selectedSpeed === 'normal' && (
@@ -345,13 +369,17 @@ export function SpeedUpSheet({
                             </div>
                             <div className='flex-1'>
                               <div className='font-semibold text-gray-900 dark:text-neutral-100'>
-                                Slow
+                                {t('speedUpSheet.speeds.slow')}
                               </div>
                               <div className='text-sm text-gray-600 dark:text-neutral-400'>
-                                ~12 hours •{' '}
                                 {feeEstimates
-                                  ? `~${formatAmount(calculateFee(feeEstimates.economyFee))} sats fee`
-                                  : '...'}
+                                  ? t('speedUpSheet.optionDetail', {
+                                      eta: t('speedUpSheet.eta.slow'),
+                                      fee: formatAmount(calculateFee(feeEstimates.economyFee)),
+                                    })
+                                  : t('speedUpSheet.optionDetailLoading', {
+                                      eta: t('speedUpSheet.eta.slow'),
+                                    })}
                               </div>
                             </div>
                             {selectedSpeed === 'slow' && (
@@ -375,10 +403,10 @@ export function SpeedUpSheet({
                             </div>
                             <div className='flex-1'>
                               <div className='font-semibold text-gray-900 dark:text-neutral-100'>
-                                Custom
+                                {t('speedUpSheet.speeds.custom')}
                               </div>
                               <div className='text-sm text-gray-600 dark:text-neutral-400'>
-                                Set your own fee rate
+                                {t('speedUpSheet.customDescription')}
                               </div>
                             </div>
                           </div>
@@ -395,7 +423,7 @@ export function SpeedUpSheet({
                       >
                         <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
                           <label className='mb-2 block text-sm font-medium text-gray-900 dark:text-neutral-100'>
-                            Fee Rate (sat/vbyte)
+                            {t('speedUpSheet.feeRateLabel')}
                           </label>
                           <div className='flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900'>
                             <input
@@ -403,7 +431,7 @@ export function SpeedUpSheet({
                               value={customFeeRate}
                               onChange={(e) => setCustomFeeRate(e.target.value)}
                               className='flex-1 border-none bg-transparent text-lg outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500'
-                              placeholder='Enter fee rate'
+                              placeholder={t('speedUpSheet.feeRatePlaceholder')}
                               min='1'
                               step='0.1'
                               autoFocus
@@ -414,8 +442,9 @@ export function SpeedUpSheet({
                           </div>
                           {customFeeRate && parseFloat(customFeeRate) > 0 && (
                             <p className='mt-2 text-sm text-gray-600 dark:text-neutral-400'>
-                              Estimated fee: ~
-                              {formatAmount(calculateFee(parseFloat(customFeeRate)))} sats
+                              {t('speedUpSheet.estimatedFee', {
+                                amount: formatAmount(calculateFee(parseFloat(customFeeRate))),
+                              })}
                             </p>
                           )}
                         </div>
@@ -424,26 +453,32 @@ export function SpeedUpSheet({
                         {feeEstimates && (
                           <div className='rounded-lg bg-gray-100 p-3 dark:bg-neutral-800'>
                             <p className='mb-2 text-xs font-medium text-gray-500 dark:text-neutral-400'>
-                              Current network rates
+                              {t('speedUpSheet.currentRates')}
                             </p>
                             <div className='grid grid-cols-3 gap-2 text-center text-xs'>
                               <div>
                                 <div className='font-semibold text-gray-900 dark:text-neutral-100'>
                                   {feeEstimates.fastestFee}
                                 </div>
-                                <div className='text-gray-500 dark:text-neutral-400'>Fast</div>
+                                <div className='text-gray-500 dark:text-neutral-400'>
+                                  {t('speedUpSheet.speeds.fast')}
+                                </div>
                               </div>
                               <div>
                                 <div className='font-semibold text-gray-900 dark:text-neutral-100'>
                                   {feeEstimates.hourFee}
                                 </div>
-                                <div className='text-gray-500 dark:text-neutral-400'>Normal</div>
+                                <div className='text-gray-500 dark:text-neutral-400'>
+                                  {t('speedUpSheet.speeds.normal')}
+                                </div>
                               </div>
                               <div>
                                 <div className='font-semibold text-gray-900 dark:text-neutral-100'>
                                   {feeEstimates.economyFee}
                                 </div>
-                                <div className='text-gray-500 dark:text-neutral-400'>Slow</div>
+                                <div className='text-gray-500 dark:text-neutral-400'>
+                                  {t('speedUpSheet.speeds.slow')}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -462,7 +497,7 @@ export function SpeedUpSheet({
                   className='h-12 w-full rounded-full'
                   disabled={isProcessing}
                 >
-                  {showCustomInput ? 'Back' : 'Cancel'}
+                  {showCustomInput ? tCommon('actions.back') : tCommon('actions.cancel')}
                 </Button>
                 <Button
                   onClick={handleConfirm}
@@ -472,10 +507,10 @@ export function SpeedUpSheet({
                   {isProcessing ? (
                     <>
                       <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                      Processing...
+                      {t('speedUpSheet.processing')}
                     </>
                   ) : (
-                    'Confirm'
+                    tCommon('actions.confirm')
                   )}
                 </Button>
               </div>

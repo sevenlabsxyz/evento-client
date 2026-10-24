@@ -6,19 +6,29 @@ import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { useContacts } from '@/lib/hooks/use-contacts';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-// Lightning address validation schema
-const addContactSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(50, 'Name must be less than 50 characters'),
-  lightningAddress: z
-    .string()
-    .min(1, 'Lightning address is required')
-    .email('Lightning address must be in user@domain format'),
-});
+interface AddContactSchemaMessages {
+  nameRequired: string;
+  nameTooLong: string;
+  addressRequired: string;
+  addressInvalid: string;
+}
 
-type AddContactFormData = z.infer<typeof addContactSchema>;
+// Lightning address validation schema
+const createAddContactSchema = (m: AddContactSchemaMessages) =>
+  z.object({
+    name: z.string().min(1, m.nameRequired).max(50, m.nameTooLong),
+    lightningAddress: z.string().min(1, m.addressRequired).email(m.addressInvalid),
+  });
+
+interface AddContactFormData {
+  name: string;
+  lightningAddress: string;
+}
 
 interface AddContactSheetProps {
   open: boolean;
@@ -26,7 +36,18 @@ interface AddContactSheetProps {
 }
 
 export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
+  const t = useTranslations('walletFlows');
   const { addContact, isAddingContact, findContactByAddress } = useContacts();
+  const addContactSchema = useMemo(
+    () =>
+      createAddContactSchema({
+        nameRequired: t('addContactSheet.errors.nameRequired'),
+        nameTooLong: t('addContactSheet.errors.nameTooLong'),
+        addressRequired: t('addContactSheet.errors.addressRequired'),
+        addressInvalid: t('addContactSheet.errors.addressInvalid'),
+      }),
+    [t]
+  );
 
   const {
     register,
@@ -49,7 +70,7 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
     if (existingContact) {
       setError('lightningAddress', {
         type: 'manual',
-        message: 'A contact with this Lightning address already exists',
+        message: t('addContactSheet.errors.duplicate'),
       });
       return;
     }
@@ -76,19 +97,23 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
   };
 
   return (
-    <MasterScrollableSheet open={open} onOpenChange={handleOpenChange} title='Add Contact'>
+    <MasterScrollableSheet
+      open={open}
+      onOpenChange={handleOpenChange}
+      title={t('addContactSheet.title')}
+    >
       <div className='p-6'>
         <form id='add-contact-form' onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
           {/* Name Input */}
           <div className='space-y-2'>
             <label htmlFor='name' className='text-sm font-medium'>
-              Name
+              {t('addContactSheet.nameLabel')}
             </label>
             <Input
               {...register('name')}
               id='name'
               type='text'
-              placeholder='Contact name'
+              placeholder={t('addContactSheet.namePlaceholder')}
               disabled={isAddingContact}
               autoComplete='name'
               className='h-12 rounded-full bg-gray-50 dark:bg-neutral-950'
@@ -101,7 +126,7 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
           {/* Lightning Address Input */}
           <div className='space-y-2'>
             <label htmlFor='lightningAddress' className='text-sm font-medium'>
-              Lightning Address
+              {t('addContactSheet.addressLabel')}
             </label>
             <Input
               {...register('lightningAddress')}
@@ -117,9 +142,7 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
                 {errors.lightningAddress.message}
               </p>
             )}
-            <p className='text-xs text-muted-foreground'>
-              Enter a Lightning address in user@domain format (e.g., alice@evento.cash)
-            </p>
+            <p className='text-xs text-muted-foreground'>{t('addContactSheet.addressHint')}</p>
           </div>
 
           <Button
@@ -130,10 +153,10 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
             {isAddingContact ? (
               <>
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Saving...
+                {t('addContactSheet.saving')}
               </>
             ) : (
-              'Save Contact'
+              t('addContactSheet.submit')
             )}
           </Button>
         </form>

@@ -2,9 +2,9 @@ import { GhostPost, GhostTag } from '@/lib/types/ghost';
 import {
   INTERNAL_BLOG_TAG_SLUGS,
   formatPostDate,
-  formatReadingTime,
   getPostExcerpt,
   getPrimaryVisibleTag,
+  getReadingMinutes,
   getVisibleTags,
 } from '@/lib/utils/blog';
 
@@ -103,6 +103,13 @@ describe('formatPostDate', () => {
     expect(formatPostDate('2026-10-14T01:00:00.000+02:00', 'short')).toBe('Oct 13, 2026');
   });
 
+  it('formats in the requested locale', () => {
+    expect(formatPostDate('2026-10-13T12:00:00.000Z', 'long', 'pt-BR')).toBe(
+      '13 de outubro de 2026'
+    );
+    expect(formatPostDate('2026-10-13T12:00:00.000Z', 'long', 'es')).toBe('13 de octubre de 2026');
+  });
+
   it('returns an empty string for null or invalid input', () => {
     expect(formatPostDate(null)).toBe('');
     expect(formatPostDate('')).toBe('');
@@ -110,14 +117,15 @@ describe('formatPostDate', () => {
   });
 });
 
-describe('formatReadingTime', () => {
-  it('returns an empty string for zero or negative minutes', () => {
-    expect(formatReadingTime(0)).toBe('');
-    expect(formatReadingTime(-3)).toBe('');
+describe('getReadingMinutes', () => {
+  it('returns null for zero, negative, or non-finite minutes', () => {
+    expect(getReadingMinutes(0)).toBeNull();
+    expect(getReadingMinutes(-3)).toBeNull();
+    expect(getReadingMinutes(Number.NaN)).toBeNull();
   });
 
-  it('labels positive minutes', () => {
-    expect(formatReadingTime(1)).toBe('1 min read');
-    expect(formatReadingTime(7)).toBe('7 min read');
+  it('rounds positive minutes', () => {
+    expect(getReadingMinutes(1)).toBe(1);
+    expect(getReadingMinutes(6.6)).toBe(7);
   });
 });

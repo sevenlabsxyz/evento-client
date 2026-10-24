@@ -4,6 +4,7 @@ import { GhostPost } from '@/lib/types/ghost';
 import { cn } from '@/lib/utils';
 import { getPostExcerpt, getPrimaryVisibleTag } from '@/lib/utils/blog';
 import { ArrowRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 interface BlogFeaturedPostProps {
@@ -12,9 +13,12 @@ interface BlogFeaturedPostProps {
 }
 
 export function BlogFeaturedPost({ post, className }: BlogFeaturedPostProps) {
+  const t = useTranslations('blog');
   const excerpt = getPostExcerpt(post);
   const tag = getPrimaryVisibleTag(post);
-  const eyebrow = [post.featured ? 'Featured' : 'Latest', tag?.name].filter(Boolean).join(' · ');
+  const eyebrow = [post.featured ? t('card.featured') : t('card.latest'), tag?.name]
+    .filter(Boolean)
+    .join(' · ');
 
   return (
     <Link
@@ -46,7 +50,7 @@ export function BlogFeaturedPost({ post, className }: BlogFeaturedPostProps) {
         )}
         <BlogPostMeta post={post} size='md' className='mt-6' />
         <span className='mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 dark:text-red-400'>
-          Read story
+          {t('card.readStory')}
           <ArrowRight
             className='h-4 w-4 transition-transform duration-200 motion-safe:group-hover:translate-x-0.5'
             aria-hidden='true'

@@ -2,6 +2,7 @@ import apiClient from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
 import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import type { ApiKey, CreateApiKeyRequest, CreateApiKeyResponse } from '../types/api-key.types';
 const MAX_API_KEYS = 10;
 
@@ -25,6 +26,7 @@ export function useApiKeys() {
 
 export function useCreateApiKey() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (request: CreateApiKeyRequest): Promise<CreateApiKeyResponse> => {
@@ -33,16 +35,17 @@ export function useCreateApiKey() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.apiKeys() });
-      toast.success('API key created successfully');
+      toast.success(t('apiKeys.created'));
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to create API key');
+      toast.error(error.message || t('apiKeys.createFailed'));
     },
   });
 }
 
 export function useRevokeApiKey() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (keyId: string): Promise<void> => {
@@ -50,10 +53,10 @@ export function useRevokeApiKey() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.apiKeys() });
-      toast.success('API key revoked successfully');
+      toast.success(t('apiKeys.revoked'));
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Failed to revoke API key');
+      toast.error(error.message || t('apiKeys.revokeFailed'));
     },
   });
 }

@@ -5,12 +5,14 @@ import type { DuplicatedEvent } from '@/lib/types/manage';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { logger } from '@/lib/utils/logger';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 /**
  * Duplicate an event as a new draft owned by the current user
  */
 export function useDuplicateEvent() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (eventId: string): Promise<DuplicatedEvent> => {
@@ -22,7 +24,7 @@ export function useDuplicateEvent() {
         return response.data;
       }
 
-      throw new Error('Failed to duplicate event');
+      throw new Error(t('events.duplicateFailed'));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.eventsUserMeDrafts() });

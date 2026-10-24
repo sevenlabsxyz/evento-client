@@ -15,6 +15,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { ChevronRight, EyeOff, Globe, Lock, ShieldCheck, ShieldOff } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -29,6 +30,8 @@ export default function SecurityPrivacyPage() {
   const pathname = usePathname();
   const router = useRouter();
   const eventId = params.id as string;
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
   const updateEventMutation = useUpdateEvent();
   const updateRegistrationSettingsMutation = useUpdateRegistrationSettings();
   const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
@@ -108,7 +111,7 @@ export default function SecurityPrivacyPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Security & Privacy',
+      title: t('security.title'),
       leftMode: 'back',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
       centerMode: 'title',
@@ -118,7 +121,7 @@ export default function SecurityPrivacyPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute, router, eventId]);
+  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute, router, eventId, t]);
 
   useEffect(() => {
     if (eventData) {
@@ -161,10 +164,10 @@ export default function SecurityPrivacyPage() {
         });
       }
 
-      toast.success('Security settings updated successfully!');
+      toast.success(t('security.toasts.updated'));
       router.push(`/e/${eventId}/manage`);
     } catch (saveError) {
-      toast.error('Failed to update security settings');
+      toast.error(t('security.toasts.updateFailed'));
       logger.error('Failed to update security settings', {
         error: saveError instanceof Error ? saveError.message : String(saveError),
       });
@@ -200,17 +203,16 @@ export default function SecurityPrivacyPage() {
       <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-            Event Not Found
+            {t('security.notFound.title')}
           </h1>
           <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            The event you&apos;re trying to edit doesn&apos;t exist or you don&apos;t have
-            permission.
+            {t('security.notFound.description')}
           </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
-            Go Back
+            {t('security.notFound.goBack')}
           </button>
         </div>
       </div>
@@ -221,11 +223,9 @@ export default function SecurityPrivacyPage() {
     <div className='space-y-4 py-4 md:py-6'>
       <div>
         <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-          Security &amp; privacy
+          {t('security.heading')}
         </h2>
-        <p className='text-sm text-gray-500 dark:text-neutral-400'>
-          Control who can see your event, password protection and guest list visibility.
-        </p>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('security.description')}</p>
       </div>
 
       <div className='max-w-2xl space-y-4'>
@@ -233,10 +233,10 @@ export default function SecurityPrivacyPage() {
         <section className='overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
           <div className='px-4 pt-4'>
             <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-              Visibility
+              {t('security.visibility.title')}
             </h3>
             <p className='text-sm text-gray-500 dark:text-neutral-400'>
-              Who can find the event and what unapproved guests see.
+              {t('security.visibility.description')}
             </p>
           </div>
           <div>
@@ -253,11 +253,11 @@ export default function SecurityPrivacyPage() {
               </div>
               <div className='flex-1'>
                 <label className='mb-1 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
-                  Event Visibility
+                  {t('security.visibility.eventVisibility')}
                 </label>
                 <div className='flex items-center justify-between'>
                   <span className='font-medium text-gray-900 dark:text-neutral-100'>
-                    {visibility === 'public' ? 'Public' : 'Private'}
+                    {visibility === 'public' ? tCommon('labels.public') : tCommon('labels.private')}
                   </span>
                   <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
                 </div>
@@ -274,10 +274,10 @@ export default function SecurityPrivacyPage() {
                     </div>
                     <div>
                       <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-                        Registration Visibility
+                        {t('security.registrationVisibility.title')}
                       </p>
                       <p className='mt-0.5 text-xs text-gray-500 dark:text-neutral-400'>
-                        Hide details from unapproved guests
+                        {t('security.registrationVisibility.description')}
                       </p>
                     </div>
                   </div>
@@ -285,7 +285,7 @@ export default function SecurityPrivacyPage() {
                   <div className='overflow-hidden rounded-xl bg-gray-50 dark:bg-neutral-800'>
                     <label className='flex items-center justify-between px-4 py-3'>
                       <span className='text-sm text-gray-700 dark:text-neutral-300'>
-                        Hide location until approved
+                        {t('security.registrationVisibility.hideLocation')}
                       </span>
                       <Switch
                         checked={hideLocationForUnapproved}
@@ -295,7 +295,7 @@ export default function SecurityPrivacyPage() {
                     <div className='mx-4 border-t border-gray-200/60 dark:border-neutral-800/60' />
                     <label className='flex items-center justify-between px-4 py-3'>
                       <span className='text-sm text-gray-700 dark:text-neutral-300'>
-                        Hide guest list until approved
+                        {t('security.registrationVisibility.hideGuestList')}
                       </span>
                       <Switch
                         checked={hideGuestListForUnapproved}
@@ -305,7 +305,7 @@ export default function SecurityPrivacyPage() {
                     <div className='mx-4 border-t border-gray-200/60 dark:border-neutral-800/60' />
                     <label className='flex items-center justify-between px-4 py-3'>
                       <span className='text-sm text-gray-700 dark:text-neutral-300'>
-                        Hide description until approved
+                        {t('security.registrationVisibility.hideDescription')}
                       </span>
                       <Switch
                         checked={hideDescriptionForUnapproved}
@@ -322,9 +322,11 @@ export default function SecurityPrivacyPage() {
         {/* Password */}
         <section className='overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
           <div className='px-4 pt-4'>
-            <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Password</h3>
+            <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+              {t('security.password.title')}
+            </h3>
             <p className='text-sm text-gray-500 dark:text-neutral-400'>
-              Require a password before guests can view the event.
+              {t('security.password.description')}
             </p>
           </div>
           <div>
@@ -343,13 +345,15 @@ export default function SecurityPrivacyPage() {
               </div>
               <div className='flex-1'>
                 <label className='mb-1 block text-sm font-medium text-gray-500 dark:text-neutral-400'>
-                  Password Protection
+                  {t('security.password.protection')}
                 </label>
                 <div className='flex items-center justify-between'>
                   <span
                     className={`font-medium ${passwordProtected ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-neutral-100'}`}
                   >
-                    {passwordProtected ? 'Protected' : 'Not Protected'}
+                    {passwordProtected
+                      ? t('security.password.protected')
+                      : t('security.password.notProtected')}
                   </span>
                   <ChevronRight className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
                 </div>
@@ -362,7 +366,7 @@ export default function SecurityPrivacyPage() {
         <section className='rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
           <div className='px-4 pt-4'>
             <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-              Guest list
+              {t('security.guestList.title')}
             </h3>
           </div>
           <div className='flex items-center justify-between p-4'>
@@ -372,10 +376,10 @@ export default function SecurityPrivacyPage() {
               </div>
               <div>
                 <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-                  Guest List Visibility
+                  {t('security.guestList.visibility')}
                 </p>
                 <p className='mt-0.5 text-xs text-gray-500 dark:text-neutral-400'>
-                  Hidden from non-hosts
+                  {t('security.guestList.hiddenFromNonHosts')}
                 </p>
               </div>
             </div>
@@ -413,7 +417,7 @@ export default function SecurityPrivacyPage() {
             }
             loading={updateEventMutation.isPending || updateRegistrationSettingsMutation.isPending}
           >
-            Save
+            {tCommon('actions.save')}
           </SubmitButton>
         </div>
       </div>

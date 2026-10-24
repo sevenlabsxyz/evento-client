@@ -1,0 +1,354 @@
+{
+  "page": {
+    "title": "Billetera",
+    "description": "Envía, recibe y lleva el control de tus bitcoins.",
+    "wakeLockEnabled": "Pantalla siempre activa",
+    "keepScreenAwake": "Mantener pantalla activa",
+    "unlockRedirectHint": "Desbloquea tu billetera y te llevaremos de vuelta automáticamente.",
+    "createRedirectHint": "Crea tu billetera y te llevaremos de vuelta automáticamente.",
+    "unlockedRedirecting": "Billetera desbloqueada. Llevándote de vuelta...",
+    "depositClaimed": "¡Depósito reclamado! {amount} sats añadidos a tu saldo",
+    "onchainReceivedTitle": "Fondos onchain recibidos",
+    "onchainReceivedBody": "Toca \"Acelerar\" abajo para reclamar tus fondos ahora.",
+    "seedUnavailable": "No se pudo recuperar la frase de recuperación. Contacta a soporte.",
+    "unsupportedQr": "No se puede leer este tipo de código QR",
+    "buyBitcoin": "Comprar Bitcoin",
+    "buySell": "Comprar / Vender",
+    "moneyIncoming": "Dinero en camino",
+    "incomingDescription": "Recibiste fondos onchain. Toca abajo para pagar una pequeña comisión y reclamarlos en tu billetera al instante.",
+    "speedItUp": "¡Acelerar!",
+    "bitcoinTools": "Herramientas Bitcoin",
+    "contacts": "Contactos",
+    "addContact": "Agregar contacto",
+    "allContacts": "Todos los contactos",
+    "viewAllContacts": "Ver todos los contactos",
+    "security": "Seguridad",
+    "backup": "Respaldo",
+    "backedUp": "Respaldada",
+    "notBackedUp": "Sin respaldo",
+    "walletSettings": "Configuración de la billetera",
+    "walletSettingsDescription": "Opciones de bloqueo, privacidad y respaldo",
+    "transactions": "Transacciones",
+    "recentTransactions": "Transacciones recientes",
+    "walletContacts": "Contactos de la billetera",
+    "newContact": "Nuevo contacto"
+  },
+  "settings": {
+    "topBarTitle": "Configuración de la billetera",
+    "beta": "Beta",
+    "locked": "Billetera bloqueada",
+    "deleted": "Billetera eliminada",
+    "title": "Configuración de la billetera",
+    "description": "Opciones de seguridad, privacidad y dispositivo para tu billetera Evento.",
+    "security": "Seguridad",
+    "securityDescription": "Bloqueo, respaldos y lo que se ve en pantalla.",
+    "lockWallet": "Bloquear billetera",
+    "lockWalletDescription": "Pedir contraseña para acceder",
+    "backupStatus": "Estado del respaldo",
+    "hideBalance": "Ocultar saldo y montos",
+    "hideBalanceDescription": "Mantén los montos ocultos en toda la billetera.",
+    "dangerZone": "Zona de peligro",
+    "dangerZoneDescription": "Acciones irreversibles para este dispositivo.",
+    "deleteWallet": "Eliminar billetera",
+    "deleteWalletDescription": "Esto eliminará permanentemente tu billetera de este dispositivo. Asegúrate de haber respaldado tu billetera antes de continuar.",
+    "cannotUndo": "Esta acción no se puede deshacer",
+    "deleteConfirmDescription": "Tu billetera se eliminará permanentemente de este dispositivo. Asegúrate de haber respaldado tu frase de recuperación antes de continuar.",
+    "confirmDelete": "Sí, eliminar billetera"
+  },
+  "balance": {
+    "registering": "Registrando..."
+  },
+  "actions": {
+    "receive": "Recibir",
+    "send": "Enviar",
+    "scan": "Escanear"
+  },
+  "balanceDisplay": {
+    "available": "disponible"
+  },
+  "desktop": {
+    "eyebrow": "Billetera Evento",
+    "preWallet": {
+      "welcome": {
+        "title": "Una billetera Bitcoin que solo tú controlas",
+        "description": "Envía y recibe bitcoin por Lightning, directamente en Evento. Tu billetera vive en este dispositivo y solo tú tienes acceso a ella."
+      },
+      "setup": {
+        "title": "Configura tu billetera",
+        "description": "Elige un PIN para proteger tu billetera en este dispositivo. Luego respáldala para que siempre puedas recuperar tus fondos."
+      },
+      "restore": {
+        "title": "Restaura tu billetera",
+        "description": "Pega tu respaldo cifrado o tu frase de recuperación de 12 palabras para recuperar el acceso a tus fondos en este dispositivo."
+      },
+      "backup": {
+        "title": "Respalda tu billetera",
+        "description": "Tu frase de recuperación es la única forma de recuperar tus fondos si pierdes el acceso a este dispositivo."
+      },
+      "unlock": {
+        "title": "Desbloquea tu billetera",
+        "description": "Tu billetera está bloqueada en este dispositivo. Ingresa tu PIN para continuar."
+      }
+    },
+    "points": {
+      "selfCustodial": {
+        "title": "Autocustodia",
+        "description": "Evento no guarda la información de tu billetera. Solo tú tienes acceso a ella."
+      },
+      "lightningAddress": {
+        "title": "Tu propia dirección Lightning",
+        "description": "Recibe pagos en una dirección @evento.cash personal."
+      },
+      "pinProtected": {
+        "title": "Protegida con PIN",
+        "description": "Bloquea la billetera cuando quieras y desbloquéala con tu PIN."
+      },
+      "recoverable": {
+        "title": "Siempre recuperable",
+        "description": "Restaura en cualquier dispositivo con tu respaldo cifrado o tu frase de recuperación de 12 palabras."
+      }
+    }
+  },
+  "education": {
+    "bitcoinBasics": "Conceptos básicos de Bitcoin"
+  },
+  "loading": {
+    "messages": {
+      "gettingReady": "Preparando todo para ti...",
+      "preparingWallet": "Preparando tu billetera...",
+      "almostThere": "Ya casi...",
+      "makingMagic": "Haciendo magia...",
+      "superpowers": "Activando tus superpoderes financieros...",
+      "futureOfMoney": "Conectando con el futuro del dinero...",
+      "wakingUp": "Tu billetera está despertando...",
+      "brewing": "Preparando algo bueno...",
+      "justAMoment": "Un momento...",
+      "digitalVault": "Cargando tu bóveda digital..."
+    },
+    "slowConnection": "Esto puede tardar más en conexiones lentas.",
+    "doNotRefresh": "No actualices la página.",
+    "logoAlt": "Logo de Evento"
+  },
+  "pin": {
+    "minLength": "El PIN debe tener al menos 6 dígitos",
+    "mismatch": "Los PIN no coinciden",
+    "createTitle": "Crea un PIN",
+    "confirmTitle": "Confirma tu PIN",
+    "confirmDescription": "Ingresa tu PIN de nuevo para confirmar",
+    "enterTitle": "Ingresa tu PIN",
+    "enterPin": "Ingresa tu PIN",
+    "enterPassword": "Ingresa tu contraseña",
+    "adminPasswordPlaceholder": "Ingresa la contraseña de administrador"
+  },
+  "restore": {
+    "invalidInput": "Ingresa un respaldo válido o una frase de recuperación de 12 palabras",
+    "success": "¡Billetera restaurada con éxito!",
+    "invalidBackupOrPin": "Respaldo o PIN no válido",
+    "failed": "No se pudo restaurar la billetera",
+    "title": "Accede a tu billetera",
+    "intro": "El respaldo de tu billetera es lo que te permite abrir tu billetera Bitcoin en un nuevo dispositivo.",
+    "introPaste": "Si guardaste tu código de respaldo o tu frase de 12 palabras al crear tu billetera Evento, pégalo aquí para recuperar el acceso.",
+    "inputLabel": "Respaldo o frase de recuperación",
+    "inputPlaceholder": "Ingresa tu respaldo cifrado o tu frase de recuperación de 12 palabras",
+    "encryptedDetected": "Respaldo cifrado detectado",
+    "seedDetected": "Frase de recuperación detectada",
+    "invalidFormat": "Formato no válido",
+    "enterPinDescription": "Ingresa el PIN que usaste para cifrar este respaldo",
+    "restoring": "Restaurando...",
+    "restoreWallet": "Restaurar billetera",
+    "createPinDescription": "Crea un PIN de 6 dígitos para proteger tu billetera",
+    "complete": "Completar"
+  },
+  "setup": {
+    "success": "¡Billetera creada con éxito!",
+    "failed": "No se pudo crear la billetera",
+    "missingApiKey": "Falta la clave de API de Breez. Contacta a soporte.",
+    "initFailed": "No se pudo inicializar la billetera. Actualiza la página e inténtalo de nuevo.",
+    "failedTitle": "Error en la configuración",
+    "goBack": "Volver",
+    "creatingTitle": "Creando billetera",
+    "creatingDescription": "Configurando tu billetera...",
+    "createPinDescription": "Define un PIN de 6 dígitos para proteger tu billetera",
+    "important": "Importante",
+    "rememberPin": "¡Recuerda este PIN! Lo necesitarás para acceder a tu billetera.",
+    "createWallet": "Crear billetera"
+  },
+  "unlock": {
+    "failed": "No se pudo desbloquear la billetera",
+    "adminTitle": "Ingresa la contraseña de administrador",
+    "pinTitle": "Ingresa el PIN de la billetera",
+    "adminMode": "Modo administrador activado",
+    "unlocking": "Desbloqueando...",
+    "unlock": "Desbloquear",
+    "useDifferentWallet": "Usar otra billetera",
+    "startFreshTitle": "¿Empezar de cero?",
+    "beforeContinue": "Antes de continuar...",
+    "removeInfo": "Esto eliminará tu billetera de este dispositivo. Asegúrate de tener tu frase de respaldo guardada en un lugar seguro antes de continuar.",
+    "noRecovery": "Sin tu frase de respaldo, no hay forma de recuperar tus fondos. Evento no guarda la información de tu billetera: solo tú tienes acceso a ella.",
+    "understandContinue": "Entiendo, continuar",
+    "areYouSure": "¿Estás seguro?",
+    "cannotUndo": "Esto no se puede deshacer. Una vez eliminada, necesitarás tu frase de respaldo para volver a acceder a esta billetera.",
+    "removeWallet": "Eliminar billetera"
+  },
+  "welcome": {
+    "mascotAlt": "Mascota de Evento",
+    "title": "Billetera Evento",
+    "description": "Una billetera Bitcoin increíblemente simple, segura y privada para usuarios modernos.",
+    "createWallet": "Crear billetera",
+    "haveWallet": "Ya tengo una billetera"
+  },
+  "backupCallout": {
+    "title": "Protege tu billetera",
+    "description": "Respalda para proteger tus fondos"
+  },
+  "seedBackup": {
+    "copied": "Frase de recuperación copiada",
+    "copyFailed": "No se pudo copiar la frase de recuperación",
+    "confirmRequired": "Confirma que guardaste tu frase de recuperación",
+    "success": "¡Billetera respaldada con éxito!",
+    "title": "Tu frase de recuperación",
+    "description": "Anota estas 12 palabras en orden y guárdalas en un lugar seguro",
+    "keepPrivate": "Mantén esto en privado",
+    "keepPrivateDescription": "Cualquiera con estas palabras puede acceder a tu billetera. Guárdalas de forma segura sin conexión.",
+    "hide": "Ocultar",
+    "show": "Mostrar",
+    "copiedButton": "¡Copiado!",
+    "copyToClipboard": "Copiar",
+    "savedConfirm": "Guardé mi frase de recuperación en un lugar seguro"
+  },
+  "quickTools": {
+    "buySell": "Comprar / Vender",
+    "spend": "Gastar",
+    "earn": "Ganar",
+    "converter": "Conversor"
+  },
+  "scanner": {
+    "startingCamera": "Iniciando cámara..."
+  },
+  "beta": {
+    "title": "Software beta",
+    "badge": "BETA",
+    "subtitle": "Información importante sobre la Billetera Evento",
+    "riskTitle": "Úsala bajo tu propio riesgo",
+    "riskBody": "La Billetera Evento está en fase de pruebas beta. Aunque buscamos confiabilidad, puede haber errores o comportamientos inesperados.",
+    "whatIsBeta": "¿Qué es beta?",
+    "whatIsBetaBody": "El software beta tiene todas sus funciones, pero aún está en pruebas. Puedes encontrar errores, problemas de rendimiento o comportamientos inesperados mientras mejoramos la billetera.",
+    "bestPractices": "Buenas prácticas",
+    "practiceBackup": "Respalda siempre tu billetera y guarda tu frase de recuperación de forma segura",
+    "practiceSmall": "Empieza con montos pequeños para probar el funcionamiento",
+    "practiceReport": "Reporta cualquier problema o error que encuentres para ayudarnos a mejorar",
+    "practiceUpdate": "Mantén tu app actualizada a la última versión",
+    "thanks": "¡Gracias por ser uno de los primeros en probarla! Tus comentarios nos ayudan a crear una mejor experiencia de billetera para todos."
+  },
+  "history": {
+    "justNow": "Justo ahora",
+    "minutesAgo": "hace {count} min",
+    "hoursAgo": "hace {count} h",
+    "daysAgo": "hace {count} d",
+    "emptyTitle": "Aún no hay transacciones",
+    "emptyDescription": "Tu historial de transacciones aparecerá aquí",
+    "refresh": "Actualizar",
+    "viewAll": "Ver todas las transacciones",
+    "sheetTitle": "Historial de transacciones"
+  },
+  "incomingFunds": {
+    "swapCompleted": "¡Intercambio completado con éxito!",
+    "claimSubmitted": "Reclamo enviado: se completará automáticamente.",
+    "requiredFee": "requerido: {amount} sats",
+    "feeLimit": "límite: {amount} sats",
+    "feeExceeded": "La comisión de reclamo superaría la comisión máxima seleccionada. Se reintentará automáticamente dentro de tu límite de comisión.",
+    "feeExceededWithDetail": "La comisión de reclamo superaría la comisión máxima seleccionada. Se reintentará automáticamente dentro de tu límite de comisión. ({detail})",
+    "deferredWithMessage": "Reclamo aplazado: {reason} ({message})",
+    "deferred": "Reclamo aplazado: {reason}",
+    "title": "Fondos entrantes",
+    "allSet": "¡Todo listo!",
+    "noPending": "No hay fondos pendientes. Convertimos Bitcoin a Lightning automáticamente cuando las comisiones son bajas.",
+    "onItsWay": "¡Tu Bitcoin está en camino! Se añadirá a tu saldo automáticamente cuando la red se descongestione. ¿Lo quieres más rápido? Paga una pequeña comisión para recibirlo ahora.",
+    "needsAction": "Requiere acción",
+    "pending": "Pendiente",
+    "swapping": "Convirtiendo...",
+    "getItNow": "Recibir ahora",
+    "autoSwapDelayed": "Conversión automática aplazada",
+    "feeExceedsLimit": "La comisión de red de {amount} sats supera el límite de reclamo automático: reclama manualmente o espera comisiones más bajas",
+    "outputNotFound": "No se encontró la salida de la transacción",
+    "unknownError": "Error desconocido"
+  },
+  "details": {
+    "received": "Recibido",
+    "sent": "Enviado",
+    "status": {
+      "completed": "Completado",
+      "pending": "Pendiente",
+      "failed": "Fallido"
+    },
+    "copied": "¡{label} copiado!",
+    "copyFailed": "No se pudo copiar",
+    "senderComment": "Comentario del remitente",
+    "description": "Descripción",
+    "savedContact": "Contacto guardado",
+    "username": "Nombre de usuario",
+    "lightningAddress": "Dirección Lightning",
+    "provider": "Proveedor",
+    "title": "Detalles de la transacción",
+    "satsTooltip": "Los satoshis (sats) son la unidad más pequeña de Bitcoin. 100.000.000 sats = 1 Bitcoin.",
+    "time": "Hora",
+    "type": "Tipo",
+    "statusLabel": "Estado",
+    "totalFees": "Comisiones totales",
+    "feesTooltip": "Comisiones de red pagadas para procesar esta transacción Lightning.",
+    "invoice": "Factura",
+    "invoiceTooltip": "Una factura Lightning es una solicitud de pago que contiene el monto, el destino y otros detalles del pago.",
+    "advanced": "Detalles avanzados",
+    "paymentHash": "Hash del pago",
+    "paymentHashCopy": "Hash del pago",
+    "paymentHashTooltip": "Un identificador único para este pago Lightning, derivado de la preimagen.",
+    "preimage": "Preimagen",
+    "preimageTooltip": "El valor secreto que demuestra que este pago se completó. Es la prueba criptográfica del pago.",
+    "destinationNode": "Nodo de destino",
+    "destinationNodeCopy": "Nodo de destino",
+    "destinationTooltip": "La clave pública del nodo Lightning que recibió este pago.",
+    "transactionId": "ID de la transacción",
+    "transactionIdTooltip": "El identificador único de esta transacción en tu billetera."
+  },
+  "backupChoice": {
+    "invalidPassword": "Contraseña no válida",
+    "invalidPin": "PIN no válido",
+    "backupCopied": "Respaldo copiado",
+    "shareTitle": "Respaldo de la billetera",
+    "backupShared": "Respaldo compartido con éxito",
+    "backupShareFailed": "No se pudo compartir el respaldo",
+    "backupDownloaded": "Respaldo descargado",
+    "confirmBackupRequired": "Confirma que guardaste tu respaldo",
+    "noWallet": "No se encontró ninguna billetera",
+    "phraseShareTitle": "Frase de recuperación",
+    "phraseShared": "Frase de recuperación compartida con éxito",
+    "phraseShareFailed": "No se pudo compartir la frase de recuperación",
+    "phraseDownloaded": "Frase de recuperación descargada",
+    "titles": {
+      "choice": "Elige el método de respaldo",
+      "password": "Respalda tu billetera",
+      "backup": "Respaldo cifrado",
+      "seedPin": "Ver frase de recuperación",
+      "seedView": "Tu frase de recuperación"
+    },
+    "recommended": "Recomendado",
+    "encryptedDescription": "Respaldo protegido con PIN que puedes guardar en la nube.",
+    "advanced": "Avanzado",
+    "phraseDescription": "Anota tu frase de recuperación de 12 palabras (también conocida como frase semilla)",
+    "onlyWay": "Tu respaldo es la única forma de recuperar tus fondos si pierdes el acceso a este dispositivo.",
+    "phraseWarning": "Si eliges la opción de frase de recuperación y la pierdes, perderás el acceso a tus fondos.",
+    "exportPasswordPrompt": "Ingresa tu contraseña de administrador para exportar el respaldo cifrado",
+    "exportPinPrompt": "Ingresa tu PIN para exportar el respaldo cifrado",
+    "verifying": "Verificando...",
+    "saveSecurely": "Guarda este respaldo cifrado en un lugar seguro",
+    "encryptedLabel": "Respaldo cifrado de la billetera",
+    "copy": "Copiar",
+    "save": "Guardar",
+    "whyBackup": "¿Por qué respaldar?",
+    "whyBackupBody": "Si pierdes tu dispositivo, olvidas tu PIN o necesitas restaurar tu billetera en un nuevo dispositivo, este respaldo cifrado es la única forma de recuperar tus fondos. ¡Guárdalo bien!",
+    "confirmEncrypted": "Guardé mi respaldo cifrado en un lugar seguro. Entiendo que necesitaré este respaldo Y mi PIN para restaurar mi billetera.",
+    "savedBackup": "Guardé mi respaldo",
+    "viewPasswordPrompt": "Ingresa tu contraseña de administrador para ver tu frase de recuperación",
+    "viewPinPrompt": "Ingresa tu PIN para ver tu frase de recuperación"
+  }
+}

@@ -4,6 +4,7 @@
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { VisuallyHidden } from '@silk-hq/components';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import './description-sheet.css';
 import { LinkProps } from './tiptap-utils';
@@ -25,6 +26,8 @@ export function LinkEditSheet({
   initialText = '',
   initialOpenInNewTab = false,
 }: LinkEditSheetProps) {
+  const t = useTranslations('createEvent');
+  const tCommon = useTranslations('common');
   const [field, setField] = useState<LinkProps>({
     url: initialUrl,
     text: initialText,
@@ -59,12 +62,12 @@ export function LinkEditSheet({
     e.preventDefault();
 
     if (!field.url.trim()) {
-      setError('Please enter a URL');
+      setError(t('music.enterUrl'));
       return;
     }
 
     if (!validateUrl(field.url)) {
-      setError('Please enter a valid URL');
+      setError(t('linkEdit.invalidUrl'));
       return;
     }
 
@@ -93,15 +96,15 @@ export function LinkEditSheet({
               <DetachedSheet.Handle className='LinkEditSheet-handle' />
             </div>
             <VisuallyHidden.Root asChild>
-              <DetachedSheet.Title>Edit Link</DetachedSheet.Title>
+              <DetachedSheet.Title>{t('linkEdit.title')}</DetachedSheet.Title>
             </VisuallyHidden.Root>
 
             <form onSubmit={handleSubmit} className='LinkEditSheet-container'>
-              <h3 className='LinkEditSheet-title'>Edit Link</h3>
+              <h3 className='LinkEditSheet-title'>{t('linkEdit.title')}</h3>
 
               <div className='LinkEditSheet-form'>
                 <div className='LinkEditSheet-field'>
-                  <label className='LinkEditSheet-label'>Link</label>
+                  <label className='LinkEditSheet-label'>{t('toolbar.link')}</label>
                   <input
                     type='url'
                     value={field.url}
@@ -109,7 +112,7 @@ export function LinkEditSheet({
                       setField({ ...field, url: e.target.value });
                       setError('');
                     }}
-                    placeholder='Paste a link (https://...)'
+                    placeholder={t('linkEdit.urlPlaceholder')}
                     className='LinkEditSheet-input dark:placeholder:text-neutral-400'
                     autoFocus
                     required
@@ -118,12 +121,12 @@ export function LinkEditSheet({
                 </div>
 
                 <div className='LinkEditSheet-field'>
-                  <label className='LinkEditSheet-label'>Display text (optional)</label>
+                  <label className='LinkEditSheet-label'>{t('linkEdit.displayText')}</label>
                   <input
                     type='text'
                     value={field.text}
                     onChange={(e) => setField({ ...field, text: e.target.value })}
-                    placeholder='Text to display'
+                    placeholder={t('linkEdit.displayTextPlaceholder')}
                     className='LinkEditSheet-input dark:placeholder:text-neutral-400'
                   />
                 </div>
@@ -141,7 +144,7 @@ export function LinkEditSheet({
                       }
                       className='LinkEditSheet-checkbox'
                     />
-                    <span>Open in new tab</span>
+                    <span>{t('linkEdit.openInNewTab')}</span>
                   </label>
                 </div>
               </div>
@@ -152,10 +155,10 @@ export function LinkEditSheet({
                   onClick={onClose}
                   className='LinkEditSheet-button LinkEditSheet-button--cancel'
                 >
-                  Cancel
+                  {tCommon('actions.cancel')}
                 </button>
                 <button type='submit' className='LinkEditSheet-button LinkEditSheet-button--save'>
-                  Insert
+                  {t('linkEdit.insert')}
                 </button>
               </div>
             </form>

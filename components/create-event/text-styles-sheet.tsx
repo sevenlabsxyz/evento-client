@@ -2,6 +2,7 @@ import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { cn } from '@/lib/utils';
 import { VisuallyHidden } from '@silk-hq/components';
 import type { Editor } from '@tiptap/core';
+import { useTranslations } from 'next-intl';
 
 interface TextStylesSheetProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface TextStylesSheetProps {
 }
 
 export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesSheetProps) {
+  const t = useTranslations('createEvent');
   return (
     <DetachedSheet.Root
       presented={isOpen}
@@ -22,11 +24,11 @@ export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesS
           <DetachedSheet.Content className='TextStylesSheet-content'>
             <DetachedSheet.Handle className='TextStylesSheet-handle' />
             <VisuallyHidden.Root asChild>
-              <DetachedSheet.Title>Text Styles</DetachedSheet.Title>
+              <DetachedSheet.Title>{t('sheets.textStyles')}</DetachedSheet.Title>
             </VisuallyHidden.Root>
 
             <div className='TextStylesSheet-container'>
-              <h3 className='TextStylesSheet-title'>Text Styles</h3>
+              <h3 className='TextStylesSheet-title'>{t('sheets.textStyles')}</h3>
 
               <div className='TextStylesSheet-options'>
                 <button
@@ -37,9 +39,9 @@ export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesS
                   className={cn('TextStylesSheet-option', {
                     'TextStylesSheet-option--active': editor.isActive('paragraph'),
                   })}
-                  aria-label='Normal text'
+                  aria-label={t('toolbar.normalTextAria')}
                 >
-                  <span className='grow'>Normal Text</span>
+                  <span className='grow'>{t('toolbar.normalText')}</span>
                 </button>
                 <button
                   onClick={() => {
@@ -49,9 +51,9 @@ export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesS
                   className={cn('TextStylesSheet-option', {
                     'TextStylesSheet-option--active': editor.isActive('heading', { level: 1 }),
                   })}
-                  aria-label='Heading 1'
+                  aria-label={t('toolbar.heading1')}
                 >
-                  <h1 className='m-0 grow text-3xl font-extrabold'>Heading 1</h1>
+                  <h1 className='m-0 grow text-3xl font-extrabold'>{t('toolbar.heading1')}</h1>
                 </button>
                 <button
                   onClick={() => {
@@ -61,9 +63,9 @@ export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesS
                   className={cn('TextStylesSheet-option', {
                     'TextStylesSheet-option--active': editor.isActive('heading', { level: 2 }),
                   })}
-                  aria-label='Heading 2'
+                  aria-label={t('toolbar.heading2')}
                 >
-                  <h2 className='m-0 grow text-xl font-bold'>Heading 2</h2>
+                  <h2 className='m-0 grow text-xl font-bold'>{t('toolbar.heading2')}</h2>
                 </button>
                 <button
                   onClick={() => {
@@ -73,9 +75,9 @@ export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesS
                   className={cn('TextStylesSheet-option', {
                     'TextStylesSheet-option--active': editor.isActive('heading', { level: 3 }),
                   })}
-                  aria-label='Heading 3'
+                  aria-label={t('toolbar.heading3')}
                 >
-                  <h3 className='m-0 grow text-lg font-semibold'>Heading 3</h3>
+                  <h3 className='m-0 grow text-lg font-semibold'>{t('toolbar.heading3')}</h3>
                 </button>
               </div>
             </div>

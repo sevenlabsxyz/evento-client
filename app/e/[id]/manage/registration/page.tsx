@@ -19,6 +19,7 @@ import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useReorderRegistrationQuestions } from '@/lib/hooks/use-reorder-registration-questions';
 import { useUpdateRegistrationQuestion } from '@/lib/hooks/use-update-registration-question';
 import { useUpdateRegistrationSettings } from '@/lib/hooks/use-update-registration-settings';
+import type { Translator } from '@/lib/i18n/types';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import type { RegistrationQuestion, RegistrationQuestionType } from '@/lib/types/api';
 import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
@@ -64,12 +65,12 @@ import {
   Type,
   Youtube,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface QuestionTypeOption {
   key: RegistrationQuestionType;
-  label: string;
   icon: React.ReactNode;
   iconBg: string;
   iconColor: string;
@@ -77,62 +78,51 @@ interface QuestionTypeOption {
 
 interface QuestionConfig {
   type: RegistrationQuestionType;
-  label: string;
-  description: string;
-  defaultQuestion: string;
   icon: React.ReactNode;
   iconBg: string;
   iconColor: string;
   hasOptions?: boolean;
-  autoNote?: string;
 }
 
 const basicQuestions: QuestionTypeOption[] = [
   {
     key: 'text',
-    label: 'Text',
     icon: <Type className='h-6 w-6' />,
     iconBg: 'bg-red-100 dark:bg-red-950/60',
     iconColor: 'text-red-600 dark:text-red-400',
   },
   {
     key: 'long_text',
-    label: 'Long Text',
     icon: <FileText className='h-6 w-6' />,
     iconBg: 'bg-red-100 dark:bg-red-950/60',
     iconColor: 'text-red-600 dark:text-red-400',
   },
   {
     key: 'single_select',
-    label: 'Single Select',
     icon: <List className='h-6 w-6' />,
     iconBg: 'bg-blue-100 dark:bg-blue-950/60',
     iconColor: 'text-blue-600 dark:text-blue-400',
   },
   {
     key: 'multi_select',
-    label: 'Multi Select',
     icon: <CheckSquare className='h-6 w-6' />,
     iconBg: 'bg-blue-100 dark:bg-blue-950/60',
     iconColor: 'text-blue-600 dark:text-blue-400',
   },
   {
     key: 'url',
-    label: 'URL',
     icon: <Link className='h-6 w-6' />,
     iconBg: 'bg-purple-100 dark:bg-purple-950/60',
     iconColor: 'text-purple-600 dark:text-purple-400',
   },
   {
     key: 'phone',
-    label: 'Phone Number',
     icon: <Phone className='h-6 w-6' />,
     iconBg: 'bg-green-100 dark:bg-green-950/60',
     iconColor: 'text-green-600 dark:text-green-400',
   },
   {
     key: 'checkbox',
-    label: 'Checkbox',
     icon: <Square className='h-6 w-6' />,
     iconBg: 'bg-yellow-100 dark:bg-yellow-950/60',
     iconColor: 'text-yellow-600 dark:text-yellow-400',
@@ -142,28 +132,24 @@ const basicQuestions: QuestionTypeOption[] = [
 const socialProfileQuestions: QuestionTypeOption[] = [
   {
     key: 'instagram',
-    label: 'Instagram',
     icon: <Instagram className='h-6 w-6' />,
     iconBg: 'bg-pink-100 dark:bg-pink-950/60',
     iconColor: 'text-pink-600 dark:text-pink-400',
   },
   {
     key: 'twitter',
-    label: 'X (Twitter)',
     icon: <Twitter className='h-6 w-6' />,
     iconBg: 'bg-gray-100 dark:bg-neutral-800',
     iconColor: 'text-gray-600 dark:text-neutral-400',
   },
   {
     key: 'youtube',
-    label: 'YouTube',
     icon: <Youtube className='h-6 w-6' />,
     iconBg: 'bg-red-100 dark:bg-red-950/60',
     iconColor: 'text-red-600 dark:text-red-400',
   },
   {
     key: 'linkedin',
-    label: 'LinkedIn',
     icon: <Linkedin className='h-6 w-6' />,
     iconBg: 'bg-blue-100 dark:bg-blue-950/60',
     iconColor: 'text-blue-600 dark:text-blue-400',
@@ -173,7 +159,6 @@ const socialProfileQuestions: QuestionTypeOption[] = [
 const otherQuestions: QuestionTypeOption[] = [
   {
     key: 'company',
-    label: 'Company',
     icon: <Building className='h-6 w-6' />,
     iconBg: 'bg-blue-100 dark:bg-blue-950/60',
     iconColor: 'text-blue-600 dark:text-blue-400',
@@ -183,27 +168,18 @@ const otherQuestions: QuestionTypeOption[] = [
 const questionConfigs: Record<RegistrationQuestionType, QuestionConfig> = {
   text: {
     type: 'text',
-    label: 'Text',
-    description: 'Collect a short, single-line answer',
-    defaultQuestion: '',
     icon: <Type className='h-6 w-6' />,
     iconBg: 'bg-red-100 dark:bg-red-950/60',
     iconColor: 'text-red-600 dark:text-red-400',
   },
   long_text: {
     type: 'long_text',
-    label: 'Long Text',
-    description: 'Collect a longer, multi-line answer',
-    defaultQuestion: '',
     icon: <FileText className='h-6 w-6' />,
     iconBg: 'bg-red-100 dark:bg-red-950/60',
     iconColor: 'text-red-600 dark:text-red-400',
   },
   single_select: {
     type: 'single_select',
-    label: 'Single Select',
-    description: 'Let guests choose one option from a list',
-    defaultQuestion: '',
     icon: <List className='h-6 w-6' />,
     iconBg: 'bg-blue-100 dark:bg-blue-950/60',
     iconColor: 'text-blue-600 dark:text-blue-400',
@@ -211,9 +187,6 @@ const questionConfigs: Record<RegistrationQuestionType, QuestionConfig> = {
   },
   multi_select: {
     type: 'multi_select',
-    label: 'Multi Select',
-    description: 'Let guests choose multiple options from a list',
-    defaultQuestion: '',
     icon: <CheckSquare className='h-6 w-6' />,
     iconBg: 'bg-blue-100 dark:bg-blue-950/60',
     iconColor: 'text-blue-600 dark:text-blue-400',
@@ -221,78 +194,140 @@ const questionConfigs: Record<RegistrationQuestionType, QuestionConfig> = {
   },
   url: {
     type: 'url',
-    label: 'URL',
-    description: 'Collect a website or link',
-    defaultQuestion: '',
     icon: <Link className='h-6 w-6' />,
     iconBg: 'bg-purple-100 dark:bg-purple-950/60',
     iconColor: 'text-purple-600 dark:text-purple-400',
   },
   phone: {
     type: 'phone',
-    label: 'Phone Number',
-    description: 'Collect a phone number',
-    defaultQuestion: 'What is your phone number?',
     icon: <Phone className='h-6 w-6' />,
     iconBg: 'bg-green-100 dark:bg-green-950/60',
     iconColor: 'text-green-600 dark:text-green-400',
   },
   checkbox: {
     type: 'checkbox',
-    label: 'Checkbox',
-    description: 'Get a yes/no or agree/disagree response',
-    defaultQuestion: '',
     icon: <Square className='h-6 w-6' />,
     iconBg: 'bg-yellow-100 dark:bg-yellow-950/60',
     iconColor: 'text-yellow-600 dark:text-yellow-400',
   },
   instagram: {
     type: 'instagram',
-    label: 'Instagram',
-    description: "Get the guest's Instagram username",
-    defaultQuestion: 'What is your Instagram profile?',
     icon: <Instagram className='h-6 w-6' />,
     iconBg: 'bg-pink-100 dark:bg-pink-950/60',
     iconColor: 'text-pink-600 dark:text-pink-400',
   },
   twitter: {
     type: 'twitter',
-    label: 'X (Twitter)',
-    description: "Get the guest's X (Twitter) handle",
-    defaultQuestion: 'What is your X (Twitter) handle?',
     icon: <Twitter className='h-6 w-6' />,
     iconBg: 'bg-gray-100 dark:bg-neutral-800',
     iconColor: 'text-gray-600 dark:text-neutral-400',
   },
   youtube: {
     type: 'youtube',
-    label: 'YouTube',
-    description: "Get the guest's YouTube channel",
-    defaultQuestion: 'What is your YouTube channel?',
     icon: <Youtube className='h-6 w-6' />,
     iconBg: 'bg-red-100 dark:bg-red-950/60',
     iconColor: 'text-red-600 dark:text-red-400',
   },
   linkedin: {
     type: 'linkedin',
-    label: 'LinkedIn',
-    description: "Get the guest's LinkedIn profile",
-    defaultQuestion: 'What is your LinkedIn profile?',
     icon: <Linkedin className='h-6 w-6' />,
     iconBg: 'bg-blue-100 dark:bg-blue-950/60',
     iconColor: 'text-blue-600 dark:text-blue-400',
   },
   company: {
     type: 'company',
-    label: 'Company',
-    description: 'Get the company the guest works for',
-    defaultQuestion: 'What company do you work for?',
     icon: <Building className='h-6 w-6' />,
     iconBg: 'bg-blue-100 dark:bg-blue-950/60',
     iconColor: 'text-blue-600 dark:text-blue-400',
-    autoNote: "We'll automatically pull this information if they've entered it on Evento before.",
   },
 };
+
+type ManageLegacyT = Translator<'manageLegacy'>;
+
+interface QuestionTypeText {
+  label: string;
+  description: string;
+  defaultQuestion: string;
+  autoNote?: string;
+}
+
+function getQuestionTypeText(t: ManageLegacyT, type: RegistrationQuestionType): QuestionTypeText {
+  switch (type) {
+    case 'text':
+      return {
+        label: t('registration.questionTypes.text'),
+        description: t('registration.questionDescriptions.text'),
+        defaultQuestion: '',
+      };
+    case 'long_text':
+      return {
+        label: t('registration.questionTypes.longText'),
+        description: t('registration.questionDescriptions.longText'),
+        defaultQuestion: '',
+      };
+    case 'single_select':
+      return {
+        label: t('registration.questionTypes.singleSelect'),
+        description: t('registration.questionDescriptions.singleSelect'),
+        defaultQuestion: '',
+      };
+    case 'multi_select':
+      return {
+        label: t('registration.questionTypes.multiSelect'),
+        description: t('registration.questionDescriptions.multiSelect'),
+        defaultQuestion: '',
+      };
+    case 'url':
+      return {
+        label: 'URL',
+        description: t('registration.questionDescriptions.url'),
+        defaultQuestion: '',
+      };
+    case 'phone':
+      return {
+        label: t('registration.questionTypes.phone'),
+        description: t('registration.questionDescriptions.phone'),
+        defaultQuestion: t('registrationAdd.defaultQuestions.phone'),
+      };
+    case 'checkbox':
+      return {
+        label: t('registration.questionTypes.checkbox'),
+        description: t('registration.questionDescriptions.checkbox'),
+        defaultQuestion: '',
+      };
+    case 'instagram':
+      return {
+        label: 'Instagram',
+        description: t('registration.questionDescriptions.instagram'),
+        defaultQuestion: t('registrationAdd.defaultQuestions.instagram'),
+      };
+    case 'twitter':
+      return {
+        label: 'X (Twitter)',
+        description: t('registration.questionDescriptions.twitter'),
+        defaultQuestion: t('registrationAdd.defaultQuestions.twitter'),
+      };
+    case 'youtube':
+      return {
+        label: 'YouTube',
+        description: t('registration.questionDescriptions.youtube'),
+        defaultQuestion: t('registrationAdd.defaultQuestions.youtube'),
+      };
+    case 'linkedin':
+      return {
+        label: 'LinkedIn',
+        description: t('registration.questionDescriptions.linkedin'),
+        defaultQuestion: t('registrationAdd.defaultQuestions.linkedin'),
+      };
+    case 'company':
+      return {
+        label: t('registration.questionTypes.company'),
+        description: t('registration.questionDescriptions.company'),
+        defaultQuestion: t('registrationAdd.defaultQuestions.company'),
+        autoNote: t('registration.companyAutoNote'),
+      };
+  }
+}
 
 interface SortableQuestionRowProps {
   question: RegistrationQuestion;
@@ -318,6 +353,8 @@ function SortableQuestionRow({
     transition,
   };
 
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
   const config = questionConfigs[question.type];
 
   return (
@@ -330,7 +367,7 @@ function SortableQuestionRow({
         <button
           type='button'
           className='mt-1.5 cursor-grab touch-none rounded p-1 text-gray-400 active:cursor-grabbing dark:text-neutral-500'
-          aria-label='Drag to reorder question'
+          aria-label={t('registration.row.dragToReorder')}
           {...attributes}
           {...listeners}
         >
@@ -342,11 +379,11 @@ function SortableQuestionRow({
             <span
               className={`whitespace-nowrap rounded px-2 py-1 text-xs font-medium leading-none ${config.iconBg} ${config.iconColor}`}
             >
-              {config.label}
+              {getQuestionTypeText(t, question.type).label}
             </span>
             {question.is_required && (
               <span className='whitespace-nowrap rounded bg-red-100 px-2 py-1 text-xs font-medium leading-none text-red-600 dark:bg-red-950/60 dark:text-red-400'>
-                Required
+                {t('registration.form.required')}
               </span>
             )}
           </div>
@@ -355,7 +392,7 @@ function SortableQuestionRow({
 
           {question.options && question.options.length > 0 && (
             <div className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-              Options: {question.options.join(', ')}
+              {t('registration.row.options', { options: question.options.join(', ') })}
             </div>
           )}
         </div>
@@ -379,18 +416,20 @@ function SortableQuestionRow({
             <DropdownMenuTrigger asChild>
               <button
                 className='rounded p-1 text-gray-600 hover:bg-gray-200 dark:text-neutral-400 dark:hover:bg-neutral-700'
-                aria-label='Question actions'
+                aria-label={t('registration.row.questionActions')}
               >
                 <MoreHorizontal className='h-5 w-5' />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end' className='z-[70] w-36'>
-              <DropdownMenuItem onClick={() => onEdit(question)}>Edit</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onEdit(question)}>
+                {tCommon('actions.edit')}
+              </DropdownMenuItem>
               <DropdownMenuItem
                 className='text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400'
                 onClick={() => onDelete(question)}
               >
-                Delete
+                {tCommon('actions.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -408,6 +447,10 @@ export default function RegistrationQuestionsPage() {
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const eventId = params.id as string;
   const shouldEnableRegistration = searchParams.get('enableRegistration') === '1';
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
+  const topBarTitle = t('registration.topBarTitle');
+  const publishLabel = t('registration.publish.action');
 
   // State for delete confirmation sheet
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
@@ -489,7 +532,7 @@ export default function RegistrationQuestionsPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Registration',
+      title: topBarTitle,
       leftMode: 'back',
       centerMode: 'title',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
@@ -500,7 +543,7 @@ export default function RegistrationQuestionsPage() {
           ? [
               {
                 id: 'publish-event',
-                label: 'Publish',
+                label: publishLabel,
                 onClick: () => setShowPublishSheet(true),
                 disabled: publishEvent.isPending,
               },
@@ -520,6 +563,8 @@ export default function RegistrationQuestionsPage() {
     setTopBarForRoute,
     applyRouteConfig,
     clearRoute,
+    topBarTitle,
+    publishLabel,
   ]);
 
   useEffect(() => {
@@ -558,7 +603,7 @@ export default function RegistrationQuestionsPage() {
       .catch(() => {
         hasAutoEnabledRegistration.current = false;
         setLocalRegistrationRequired(false);
-        toast.error('Failed to enable registration requirement');
+        toast.error(t('registration.toasts.enableFailed'));
       });
   }, [
     eventId,
@@ -568,16 +613,16 @@ export default function RegistrationQuestionsPage() {
     settings?.registration_required,
     shouldEnableRegistration,
     updateSettings,
+    t,
   ]);
 
   useEffect(() => {
     if (!selectedQuestionType) return;
 
-    const config = questionConfigs[selectedQuestionType];
-    setQuestionLabel(config.defaultQuestion ?? '');
+    setQuestionLabel(getQuestionTypeText(t, selectedQuestionType).defaultQuestion);
     setIsRequiredNewQuestion(false);
     setQuestionOptions(['']);
-  }, [selectedQuestionType]);
+  }, [selectedQuestionType, t]);
 
   useEffect(() => {
     setLocalQuestions(questions ?? []);
@@ -586,11 +631,11 @@ export default function RegistrationQuestionsPage() {
   const handlePublishEvent = async () => {
     try {
       await publishEvent.mutateAsync(eventId);
-      toast.success('Event published successfully');
+      toast.success(t('registration.publish.success'));
       setShowPublishSheet(false);
       router.push(`/e/${eventId}`);
     } catch (error: any) {
-      toast.error(error?.message || 'Failed to publish event');
+      toast.error(error?.message || t('registration.publish.failed'));
     }
   };
 
@@ -643,16 +688,16 @@ export default function RegistrationQuestionsPage() {
       <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-            Event Not Found
+            {t('registration.eventNotFound.title')}
           </h1>
           <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            The event you&apos;re trying to manage doesn&apos;t exist.
+            {t('registration.eventNotFound.description')}
           </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
-            Go Back
+            {t('registration.invalidType.goBack')}
           </button>
         </div>
       </div>
@@ -675,11 +720,11 @@ export default function RegistrationQuestionsPage() {
         registration_required: nextRegistrationState,
       });
       if (!nextRegistrationState) {
-        toast.success('Registration disabled');
+        toast.success(t('registration.toasts.registrationDisabled'));
       }
     } catch {
       setLocalRegistrationRequired(!nextRegistrationState);
-      toast.error('Failed to update registration settings');
+      toast.error(t('registration.toasts.settingsUpdateFailed'));
     } finally {
       setIsTogglingRegistration(false);
     }
@@ -729,6 +774,9 @@ export default function RegistrationQuestionsPage() {
   const selectedQuestionConfig = selectedQuestionType
     ? questionConfigs[selectedQuestionType]
     : null;
+  const selectedQuestionText = selectedQuestionType
+    ? getQuestionTypeText(t, selectedQuestionType)
+    : null;
   const isQuestionFormValid =
     !!selectedQuestionConfig &&
     questionLabel.trim() !== '' &&
@@ -748,11 +796,11 @@ export default function RegistrationQuestionsPage() {
         is_required: isRequiredNewQuestion,
       });
 
-      toast.success('Question created');
+      toast.success(t('registrationAdd.toasts.created'));
       setIsQuestionSheetOpen(false);
       resetQuestionSheetState();
     } catch {
-      toast.error('Failed to create question');
+      toast.error(t('registrationAdd.toasts.createFailed'));
     }
   };
 
@@ -771,11 +819,11 @@ export default function RegistrationQuestionsPage() {
           is_required: isRequiredNewQuestion,
         });
 
-        toast.success('Question updated');
+        toast.success(t('registrationEdit.toasts.updated'));
         setIsQuestionSheetOpen(false);
         resetQuestionSheetState();
       } catch {
-        toast.error('Failed to update question');
+        toast.error(t('registrationEdit.toasts.updateFailed'));
       }
 
       return;
@@ -791,9 +839,13 @@ export default function RegistrationQuestionsPage() {
         questionId,
         is_enabled: !currentEnabled,
       });
-      toast.success(currentEnabled ? 'Question disabled' : 'Question enabled');
+      toast.success(
+        currentEnabled
+          ? t('registration.toasts.questionDisabled')
+          : t('registration.toasts.questionEnabled')
+      );
     } catch {
-      toast.error('Failed to update question');
+      toast.error(t('registrationEdit.toasts.updateFailed'));
     }
   };
 
@@ -837,7 +889,7 @@ export default function RegistrationQuestionsPage() {
       });
     } catch {
       setLocalQuestions(previousQuestions);
-      toast.error('Failed to reorder questions');
+      toast.error(t('registration.toasts.reorderFailed'));
     }
   };
 
@@ -849,9 +901,9 @@ export default function RegistrationQuestionsPage() {
         eventId,
         questionId: deleteConfirmation.questionId,
       });
-      toast.success('Question deleted');
+      toast.success(t('registration.toasts.questionDeleted'));
     } catch {
-      toast.error('Failed to delete question');
+      toast.error(t('registration.toasts.deleteFailed'));
     } finally {
       setDeleteConfirmation({ isOpen: false, questionId: null, questionLabel: '' });
     }
@@ -873,10 +925,14 @@ export default function RegistrationQuestionsPage() {
         eventId,
         custom_rsvp_email_enabled: nextEnabled,
       });
-      toast.success(nextEnabled ? 'Custom RSVP message enabled' : 'Custom RSVP message disabled');
+      toast.success(
+        nextEnabled
+          ? t('registration.customMessage.toasts.enabled')
+          : t('registration.customMessage.toasts.disabled')
+      );
     } catch {
       setCustomApprovalMessageEnabled(!nextEnabled);
-      toast.error('Failed to update RSVP message settings');
+      toast.error(t('registration.customMessage.toasts.updateFailed'));
     } finally {
       setIsUpdatingCustomMessage(false);
     }
@@ -896,10 +952,10 @@ export default function RegistrationQuestionsPage() {
         custom_rsvp_email_enabled: customApprovalMessageEnabled,
         custom_rsvp_email_content: message,
       });
-      toast.success('Custom RSVP message saved');
+      toast.success(t('registration.customMessage.toasts.saved'));
     } catch (error) {
       setCustomApprovalMessage(previousMessage);
-      toast.error('Failed to save custom RSVP message');
+      toast.error(t('registration.customMessage.toasts.saveFailed'));
       throw error; // Re-throw to prevent DescriptionSheet from closing
     } finally {
       setIsUpdatingCustomMessage(false);
@@ -923,7 +979,7 @@ export default function RegistrationQuestionsPage() {
             </div>
             <div className='flex-1 text-left'>
               <h4 className='font-medium text-gray-900 dark:text-neutral-100'>
-                {questionType.label}
+                {getQuestionTypeText(t, questionType.key).label}
               </h4>
             </div>
             <div className='text-gray-400 dark:text-neutral-500'>
@@ -945,10 +1001,10 @@ export default function RegistrationQuestionsPage() {
   return (
     <div className='space-y-4 py-4 md:py-6'>
       <div className='max-w-2xl space-y-1'>
-        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Registration</h2>
-        <p className='text-sm text-gray-500 dark:text-neutral-400'>
-          Require guests to register before RSVPing and choose the questions they answer.
-        </p>
+        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+          {t('registration.title')}
+        </h2>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('registration.subtitle')}</p>
       </div>
 
       <div className='max-w-2xl space-y-4'>
@@ -960,9 +1016,9 @@ export default function RegistrationQuestionsPage() {
                 <ClipboardList className='h-5 w-5 text-purple-600 dark:text-purple-400' />
               </div>
               <div className='min-w-0'>
-                <h3 className='font-medium'>Require Registration</h3>
+                <h3 className='font-medium'>{t('registration.requireRegistration.title')}</h3>
                 <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                  Guests must register to RSVP
+                  {t('registration.requireRegistration.description')}
                 </p>
               </div>
             </div>
@@ -990,9 +1046,9 @@ export default function RegistrationQuestionsPage() {
                   <MessageSquareText className='h-5 w-5 text-blue-600 dark:text-blue-400' />
                 </div>
                 <div className='min-w-0'>
-                  <h3 className='font-medium'>Custom RSVP Message</h3>
+                  <h3 className='font-medium'>{t('registration.customMessage.title')}</h3>
                   <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                    Send a custom message to guests when their registration is approved
+                    {t('registration.customMessage.description')}
                   </p>
                 </div>
               </div>
@@ -1017,7 +1073,7 @@ export default function RegistrationQuestionsPage() {
                 className='mt-4 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-800 dark:hover:bg-neutral-700'
               >
                 <p className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-                  Message
+                  {t('registration.customMessage.messageLabel')}
                 </p>
                 <p
                   className={`mt-1 text-sm ${
@@ -1027,7 +1083,7 @@ export default function RegistrationQuestionsPage() {
                   }`}
                 >
                   {isContentEmpty(customApprovalMessage)
-                    ? 'Add a custom message for approved guests...'
+                    ? t('registration.customMessage.emptyPreview')
                     : getContentPreview(customApprovalMessage, 110)}
                 </p>
               </button>
@@ -1039,11 +1095,10 @@ export default function RegistrationQuestionsPage() {
           <section className='space-y-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
             <div>
               <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                Questions
+                {t('registration.questions.title')}
               </h3>
               <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                Guests will be asked these questions when they register for your event. Drag to
-                reorder.
+                {t('registration.questions.description')}
               </p>
             </div>
             {/* Questions List */}
@@ -1078,7 +1133,7 @@ export default function RegistrationQuestionsPage() {
                   className='flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 >
                   <Plus className='h-4 w-4' />
-                  Add New Question
+                  {t('registration.questions.addNew')}
                 </button>
               </div>
             ) : (
@@ -1087,18 +1142,17 @@ export default function RegistrationQuestionsPage() {
                   <Settings className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
                 </div>
                 <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
-                  Registration Questions
+                  {t('registration.questions.emptyTitle')}
                 </h3>
                 <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
-                  Add questions to collect information from guests when they register for your
-                  event.
+                  {t('registration.questions.emptyDescription')}
                 </p>
                 <button
                   onClick={handleAddQuestion}
                   className='flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 >
                   <Plus className='h-4 w-4' />
-                  Add Question
+                  {t('registrationAdd.title')}
                 </button>
               </div>
             )}
@@ -1111,12 +1165,12 @@ export default function RegistrationQuestionsPage() {
         onClose={() => setShowCustomMessageSheet(false)}
         onSave={handleSaveCustomApprovalMessage}
         initialContent={customApprovalMessage}
-        title='Custom RSVP Message'
-        placeholder='Write the message approved guests will receive...'
+        title={t('registration.customMessage.title')}
+        placeholder={t('registration.customMessage.placeholder')}
       />
 
       <MasterScrollableSheet
-        title='Publish Event'
+        title={t('registration.publish.title')}
         open={showPublishSheet}
         onOpenChange={setShowPublishSheet}
         footer={
@@ -1127,41 +1181,45 @@ export default function RegistrationQuestionsPage() {
               onClick={() => setShowPublishSheet(false)}
               disabled={publishEvent.isPending}
             >
-              Cancel
+              {tCommon('actions.cancel')}
             </Button>
             <Button
               className='h-11 flex-1'
               onClick={handlePublishEvent}
               disabled={publishEvent.isPending}
             >
-              {publishEvent.isPending ? 'Publishing...' : 'Yes, Publish'}
+              {publishEvent.isPending
+                ? t('registration.publish.publishing')
+                : t('registration.publish.confirm')}
             </Button>
           </div>
         }
       >
         <div className='px-4 pb-4 text-sm text-gray-600 dark:text-neutral-400'>
-          Are you sure you want to publish this event? It will be visible in feeds and discovery.
+          {t('registration.publish.description')}
         </div>
       </MasterScrollableSheet>
 
       <MasterScrollableSheet
-        title='Choose New Question'
+        title={t('registration.questionSheet.chooseTitle')}
         open={isQuestionSheetOpen}
         onOpenChange={handleCloseQuestionSheet}
         headerLeft={
           questionSheetMode === 'choose' ? (
-            <h2 className='text-xl font-semibold'>Choose New Question</h2>
+            <h2 className='text-xl font-semibold'>{t('registration.questionSheet.chooseTitle')}</h2>
           ) : (
             <div className='flex items-center gap-3'>
               <button
                 onClick={handleBackToQuestionTypes}
                 className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
-                aria-label='Back to question types'
+                aria-label={t('registration.questionSheet.backToTypes')}
               >
                 <ArrowLeft className='h-5 w-5' />
               </button>
               <h2 className='text-xl font-semibold'>
-                {questionSheetMode === 'edit' ? 'Edit Question' : 'Add Question'}
+                {questionSheetMode === 'edit'
+                  ? t('registrationEdit.title')
+                  : t('registrationAdd.title')}
               </h2>
             </div>
           )
@@ -1182,12 +1240,14 @@ export default function RegistrationQuestionsPage() {
               {createQuestion.isPending || updateQuestion.isPending ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  {questionSheetMode === 'edit' ? 'Updating...' : 'Saving...'}
+                  {questionSheetMode === 'edit'
+                    ? t('registration.questionSheet.updating')
+                    : tCommon('states.saving')}
                 </>
               ) : questionSheetMode === 'edit' ? (
-                'Save Changes'
+                t('registration.questionSheet.saveChanges')
               ) : (
-                'Save Question'
+                t('registration.questionSheet.saveQuestion')
               )}
             </Button>
           )
@@ -1204,15 +1264,17 @@ export default function RegistrationQuestionsPage() {
         >
           {questionSheetMode === 'choose' ? (
             <>
-              {renderQuestionTypeSection('Basic', basicQuestions)}
-              {renderQuestionTypeSection('Social Profile', socialProfileQuestions)}
+              {renderQuestionTypeSection(t('registrationTypes.sections.basic'), basicQuestions)}
+              {renderQuestionTypeSection(
+                t('registrationTypes.sections.socialProfile'),
+                socialProfileQuestions
+              )}
               <div className='mb-6 px-4'>
                 <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                  We will retrieve this information automatically if guests have added it to their
-                  Evento profile.
+                  {t('registration.questionSheet.socialNote')}
                 </p>
               </div>
-              {renderQuestionTypeSection('Other', otherQuestions)}
+              {renderQuestionTypeSection(t('registrationTypes.sections.other'), otherQuestions)}
             </>
           ) : (
             <>
@@ -1226,31 +1288,31 @@ export default function RegistrationQuestionsPage() {
                 </div>
                 <div>
                   <h3 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-                    {selectedQuestionConfig?.label}
+                    {selectedQuestionText?.label}
                   </h3>
                   <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                    {selectedQuestionConfig?.description}
+                    {selectedQuestionText?.description}
                   </p>
                 </div>
               </div>
 
               <div className='space-y-2'>
                 <label className='block text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                  Question Label
+                  {t('registration.form.questionLabel')}
                 </label>
                 <input
                   type='text'
                   value={questionLabel}
                   onChange={(event) => setQuestionLabel(event.target.value)}
-                  placeholder='Enter your question'
+                  placeholder={t('registration.form.questionPlaceholder')}
                   className='w-full rounded-xl border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:caret-neutral-100 dark:placeholder:text-neutral-500'
                 />
               </div>
 
-              {selectedQuestionConfig?.autoNote && (
+              {selectedQuestionText?.autoNote && (
                 <div className='mt-4 rounded-xl bg-blue-50 p-4 dark:bg-blue-950/40'>
                   <p className='text-sm text-blue-700 dark:text-blue-400'>
-                    {selectedQuestionConfig.autoNote}
+                    {selectedQuestionText.autoNote}
                   </p>
                 </div>
               )}
@@ -1258,7 +1320,7 @@ export default function RegistrationQuestionsPage() {
               {selectedQuestionConfig?.hasOptions && (
                 <div className='mt-6 space-y-3'>
                   <label className='block text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                    Options
+                    {t('registration.form.options')}
                   </label>
                   {questionOptions.map((option, index) => (
                     <div key={index} className='flex gap-2'>
@@ -1266,7 +1328,9 @@ export default function RegistrationQuestionsPage() {
                         type='text'
                         value={option}
                         onChange={(event) => handleOptionChange(index, event.target.value)}
-                        placeholder={`Option ${index + 1}`}
+                        placeholder={t('registration.form.optionPlaceholder', {
+                          number: index + 1,
+                        })}
                         className='flex-1 rounded-lg border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:caret-neutral-100 dark:placeholder:text-neutral-500'
                       />
                       {questionOptions.length > 1 && (
@@ -1274,7 +1338,7 @@ export default function RegistrationQuestionsPage() {
                           onClick={() => handleRemoveOption(index)}
                           className='rounded-lg px-3 py-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40'
                         >
-                          Remove
+                          {tCommon('actions.remove')}
                         </button>
                       )}
                     </div>
@@ -1283,16 +1347,18 @@ export default function RegistrationQuestionsPage() {
                     onClick={handleAddOption}
                     className='w-full rounded-lg border-2 border-dashed border-gray-300 p-3 text-gray-500 hover:border-gray-400 hover:text-gray-600 dark:border-neutral-700 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-neutral-300'
                   >
-                    + Add Option
+                    {t('registration.form.addOption')}
                   </button>
                 </div>
               )}
 
               <div className='mt-6 flex items-center justify-between rounded-xl bg-gray-50 p-4 dark:bg-neutral-950'>
                 <div>
-                  <h3 className='font-medium text-gray-900 dark:text-neutral-100'>Required</h3>
+                  <h3 className='font-medium text-gray-900 dark:text-neutral-100'>
+                    {t('registration.form.required')}
+                  </h3>
                   <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                    Guests must answer this question to register.
+                    {t('registration.questionSheet.requiredDescription')}
                   </p>
                 </div>
                 <button
@@ -1317,7 +1383,7 @@ export default function RegistrationQuestionsPage() {
 
       {/* Delete Confirmation Sheet */}
       <MasterScrollableSheet
-        title='Delete Question'
+        title={t('registration.deleteSheet.title')}
         open={deleteConfirmation.isOpen}
         onOpenChange={(open) => {
           if (!open) handleCancelDelete();
@@ -1325,7 +1391,7 @@ export default function RegistrationQuestionsPage() {
         footer={
           <div className='flex gap-3'>
             <Button variant='outline' className='flex-1' onClick={handleCancelDelete}>
-              Cancel
+              {tCommon('actions.cancel')}
             </Button>
             <Button
               variant='destructive'
@@ -1333,7 +1399,9 @@ export default function RegistrationQuestionsPage() {
               onClick={handleConfirmDelete}
               disabled={deleteQuestion.isPending}
             >
-              {deleteQuestion.isPending ? 'Deleting...' : 'Delete'}
+              {deleteQuestion.isPending
+                ? t('registration.deleteSheet.deleting')
+                : tCommon('actions.delete')}
             </Button>
           </div>
         }
@@ -1342,10 +1410,9 @@ export default function RegistrationQuestionsPage() {
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60'>
             <Trash2 className='h-8 w-8 text-red-600 dark:text-red-400' />
           </div>
-          <h3 className='mb-2 text-lg font-semibold'>Delete this question?</h3>
+          <h3 className='mb-2 text-lg font-semibold'>{t('registration.deleteSheet.heading')}</h3>
           <p className='text-gray-600 dark:text-neutral-400'>
-            &quot;{deleteConfirmation.questionLabel}&quot; will be permanently deleted. This action
-            cannot be undone.
+            {t('registration.deleteSheet.description', { label: deleteConfirmation.questionLabel })}
           </p>
         </div>
       </MasterScrollableSheet>

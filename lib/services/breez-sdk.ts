@@ -1,3 +1,5 @@
+import { getIntlLocale } from '@/lib/i18n/active-locale';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import {
   AddContactRequest,
   Contact,
@@ -258,9 +260,7 @@ export class BreezSDKService {
 
         // Provide helpful error message
         if (error instanceof Error && error.message?.includes('defaultConfig')) {
-          throw new Error(
-            'Breez SDK initialization failed. Please refresh the page and try again. If the issue persists, check that the Breez SDK package is properly installed.'
-          );
+          throw new Error(translateHooks('breez.sdkInitFailedRefresh'));
         }
 
         const userMessage = getBreezErrorMessage(error, 'connect to wallet');
@@ -1019,7 +1019,11 @@ export class BreezSDKService {
 
         // Show toast for incoming payments (always, not just debug)
         if (isIncoming) {
-          toast.success(`+${amount.toLocaleString()} sats received`);
+          toast.success(
+            translateHooks('wallet.satsReceived', {
+              amount: amount.toLocaleString(getIntlLocale()),
+            })
+          );
         }
         break;
       }

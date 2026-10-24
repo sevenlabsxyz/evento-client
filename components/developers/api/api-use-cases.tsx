@@ -9,12 +9,13 @@ import {
   RefreshCw,
   UserRound,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { API_DOCS } from './api-links';
 import { ApiSectionHeader, DocsTextLink } from './api-primitives';
 
 interface UseCase {
-  title: string;
-  description: string;
+  /** Title and description live under `developers.api.useCases.items.<key>`. */
+  key: 'discovery' | 'widgets' | 'detailViews' | 'community' | 'profiles' | 'sync';
   icon: LucideIcon;
   tint: string;
   endpoints: string[];
@@ -24,53 +25,42 @@ interface UseCase {
 /** Patterns described in the Use cases guide and the endpoint reference pages. */
 const USE_CASES: UseCase[] = [
   {
-    title: 'Event discovery platform',
-    description:
-      'Aggregate events from creator accounts and public event IDs, then cache responses to keep pages fast.',
+    key: 'discovery',
     icon: Compass,
     tint: 'bg-red-50 text-red-600 dark:bg-red-950/60 dark:text-red-400',
     endpoints: ['/events/{eventId}', '/users/{username}/events'],
     href: API_DOCS.useCases,
   },
   {
-    title: 'Calendars & widgets',
-    description:
-      'Render browser-safe calendars and event cards with the Embed API — no API key needed.',
+    key: 'widgets',
     icon: CalendarDays,
     tint: 'bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400',
     endpoints: ['Embed API'],
     href: API_DOCS.reactComponents,
   },
   {
-    title: 'Event detail views',
-    description:
-      'Build detail pages with creator metadata, Spotify and Wavlake links, and contribution handles.',
+    key: 'detailViews',
     icon: PanelsTopLeft,
     tint: 'bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400',
     endpoints: ['/events/{eventId}'],
     href: API_DOCS.fetchEvent,
   },
   {
-    title: 'Community intelligence',
-    description:
-      'Measure RSVP conversion by status, verification mix, and repeat attendees across events.',
+    key: 'community',
     icon: ChartColumn,
     tint: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400',
     endpoints: ['/events/{eventId}/guests'],
     href: API_DOCS.useCases,
   },
   {
-    title: 'Organizer profiles',
-    description: 'Show a creator’s upcoming and past events on profile pages with the type filter.',
+    key: 'profiles',
     icon: UserRound,
     tint: 'bg-violet-50 text-violet-600 dark:bg-violet-950/60 dark:text-violet-400',
     endpoints: ['/users/{username}/events'],
     href: API_DOCS.fetchUserEvents,
   },
   {
-    title: 'Calendar exports & sync',
-    description:
-      'Transform public schedules into external calendars and feeds, and refresh local caches.',
+    key: 'sync',
     icon: RefreshCw,
     tint: 'bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400',
     endpoints: ['/users/{username}/events', '/events/{eventId}'],
@@ -79,21 +69,23 @@ const USE_CASES: UseCase[] = [
 ];
 
 export function ApiUseCases() {
+  const t = useTranslations('developers.api');
+
   return (
     <section aria-labelledby='api-use-cases-title' className='space-y-8'>
       <ApiSectionHeader
         id='api-use-cases-title'
-        eyebrow='What you can build'
-        title='From widgets to community insights'
-        description='Integration patterns straight from the Evento guides.'
-        action={<DocsTextLink href={API_DOCS.examples}>Code examples</DocsTextLink>}
+        eyebrow={t('useCases.eyebrow')}
+        title={t('useCases.title')}
+        description={t('useCases.description')}
+        action={<DocsTextLink href={API_DOCS.examples}>{t('useCases.codeExamples')}</DocsTextLink>}
       />
 
       <ul className='grid gap-4 sm:grid-cols-2 xl:grid-cols-3'>
         {USE_CASES.map((useCase) => {
           const Icon = useCase.icon;
           return (
-            <li key={useCase.title}>
+            <li key={useCase.key}>
               <a
                 href={useCase.href}
                 target='_blank'
@@ -115,10 +107,10 @@ export function ApiUseCases() {
                   />
                 </div>
                 <h3 className='mt-4 font-semibold text-gray-900 dark:text-neutral-100'>
-                  {useCase.title}
+                  {t(`useCases.items.${useCase.key}.title`)}
                 </h3>
                 <p className='mt-1.5 flex-1 text-sm leading-6 text-gray-600 dark:text-neutral-400'>
-                  {useCase.description}
+                  {t(`useCases.items.${useCase.key}.description`)}
                 </p>
                 <div className='mt-4 flex flex-wrap gap-1.5'>
                   {useCase.endpoints.map((endpoint) => (
@@ -130,7 +122,7 @@ export function ApiUseCases() {
                     </span>
                   ))}
                 </div>
-                <span className='sr-only'>(opens in a new tab)</span>
+                <span className='sr-only'>{t('opensInNewTab')}</span>
               </a>
             </li>
           );

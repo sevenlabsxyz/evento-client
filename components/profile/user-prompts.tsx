@@ -2,6 +2,7 @@
 
 import { UserPrompt } from '@/lib/types/api';
 import { EyeOff } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface UserPromptsProps {
   prompts: UserPrompt[];
@@ -9,6 +10,7 @@ interface UserPromptsProps {
 }
 
 export function UserPrompts({ prompts, isOwnProfile = false }: UserPromptsProps) {
+  const t = useTranslations('profile');
   if (!prompts || prompts.length === 0) {
     return null;
   }
@@ -18,7 +20,7 @@ export function UserPrompts({ prompts, isOwnProfile = false }: UserPromptsProps)
 
   return (
     <div className='rounded-3xl border border-gray-200 bg-gray-50 p-6 dark:border-neutral-800 dark:bg-neutral-950'>
-      <h2 className='mb-4 text-lg font-bold text-gray-900 dark:text-neutral-100'>About Me</h2>
+      <h2 className='mb-4 text-lg font-bold text-gray-900 dark:text-neutral-100'>{t('aboutMe')}</h2>
 
       <div className='space-y-4'>
         {sortedPrompts.map((userPrompt) => (
@@ -40,7 +42,7 @@ export function UserPrompts({ prompts, isOwnProfile = false }: UserPromptsProps)
               {isOwnProfile && !userPrompt.is_visible && (
                 <div className='flex items-center gap-1 text-xs text-gray-500 dark:text-neutral-400'>
                   <EyeOff className='h-3.5 w-3.5' />
-                  <span>Hidden</span>
+                  <span>{t('hidden')}</span>
                 </div>
               )}
             </div>

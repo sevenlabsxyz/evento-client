@@ -14,6 +14,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { Plugin, TextSelection } from '@tiptap/pm/state';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import './description-sheet.css';
 import { getOutput } from './tiptap-utils';
@@ -48,8 +49,8 @@ export default function DescriptionSheet({
   onClose,
   onSave,
   initialContent = '',
-  title = 'Edit Description',
-  placeholder = 'Add a description...',
+  title,
+  placeholder,
   onOpenTextStylesSheet,
   onOpenMoreFormattingSheet,
   onOpenListsSheet,
@@ -57,6 +58,8 @@ export default function DescriptionSheet({
   onOpenLinkEditSheet,
   event,
 }: DescriptionSheetProps) {
+  const t = useTranslations('createEvent');
+  const tCommon = useTranslations('common');
   // No longer need activeDetent as it always opens at full height
 
   const editor = useEditor({
@@ -119,7 +122,7 @@ export default function DescriptionSheet({
         },
       }),
       Placeholder.configure({
-        placeholder,
+        placeholder: placeholder ?? t('description.placeholder'),
         emptyEditorClass: 'is-editor-empty',
       }),
     ],
@@ -195,14 +198,16 @@ export default function DescriptionSheet({
                     onClick={onClose}
                     className='DescriptionSheet-headerButton DescriptionSheet-headerButton--cancel'
                   >
-                    Cancel
+                    {tCommon('actions.cancel')}
                   </button>
-                  <h1 className='DescriptionSheet-headerTitle dark:text-neutral-100'>{title}</h1>
+                  <h1 className='DescriptionSheet-headerTitle dark:text-neutral-100'>
+                    {title ?? t('description.title')}
+                  </h1>
                   <button
                     onClick={handleSave}
                     className='DescriptionSheet-headerButton DescriptionSheet-headerButton--save'
                   >
-                    Save
+                    {tCommon('actions.save')}
                   </button>
                 </div>
 

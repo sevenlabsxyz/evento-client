@@ -10,7 +10,7 @@ import {
   LIST_PAGE_BACKGROUND_CLASS,
   LIST_PAGE_CONTAINER_CLASS,
 } from '@/components/lists/list-page-layout';
-import { formatEventCount, isDefaultList, orderLists } from '@/components/lists/list-utils';
+import { isDefaultList, orderLists } from '@/components/lists/list-utils';
 import { ListsEmptyState } from '@/components/lists/lists-empty-state';
 import { Button } from '@/components/ui/button';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
@@ -21,11 +21,13 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { UserList } from '@/lib/types/api';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { Plus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
 const LISTS_PATHNAME = '/e/lists';
 
 export default function SavedListsPage() {
+  const t = useTranslations('lists');
   const { isAuthenticated } = useRequireAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
@@ -50,7 +52,7 @@ export default function SavedListsPage() {
   useEffect(() => {
     applyRouteConfig(LISTS_PATHNAME);
     setTopBarForRoute(LISTS_PATHNAME, {
-      title: 'Lists',
+      title: t('index.topBarTitle'),
       subtitle: '',
       leftMode: 'menu',
       centerMode: 'title',
@@ -65,7 +67,7 @@ export default function SavedListsPage() {
     return () => {
       clearRoute(LISTS_PATHNAME);
     };
-  }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
+  }, [applyRouteConfig, setTopBarForRoute, clearRoute, t]);
 
   const summaries = listIds.map((id) => eventsByList[id]);
   const allEventsLoaded = summaries.every((summary) => summary && !summary.isLoading);
@@ -98,7 +100,7 @@ export default function SavedListsPage() {
     if (listsError) {
       return (
         <ListLoadError
-          title='Couldn’t load your lists'
+          title={t('index.loadError')}
           message={getErrorMessage(listsError)}
           onRetry={() => void refetchLists()}
         />
@@ -113,7 +115,7 @@ export default function SavedListsPage() {
           id='lists-grid-heading'
           className='mb-4 text-xl font-semibold text-gray-900 dark:text-neutral-100'
         >
-          Your lists
+          {t('index.yourLists')}
         </h2>
         <div className={LIST_GRID_CLASS}>
           {orderedLists.map((list) => {
@@ -149,7 +151,7 @@ export default function SavedListsPage() {
             <span className='flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm transition-transform duration-200 motion-safe:group-hover:scale-105 dark:bg-neutral-800 dark:shadow-none'>
               <Plus className='h-5 w-5' aria-hidden='true' />
             </span>
-            <span className='text-sm font-medium'>New list</span>
+            <span className='text-sm font-medium'>{t('index.newList')}</span>
           </button>
         </div>
       </section>
@@ -160,14 +162,12 @@ export default function SavedListsPage() {
     <div className={LIST_PAGE_BACKGROUND_CLASS}>
       <div className={LIST_PAGE_CONTAINER_CLASS}>
         <ListPageHeader
-          eyebrow='Lists'
-          title='Your saved events'
-          description='Save events you don’t want to miss and organize them into lists.'
+          eyebrow={t('index.eyebrow')}
+          title={t('index.title')}
+          description={t('index.description')}
           meta={
             isReady && orderedLists.length > 0
-              ? `${formatEventCount(totalSaved)} saved across ${orderedLists.length} ${
-                  orderedLists.length === 1 ? 'list' : 'lists'
-                }`
+              ? t('index.meta', { saved: totalSaved, lists: orderedLists.length })
               : undefined
           }
           actions={
@@ -178,7 +178,7 @@ export default function SavedListsPage() {
               className='w-full md:w-auto'
             >
               <Plus aria-hidden='true' />
-              New list
+              {t('index.newList')}
             </Button>
           }
         />

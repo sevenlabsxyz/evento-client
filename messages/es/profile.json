@@ -1,0 +1,320 @@
+{
+  "sheets": {
+    "instagram": {
+      "subtitle": "Perfil de Instagram",
+      "description": "Estás a punto de visitar este perfil de Instagram. Se abrirá en una nueva pestaña.",
+      "open": "Abrir Instagram"
+    },
+    "x": {
+      "subtitle": "Perfil de X (Twitter)",
+      "description": "Estás a punto de visitar este perfil de X (Twitter). Se abrirá en una nueva pestaña.",
+      "open": "Abrir perfil de X"
+    },
+    "website": {
+      "title": "Sitio web",
+      "subtitle": "Sitio web externo",
+      "description": "Estás a punto de visitar un sitio web externo. Se abrirá en una nueva pestaña.",
+      "open": "Abrir sitio web"
+    },
+    "lightning": {
+      "copiedToast": "¡Dirección Lightning copiada!",
+      "copyFailed": "No se pudo copiar la dirección",
+      "title": "Dirección Lightning",
+      "subtitle": "Dirección Bitcoin Lightning",
+      "description": "Esta es una dirección de la Bitcoin Lightning Network. Puedes usarla para enviar pagos en Bitcoin instantáneos y de bajo costo a todo el mundo.",
+      "openInWallet": "Abrir en la billetera",
+      "copyAddress": "Copiar dirección"
+    },
+    "nostr": {
+      "copiedToast": "¡Identificador de Nostr copiado!",
+      "copyFailed": "No se pudo copiar el identificador",
+      "title": "Protocolo Nostr",
+      "subtitle": "Red social descentralizada",
+      "description": "Este es un identificador de Nostr (NIP-05). Nostr es un protocolo descentralizado para redes sociales.",
+      "openApp": "Abrir en la app de Nostr",
+      "copy": "Copiar NIP-05"
+    },
+    "qr": {
+      "downloaded": "¡Código QR descargado!",
+      "downloadFailed": "No se pudo descargar el código QR",
+      "linkCopied": "¡Enlace copiado!",
+      "copyFailed": "No se pudo copiar el enlace",
+      "title": "Código QR del perfil",
+      "download": "Descargar código QR",
+      "copyLink": "Copiar enlace"
+    }
+  },
+  "copiedBang": "¡Copiado!",
+  "aboutMe": "Sobre mí",
+  "hidden": "Oculto",
+  "interests": "Intereses",
+  "campaign": {
+    "pledge": {
+      "createFailed": "No se pudo crear la contribución. Inténtalo de nuevo.",
+      "invoiceCopied": "Factura copiada al portapapeles",
+      "copyInvoiceFailed": "No se pudo copiar la factura",
+      "contributeTo": "Contribuye a \"{title}\"",
+      "chooseAmount": "Elige un monto para contribuir",
+      "creatingInvoice": "Creando factura…",
+      "contributeAmount": "Contribuir {amount} sats",
+      "selectAmount": "Selecciona un monto",
+      "scanToPay": "Escanea o copia la factura para pagar <strong>{amount} sats</strong>",
+      "copyInvoice": "Copiar factura",
+      "waiting": "Esperando el pago…",
+      "thankYou": "¡Gracias!",
+      "received": "Tu contribución de <strong>{amount} sats</strong> ha sido recibida.",
+      "expiredHeading": "Factura vencida",
+      "expiredBody": "El plazo de pago terminó. Puedes intentarlo de nuevo con una nueva factura.",
+      "tryAgain": "Intentar de nuevo",
+      "titles": {
+        "amount": "Contribuir",
+        "invoice": "Pagar factura",
+        "settled": "Pago recibido",
+        "expired": "Factura vencida"
+      }
+    },
+    "card": {
+      "defaultTitle": "Financiamiento colectivo",
+      "active": "Activa",
+      "paused": "Pausada",
+      "satsRaised": "sats recaudados",
+      "of": "de",
+      "goal": "meta de {amount}",
+      "contributions": "{count, plural, one {# contribución} other {# contribuciones}}",
+      "campaignPaused": "Campaña pausada",
+      "contributeSats": "Contribuir sats"
+    }
+  },
+  "badges": {
+    "earnedOn": "Obtenido el",
+    "title": "Insignias",
+    "manage": {
+      "slotsFull": "Todos los espacios de exhibición están ocupados. Quita una insignia primero.",
+      "updated": "Insignias actualizadas correctamente",
+      "updateFailed": "No se pudieron actualizar las insignias",
+      "title": "Administrar insignias",
+      "slotsUsed": "{used} de {total} espacios usados",
+      "emptyTitle": "Todavía no has obtenido ninguna insignia.",
+      "emptyBody": "¡Sigue usando Evento para obtener insignias!",
+      "displayOnProfile": "Mostrar en el perfil",
+      "displayHint": "Toca un espacio para quitar una insignia. Las insignias aparecen en tu perfil en este orden.",
+      "available": "Insignias disponibles",
+      "availableHint": "Toca una insignia para agregarla a la exhibición de tu perfil."
+    }
+  },
+  "saving": "Guardando...",
+  "followers": {
+    "title": "Seguidores",
+    "searchPlaceholder": "Buscar seguidores",
+    "loadFailed": "No se pudieron cargar los seguidores",
+    "noMatches": "No se encontraron seguidores que coincidan con \"{query}\"",
+    "empty": "@{username} aún no tiene seguidores"
+  },
+  "following": {
+    "title": "Siguiendo",
+    "searchPlaceholder": "Buscar seguidos",
+    "loadFailed": "No se pudo cargar la lista de seguidos",
+    "noMatches": "No se encontraron seguidos que coincidan con \"{query}\"",
+    "empty": "@{username} aún no sigue a nadie"
+  },
+  "loadingEllipsis": "Cargando...",
+  "loadMore": "Cargar más",
+  "edit": {
+    "name": {
+      "title": "Nombre",
+      "required": "El nombre es obligatorio",
+      "tooLong": "El nombre debe tener menos de 50 caracteres",
+      "invalid": "Nombre no válido",
+      "updated": "Nombre actualizado correctamente",
+      "updateFailed": "No se pudo actualizar el nombre",
+      "placeholder": "Tu nombre",
+      "info": "Tu nombre visible es como apareces ante los demás en Evento. Usa tu nombre real o un apodo."
+    },
+    "bio": {
+      "title": "Biografía",
+      "invalid": "Biografía no válida",
+      "updated": "Biografía actualizada correctamente",
+      "updateFailed": "No se pudo actualizar la biografía",
+      "placeholder": "Cuéntanos sobre ti...",
+      "info": "Escribe una biografía breve para que los demás te conozcan. Comparte tus intereses, qué te lleva a los eventos o cualquier otra cosa que quieras contar."
+    },
+    "username": {
+      "title": "Nombre de usuario",
+      "chooseAvailable": "Elige un nombre de usuario disponible",
+      "invalid": "Nombre de usuario no válido",
+      "updated": "Nombre de usuario actualizado correctamente",
+      "updateFailed": "No se pudo actualizar el nombre de usuario",
+      "placeholder": "nombredeusuario",
+      "available": "¡El nombre de usuario está disponible!",
+      "unavailable": "El nombre de usuario no está disponible.",
+      "info": "Tu nombre de usuario es único y ayuda a que otros te encuentren en Evento. Solo puede contener letras, números y guiones bajos."
+    },
+    "lightning": {
+      "title": "Bitcoin",
+      "invalidFormat": "Formato de dirección Lightning no válido (p. ej., usuario@billetera.com)",
+      "invalid": "Dirección Lightning no válida",
+      "updated": "Dirección Lightning actualizada correctamente",
+      "updateFailed": "No se pudo actualizar la dirección Lightning",
+      "managedSubtitle": "Tu dirección Lightning es administrada por tu billetera de Evento.",
+      "subtitle": "Agrega tu dirección de Lightning Network para recibir pagos.",
+      "managedInfo": "Evento sincroniza esta dirección desde tu billetera integrada para que el financiamiento colectivo y los pagos de la billetera usen siempre el mismo destino.",
+      "info": "Las direcciones Lightning te permiten recibir pagos instantáneos en Bitcoin de cualquier persona que asista a tus eventos o visite tu perfil.",
+      "openWalletHint": "Abre la Billetera para desbloquear, crear o resincronizar tu dirección Lightning.",
+      "popularWallets": "Billeteras Lightning populares:",
+      "openWallet": "Abrir billetera"
+    },
+    "nostr": {
+      "title": "Nostr",
+      "invalidFormat": "Formato de identificador de Nostr no válido (p. ej., usuario@dominio.com)",
+      "invalid": "Identificador de Nostr no válido",
+      "updated": "Identificador de Nostr actualizado correctamente",
+      "updateFailed": "No se pudo actualizar el identificador de Nostr",
+      "subtitle": "Agrega tu identificador de Nostr (NIP-05)",
+      "info": "Un identificador de Nostr (NIP-05) ayuda a las personas a encontrar y verificar tu perfil de Nostr. Parece una dirección de correo electrónico, pero se usa en el protocolo Nostr.",
+      "whatIs": "¿Qué es Nostr?",
+      "whatIsBody": "Nostr es un protocolo de red social descentralizado que te da control sobre tu identidad y tu contenido. Tu identificador NIP-05 facilita que otros te encuentren en distintas apps de Nostr."
+    },
+    "image": {
+      "selectImageFile": "Selecciona un archivo de imagen",
+      "tooLarge": "La imagen debe pesar menos de 5 MB",
+      "selectImage": "Selecciona una imagen",
+      "updated": "Foto de perfil actualizada",
+      "updateFailed": "No se pudo actualizar la foto de perfil",
+      "title": "Foto de perfil",
+      "subtitle": "Elige tu foto",
+      "alt": "Perfil",
+      "chooseFromLibrary": "Elegir de la galería",
+      "uploading": "Subiendo..."
+    },
+    "interests": {
+      "updated": "Intereses actualizados correctamente",
+      "updateFailed": "No se pudieron actualizar los intereses",
+      "selectedCount": "{count, plural, one {# interés seleccionado} other {# intereses seleccionados}}",
+      "searchPlaceholder": "Buscar intereses...",
+      "noMatches": "No se encontraron intereses que coincidan con \"{query}\"",
+      "noneAvailable": "No hay intereses disponibles"
+    },
+    "social": {
+      "title": "Redes sociales",
+      "invalidInstagram": "Nombre de usuario de Instagram no válido",
+      "invalidX": "Nombre de usuario de X no válido",
+      "invalidWebsite": "URL del sitio web no válida",
+      "invalidData": "Datos de redes sociales no válidos",
+      "updated": "Redes sociales actualizadas correctamente",
+      "updateFailed": "No se pudieron actualizar las redes sociales",
+      "xLabel": "X (antes Twitter)",
+      "websitePlaceholder": "tusitio.com",
+      "info": "Agrega tus perfiles de redes sociales para que otras personas puedan conectar contigo fuera de Evento."
+    },
+    "prompts": {
+      "answerTooShort": "La respuesta debe tener al menos 5 caracteres",
+      "answerTooLong": "La respuesta debe tener menos de 500 caracteres",
+      "updated": "Pregunta actualizada correctamente",
+      "answered": "Pregunta respondida correctamente",
+      "limit": "Solo puedes tener hasta 4 preguntas",
+      "saveFailed": "No se pudo guardar la pregunta",
+      "deleted": "Pregunta eliminada correctamente",
+      "deleteFailed": "No se pudo eliminar la pregunta",
+      "hiddenToast": "Pregunta oculta del perfil",
+      "visibleToast": "Pregunta visible en el perfil",
+      "visibilityFailed": "No se pudo actualizar la visibilidad",
+      "title": "Preguntas",
+      "answerTitle": "Responder pregunta",
+      "editTitle": "Editar pregunta",
+      "subtitle": "{count}/4 preguntas • Muestra tu personalidad",
+      "yourPrompts": "Tus preguntas",
+      "moveUp": "Subir",
+      "moveDown": "Bajar",
+      "hideFromProfile": "Ocultar del perfil",
+      "showOnProfile": "Mostrar en el perfil",
+      "deletePrompt": "Eliminar pregunta",
+      "editAnswer": "Editar respuesta",
+      "available": "Preguntas disponibles",
+      "selectCategory": "Selecciona una categoría",
+      "noneInCategory": "No hay preguntas disponibles en esta categoría",
+      "empty": "Aún no hay preguntas",
+      "maxReached": "Alcanzaste el máximo de 4 preguntas. Elimina una pregunta para agregar otra.",
+      "yourAnswer": "Tu respuesta",
+      "answerPlaceholder": "Comparte lo que piensas...",
+      "minChars": "Mínimo 5 caracteres",
+      "visibleHint": "Haz que esta pregunta sea visible para los demás",
+      "deleteTitle": "Eliminar pregunta",
+      "deleteConfirm": "¿Seguro que quieres eliminar esta pregunta? Esta acción no se puede deshacer.",
+      "deleting": "Eliminando...",
+      "reordered": "Orden de las preguntas actualizado",
+      "reorderFailed": "No se pudieron reordenar las preguntas"
+    }
+  },
+  "metadata": {
+    "titleWithName": "{name} (@{username}) en Evento",
+    "title": "@{username} en Evento",
+    "description": "Mira todos los eventos de {name} en Evento.",
+    "ogAlt": "Tarjeta de perfil de {name}",
+    "defaultDescription": "Eventos que conectan personas -- evento.so",
+    "ogTagline": "Mira los eventos en Evento"
+  },
+  "page": {
+    "unknownUser": "Usuario desconocido",
+    "unableToIdentify": "No se pudo identificar al usuario",
+    "thisUser": "este usuario",
+    "followed": "¡Ahora sigues a {name}!",
+    "unfollowed": "Dejaste de seguir a {name}",
+    "followFailed": "No se pudo seguir. Inténtalo de nuevo.",
+    "unfollowFailed": "No se pudo dejar de seguir. Inténtalo de nuevo.",
+    "user": "Usuario",
+    "shareTitle": "{name} en Evento",
+    "shareText": "Mira el perfil de {name} en Evento",
+    "linkCopied": "¡Enlace del perfil copiado al portapapeles!",
+    "shareFailed": "No se pudo compartir el perfil",
+    "shareProfile": "Compartir perfil",
+    "notFoundTitle": "Usuario no encontrado",
+    "notFoundBody": "El usuario @{username} no existe o pudo haber sido eliminado.",
+    "goBack": "Volver",
+    "eventUnpinned": "Evento desfijado de tu perfil",
+    "eventPinned": "Evento fijado en tu perfil",
+    "unpinFailed": "No se pudo desfijar el evento",
+    "pinFailed": "No se pudo fijar el evento",
+    "upcoming": "Próximos",
+    "past": "Pasados",
+    "noUpcoming": "No se encontraron próximos eventos",
+    "noPast": "No se encontraron eventos pasados",
+    "bio": "Biografía",
+    "noBadgesTitle": "Aún no hay insignias",
+    "noBadgesBody": "Este usuario aún no ha recibido ninguna insignia.",
+    "events": "Eventos",
+    "unfollowing": "Dejando de seguir...",
+    "followingInProgress": "Siguiendo...",
+    "follow": "Seguir",
+    "tabs": {
+      "about": "Acerca de"
+    },
+    "verifiedTitle": "Este usuario está verificado",
+    "verifiedBody": "Este usuario es un miembro premium con una cuenta verificada. Los usuarios verificados tienen mayor credibilidad y acceso a funciones exclusivas en nuestra plataforma.",
+    "verifiedContact": "Contáctanos sobre la verificación"
+  },
+  "own": {
+    "editProfileLabel": "Editar perfil",
+    "welcome": "Bienvenido a Evento",
+    "noEvents": "No se encontraron eventos",
+    "pickBadges": "Elegir insignias favoritas",
+    "noBadgesBody": "Aún no has recibido ninguna insignia.",
+    "editProfile": "Editar perfil",
+    "verifiedTitle": "Estás verificado",
+    "verifiedBody": "¡Felicidades! Tu cuenta está verificada. Tienes estatus de miembro premium, con mayor credibilidad y acceso a funciones exclusivas en nuestra plataforma.",
+    "contactSupport": "Contactar a soporte"
+  },
+  "editPage": {
+    "picture": "Foto de perfil",
+    "changePhoto": "Toca para cambiar la foto",
+    "addPhoto": "Agrega una foto de perfil",
+    "chooseUsername": "Elige un nombre de usuario",
+    "addName": "Agrega tu nombre",
+    "bioEmpty": "Cuéntanos sobre ti",
+    "addSocial": "Agrega tus perfiles sociales",
+    "addNostr": "Agregar identificador de Nostr",
+    "interestsHint": "Comparte lo que te encanta",
+    "promptsHint": "Muestra tu personalidad",
+    "badgesOnDisplay": "{count, plural, one {# insignia en exhibición} other {# insignias en exhibición}}",
+    "badgesHint": "Muestra tus logros"
+  }
+}

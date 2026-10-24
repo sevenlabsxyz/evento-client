@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { ExternalLink, Instagram } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface InstagramSheetProps {
   isOpen: boolean;
@@ -11,6 +12,8 @@ interface InstagramSheetProps {
 }
 
 export default function InstagramSheet({ isOpen, onClose, handle }: InstagramSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const handleOpenInstagram = () => {
     const instagramUrl = `https://instagram.com/${handle}`;
     window.open(instagramUrl, '_blank', 'noopener,noreferrer');
@@ -42,14 +45,16 @@ export default function InstagramSheet({ isOpen, onClose, handle }: InstagramShe
                 </div>
                 <div>
                   <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>@{handle}</h3>
-                  <p className='text-sm text-gray-500 dark:text-neutral-400'>Instagram profile</p>
+                  <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                    {t('sheets.instagram.subtitle')}
+                  </p>
                 </div>
               </div>
 
               {/* Description */}
               <div className='mb-6'>
                 <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-                  You&apos;re about to visit this Instagram profile. This will open in a new tab.
+                  {t('sheets.instagram.description')}
                 </p>
                 <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
                   <p className='text-sm text-gray-700 dark:text-neutral-300'>
@@ -65,10 +70,10 @@ export default function InstagramSheet({ isOpen, onClose, handle }: InstagramShe
                   className='w-full bg-red-600 text-white hover:bg-red-700'
                 >
                   <ExternalLink className='mr-2 h-4 w-4' />
-                  Open Instagram
+                  {t('sheets.instagram.open')}
                 </Button>
                 <Button variant='outline' onClick={onClose} className='w-full'>
-                  Cancel
+                  {tCommon('actions.cancel')}
                 </Button>
               </div>
             </div>

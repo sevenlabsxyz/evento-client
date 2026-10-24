@@ -14,13 +14,17 @@ import { UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { format, formatDistance } from 'date-fns';
+import { enUS, es, ptBR } from 'date-fns/locale';
 import { Heart, MoreHorizontal, Reply, SendHorizontal, Zap } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 import { ReplyAvatar } from '../ui/reply-avatar';
 import { ZapSheet } from '../zap/zap-sheet';
 import { CommentActionsSheet } from './comment-actions-sheet';
+
+const DATE_FNS_LOCALES = { en: enUS, 'pt-BR': ptBR, es } as const;
 
 interface CommentItemProps {
   comment: EventComment;
@@ -41,6 +45,10 @@ export default function CommentItem({
   activeReplyId,
   setActiveReplyId,
 }: CommentItemProps) {
+  const t = useTranslations('eventSocial');
+  const tCommon = useTranslations('common');
+  const locale = useLocale();
+  const dateFnsLocale = DATE_FNS_LOCALES[locale as keyof typeof DATE_FNS_LOCALES] ?? enUS;
   const router = useRouter();
   const isReplying = activeReplyId === comment.id;
   const [replyText, setReplyText] = useState('');
@@ -68,8 +76,14 @@ export default function CommentItem({
   }, []);
 
   const createdDate = new Date(comment.created_at);
-  const timeAgo = formatDistance(createdDate, new Date(), { addSuffix: true });
-  const formattedDate = format(createdDate, "MMM d, yyyy 'at' h:mm a");
+  const timeAgo = formatDistance(createdDate, new Date(), {
+    addSuffix: true,
+    locale: dateFnsLocale,
+  });
+  const formattedDate = t('comment.dateAtTime', {
+    date: format(createdDate, 'PP', { locale: dateFnsLocale }),
+    time: format(createdDate, 'p', { locale: dateFnsLocale }),
+  });
   const isAuthor = currentUser ? comment.user_id === currentUser.id : false;
   const canEdit = isAuthor;
   const canDelete = isAuthor || isEventHost;
@@ -105,7 +119,7 @@ export default function CommentItem({
       });
       setShowDeleteConfirmation(false);
     } catch (error) {
-      toast.error('Failed to delete comment');
+      toast.error(t('comment.deleteFailed'));
     }
   };
 
@@ -120,7 +134,7 @@ export default function CommentItem({
       });
       setIsEditing(false);
     } catch (error) {
-      toast.error('Failed to edit comment');
+      toast.error(t('comment.editFailed'));
     }
   };
 
@@ -156,7 +170,7 @@ export default function CommentItem({
         parent_comment_id: comment.id,
       });
     } catch {
-      toast.error('Failed to add reply');
+      toast.error(t('comment.replyFailed'));
     }
   };
 
@@ -239,10 +253,10 @@ export default function CommentItem({
                       setEditText(comment.message);
                     }}
                   >
-                    Cancel
+                    {tCommon('actions.cancel')}
                   </Button>
                   <Button size='sm' onClick={handleEdit}>
-                    Save
+                    {tCommon('actions.save')}
                   </Button>
                 </div>
               </div>
@@ -275,7 +289,11 @@ export default function CommentItem({
                   <CommentReactionButton icon={Zap} />
                 </ZapSheet>
 
-                <CommentReactionButton icon={Reply} label='Reply' onClick={handleReplyClick} />
+                <CommentReactionButton
+                  icon={Reply}
+                  label={t('comment.reply')}
+                  onClick={handleReplyClick}
+                />
               </div>
             )}
 
@@ -292,13 +310,15 @@ export default function CommentItem({
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
                       onKeyDown={handleReplyKeyDown}
-                      placeholder={`Reply to @${comment.user_details.username}`}
+                      placeholder={t('comment.replyPlaceholder', {
+                        username: comment.user_details.username,
+                      })}
                       className='min-h-[36px] w-full resize-none bg-transparent px-1 py-2 pr-10 text-sm text-gray-900 outline-none placeholder:text-gray-400 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                       rows={1}
                     />
                     <button
                       type='button'
-                      aria-label='Post reply'
+                      aria-label={t('comment.postReplyAria')}
                       className={cn(
                         'absolute bottom-0 right-0 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full transition-colors',
                         replyText.trim()
@@ -319,7 +339,7 @@ export default function CommentItem({
                     onClick={() => setActiveReplyId(null)}
                     className='h-7 rounded-full px-3 py-1 text-xs text-gray-600 dark:text-neutral-400'
                   >
-                    Cancel
+                    {tCommon('actions.cancel')}
                   </Button>
                 </div>
               </div>
@@ -337,12 +357,8 @@ export default function CommentItem({
                 onClick={() => setShowReplies(!showReplies)}
               >
                 {showReplies
-                  ? `Hide ${comment.replies.length} ${
-                      comment.replies.length === 1 ? 'reply' : 'replies'
-                    }`
-                  : `Show ${comment.replies.length} ${
-                      comment.replies.length === 1 ? 'reply' : 'replies'
-                    }`}
+                  ? t('comment.hideReplies', { count: comment.replies.length })
+                  : t('comment.showReplies', { count: comment.replies.length })}
               </button>
             )}
 

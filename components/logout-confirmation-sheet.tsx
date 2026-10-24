@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { hasWalletData } from '@/lib/utils/logout-cleanup';
 import { AlertTriangle, LogOut, Shield } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
 interface LogoutConfirmationSheetProps {
@@ -19,6 +20,8 @@ export function LogoutConfirmationSheet({
   onConfirm,
   isLoading = false,
 }: LogoutConfirmationSheetProps) {
+  const t = useTranslations('nav');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const showWalletWarning = hasWalletData();
 
@@ -27,7 +30,7 @@ export function LogoutConfirmationSheet({
     router.push('/e/wallet/settings');
   };
 
-  const title = showWalletWarning ? 'Warning: Wallet Data' : 'Log Out';
+  const title = showWalletWarning ? t('logout.walletWarningTitle') : t('logout.title');
 
   return (
     <MasterScrollableSheet
@@ -59,27 +62,19 @@ export function LogoutConfirmationSheet({
           {showWalletWarning ? (
             <>
               <p className='font-medium text-gray-900 dark:text-neutral-100'>
-                You have a wallet set up on this device.
+                {t('logout.walletOnDevice')}
               </p>
-              <p>
-                Logging out will permanently delete your wallet data from this device, including
-                your encrypted seed phrase.
-              </p>
+              <p>{t('logout.walletDeleteWarning')}</p>
               <div className='rounded-lg bg-amber-50 p-3 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400'>
                 <p className='flex items-center gap-2 font-medium'>
                   <Shield className='h-4 w-4' />
-                  Make sure you have a backup!
+                  {t('logout.backupReminder')}
                 </p>
-                <p className='mt-1 text-sm'>
-                  Without a backup, you will lose access to any funds permanently.
-                </p>
+                <p className='mt-1 text-sm'>{t('logout.backupLoss')}</p>
               </div>
             </>
           ) : (
-            <p>
-              Are you sure you want to log out? You&apos;ll need to sign in again to access your
-              account.
-            </p>
+            <p>{t('logout.confirmMessage')}</p>
           )}
         </div>
 
@@ -88,14 +83,14 @@ export function LogoutConfirmationSheet({
           {showWalletWarning && (
             <Button onClick={handleBackupFirst} className='w-full'>
               <Shield className='mr-2 h-4 w-4' />
-              Back Up Wallet First
+              {t('logout.backUpFirst')}
             </Button>
           )}
           <Button onClick={onConfirm} variant='destructive' className='w-full' disabled={isLoading}>
-            {isLoading ? 'Logging out...' : 'Log Out'}
+            {isLoading ? t('logout.loggingOut') : t('logout.confirm')}
           </Button>
           <Button onClick={onClose} variant='outline' className='w-full'>
-            Cancel
+            {tCommon('actions.cancel')}
           </Button>
         </div>
       </div>

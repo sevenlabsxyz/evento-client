@@ -1,6 +1,7 @@
 import { apiClient } from '@/lib/api/client';
 import { ApiResponse } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
   return !!value && typeof value === 'object' && 'data' in value;
@@ -8,6 +9,7 @@ const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
 
 export function useDeleteGalleryItem() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async ({ galleryItemId, eventId }: { galleryItemId: string; eventId: string }) => {
@@ -22,7 +24,7 @@ export function useDeleteGalleryItem() {
       // Check if it's the expected API response structure
       if (isApiResponse<{ success?: boolean } | null>(response)) {
         if (response.success === false) {
-          throw new Error('Failed to delete photo');
+          throw new Error(t('gallery.deleteFailed'));
         }
 
         const nested = response.data;
@@ -32,7 +34,7 @@ export function useDeleteGalleryItem() {
           'success' in nested &&
           nested.success === false
         ) {
-          throw new Error('Failed to delete photo');
+          throw new Error(t('gallery.deleteFailed'));
         }
       }
 

@@ -8,6 +8,7 @@ import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Loader2, User, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface NameSheetProps {
@@ -18,6 +19,8 @@ interface NameSheetProps {
 }
 
 export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }: NameSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const [name, setName] = useState(currentName);
   const updateProfileMutation = useUpdateUserProfile();
 
@@ -32,12 +35,12 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
     const trimmedName = name.trim();
 
     if (!trimmedName) {
-      toast.error('Name is required');
+      toast.error(t('edit.name.required'));
       return;
     }
 
     if (trimmedName.length > 50) {
-      toast.error('Name must be less than 50 characters');
+      toast.error(t('edit.name.tooLong'));
       return;
     }
 
@@ -52,19 +55,19 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
-        toast.error(validation.error || 'Invalid name');
+        toast.error(validation.error || t('edit.name.invalid'));
         return;
       }
 
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
-      toast.success('Name updated successfully');
+      toast.success(t('edit.name.updated'));
 
       // Close sheet
       onClose();
     } catch (error) {
       logger.error('Failed to update name', { error });
-      toast.error('Failed to update name');
+      toast.error(t('edit.name.updateFailed'));
     }
   };
 
@@ -91,7 +94,7 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
                 <SheetWithDetentFull.Handle className='dark:bg-neutral-700' />
               </div>
               <div className='flex items-center justify-between'>
-                <h2 className='text-xl font-semibold'>Name</h2>
+                <h2 className='text-xl font-semibold'>{t('edit.name.title')}</h2>
                 <button
                   onClick={handleCancel}
                   className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
@@ -116,7 +119,7 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
                       onChange={(e) => {
                         setName(e.target.value);
                       }}
-                      placeholder='Your name'
+                      placeholder={t('edit.name.placeholder')}
                       className='pl-10'
                       autoFocus
                       maxLength={50}
@@ -130,8 +133,7 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
 
                   {/* Info text */}
                   <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
-                    Your display name is how you appear to others on Evento. Use your real name or a
-                    nickname.
+                    {t('edit.name.info')}
                   </p>
 
                   {/* Save/Cancel Buttons */}
@@ -145,14 +147,14 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
                       {isSaving ? (
                         <>
                           <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                          Saving...
+                          {t('saving')}
                         </>
                       ) : (
-                        'Save'
+                        tCommon('actions.save')
                       )}
                     </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
-                      Cancel
+                      {tCommon('actions.cancel')}
                     </Button>
                   </div>
                 </SheetWithDetentFull.ScrollContent>

@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { Share, UserPlus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';
@@ -26,6 +27,8 @@ export default function EventGuestsSection({
   hosts,
   currentUserId,
 }: GuestsSectionProps) {
+  const t = useTranslations('event');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const { data: rsvps = [], isLoading, error, refetch } = useEventRSVPs(eventId);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -54,7 +57,7 @@ export default function EventGuestsSection({
   // Loading state: show lightweight skeleton row
   if (isLoading) {
     return (
-      <EventSection title='Guests'>
+      <EventSection title={tCommon('labels.guests')}>
         <div className='flex items-center gap-3'>
           <div className='flex items-center'>
             {Array.from({ length: 4 }).map((_, idx) => (
@@ -75,14 +78,14 @@ export default function EventGuestsSection({
   if (error) {
     return (
       <EventSection
-        title='Guests'
+        title={tCommon('labels.guests')}
         action={
           <Button variant='outline' size='sm' onClick={() => refetch()}>
-            Retry
+            {tCommon('actions.retry')}
           </Button>
         }
       >
-        <p className='text-sm text-red-500 dark:text-red-400'>Failed to load guests.</p>
+        <p className='text-sm text-red-500 dark:text-red-400'>{t('guests.loadFailed')}</p>
       </EventSection>
     );
   }
@@ -111,7 +114,7 @@ export default function EventGuestsSection({
       <EventSection
         title={
           <span className='inline-flex items-center gap-2'>
-            Guests
+            {tCommon('labels.guests')}
             <span className='rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'>
               {goingCount}
             </span>
@@ -124,7 +127,7 @@ export default function EventGuestsSection({
               onClick={handlePrimaryClick}
               className='inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800'
             >
-              <UserPlus className='h-4 w-4' /> Invite
+              <UserPlus className='h-4 w-4' /> {tCommon('actions.invite')}
             </button>
           ) : (
             <CircledIconButton icon={Share} onClick={handlePrimaryClick} />
@@ -144,9 +147,9 @@ export default function EventGuestsSection({
                     zIndex: display.length - idx,
                   }}
                   onClick={() => setSheetOpen(true)}
-                  aria-label={`View ${
-                    r.user_details?.name || r.user_details?.username || 'guest'
-                  } details`}
+                  aria-label={t('guests.viewDetails', {
+                    name: r.user_details?.name || r.user_details?.username || t('guests.guest'),
+                  })}
                 >
                   <UserAvatar
                     user={{
@@ -165,14 +168,14 @@ export default function EventGuestsSection({
                   className='relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-gray-100 text-xs font-semibold text-gray-600 dark:border-neutral-900 dark:bg-neutral-800 dark:text-neutral-300'
                   style={{ marginLeft: -8 }}
                   onClick={() => setSheetOpen(true)}
-                  aria-label='Open full guest list'
+                  aria-label={t('guests.openFullList')}
                 >
                   +{remaining}
                 </button>
               )}
             </div>
             <p className='truncate text-sm text-gray-500 dark:text-neutral-500'>
-              {goingCount} going
+              {tCommon('counts.going', { count: goingCount })}
             </p>
           </div>
           <button
@@ -180,7 +183,7 @@ export default function EventGuestsSection({
             onClick={() => setSheetOpen(true)}
             className='shrink-0 text-sm font-medium text-gray-900 hover:underline dark:text-neutral-100'
           >
-            See all
+            {tCommon('actions.seeAll')}
           </button>
         </div>
 

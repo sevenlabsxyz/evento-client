@@ -8,10 +8,12 @@ import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useContactSupport } from '@/lib/hooks/use-contact-support';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
+import { useTranslations } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ContactPage() {
+  const t = useTranslations('misc.contact');
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const pathname = usePathname();
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
@@ -20,7 +22,7 @@ export default function ContactPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Help & Support',
+      title: t('topBarTitle'),
       subtitle: '',
       leftMode: 'menu',
       showAvatar: false,
@@ -31,7 +33,7 @@ export default function ContactPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
+  }, [applyRouteConfig, setTopBarForRoute, clearRoute, t]);
 
   const router = useRouter();
   const prefilledTitle = useSearchParams().get('title') ?? '';
@@ -47,7 +49,7 @@ export default function ContactPage() {
     e.preventDefault();
 
     if (!formData.title.trim() || !formData.message.trim()) {
-      toast.error('Please fill in all required fields');
+      toast.error(t('requiredFields'));
       return;
     }
 
@@ -59,7 +61,7 @@ export default function ContactPage() {
         },
         {
           onSuccess: () => {
-            toast.success("Message sent successfully! We'll get back to you soon.");
+            toast.success(t('sent'));
             setFormData({
               title: '',
               message: '',
@@ -67,7 +69,7 @@ export default function ContactPage() {
             router.back();
           },
           onError: () => {
-            toast.error('Failed to send message. Please try again.');
+            toast.error(t('sendFailed'));
           },
         }
       );
@@ -118,13 +120,13 @@ export default function ContactPage() {
         {/* Title Field */}
         <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
           <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-            Subject *
+            {t('subject')}
           </label>
           <input
             type='text'
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            placeholder="What's this about?"
+            placeholder={t('subjectPlaceholder')}
             className='w-full border-none bg-transparent text-lg font-medium text-gray-900 outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500'
             required
           />
@@ -133,12 +135,12 @@ export default function ContactPage() {
         {/* Message Field */}
         <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
           <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-            Message *
+            {t('message')}
           </label>
           <textarea
             value={formData.message}
             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-            placeholder='Tell us more about your issue or question...'
+            placeholder={t('messagePlaceholder')}
             rows={6}
             className='w-full resize-none border-none bg-transparent text-gray-900 outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500'
             required
@@ -209,10 +211,10 @@ export default function ContactPage() {
             {contactMutation.isPending ? (
               <div className='flex items-center gap-2'>
                 <div className='h-4 w-4 animate-spin rounded-full border-b-2 border-white'></div>
-                Sending...
+                {t('sending')}
               </div>
             ) : (
-              'Send Message'
+              t('send')
             )}
           </Button>
         </div>
