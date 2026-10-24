@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import { Info } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { type KeyboardEvent, useId, useRef, useState } from 'react';
 import {
   API_ENDPOINTS,
@@ -28,6 +29,8 @@ function MethodBadge({ method }: { method: ApiEndpoint['method'] }) {
 }
 
 function EndpointDetails({ endpoint }: { endpoint: ApiEndpoint }) {
+  const t = useTranslations('developers.api.explorer');
+
   return (
     <div className='rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none md:p-6'>
       <div className='flex flex-wrap items-center gap-2'>
@@ -42,7 +45,7 @@ function EndpointDetails({ endpoint }: { endpoint: ApiEndpoint }) {
         </span>
       </div>
       <h3 className='mt-3 text-xl font-semibold tracking-tight text-gray-900 dark:text-neutral-100'>
-        {endpoint.title}
+        {t(`endpoints.${endpoint.messageKey}.title`)}
       </h3>
       <p className='mt-2 break-all font-mono text-sm'>
         <span className='text-gray-400 dark:text-neutral-500'>
@@ -51,11 +54,11 @@ function EndpointDetails({ endpoint }: { endpoint: ApiEndpoint }) {
         <span className='font-medium text-gray-900 dark:text-neutral-100'>{endpoint.path}</span>
       </p>
       <p className='mt-3 text-sm leading-6 text-gray-600 dark:text-neutral-400'>
-        {endpoint.description}
+        {t(`endpoints.${endpoint.messageKey}.description`)}
       </p>
 
       <h4 className='mt-6 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-neutral-500'>
-        Parameters
+        {t('parameters')}
       </h4>
       <dl className='mt-2 divide-y divide-gray-100 rounded-xl border border-gray-200 dark:divide-neutral-800 dark:border-neutral-800'>
         {endpoint.params.map((param) => (
@@ -68,37 +71,41 @@ function EndpointDetails({ endpoint }: { endpoint: ApiEndpoint }) {
                 {param.name}
               </code>
               <span className='text-xs text-gray-500 dark:text-neutral-500'>
-                {param.location} · {param.type}
+                {t(`locations.${param.location}`)} · {param.type}
               </span>
               {param.required && (
                 <span className='rounded-full bg-red-50 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-red-700 dark:bg-red-950/60 dark:text-red-300'>
-                  Required
+                  {t('required')}
                 </span>
               )}
             </dt>
-            <dd className='text-sm text-gray-600 dark:text-neutral-400'>{param.description}</dd>
+            <dd className='text-sm text-gray-600 dark:text-neutral-400'>
+              {t(`params.${param.descriptionKey}`)}
+            </dd>
           </div>
         ))}
       </dl>
 
-      {endpoint.note && (
+      {endpoint.noteKey && (
         <p className='mt-4 flex gap-2.5 rounded-xl bg-gray-50 px-4 py-3 text-sm text-gray-600 dark:bg-neutral-800 dark:text-neutral-300'>
           <Info
             className='mt-0.5 h-4 w-4 shrink-0 text-gray-400 dark:text-neutral-500'
             aria-hidden='true'
           />
-          {endpoint.note}
+          {t(`notes.${endpoint.noteKey}`)}
         </p>
       )}
 
       <div className='mt-5'>
-        <DocsTextLink href={endpoint.docsUrl}>Full reference</DocsTextLink>
+        <DocsTextLink href={endpoint.docsUrl}>{t('fullReference')}</DocsTextLink>
       </div>
     </div>
   );
 }
 
 export function EndpointExplorer() {
+  const t = useTranslations('developers.api.explorer');
+  const tApi = useTranslations('developers.api');
   const baseId = useId();
   const [activeIndex, setActiveIndex] = useState(0);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -137,17 +144,17 @@ export function EndpointExplorer() {
     <section aria-labelledby='api-endpoints-title' className='space-y-8'>
       <ApiSectionHeader
         id='api-endpoints-title'
-        eyebrow='Endpoints'
-        title='Five GET endpoints, one consistent envelope'
-        description='Explore each endpoint with real requests and response excerpts from the reference docs.'
-        action={<DocsTextLink href={API_DOCS.overview}>API reference</DocsTextLink>}
+        eyebrow={t('eyebrow')}
+        title={t('title')}
+        description={t('description')}
+        action={<DocsTextLink href={API_DOCS.overview}>{t('apiReference')}</DocsTextLink>}
       />
 
       <div className='grid gap-4 lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-6'>
         <div className='scrollbar-hide -mx-4 overflow-x-auto px-4 md:mx-0 md:px-0 lg:overflow-visible'>
           <div
             role='tablist'
-            aria-label='API endpoints'
+            aria-label={t('tablistLabel')}
             className='flex w-max gap-1.5 rounded-2xl border border-gray-200 bg-gray-50 p-1.5 dark:border-neutral-800 dark:bg-neutral-950/40 lg:sticky lg:top-6 lg:w-full lg:flex-col'
           >
             {API_ENDPOINTS.map((endpoint, index) => {
@@ -195,7 +202,7 @@ export function EndpointExplorer() {
                     {endpoint.path}
                   </span>
                   <span className='mt-0.5 block text-xs text-gray-500 dark:text-neutral-500'>
-                    {endpoint.title}
+                    {t(`endpoints.${endpoint.messageKey}.title`)}
                   </span>
                 </button>
               );
@@ -216,23 +223,23 @@ export function EndpointExplorer() {
               snippets={[
                 {
                   id: `${activeEndpoint.id}-request`,
-                  label: 'Request',
+                  label: tApi('request'),
                   language: 'bash',
                   code: activeEndpoint.request,
                 },
               ]}
-              caption='Request'
+              caption={tApi('request')}
             />
             <CodePanel
               snippets={[
                 {
                   id: `${activeEndpoint.id}-response`,
-                  label: 'Response',
+                  label: tApi('response'),
                   language: 'json',
                   code: activeEndpoint.response,
                 },
               ]}
-              caption='Response · excerpt'
+              caption={tApi('hero.responseExcerpt')}
               badge={
                 <span className='shrink-0 rounded-full bg-emerald-500/15 px-2 py-0.5 font-mono text-[11px] font-medium text-emerald-300'>
                   200 OK

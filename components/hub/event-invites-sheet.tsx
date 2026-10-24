@@ -10,6 +10,7 @@ import { useEventInvites } from '@/lib/hooks/use-event-invites';
 import { EventInvite, HubSectionError } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
 import { AlertTriangle, Archive, Calendar, Check, Clock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { SheetWithDetentFull } from '../ui/sheet-with-detent-full';
 import { MasterInviteCard } from './master-invite-card';
@@ -31,6 +32,7 @@ export function EventInvitesSheet({
   pendingTotalCount,
   pendingError,
 }: EventInvitesSheetProps) {
+  const t = useTranslations('hub');
   const [activeTab, setActiveTab] = useState<'pending' | 'responded'>('pending');
   const [loadedTabs, setLoadedTabs] = useState<Set<'pending' | 'responded'>>(new Set());
 
@@ -81,18 +83,24 @@ export function EventInvitesSheet({
               </div>
 
               <VisuallyHidden.Root asChild>
-                <SheetWithDetentFull.Title>Event Invites</SheetWithDetentFull.Title>
+                <SheetWithDetentFull.Title>{t('invites.sheetTitle')}</SheetWithDetentFull.Title>
               </VisuallyHidden.Root>
 
               {/* Tabs */}
               <AnimatedTabs
                 tabs={[
                   {
-                    title: `Waiting (${pendingTotalCount ?? pendingInvites.length})`,
+                    title: t('invites.waiting', {
+                      count: pendingTotalCount ?? pendingInvites.length,
+                    }),
                     icon: Clock,
                     onClick: () => setActiveTab('pending'),
                   },
-                  { title: 'Archive', icon: Archive, onClick: () => setActiveTab('responded') },
+                  {
+                    title: t('invites.archive'),
+                    icon: Archive,
+                    onClick: () => setActiveTab('responded'),
+                  },
                 ]}
                 selected={['pending', 'responded'].indexOf(activeTab)}
                 className='mb-4'
@@ -121,7 +129,7 @@ export function EventInvitesSheet({
                               <AlertTriangle className='h-8 w-8' />
                             </EmptyMedia>
                             <EmptyTitle className='text-base sm:text-base'>
-                              Couldn&apos;t load pending invites
+                              {t('invites.pendingError')}
                             </EmptyTitle>
                             <EmptyDescription>{pendingSheetError.message}</EmptyDescription>
                           </EmptyHeader>
@@ -133,9 +141,9 @@ export function EventInvitesSheet({
                               <Calendar className='h-8 w-8' />
                             </EmptyMedia>
                             <EmptyTitle className='text-base sm:text-base'>
-                              No pending invites
+                              {t('invites.noPending')}
                             </EmptyTitle>
-                            <EmptyDescription>You&apos;re all caught up!</EmptyDescription>
+                            <EmptyDescription>{t('invites.caughtUp')}</EmptyDescription>
                           </EmptyHeader>
                         </Empty>
                       ) : (
@@ -166,11 +174,9 @@ export function EventInvitesSheet({
                             <Check className='h-8 w-8' />
                           </EmptyMedia>
                           <EmptyTitle className='text-base sm:text-base'>
-                            No responded invites
+                            {t('invites.noResponded')}
                           </EmptyTitle>
-                          <EmptyDescription>
-                            Invites you respond to will appear here
-                          </EmptyDescription>
+                          <EmptyDescription>{t('invites.respondedHint')}</EmptyDescription>
                         </EmptyHeader>
                       </Empty>
                     ) : (

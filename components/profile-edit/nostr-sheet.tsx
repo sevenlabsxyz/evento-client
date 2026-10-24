@@ -8,6 +8,7 @@ import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Hash, Loader2, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface NostrSheetProps {
@@ -23,6 +24,8 @@ export default function NostrSheet({
   onSave,
   currentNip05 = '',
 }: NostrSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const [nip05, setNip05] = useState(currentNip05);
   const updateProfileMutation = useUpdateUserProfile();
 
@@ -45,7 +48,7 @@ export default function NostrSheet({
     const trimmedNip05 = nip05.trim();
 
     if (trimmedNip05 && !validateNip05(trimmedNip05)) {
-      toast.error('Invalid Nostr identifier format (e.g., user@domain.com)');
+      toast.error(t('edit.nostr.invalidFormat'));
       return;
     }
 
@@ -60,19 +63,19 @@ export default function NostrSheet({
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
-        toast.error(validation.error || 'Invalid Nostr identifier');
+        toast.error(validation.error || t('edit.nostr.invalid'));
         return;
       }
 
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
-      toast.success('Nostr identifier updated successfully');
+      toast.success(t('edit.nostr.updated'));
 
       // Close sheet
       onClose();
     } catch (error) {
       logger.error('Failed to update Nostr identifier', { error });
-      toast.error('Failed to update Nostr identifier');
+      toast.error(t('edit.nostr.updateFailed'));
     }
   };
 
@@ -99,7 +102,7 @@ export default function NostrSheet({
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='flex items-center justify-between'>
-                <h2 className='text-xl font-semibold'>Nostr</h2>
+                <h2 className='text-xl font-semibold'>{t('edit.nostr.title')}</h2>
                 <button
                   onClick={handleCancel}
                   className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
@@ -108,7 +111,7 @@ export default function NostrSheet({
                 </button>
               </div>
               <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-                Add your Nostr identifier (NIP-05)
+                {t('edit.nostr.subtitle')}
               </p>
             </div>
 
@@ -136,23 +139,15 @@ export default function NostrSheet({
                   {/* Info text */}
                   <div className='mb-6 space-y-3'>
                     <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                      A Nostr identifier (NIP-05) helps people find and verify your Nostr profile.
-                      It looks like an email address but is used for the Nostr protocol. A Nostr
-                      identifier (NIP-05) helps people find and verify your Nostr profile. It looks
-                      like an email address but is used for the Nostr protocol.
+                      {t('edit.nostr.info')}
                     </p>
 
                     <div className='rounded-xl bg-pink-50 p-4 dark:bg-pink-950/40'>
                       <p className='mb-2 text-sm font-medium text-pink-800 dark:text-pink-400'>
-                        What is Nostr?
+                        {t('edit.nostr.whatIs')}
                       </p>
                       <p className='text-sm text-pink-700 dark:text-pink-400'>
-                        Nostr is a decentralized social network protocol that gives you control over
-                        your identity and content. Your NIP-05 identifier makes it easy for others
-                        to find you across different Nostr apps. Nostr is a decentralized social
-                        network protocol that gives you control over your identity and content. Your
-                        NIP-05 identifier makes it easy for others to find you across different
-                        Nostr apps.
+                        {t('edit.nostr.whatIsBody')}
                       </p>
                     </div>
                   </div>
@@ -167,14 +162,14 @@ export default function NostrSheet({
                       {isSaving ? (
                         <>
                           <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                          Saving...
+                          {t('saving')}
                         </>
                       ) : (
-                        'Save'
+                        tCommon('actions.save')
                       )}
                     </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
-                      Cancel
+                      {tCommon('actions.cancel')}
                     </Button>
                   </div>
                 </SheetWithDetentFull.ScrollContent>

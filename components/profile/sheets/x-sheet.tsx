@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { ExternalLink } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface XSheetProps {
   isOpen: boolean;
@@ -11,6 +12,8 @@ interface XSheetProps {
 }
 
 export default function XSheet({ isOpen, onClose, handle }: XSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const handleOpenX = () => {
     const xUrl = `https://x.com/${handle}`;
     window.open(xUrl, '_blank', 'noopener,noreferrer');
@@ -44,14 +47,16 @@ export default function XSheet({ isOpen, onClose, handle }: XSheetProps) {
                 </div>
                 <div>
                   <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>@{handle}</h3>
-                  <p className='text-sm text-gray-500 dark:text-neutral-400'>X (Twitter) profile</p>
+                  <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                    {t('sheets.x.subtitle')}
+                  </p>
                 </div>
               </div>
 
               {/* Description */}
               <div className='mb-6'>
                 <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-                  You&apos;re about to visit this X (Twitter) profile. This will open in a new tab.
+                  {t('sheets.x.description')}
                 </p>
                 <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
                   <p className='text-sm text-gray-700 dark:text-neutral-300'>x.com/{handle}</p>
@@ -65,10 +70,10 @@ export default function XSheet({ isOpen, onClose, handle }: XSheetProps) {
                   className='w-full bg-red-600 text-white hover:bg-red-700'
                 >
                   <ExternalLink className='mr-2 h-4 w-4' />
-                  Open X Profile
+                  {t('sheets.x.open')}
                 </Button>
                 <Button variant='outline' onClick={onClose} className='w-full'>
-                  Cancel
+                  {tCommon('actions.cancel')}
                 </Button>
               </div>
             </div>

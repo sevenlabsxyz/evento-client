@@ -1,1 +1,78 @@
-{}
+{
+  "flow": {
+    "usernameCharsWarning": "Only letters and numbers are allowed in Usernames.",
+    "usernameLengthWarning": "Username must be 20 characters or less.",
+    "noImageSelected": "No image selected. Please try again.",
+    "imageUploaded": "Image uploaded successfully",
+    "imageUploadFailed": "Could not upload image. Please try again or skip this step.",
+    "fileTooLarge": "File is too large, please select a file less than 10MB.",
+    "completeToast": "Welcome to Evento! Your profile is all set up.",
+    "completeError": "There was a problem completing your profile setup.",
+    "stepOf": "Step {step} of {total}",
+    "exitSetup": "Exit setup",
+    "back": "Back",
+    "saving": "Saving...",
+    "continue": "Continue",
+    "skip": "Skip",
+    "completeSetup": "Complete Setup",
+    "skipAndFinish": "Skip & Finish"
+  },
+  "name": {
+    "title": "Enter your name",
+    "description": "Let everyone know what to call you.",
+    "placeholder": "William Shakespeare"
+  },
+  "username": {
+    "title": "Choose a username",
+    "description": "This will be your unique Evento identifier. You can change your @username anytime in your Profile Settings.",
+    "reserved": "This username is reserved and cannot be used",
+    "invalid": "Invalid username",
+    "taken": "This username is already taken",
+    "available": "Great! This username is available"
+  },
+  "avatar": {
+    "title": "Upload a profile picture",
+    "description": "Help others recognize you at Events.",
+    "uploadAria": "Upload profile picture",
+    "loading": "Loading...",
+    "tapToUpload": "Tap to upload"
+  },
+  "interests": {
+    "title": "What are you interested in?",
+    "description": "Select topics to personalize your feed (you can skip this step)"
+  },
+  "prompts": {
+    "title": "Showcase your personality",
+    "description": "Answer up to 4 prompts to help others get to know you",
+    "yourPrompts": "Your Prompts ({count}/4)",
+    "edit": "Edit",
+    "addMore": "Add More",
+    "choosePrompt": "Choose a Prompt",
+    "noMore": "No more prompts available",
+    "maxReached": "Maximum 4 prompts reached. Remove one to add another.",
+    "backToPrompts": "Back to prompts",
+    "answerPrompt": "Answer Prompt",
+    "editAnswer": "Edit Answer",
+    "shareSomething": "Share something about yourself",
+    "yourAnswer": "Your Answer",
+    "answerPlaceholder": "Share your thoughts...",
+    "minChars": "Minimum 5 characters",
+    "showOnProfile": "Show on profile",
+    "showOnProfileHint": "Make this visible to others",
+    "cancel": "Cancel",
+    "addPrompt": "Add Prompt",
+    "saveChanges": "Save Changes"
+  },
+  "welcome": {
+    "title": "Welcome to Evento!",
+    "subtitle": "Here's what you can do",
+    "goToSlide": "Go to slide {number}",
+    "progress": "{current} of {total}",
+    "discoverTitle": "Discover Amazing Events",
+    "discoverDescription": "Find and attend events that match your interests. From concerts to conferences, discover what's happening around you.",
+    "walletTitle": "Built-in Lightning Wallet",
+    "walletDescription": "Send and receive Bitcoin instantly with your built-in Lightning wallet. Pay for tickets, tip creators, and manage your funds seamlessly.",
+    "connectTitle": "Connect & Share",
+    "connectDescription": "Connect with friends, share your experiences, and build your community. Evento brings people together through shared experiences."
+  }
+}

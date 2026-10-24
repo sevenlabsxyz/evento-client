@@ -1,3 +1,5 @@
+import { translateHooks } from '@/lib/i18n/active-translator';
+
 export type EarnPartner = {
   id: string;
   name: string;
@@ -15,33 +17,49 @@ export const EARN_PARTNERS: EarnPartner[] = [
   {
     id: 'zbd',
     name: 'ZBD',
-    description: 'Earn Bitcoin by playing games and completing tasks',
+    get description() {
+      return translateHooks('earnPartners.zbd');
+    },
     logo: '/assets/partners/zbd.webp',
     link: 'https://zbd.gg',
-    ctaText: 'Visit',
+    get ctaText() {
+      return translateHooks('earnPartners.visit');
+    },
   },
   {
     id: 'fold',
     name: 'Fold',
-    description: 'Earn Bitcoin rewards on everyday purchases with the Fold debit card',
+    get description() {
+      return translateHooks('earnPartners.fold');
+    },
     logo: '/assets/partners/fold.webp',
     link: 'https://foldapp.com',
-    ctaText: 'Visit',
+    get ctaText() {
+      return translateHooks('earnPartners.visit');
+    },
   },
   {
     id: 'stacker-news',
     name: 'Stacker News',
-    description: 'Earn Bitcoin by sharing and engaging with content',
+    get description() {
+      return translateHooks('earnPartners.stackerNews');
+    },
     logo: '/assets/partners/stacker-news.avif',
     link: 'https://stacker.news',
-    ctaText: 'Visit',
+    get ctaText() {
+      return translateHooks('earnPartners.visit');
+    },
   },
   {
     id: 'lolli',
     name: 'Lolli',
-    description: 'Earn Bitcoin when you shop at 1,000+ top stores online',
+    get description() {
+      return translateHooks('earnPartners.lolli');
+    },
     logo: '/assets/partners/lolli.webp',
     link: 'https://lolli.com',
-    ctaText: 'Visit',
+    get ctaText() {
+      return translateHooks('earnPartners.visit');
+    },
   },
 ];

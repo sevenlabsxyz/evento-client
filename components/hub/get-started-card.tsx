@@ -17,6 +17,7 @@ import {
   UserRoundPen,
   Wallet,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useSyncExternalStore } from 'react';
 
@@ -47,6 +48,7 @@ function getServerHasStoredWalletSeed(): null {
 }
 
 export function GetStartedCard({ viewer }: GetStartedCardProps) {
+  const t = useTranslations('hub');
   const hasViewer = !!viewer;
 
   const hostingQuery = useUserEvents({ filter: 'hosting', limit: 1, enabled: hasViewer });
@@ -95,32 +97,32 @@ export function GetStartedCard({ viewer }: GetStartedCardProps) {
   const steps: GetStartedStep[] = [
     {
       id: 'create',
-      title: 'Create your first event',
-      description: 'Host a meetup, party or class',
+      title: t('getStarted.steps.create.title'),
+      description: t('getStarted.steps.create.description'),
       href: '/e/create',
       icon: CalendarPlus,
       done: hostingCount > 0 || draftsCount > 0,
     },
     {
       id: 'follow',
-      title: 'Follow hosts',
-      description: 'See their events in your feed',
+      title: t('getStarted.steps.follow.title'),
+      description: t('getStarted.steps.follow.description'),
       href: '/e/search',
       icon: UserPlus,
       done: (followingCountQuery.data ?? 0) > 0,
     },
     {
       id: 'wallet',
-      title: 'Set up your wallet',
-      description: 'Send and receive sats',
+      title: t('getStarted.steps.wallet.title'),
+      description: t('getStarted.steps.wallet.description'),
       href: '/e/wallet',
       icon: Wallet,
       done: isWalletInitialized || hasStoredWalletSeed === true,
     },
     {
       id: 'profile',
-      title: 'Complete your profile',
-      description: 'Add a photo and a bio',
+      title: t('getStarted.steps.profile.title'),
+      description: t('getStarted.steps.profile.description'),
       href: '/e/profile/edit',
       icon: UserRoundPen,
       done: !!viewer.bio?.trim() && hasCustomAvatar,
@@ -144,19 +146,17 @@ export function GetStartedCard({ viewer }: GetStartedCardProps) {
             id='get-started-title'
             className='text-base font-semibold text-gray-900 dark:text-neutral-100'
           >
-            Get started
+            {t('getStarted.title')}
           </h2>
-          <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            A few steps to make Evento yours
-          </p>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('getStarted.subtitle')}</p>
         </div>
         <div className='flex shrink-0 flex-col items-end gap-1.5 pt-0.5'>
           <span className='text-xs font-medium tabular-nums text-gray-600 dark:text-neutral-300'>
-            {completedCount} of {steps.length}
+            {t('getStarted.progress', { completed: completedCount, total: steps.length })}
           </span>
           <div
             role='progressbar'
-            aria-label='Get started progress'
+            aria-label={t('getStarted.progressLabel')}
             aria-valuemin={0}
             aria-valuemax={steps.length}
             aria-valuenow={completedCount}
@@ -178,7 +178,9 @@ export function GetStartedCard({ viewer }: GetStartedCardProps) {
             <li key={step.id} className='min-w-0'>
               <Link
                 href={step.href}
-                aria-label={step.done ? `${step.title} (completed)` : step.title}
+                aria-label={
+                  step.done ? t('getStarted.completedLabel', { title: step.title }) : step.title
+                }
                 className={cn(
                   'group flex h-full flex-col gap-3 rounded-xl border p-3 transition-colors',
                   step.done

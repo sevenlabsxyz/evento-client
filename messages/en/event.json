@@ -1,1 +1,248 @@
-{}
+{
+  "page": {
+    "twoHosts": "{first} & {second}",
+    "manyHosts": "{first} & {count, plural, one {# other} other {# others}}",
+    "rsvpGoing": "You're going",
+    "rsvpMaybe": "Marked as maybe",
+    "rsvpNotGoing": "You are not going",
+    "rsvpFailed": "Failed to update RSVP. Please try again.",
+    "saveEvent": "Save Event",
+    "notFoundTitle": "Event not found",
+    "notFoundDescription": "The event you're looking for doesn't exist or is no longer available.",
+    "goBack": "Go back",
+    "exploreEvents": "Explore events",
+    "hiddenUntilApproved": "Some event details are hidden until your registration is approved.",
+    "hiddenUntilRsvp": "Some event details are hidden until you RSVP.",
+    "music": "Music",
+    "hostedBy": "Hosted by",
+    "goingCount": "<strong>{count}</strong> going",
+    "sectionsNav": "Event sections",
+    "tabs": {
+      "details": "Details",
+      "comments": "Comments",
+      "gallery": "Gallery"
+    },
+    "photos": "Photos",
+    "metaDescription": "Events made social -- evento.so"
+  },
+  "info": {
+    "types": {
+      "rsvp": "RSVP",
+      "registration": "Registration",
+      "ticketed": "Ticketed"
+    },
+    "rsvpButton": {
+      "going": "You're going",
+      "noSpots": "NO SPOTS LEFT",
+      "maybe": "Maybe",
+      "notGoing": "Not going",
+      "rsvp": "RSVP"
+    },
+    "pendingToast": "Your registration is pending host approval",
+    "deniedToast": "Your registration was not approved. Contact the host for details.",
+    "icsLocationHidden": "Location hidden until registration approval",
+    "icsDescriptionHidden": "Description hidden until registration approval",
+    "dateTimeCopied": "Date and time copied",
+    "dateTimeCopyFailed": "Failed to copy date and time",
+    "chips": {
+      "hosting": "Hosting",
+      "pendingApproval": "Pending approval",
+      "going": "Going",
+      "cancelled": "Cancelled"
+    },
+    "status": {
+      "hosting": "You're hosting this event",
+      "waitingApproval": "Waiting for host approval",
+      "notApproved": "Registration not approved",
+      "registrationRequired": "Registration required",
+      "ticketed": "Ticketed event"
+    },
+    "noMoreSpots": "No more spots left",
+    "spotsLeft": "{count, plural, one {# spot left} other {# spots left}}",
+    "pending": "Pending",
+    "denied": "Denied"
+  },
+  "rsvpSheet": {
+    "capacityReached": "This event has reached its capacity.",
+    "signInToRsvp": "Please sign in to RSVP.",
+    "yes": "Yes",
+    "maybe": "Maybe",
+    "no": "No",
+    "markedMaybe": "Marked maybe",
+    "notGoing": "Not going",
+    "registrationApproved": "Your registration has been approved. Update your attendance below.",
+    "checkingSession": "Checking session...",
+    "requiresRegistration": "This event requires registration. Clicking \"Yes\" will open the registration form.",
+    "updating": "Updating RSVP...",
+    "verifyEmail": "Verify your email",
+    "registerTitle": "Register for Event",
+    "title": "RSVP",
+    "codeSentTo": "Code sent to <strong>{email}</strong>"
+  },
+  "registrationForm": {
+    "errors": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "emailMismatch": "Email must match your account email",
+      "fieldRequired": "This field is required"
+    },
+    "toasts": {
+      "registered": "You're registered! You're going to the event.",
+      "submitted": "Registration submitted. Awaiting host approval.",
+      "submitFailed": "Failed to submit registration. Please try again.",
+      "sendCodeFailed": "Failed to send verification code. Please try again.",
+      "invalidCode": "Invalid verification code. Please try again.",
+      "codeSent": "Verification code sent!",
+      "resendFailed": "Failed to resend code. Please try again."
+    },
+    "placeholders": {
+      "enterField": "Enter {field}",
+      "agree": "I agree",
+      "username": "username",
+      "youtube": "channel URL or username",
+      "linkedin": "profile URL or username",
+      "company": "Company name",
+      "fullName": "Your full name",
+      "email": "your@email.com"
+    },
+    "completingTitle": "Completing your registration...",
+    "completingDescription": "Please wait while we finalize your account and RSVP.",
+    "usingAccountEmail": "Using your account email",
+    "verificationHint": "We'll send a verification code to this email",
+    "sendingCode": "Sending code...",
+    "submitting": "Submitting...",
+    "register": "Register"
+  },
+  "registrationStatus": {
+    "pendingTitle": "Registration Pending",
+    "pendingDescription": "You're on the list! We're waiting for the host to approve your registration.",
+    "approvedTitle": "You're Registered!",
+    "approvedDescription": "Your registration has been approved.",
+    "deniedTitle": "Registration Not Approved",
+    "deniedReason": "Reason: {reason}",
+    "deniedDescription": "Unfortunately, your registration was not approved.",
+    "registeredAgo": "Registered {time}",
+    "approvedAgo": "Approved {time}",
+    "updateRsvp": "Update RSVP",
+    "contactHost": "If you believe this was a mistake, please contact the event host."
+  },
+  "otp": {
+    "verifying": "Verifying...",
+    "verifyAndRegister": "Verify & Register",
+    "sending": "Sending...",
+    "resendIn": "Resend code in {seconds}s",
+    "resend": "Didn't receive the code? Resend"
+  },
+  "passwordGate": {
+    "enterPassword": "Please enter the event password",
+    "accessGranted": "Access granted!",
+    "incorrect": "Incorrect password. Please try again.",
+    "verifyFailed": "Failed to verify password. Please try again.",
+    "hostAndMore": "{host} + {count} more",
+    "privateEvent": "Private event",
+    "hostedBy": "Hosted by <strong>{host}</strong>",
+    "protectedDescription": "This event is password protected. Enter the password to view event details.",
+    "passwordLabel": "Event Password",
+    "passwordPlaceholder": "Enter password",
+    "hidePassword": "Hide password",
+    "showPassword": "Show password",
+    "verifying": "Verifying...",
+    "enterEvent": "Enter Event",
+    "invitedFooter": "You've been invited to an evento. Enter the password to access event details."
+  },
+  "saveSheet": {
+    "removedFrom": "Removed from {list}.",
+    "removedTitle": "Removed",
+    "savedTo": "Saved to {list}.",
+    "updateFailedTitle": "Couldn’t update list",
+    "createdAndSaved": "Created {list} and saved this event to it.",
+    "createdNotAdded": "{list} was created, but the event wasn’t added: {error}",
+    "saveFailedTitle": "Couldn’t save event",
+    "loadFailed": "Couldn’t load your lists",
+    "newList": "New list",
+    "namePlaceholder": "e.g. Summer in Lisbon",
+    "creating": "Creating…",
+    "createAndSave": "Create & save",
+    "yourLists": "Your lists",
+    "default": "Default",
+    "title": "Save event",
+    "description": "Choose the lists to save this event to."
+  },
+  "ownerButtons": {
+    "eventLinkToast": "Event link: {url}",
+    "linkCopied": "Event link copied to clipboard!",
+    "blasts": "Blasts",
+    "eventLink": "Event Link",
+    "copyEventLink": "Copy Event Link"
+  },
+  "header": {
+    "imageAlt": "{title} - Image {index}",
+    "showImage": "Show image {index}"
+  },
+  "dateTimeSheet": {
+    "title": "Date & Time",
+    "addToCalendar": "Add to Calendar",
+    "copyDateTime": "Copy Date/Time"
+  },
+  "locationSheet": {
+    "addressCopied": "Address copied",
+    "copyFailed": "Failed to copy address",
+    "title": "Open in Maps",
+    "appleMaps": "Open in Apple Maps",
+    "googleMaps": "Open in Google Maps",
+    "copyAddress": "Copy Address"
+  },
+  "subEventCalendar": {
+    "continuesBefore": "Continues from the previous day.",
+    "continuesAfter": "Continues into the next day.",
+    "blockLabel": "{title}, {date}, {time}. {continuation}",
+    "title": "Sub-Events Calendar",
+    "allTimesIn": "All times in {timezone}",
+    "timeTbd": "Time TBD",
+    "tbdLabel": "{title}, time to be determined"
+  },
+  "guests": {
+    "loadFailed": "Failed to load guests.",
+    "viewDetails": "View {name} details",
+    "guest": "guest",
+    "guestTitle": "Guest",
+    "openFullList": "Open full guest list"
+  },
+  "guestsSheet": {
+    "title": "Guest List",
+    "searchPlaceholder": "Search guests",
+    "zapAll": "Zap All",
+    "noMatches": "No matching guests",
+    "noneGoing": "No guests marked as Going",
+    "noneMaybe": "No guests marked as Maybe",
+    "noneNotGoing": "No guests marked as Not Going",
+    "noMatchesHint": "Try a different name or username, or clear your search.",
+    "emptyHint": "Once guests respond, they will appear here.",
+    "clearSearch": "Clear search",
+    "openProfile": "Open profile for @{username}"
+  },
+  "description": {
+    "title": "About"
+  },
+  "location": {
+    "mapTitle": "Map of {name}",
+    "mapAria": "Map showing {name}",
+    "directionsAria": "Open directions to {name} in Google Maps"
+  },
+  "weather": {
+    "title": "Current Weather",
+    "fahrenheit": "Fahrenheit",
+    "celsius": "Celsius",
+    "feelsLike": "Feels like",
+    "humidity": "Humidity",
+    "wind": "Wind",
+    "disclaimer": "<strong>Note:</strong> This shows current weather conditions at the event location, not the actual weather from the event date."
+  },
+  "subEvents": {
+    "title": "Sub-events",
+    "viewCalendar": "View Calendar",
+    "manage": "Manage sub events",
+    "empty": "No sub-events yet."
+  }
+}

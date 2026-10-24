@@ -4,6 +4,7 @@ import apiClient from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
 import { ApiResponse, CreateListForm, UserList } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 export const CREATE_LIST_MUTATION_KEY = ['lists', 'create'] as const;
 
@@ -12,6 +13,7 @@ export const CREATE_LIST_MUTATION_KEY = ['lists', 'create'] as const;
  */
 export function useCreateList() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationKey: CREATE_LIST_MUTATION_KEY,
@@ -22,7 +24,7 @@ export function useCreateList() {
         return response.data;
       }
 
-      throw new Error('Failed to create list');
+      throw new Error(t('lists.createFailed'));
     },
     onSuccess: (newList) => {
       // Show the new list immediately (e.g. in the save sheet) while the refetch runs.

@@ -1,66 +1,40 @@
 import { Button } from '@/components/ui/button';
 import { ArrowUpRight, BookOpen, Boxes, KeyRound, type LucideIcon, Rocket } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { API_DOCS, API_KEYS_SETTINGS_PATH, SETTINGS_PATH } from './api-links';
 
 interface GetStartedStep {
-  title: string;
-  description: string;
-  link: { label: string; href: string; external: boolean };
+  /** Title, description and link label live under `developers.api.getStarted.steps.<key>`. */
+  key: 'developerMode' | 'createKey' | 'firstRequest';
+  link: { href: string; external: boolean };
 }
 
 const STEPS: GetStartedStep[] = [
-  {
-    title: 'Enable Developer Mode',
-    description: 'Switch it on under Settings → Advanced to surface API keys in your settings.',
-    link: { label: 'Open settings', href: SETTINGS_PATH, external: false },
-  },
-  {
-    title: 'Create an API key',
-    description:
-      'Name it, then copy it right away — keys are shown only once. Up to 10 active keys per account.',
-    link: { label: 'Manage API keys', href: API_KEYS_SETTINGS_PATH, external: false },
-  },
-  {
-    title: 'Make your first request',
-    description:
-      'Send the key in the x-evento-api-key header from your server. Successful calls return success: true with your payload in data.',
-    link: { label: 'Follow the quickstart', href: API_DOCS.quickstart, external: true },
-  },
+  { key: 'developerMode', link: { href: SETTINGS_PATH, external: false } },
+  { key: 'createKey', link: { href: API_KEYS_SETTINGS_PATH, external: false } },
+  { key: 'firstRequest', link: { href: API_DOCS.quickstart, external: true } },
 ];
 
 interface DocLink {
-  title: string;
-  description: string;
+  /** Title and description live under `developers.api.getStarted.docs.<key>`. */
+  key: 'quickstart' | 'authentication' | 'dataModels';
   href: string;
   icon: LucideIcon;
 }
 
 const DOC_LINKS: DocLink[] = [
-  {
-    title: 'Quickstart',
-    description: 'Create an API key and make your first public API request.',
-    href: API_DOCS.quickstart,
-    icon: Rocket,
-  },
-  {
-    title: 'Authentication',
-    description: 'Header formats, auth flows by surface, and security practices.',
-    href: API_DOCS.authentication,
-    icon: KeyRound,
-  },
-  {
-    title: 'Data models',
-    description: 'Canonical event, guest, and pagination object schemas.',
-    href: API_DOCS.dataModels,
-    icon: Boxes,
-  },
+  { key: 'quickstart', href: API_DOCS.quickstart, icon: Rocket },
+  { key: 'authentication', href: API_DOCS.authentication, icon: KeyRound },
+  { key: 'dataModels', href: API_DOCS.dataModels, icon: Boxes },
 ];
 
 const STEP_LINK_CLASS =
   'inline-flex items-center gap-1 rounded-sm text-sm font-semibold text-white hover:text-red-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400';
 
 export function ApiGetStarted() {
+  const t = useTranslations('developers.api');
+
   return (
     <section aria-labelledby='api-get-started-title' className='space-y-4 lg:space-y-6'>
       <div className='relative isolate overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-950 px-5 py-8 text-white md:px-10 md:py-12'>
@@ -76,13 +50,13 @@ export function ApiGetStarted() {
         <div className='flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between'>
           <div className='max-w-xl'>
             <p className='text-xs font-semibold uppercase tracking-wider text-red-400'>
-              Get started
+              {t('getStarted.eyebrow')}
             </p>
             <h2
               id='api-get-started-title'
               className='mt-2 text-balance text-3xl font-bold tracking-tight md:text-4xl'
             >
-              Your first request is three steps away
+              {t('getStarted.title')}
             </h2>
           </div>
           <div className='flex flex-col gap-3 sm:flex-row'>
@@ -93,7 +67,7 @@ export function ApiGetStarted() {
             >
               <Link href={API_KEYS_SETTINGS_PATH}>
                 <KeyRound aria-hidden='true' />
-                Get an API key
+                {t('hero.getApiKey')}
               </Link>
             </Button>
             <Button
@@ -104,8 +78,8 @@ export function ApiGetStarted() {
             >
               <a href={API_DOCS.overview} target='_blank' rel='noopener noreferrer'>
                 <BookOpen aria-hidden='true' />
-                Read the docs
-                <span className='sr-only'>(opens in a new tab)</span>
+                {t('hero.readDocs')}
+                <span className='sr-only'>{t('opensInNewTab')}</span>
               </a>
             </Button>
           </div>
@@ -114,7 +88,7 @@ export function ApiGetStarted() {
         <ol className='mt-8 grid gap-3 md:mt-10 md:grid-cols-3 md:gap-4'>
           {STEPS.map((step, index) => (
             <li
-              key={step.title}
+              key={step.key}
               className='flex flex-col rounded-2xl border border-neutral-800 bg-neutral-900/80 p-5'
             >
               <span
@@ -123,8 +97,12 @@ export function ApiGetStarted() {
               >
                 {index + 1}
               </span>
-              <h3 className='mt-4 font-semibold text-neutral-100'>{step.title}</h3>
-              <p className='mt-1.5 flex-1 text-sm leading-6 text-neutral-400'>{step.description}</p>
+              <h3 className='mt-4 font-semibold text-neutral-100'>
+                {t(`getStarted.steps.${step.key}.title`)}
+              </h3>
+              <p className='mt-1.5 flex-1 text-sm leading-6 text-neutral-400'>
+                {t(`getStarted.steps.${step.key}.description`)}
+              </p>
               <div className='mt-4'>
                 {step.link.external ? (
                   <a
@@ -133,13 +111,13 @@ export function ApiGetStarted() {
                     rel='noopener noreferrer'
                     className={STEP_LINK_CLASS}
                   >
-                    {step.link.label}
+                    {t(`getStarted.steps.${step.key}.link`)}
                     <ArrowUpRight className='h-4 w-4' aria-hidden='true' />
-                    <span className='sr-only'>(opens in a new tab)</span>
+                    <span className='sr-only'>{t('opensInNewTab')}</span>
                   </a>
                 ) : (
                   <Link href={step.link.href} className={STEP_LINK_CLASS}>
-                    {step.link.label}
+                    {t(`getStarted.steps.${step.key}.link`)}
                     <span aria-hidden='true'>→</span>
                   </Link>
                 )}
@@ -153,7 +131,7 @@ export function ApiGetStarted() {
         {DOC_LINKS.map((doc) => {
           const Icon = doc.icon;
           return (
-            <li key={doc.title}>
+            <li key={doc.key}>
               <a
                 href={doc.href}
                 target='_blank'
@@ -165,17 +143,17 @@ export function ApiGetStarted() {
                 </div>
                 <div className='min-w-0 flex-1'>
                   <p className='flex items-center gap-1 font-semibold text-gray-900 dark:text-neutral-100'>
-                    {doc.title}
+                    {t(`getStarted.docs.${doc.key}.title`)}
                     <ArrowUpRight
                       className='h-4 w-4 text-gray-400 motion-safe:transition-transform motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5 dark:text-neutral-500'
                       aria-hidden='true'
                     />
                   </p>
                   <p className='mt-1 text-sm text-gray-600 dark:text-neutral-400'>
-                    {doc.description}
+                    {t(`getStarted.docs.${doc.key}.description`)}
                   </p>
                 </div>
-                <span className='sr-only'>(opens in a new tab)</span>
+                <span className='sr-only'>{t('opensInNewTab')}</span>
               </a>
             </li>
           );

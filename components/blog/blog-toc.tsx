@@ -2,6 +2,7 @@
 
 import type { BlogContentHeading } from '@/components/blog/enhanced-blog-content';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import { type MouseEvent, useEffect, useMemo, useState } from 'react';
 
 interface BlogTocProps {
@@ -63,6 +64,7 @@ function useActiveHeadingId(headingIds: string[]): string | null {
 }
 
 export function BlogToc({ headings, className }: BlogTocProps) {
+  const t = useTranslations('blog');
   const headingIds = useMemo(() => headings.map((heading) => heading.id), [headings]);
 
   const activeId = useActiveHeadingId(headingIds);
@@ -81,9 +83,9 @@ export function BlogToc({ headings, className }: BlogTocProps) {
   };
 
   return (
-    <nav aria-label='On this page' className={cn('text-sm', className)}>
+    <nav aria-label={t('toc.onThisPage')} className={cn('text-sm', className)}>
       <p className='mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-neutral-500'>
-        On this page
+        {t('toc.onThisPage')}
       </p>
       <ol className='space-y-0.5 border-l border-gray-200 dark:border-neutral-800'>
         {headings.map((heading) => {

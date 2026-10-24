@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { toast } from '@/lib/utils/toast';
 import { Pencil, Percent, Plus, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface DiscountCodesSectionProps {
@@ -31,6 +32,8 @@ interface DiscountCodesSectionProps {
 }
 
 export function DiscountCodesSection({ eventId }: DiscountCodesSectionProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
   const { data: discountCodes, isLoading, error, refetch } = useDiscountCodes(eventId);
   const updateDiscountCode = useUpdateDiscountCode(eventId);
   const deleteDiscountCode = useDeleteDiscountCode(eventId);
@@ -51,9 +54,13 @@ export function DiscountCodesSection({ eventId }: DiscountCodesSectionProps) {
   const handleToggleActive = async (discountCode: DiscountCode, isActive: boolean) => {
     try {
       await updateDiscountCode.mutateAsync({ codeId: discountCode.id, is_active: isActive });
-      toast.success(`${discountCode.code} ${isActive ? 'activated' : 'paused'}`);
+      toast.success(
+        isActive
+          ? t('discountCodes.activatedToast', { code: discountCode.code })
+          : t('discountCodes.pausedToast', { code: discountCode.code })
+      );
     } catch (toggleError) {
-      toast.error(getErrorMessage(toggleError) || 'Failed to update discount code');
+      toast.error(getErrorMessage(toggleError) || t('discountCodes.updateError'));
     }
   };
 
@@ -64,10 +71,10 @@ export function DiscountCodesSection({ eventId }: DiscountCodesSectionProps) {
 
     try {
       await deleteDiscountCode.mutateAsync(pendingDeletion.id);
-      toast.success(`${pendingDeletion.code} deleted`);
+      toast.success(t('discountCodes.deletedToast', { code: pendingDeletion.code }));
       setPendingDeletion(null);
     } catch (deleteError) {
-      toast.error(getErrorMessage(deleteError) || 'Failed to delete discount code');
+      toast.error(getErrorMessage(deleteError) || t('discountCodes.deleteError'));
     }
   };
 
@@ -78,15 +85,15 @@ export function DiscountCodesSection({ eventId }: DiscountCodesSectionProps) {
       <div className='flex items-center justify-between gap-3'>
         <div>
           <h2 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-            Discount codes
+            {t('discountCodes.heading')}
           </h2>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            Percentage discounts buyers apply at checkout.
+            {t('discountCodes.subtitle')}
           </p>
         </div>
         <Button type='button' size='sm' onClick={openCreateSheet} className='shrink-0'>
           <Plus />
-          Add code
+          {t('discountCodes.addCode')}
         </Button>
       </div>
 
@@ -105,7 +112,7 @@ export function DiscountCodesSection({ eventId }: DiscountCodesSectionProps) {
       ) : error ? (
         <div className='rounded-2xl border border-gray-200 bg-white p-4 text-center dark:border-neutral-800 dark:bg-neutral-900'>
           <p className='text-sm text-gray-600 dark:text-neutral-400'>
-            {getErrorMessage(error) || 'Could not load discount codes.'}
+            {getErrorMessage(error) || t('discountCodes.loadError')}
           </p>
           <Button
             type='button'
@@ -114,17 +121,17 @@ export function DiscountCodesSection({ eventId }: DiscountCodesSectionProps) {
             onClick={() => void refetch()}
             className='mt-3 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800'
           >
-            Try again
+            {tCommon('actions.tryAgain')}
           </Button>
         </div>
       ) : codes.length === 0 ? (
         <div className='rounded-2xl border border-dashed border-gray-200 bg-white px-4 py-8 text-center dark:border-neutral-800 dark:bg-neutral-900'>
           <Percent className='mx-auto h-6 w-6 text-gray-400 dark:text-neutral-500' />
           <p className='mt-2 text-sm font-medium text-gray-900 dark:text-neutral-100'>
-            No discount codes yet
+            {t('discountCodes.emptyTitle')}
           </p>
           <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-            Create a code to offer early-bird, community, or partner pricing.
+            {t('discountCodes.emptyDescription')}
           </p>
         </div>
       ) : (
@@ -151,17 +158,24 @@ export function DiscountCodesSection({ eventId }: DiscountCodesSectionProps) {
                       {discountCode.code}
                     </span>
                     <span className='rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-950/60 dark:text-red-400'>
-                      {discountCode.percentage}% off
+                      {t('discountCodes.percentOff', { percentage: discountCode.percentage })}
                     </span>
                     {isExhausted ? (
                       <span className='rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'>
-                        Limit reached
+                        {t('discountCodes.limitReached')}
                       </span>
                     ) : null}
                   </div>
                   <p className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
-                    {discountCode.usage_count} / {discountCode.usage_limit} used
-                    {discountCode.is_active ? '' : ' · Paused'}
+                    {discountCode.is_active
+                      ? t('discountCodes.usage', {
+                          used: discountCode.usage_count,
+                          limit: discountCode.usage_limit,
+                        })
+                      : t('discountCodes.usagePaused', {
+                          used: discountCode.usage_count,
+                          limit: discountCode.usage_limit,
+                        })}
                   </p>
                 </div>
 
@@ -170,12 +184,16 @@ export function DiscountCodesSection({ eventId }: DiscountCodesSectionProps) {
                     checked={discountCode.is_active}
                     disabled={isToggling}
                     onCheckedChange={(checked) => void handleToggleActive(discountCode, checked)}
-                    aria-label={`${discountCode.is_active ? 'Pause' : 'Activate'} ${discountCode.code}`}
+                    aria-label={
+                      discountCode.is_active
+                        ? t('discountCodes.pauseAria', { code: discountCode.code })
+                        : t('discountCodes.activateAria', { code: discountCode.code })
+                    }
                   />
                   <button
                     type='button'
                     onClick={() => openEditSheet(discountCode)}
-                    aria-label={`Edit ${discountCode.code} usage limit`}
+                    aria-label={t('discountCodes.editAria', { code: discountCode.code })}
                     className='ml-1 rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100'
                   >
                     <Pencil className='h-4 w-4' />
@@ -183,7 +201,7 @@ export function DiscountCodesSection({ eventId }: DiscountCodesSectionProps) {
                   <button
                     type='button'
                     onClick={() => setPendingDeletion(discountCode)}
-                    aria-label={`Delete ${discountCode.code}`}
+                    aria-label={t('discountCodes.deleteAria', { code: discountCode.code })}
                     className='rounded-full p-2 text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40'
                   >
                     <Trash2 className='h-4 w-4' />
@@ -212,16 +230,19 @@ export function DiscountCodesSection({ eventId }: DiscountCodesSectionProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete {pendingDeletion?.code}?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t('discountCodes.deleteDialogTitle', { code: pendingDeletion?.code ?? '' })}
+            </AlertDialogTitle>
             <AlertDialogDescription className='dark:text-neutral-400'>
-              Buyers will no longer be able to use this code. This can&apos;t be undone
               {pendingDeletion && pendingDeletion.usage_count > 0
-                ? ' — to stop new redemptions while keeping its history, pause it instead.'
-                : '.'}
+                ? t('discountCodes.deleteDialogDescriptionUsed')
+                : t('discountCodes.deleteDialogDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteDiscountCode.isPending}>Keep</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleteDiscountCode.isPending}>
+              {t('discountCodes.keep')}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={(event) => {
                 event.preventDefault();
@@ -230,7 +251,9 @@ export function DiscountCodesSection({ eventId }: DiscountCodesSectionProps) {
               disabled={deleteDiscountCode.isPending}
               className='bg-red-600 hover:bg-red-700 focus:ring-red-600 dark:text-white'
             >
-              {deleteDiscountCode.isPending ? 'Deleting...' : 'Delete'}
+              {deleteDiscountCode.isPending
+                ? t('discountCodes.deleting')
+                : tCommon('actions.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -13,16 +13,24 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
+import { isAppLocale } from '@/i18n/config';
 import { useApiKeys, useApiKeysCount } from '@/lib/hooks/use-api-keys';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import type { ApiKey } from '@/lib/types/api-key.types';
 import { formatDistanceToNow } from 'date-fns';
+import { enUS, es, ptBR } from 'date-fns/locale';
 import { AlertCircle, Key, Plus, ShieldAlert } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+const DATE_FNS_LOCALES = { en: enUS, 'pt-BR': ptBR, es } as const;
+
 export default function ApiKeysPage() {
+  const t = useTranslations('settings');
+  const locale = useLocale();
+  const dateFnsLocale = isAppLocale(locale) ? DATE_FNS_LOCALES[locale] : enUS;
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const pathname = usePathname();
@@ -34,12 +42,14 @@ export default function ApiKeysPage() {
   const [revokeDialogOpen, setRevokeDialogOpen] = useState(false);
   const [selectedKey, setSelectedKey] = useState<{ id: string; name: string } | null>(null);
 
+  const topBarTitle = t('apiKeys.title');
+
   // Set TopBar content
   useEffect(() => {
     applyRouteConfig(pathname);
 
     setTopBarForRoute(pathname, {
-      title: 'API Keys',
+      title: topBarTitle,
       subtitle: undefined,
       showAvatar: false,
       leftMode: 'back',
@@ -49,7 +59,7 @@ export default function ApiKeysPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
+  }, [pathname, topBarTitle, setTopBarForRoute, applyRouteConfig, clearRoute]);
 
   const handleRevoke = (key: ApiKey) => {
     setSelectedKey({ id: key.id, name: key.name });
@@ -57,12 +67,15 @@ export default function ApiKeysPage() {
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Never';
+    if (!dateString) return t('apiKeys.never');
 
     try {
-      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+      return formatDistanceToNow(new Date(dateString), {
+        addSuffix: true,
+        locale: dateFnsLocale,
+      });
     } catch {
-      return 'Invalid date';
+      return t('apiKeys.invalidDate');
     }
   };
 
@@ -106,9 +119,11 @@ export default function ApiKeysPage() {
         <div className='mb-6'>
           <div className='mb-2 flex items-start justify-between'>
             <div>
-              <h1 className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>API Keys</h1>
+              <h1 className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+                {t('apiKeys.title')}
+              </h1>
               <p className='mt-1 text-sm text-gray-600 dark:text-neutral-400'>
-                Manage your API keys for Evento integrations
+                {t('apiKeys.description')}
               </p>
             </div>
           </div>
@@ -117,11 +132,15 @@ export default function ApiKeysPage() {
           <div className='mt-4 flex items-stretch gap-2'>
             <div className='flex flex-1 items-center rounded-lg bg-gray-100 px-3 dark:bg-neutral-800'>
               <p className='text-xs text-gray-600 dark:text-neutral-400'>
-                Active Keys:{' '}
-                <span className='font-semibold text-gray-900 dark:text-neutral-100'>
-                  {activeCount}
-                </span>{' '}
-                / {maxKeys}
+                {t.rich('apiKeys.activeCount', {
+                  count: activeCount,
+                  max: maxKeys,
+                  strong: (chunks) => (
+                    <span className='font-semibold text-gray-900 dark:text-neutral-100'>
+                      {chunks}
+                    </span>
+                  ),
+                })}
               </p>
             </div>
             <Button
@@ -130,7 +149,7 @@ export default function ApiKeysPage() {
               className='rounded-xl bg-red-500 text-white hover:bg-red-600 disabled:bg-gray-300 disabled:text-gray-500 dark:bg-red-600 dark:text-white dark:hover:bg-red-700 dark:disabled:bg-neutral-600 dark:disabled:text-neutral-400'
             >
               <Plus className='mr-1 h-4 w-4' />
-              Create Key
+              {t('apiKeys.createKey')}
             </Button>
           </div>
 
@@ -138,8 +157,7 @@ export default function ApiKeysPage() {
             <div className='mt-3 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950/40'>
               <AlertCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-600 dark:text-red-400' />
               <p className='text-sm text-red-800 dark:text-red-400'>
-                You&apos;ve reached the maximum of {maxKeys} API keys. Revoke an existing key to
-                create a new one.
+                {t('apiKeys.limitReached', { max: maxKeys })}
               </p>
             </div>
           )}
@@ -152,10 +170,8 @@ export default function ApiKeysPage() {
               <EmptyMedia variant='icon'>
                 <Key className='h-6 w-6' />
               </EmptyMedia>
-              <EmptyTitle>No API Keys</EmptyTitle>
-              <EmptyDescription>
-                Create your first API key to start integrating with Evento
-              </EmptyDescription>
+              <EmptyTitle>{t('apiKeys.emptyTitle')}</EmptyTitle>
+              <EmptyDescription>{t('apiKeys.emptyDescription')}</EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
               <Button
@@ -163,7 +179,7 @@ export default function ApiKeysPage() {
                 className='bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 <Plus className='mr-2 h-4 w-4' />
-                Create Your First Key
+                {t('apiKeys.createFirstKey')}
               </Button>
             </EmptyContent>
           </Empty>
@@ -195,19 +211,21 @@ export default function ApiKeysPage() {
                         : 'bg-gray-200 text-gray-700 hover:bg-gray-200 dark:bg-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-700'
                     }
                   >
-                    {key.status === 'active' ? 'Active' : 'Revoked'}
+                    {key.status === 'active'
+                      ? t('apiKeys.statusActive')
+                      : t('apiKeys.statusRevoked')}
                   </Badge>
                 </div>
 
                 <div className='mb-3 space-y-1 text-sm text-gray-600 dark:text-neutral-400'>
                   <div className='flex items-center justify-between'>
-                    <span>Created:</span>
+                    <span>{t('apiKeys.created')}</span>
                     <span className='font-medium text-gray-900 dark:text-neutral-100'>
                       {formatDate(key.created_at)}
                     </span>
                   </div>
                   <div className='flex items-center justify-between'>
-                    <span>Last used:</span>
+                    <span>{t('apiKeys.lastUsed')}</span>
                     <span className='font-medium text-gray-900 dark:text-neutral-100'>
                       {formatDate(key.last_used_at)}
                     </span>
@@ -221,7 +239,7 @@ export default function ApiKeysPage() {
                     onClick={() => handleRevoke(key)}
                     className='w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/40 dark:hover:text-red-400'
                   >
-                    Revoke Key
+                    {t('apiKeys.revokeKey')}
                   </Button>
                 )}
               </div>

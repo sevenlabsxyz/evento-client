@@ -1,14 +1,16 @@
 import { Skeleton } from '@/components/ui/skeleton';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import type { EventDashboard, EventSales } from '@/lib/types/manage';
 import { Clock, CreditCard, Ticket, Zap, type LucideIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export function formatSats(sats: number): string {
-  return Math.round(sats).toLocaleString();
+  return Math.round(sats).toLocaleString(getIntlLocale());
 }
 
 export function formatFiat(amount: number, currency: string): string {
   try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+    return new Intl.NumberFormat(getIntlLocale(), { style: 'currency', currency }).format(amount);
   } catch {
     // Unknown ISO code from the API; fall back to a plain amount.
     return `${amount.toFixed(2)} ${currency}`;
@@ -43,45 +45,50 @@ interface SalesSummaryProps {
 }
 
 export function SalesSummary({ summary, tickets }: SalesSummaryProps) {
+  const t = useTranslations('manage');
+  const intlLocale = getIntlLocale();
   const { sats, fiatEquivalent, currency } = summary.totalRevenue;
   const fiatUnavailable = sats > 0 && fiatEquivalent === 0;
   const revenueHint = fiatUnavailable
-    ? 'Fiat estimate unavailable'
-    : `≈ ${formatFiat(fiatEquivalent, currency)} at current rate`;
+    ? t('salesSummary.fiatUnavailable')
+    : t('salesSummary.atCurrentRate', { amount: formatFiat(fiatEquivalent, currency) });
 
   const ticketsSold = summary.totalTicketsSold;
   const soldPercent =
     tickets.capacity > 0 ? Math.min(100, Math.round((ticketsSold / tickets.capacity) * 100)) : 0;
   const ticketsHint =
     tickets.capacity > 0
-      ? `${soldPercent}% of ${tickets.capacity.toLocaleString()} available`
-      : 'No active ticket inventory';
+      ? t('salesSummary.percentOfAvailable', {
+          percent: soldPercent,
+          capacity: tickets.capacity.toLocaleString(intlLocale),
+        })
+      : t('salesSummary.noInventory');
 
   return (
     <div className='grid grid-cols-2 gap-3 lg:grid-cols-4'>
       <SummaryCard
         icon={Zap}
-        label='Total revenue'
-        value={`${formatSats(sats)} sats`}
+        label={t('salesSummary.totalRevenue')}
+        value={t('salesSummary.satsValue', { amount: formatSats(sats) })}
         hint={revenueHint}
       />
       <SummaryCard
         icon={Ticket}
-        label='Tickets sold'
-        value={ticketsSold.toLocaleString()}
+        label={t('salesSummary.ticketsSold')}
+        value={ticketsSold.toLocaleString(intlLocale)}
         hint={ticketsHint}
       />
       <SummaryCard
         icon={CreditCard}
-        label='Paid orders'
-        value={tickets.paidOrders.toLocaleString()}
-        hint='Completed payments'
+        label={t('salesSummary.paidOrders')}
+        value={tickets.paidOrders.toLocaleString(intlLocale)}
+        hint={t('salesSummary.completedPayments')}
       />
       <SummaryCard
         icon={Clock}
-        label='Pending orders'
-        value={tickets.pendingOrders.toLocaleString()}
-        hint='Awaiting payment'
+        label={t('salesSummary.pendingOrders')}
+        value={tickets.pendingOrders.toLocaleString(intlLocale)}
+        hint={t('salesSummary.awaitingPayment')}
       />
     </div>
   );

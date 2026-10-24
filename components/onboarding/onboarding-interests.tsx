@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAllInterests, useUserInterests } from '@/lib/hooks/use-user-interests';
 import { Interest } from '@/lib/types/api';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { OnboardingHeader } from './onboarding-header';
 
@@ -13,6 +14,7 @@ interface OnboardingInterestsProps {
 }
 
 export const OnboardingInterests = ({ onInterestsSelected }: OnboardingInterestsProps) => {
+  const t = useTranslations('onboarding.interests');
   const { data: userInterests, isLoading: isLoadingUserInterests } = useUserInterests();
   const { data: allInterests, isLoading: isLoadingAllInterests } = useAllInterests(true, false);
 
@@ -85,10 +87,7 @@ export const OnboardingInterests = ({ onInterestsSelected }: OnboardingInterests
         transition={{ duration: 0.2, ease: 'easeOut' }}
         className='w-full'
       >
-        <OnboardingHeader
-          title='What are you interested in?'
-          description='Select topics to personalize your feed (you can skip this step)'
-        />
+        <OnboardingHeader title={t('title')} description={t('description')} />
         <div className='mt-6 space-y-5'>
           {[1, 2, 3].map((i) => (
             <div key={i} className='space-y-2.5'>
@@ -114,10 +113,7 @@ export const OnboardingInterests = ({ onInterestsSelected }: OnboardingInterests
       transition={{ duration: 0.2, ease: 'easeOut' }}
       className='w-full'
     >
-      <OnboardingHeader
-        title='What are you interested in?'
-        description='Select topics to personalize your feed (you can skip this step)'
-      />
+      <OnboardingHeader title={t('title')} description={t('description')} />
       <div className='mt-6'>
         <InterestsSelector
           categories={categories}

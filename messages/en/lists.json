@@ -1,1 +1,119 @@
-{}
+{
+  "eventCount": "{count, plural, one {# event} other {# events}}",
+  "updated": "Updated {time}",
+  "exploreDiscover": "Explore Discover",
+  "searchEvents": "Search events",
+  "index": {
+    "topBarTitle": "Lists",
+    "eyebrow": "Lists",
+    "title": "Your saved events",
+    "description": "Save events you don’t want to miss and organize them into lists.",
+    "meta": "{saved, plural, one {# event} other {# events}} saved across {lists, plural, one {# list} other {# lists}}",
+    "loadError": "Couldn’t load your lists",
+    "yourLists": "Your lists",
+    "newList": "New list"
+  },
+  "detail": {
+    "topBarFallback": "List",
+    "loadError": "Couldn’t load this list",
+    "loadEventsError": "Couldn’t load saved events",
+    "notFoundTitle": "List not found",
+    "notFoundDescription": "This list may have been deleted, or the link isn’t quite right.",
+    "backToLists": "Back to your lists",
+    "allLists": "All lists",
+    "eyebrowDefault": "Default list",
+    "eyebrow": "List",
+    "upcomingCount": "{count} upcoming",
+    "findEvents": "Find events",
+    "filters": {
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "all": "All"
+    },
+    "sort": {
+      "added": "Date added",
+      "eventDate": "Event date"
+    },
+    "sortAria": {
+      "added": "Sort by date added",
+      "eventDate": "Sort by event date"
+    },
+    "sortBy": "Sort by",
+    "emptyTitle": "No events in this list yet",
+    "emptyDescription": "Open any event and tap the bookmark at the top to save it here.",
+    "noUpcomingTitle": "No upcoming events",
+    "noUpcomingDescription": "Everything saved in this list has already happened.",
+    "noPastTitle": "No past events",
+    "noPastDescription": "Events move here once they’ve ended.",
+    "showPast": "Show past events",
+    "showUpcoming": "Show upcoming events",
+    "eventsInList": "Events in {name}",
+    "removedTitle": "Removed from list",
+    "removedMessage": "“{title}” was removed from {list}.",
+    "undo": "Undo",
+    "removeFailed": "Couldn’t remove event",
+    "restoreFailed": "Couldn’t restore event"
+  },
+  "card": {
+    "default": "Default"
+  },
+  "actionsMenu": {
+    "ariaLabel": "Actions for {name}",
+    "renameList": "Rename list",
+    "rename": "Rename",
+    "deleteList": "Delete list"
+  },
+  "deleteDialog": {
+    "title": "Delete “{name}”?",
+    "descriptionWithCount": "This removes the list along with the {count, plural, one {# event} other {# events}} saved in it. The events themselves aren’t affected. This can’t be undone.",
+    "description": "This removes the list. The events themselves aren’t affected. This can’t be undone.",
+    "confirm": "Delete list",
+    "toastTitle": "List deleted",
+    "toastMessage": "\"{name}\" was deleted.",
+    "failed": "Couldn’t delete list"
+  },
+  "form": {
+    "renameTitle": "Rename list",
+    "newTitle": "New list",
+    "renameSubtitle": "Update the name or description of this list.",
+    "newSubtitle": "Group saved events however you like — a trip, a scene, a weekend.",
+    "savedTitle": "List saved",
+    "savedMessage": "Your list has been updated.",
+    "createdTitle": "List created",
+    "createdMessage": "\"{name}\" is ready for events.",
+    "createList": "Create list",
+    "creating": "Creating…",
+    "description": "Description",
+    "optional": "(optional)",
+    "namePlaceholder": "e.g. Summer in Lisbon",
+    "descriptionPlaceholder": "What ties these events together?"
+  },
+  "nameErrors": {
+    "required": "Give your list a name.",
+    "tooLong": "Keep it under {max} characters.",
+    "duplicate": "You already have a list with this name."
+  },
+  "eventCard": {
+    "removeAria": "Remove {title} from {list}",
+    "removeTitle": "Remove from list"
+  },
+  "emptyState": {
+    "title": "Nothing saved yet",
+    "description": "Keep track of events you don’t want to miss. Everything you save shows up here, grouped into lists.",
+    "stepLabel": "Step {number}: ",
+    "steps": {
+      "find": {
+        "title": "Find an event",
+        "description": "Browse Discover in your hub or search for events and hosts."
+      },
+      "bookmark": {
+        "title": "Tap the bookmark",
+        "description": "On any event page, tap the bookmark at the top to save it."
+      },
+      "pick": {
+        "title": "Pick your lists",
+        "description": "Save it to your default list or to any list you create."
+      }
+    }
+  }
+}

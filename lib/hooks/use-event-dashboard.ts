@@ -1,4 +1,5 @@
 import apiClient from '@/lib/api/client';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { queryKeys } from '@/lib/query-client';
 import type { ApiError, ApiResponse } from '@/lib/types/api';
 import type { EventDashboard } from '@/lib/types/manage';
@@ -18,7 +19,7 @@ async function getEventDashboard(eventId: string): Promise<EventDashboard> {
     return response.data;
   }
 
-  const error: ApiError = { success: false, message: 'Failed to load event dashboard' };
+  const error: ApiError = { success: false, message: translateHooks('events.dashboardLoadFailed') };
   throw error;
 }
 

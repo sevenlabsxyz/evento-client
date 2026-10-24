@@ -1,9 +1,11 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import type { Translator } from '@/lib/i18n/types';
 import type { EventDashboard } from '@/lib/types/manage';
 import { cn } from '@/lib/utils';
 import { Check, ChevronRight, PartyPopper } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 interface SetupChecklistProps {
@@ -20,21 +22,37 @@ interface ChecklistItem {
   hint?: string;
 }
 
-function buildChecklist(dashboard: EventDashboard, onInviteGuests: () => void): ChecklistItem[] {
+type ManageT = Translator<'manage'>;
+
+function buildChecklist(
+  dashboard: EventDashboard,
+  onInviteGuests: () => void,
+  t: ManageT
+): ChecklistItem[] {
   const { event, registration, tickets, communications, invites, rsvps } = dashboard;
   const base = `/e/${event.id}/manage`;
   const items: ChecklistItem[] = [
-    { id: 'cover', label: 'Add a cover image', done: !!event.cover, href: `${base}/details` },
+    {
+      id: 'cover',
+      label: t('setupChecklist.items.cover'),
+      done: !!event.cover,
+      href: `${base}/details`,
+    },
     {
       id: 'description',
-      label: 'Write a description',
+      label: t('setupChecklist.items.description'),
       done: event.has_description,
       href: `${base}/details`,
     },
-    { id: 'location', label: 'Set a location', done: event.has_location, href: `${base}/details` },
+    {
+      id: 'location',
+      label: t('setupChecklist.items.location'),
+      done: event.has_location,
+      href: `${base}/details`,
+    },
     {
       id: 'date',
-      label: 'Set the date and time',
+      label: t('setupChecklist.items.date'),
       done: !!event.computed_start_date,
       href: `${base}/details`,
     },
@@ -43,7 +61,7 @@ function buildChecklist(dashboard: EventDashboard, onInviteGuests: () => void): 
   if (registration && (event.type === 'registration' || registration.required)) {
     items.push({
       id: 'registration-questions',
-      label: 'Add registration questions',
+      label: t('setupChecklist.items.registrationQuestions'),
       done: registration.questionCount > 0,
       href: `${base}/registration`,
     });
@@ -52,7 +70,7 @@ function buildChecklist(dashboard: EventDashboard, onInviteGuests: () => void): 
   if (tickets) {
     items.push({
       id: 'ticket-types',
-      label: 'Create an active ticket type',
+      label: t('setupChecklist.items.ticketTypes'),
       done: tickets.activeTypesCount > 0,
       href: `${base}/tickets`,
     });
@@ -61,21 +79,21 @@ function buildChecklist(dashboard: EventDashboard, onInviteGuests: () => void): 
   items.push(
     {
       id: 'reminders',
-      label: 'Configure guest reminders',
+      label: t('setupChecklist.items.reminders'),
       done: communications.reminders.offsets.length > 0,
       href: `${base}/reminders`,
     },
     {
       id: 'invites',
-      label: 'Invite your first guests',
+      label: t('setupChecklist.items.invites'),
       done: invites.total > 0 || rsvps.total > 1,
       onClick: onInviteGuests,
     },
     {
       id: 'published',
-      label: 'Publish your event',
+      label: t('setupChecklist.items.published'),
       done: event.status !== 'draft',
-      hint: 'Use Publish in the header above',
+      hint: t('setupChecklist.items.publishedHint'),
     }
   );
 
@@ -83,7 +101,8 @@ function buildChecklist(dashboard: EventDashboard, onInviteGuests: () => void): 
 }
 
 export function SetupChecklist({ dashboard, onInviteGuests }: SetupChecklistProps) {
-  const items = buildChecklist(dashboard, onInviteGuests);
+  const t = useTranslations('manage');
+  const items = buildChecklist(dashboard, onInviteGuests, t);
   const doneCount = items.filter((item) => item.done).length;
   const allDone = doneCount === items.length;
 
@@ -94,9 +113,11 @@ export function SetupChecklist({ dashboard, onInviteGuests }: SetupChecklistProp
           <PartyPopper className='h-4 w-4' />
         </div>
         <div>
-          <p className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>All set</p>
+          <p className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+            {t('setupChecklist.allSetTitle')}
+          </p>
           <p className='text-xs text-gray-500 dark:text-neutral-400'>
-            Your event is ready for guests.
+            {t('setupChecklist.allSetDescription')}
           </p>
         </div>
       </section>
@@ -108,7 +129,9 @@ export function SetupChecklist({ dashboard, onInviteGuests }: SetupChecklistProp
   return (
     <section className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
       <div className='mb-3 flex items-center justify-between'>
-        <h2 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>Get ready</h2>
+        <h2 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
+          {t('setupChecklist.title')}
+        </h2>
         <span className='text-sm tabular-nums text-gray-500 dark:text-neutral-400'>
           {doneCount}/{items.length}
         </span>

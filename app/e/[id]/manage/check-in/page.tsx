@@ -14,6 +14,7 @@ import type { CheckInResult } from '@/lib/types/manage';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { logger } from '@/lib/utils/logger';
 import { AlertCircle, Loader2, QrCode, ScanLine, Ticket } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { type FormEvent, useEffect, useState } from 'react';
@@ -23,13 +24,14 @@ export default function EventCheckInPage() {
   const pathname = usePathname();
   const router = useRouter();
   const eventId = params.id as string;
+  const t = useTranslations('manage');
   const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const { data: dashboard, isLoading, error, refetch, isRefetching } = useEventDashboard(eventId);
 
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Check-in',
+      title: t('checkInPage.topBarTitle'),
       leftMode: 'back',
       centerMode: 'title',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
@@ -41,7 +43,7 @@ export default function EventCheckInPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
+  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute, t]);
 
   if (isLoading) {
     return <CheckInSkeleton />;
@@ -56,8 +58,8 @@ export default function EventCheckInPage() {
     return (
       <div className='py-4 md:py-6'>
         <ErrorCard
-          title='Check-in unavailable'
-          message={getErrorMessage(error) || "We couldn't load this event."}
+          title={t('checkInPage.unavailableTitle')}
+          message={getErrorMessage(error) || t('checkInPage.loadEventFallback')}
           onRetry={() => refetch()}
           isRetrying={isRefetching}
         />
@@ -73,18 +75,18 @@ export default function EventCheckInPage() {
             <Ticket className='h-6 w-6 text-gray-500 dark:text-neutral-400' />
           </div>
           <h2 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-            Check-in is for ticketed events
+            {t('checkInPage.notTicketedTitle')}
           </h2>
           <p className='mx-auto mt-2 max-w-sm text-sm text-gray-500 dark:text-neutral-400'>
-            Door check-in scans the QR code on each guest&apos;s ticket. This event uses{' '}
-            {dashboard.event.type === 'rsvp' ? 'RSVPs' : 'registration'}, so there are no tickets to
-            scan. Use the guest list to see who&apos;s coming.
+            {dashboard.event.type === 'rsvp'
+              ? t('checkInPage.notTicketedBodyRsvp')
+              : t('checkInPage.notTicketedBodyRegistration')}
           </p>
           <Link
             href={`/e/${eventId}/manage/guests`}
             className='mt-5 inline-flex h-10 items-center justify-center rounded-full bg-gray-900 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
           >
-            View guest list
+            {t('checkInPage.viewGuestList')}
           </Link>
         </div>
       </div>
@@ -95,6 +97,7 @@ export default function EventCheckInPage() {
 }
 
 function TicketedCheckIn({ eventId }: { eventId: string }) {
+  const t = useTranslations('manage');
   const { data, isLoading, error, refetch, isRefetching } = useEventAttendees(eventId);
   const { mutateAsync: checkInAsync, isPending: isCheckingIn } = useCheckIn(eventId);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -117,7 +120,7 @@ function TicketedCheckIn({ eventId }: { eventId: string }) {
       logger.error('Manual token check-in failed', { error: getErrorMessage(submitError) });
       setManualResult({
         valid: false,
-        error: getErrorMessage(submitError) || 'Check-in failed. Please try again.',
+        error: getErrorMessage(submitError) || t('checkInPage.checkInFailed'),
       });
     }
   };
@@ -130,8 +133,8 @@ function TicketedCheckIn({ eventId }: { eventId: string }) {
     return (
       <div className='py-4 md:py-6'>
         <ErrorCard
-          title='Attendees unavailable'
-          message={getErrorMessage(error) || "We couldn't load the attendee list."}
+          title={t('checkInPage.attendeesUnavailable')}
+          message={getErrorMessage(error) || t('checkInPage.loadAttendeesFallback')}
           onRetry={() => refetch()}
           isRetrying={isRefetching}
         />
@@ -147,10 +150,12 @@ function TicketedCheckIn({ eventId }: { eventId: string }) {
     <div className='space-y-4 py-4 md:py-6'>
       <div className='grid gap-4 md:grid-cols-2'>
         <section
-          aria-label='Check-in progress'
+          aria-label={t('checkInPage.progressLabel')}
           className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'
         >
-          <p className='text-sm font-medium text-gray-500 dark:text-neutral-400'>Checked in</p>
+          <p className='text-sm font-medium text-gray-500 dark:text-neutral-400'>
+            {t('checkInPage.checkedIn')}
+          </p>
           <div className='mt-1 flex items-baseline gap-1.5'>
             <span className='text-3xl font-semibold tabular-nums text-gray-900 dark:text-neutral-100'>
               {checkedIn}
@@ -164,7 +169,7 @@ function TicketedCheckIn({ eventId }: { eventId: string }) {
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={percent}
-            aria-label='Checked-in percentage'
+            aria-label={t('checkInPage.progressBarLabel')}
             className='mt-3 h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-neutral-800'
           >
             <div
@@ -174,13 +179,13 @@ function TicketedCheckIn({ eventId }: { eventId: string }) {
           </div>
           <p className='mt-2 text-xs text-gray-500 dark:text-neutral-400'>
             {total === 0
-              ? 'No tickets issued yet'
-              : `${percent}% arrived · ${remaining} still to check in`}
+              ? t('checkInPage.noTickets')
+              : t('checkInPage.progress', { percent, remaining })}
           </p>
         </section>
 
         <section
-          aria-label='Check in a ticket'
+          aria-label={t('checkInPage.checkInSectionLabel')}
           className='space-y-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'
         >
           <button
@@ -189,7 +194,7 @@ function TicketedCheckIn({ eventId }: { eventId: string }) {
             className='flex h-11 w-full items-center justify-center gap-2 rounded-full bg-gray-900 text-sm font-semibold text-white transition-colors hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
           >
             <ScanLine className='h-5 w-5' />
-            Scan tickets
+            {t('checkInPage.scanTickets')}
           </button>
 
           <form onSubmit={handleManualSubmit} className='flex gap-2'>
@@ -198,8 +203,8 @@ function TicketedCheckIn({ eventId }: { eventId: string }) {
               <input
                 value={manualToken}
                 onChange={(event) => setManualToken(event.target.value)}
-                placeholder='Paste ticket code'
-                aria-label='Ticket code'
+                placeholder={t('checkInPage.codePlaceholder')}
+                aria-label={t('checkInPage.codeLabel')}
                 autoComplete='off'
                 autoCapitalize='off'
                 spellCheck={false}
@@ -212,7 +217,7 @@ function TicketedCheckIn({ eventId }: { eventId: string }) {
               className='flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-gray-200 px-4 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-neutral-700 dark:text-neutral-100 dark:hover:bg-neutral-800'
             >
               {isCheckingIn ? <Loader2 className='h-4 w-4 animate-spin' /> : null}
-              Check in
+              {t('checkInPage.checkIn')}
             </button>
           </form>
 
@@ -240,6 +245,8 @@ function ErrorCard({
   onRetry: () => void;
   isRetrying: boolean;
 }) {
+  const tCommon = useTranslations('common');
+
   return (
     <div className='rounded-2xl border border-gray-200 bg-white px-6 py-10 text-center dark:border-neutral-800 dark:bg-neutral-900'>
       <div className='mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/50'>
@@ -254,15 +261,21 @@ function ErrorCard({
         className='mt-5 inline-flex h-10 items-center justify-center gap-2 rounded-full bg-gray-900 px-4 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
       >
         {isRetrying ? <Loader2 className='h-4 w-4 animate-spin' /> : null}
-        Try again
+        {tCommon('actions.tryAgain')}
       </button>
     </div>
   );
 }
 
 function CheckInSkeleton() {
+  const t = useTranslations('manage');
+
   return (
-    <div className='space-y-4 py-4 md:py-6' aria-busy='true' aria-label='Loading check-in'>
+    <div
+      className='space-y-4 py-4 md:py-6'
+      aria-busy='true'
+      aria-label={t('checkInPage.loadingLabel')}
+    >
       <div className='grid gap-4 md:grid-cols-2'>
         <div className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
           <Skeleton className='h-4 w-20' />

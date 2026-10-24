@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, Check, Copy, Eye, EyeOff } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface SeedBackupProps {
@@ -13,6 +14,8 @@ interface SeedBackupProps {
 }
 
 export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) {
+  const t = useTranslations('wallet');
+  const tCommon = useTranslations('common');
   const [showSeed, setShowSeed] = useState(false);
   const [copied, setCopied] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
@@ -24,57 +27,53 @@ export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) 
     try {
       await navigator.clipboard.writeText(mnemonic);
       setCopied(true);
-      toast.success('Recovery phrase copied to clipboard');
+      toast.success(t('seedBackup.copied'));
       setTimeout(() => setCopied(false), 3000);
     } catch (error) {
-      toast.error('Failed to copy recovery phrase');
+      toast.error(t('seedBackup.copyFailed'));
     }
   };
 
   const handleComplete = () => {
     if (!confirmed) {
-      toast.error('Please confirm you have saved your recovery phrase');
+      toast.error(t('seedBackup.confirmRequired'));
       return;
     }
     markAsBackedUp();
-    toast.success('Wallet backed up successfully!');
+    toast.success(t('seedBackup.success'));
     onComplete();
   };
 
   return (
     <div className='space-y-6'>
       <div className='text-center'>
-        <h2 className='text-2xl font-bold'>Your Recovery Phrase</h2>
-        <p className='mt-2 text-sm text-muted-foreground'>
-          Write down these 12 words in order and store them safely
-        </p>
+        <h2 className='text-2xl font-bold'>{t('seedBackup.title')}</h2>
+        <p className='mt-2 text-sm text-muted-foreground'>{t('seedBackup.description')}</p>
       </div>
 
       <div className='rounded-2xl bg-red-50 p-4 dark:border dark:border-red-900 dark:bg-red-950/40'>
         <div className='flex gap-3'>
           <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400' />
           <div className='text-sm text-red-900 dark:text-red-400'>
-            <p className='font-medium'>Keep this private</p>
-            <p className='mt-1'>
-              Anyone with these words can access your wallet. Store them securely offline.
-            </p>
+            <p className='font-medium'>{t('seedBackup.keepPrivate')}</p>
+            <p className='mt-1'>{t('seedBackup.keepPrivateDescription')}</p>
           </div>
         </div>
       </div>
 
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
-          <span className='text-sm font-medium'>Your Recovery Phrase</span>
+          <span className='text-sm font-medium'>{t('seedBackup.title')}</span>
           <Button variant='ghost' size='sm' onClick={() => setShowSeed(!showSeed)}>
             {showSeed ? (
               <>
                 <EyeOff className='mr-2 h-4 w-4' />
-                Hide
+                {t('seedBackup.hide')}
               </>
             ) : (
               <>
                 <Eye className='mr-2 h-4 w-4' />
-                Show
+                {t('seedBackup.show')}
               </>
             )}
           </Button>
@@ -101,12 +100,12 @@ export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) 
             {copied ? (
               <>
                 <Check className='mr-2 h-4 w-4' />
-                Copied!
+                {t('seedBackup.copiedButton')}
               </>
             ) : (
               <>
                 <Copy className='mr-2 h-4 w-4' />
-                Copy to Clipboard
+                {t('seedBackup.copyToClipboard')}
               </>
             )}
           </Button>
@@ -121,7 +120,7 @@ export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) 
             className='mt-1 h-4 w-4 rounded border-gray-300 dark:border-neutral-700'
           />
           <label htmlFor='confirm' className='text-sm'>
-            I&apos;ve saved my recovery phrase in a safe place
+            {t('seedBackup.savedConfirm')}
           </label>
         </div>
       </div>
@@ -133,10 +132,10 @@ export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) 
           className='w-full rounded-full'
           size='lg'
         >
-          Done
+          {tCommon('actions.done')}
         </Button>
         <Button onClick={onCancel} variant='ghost' className='w-full rounded-full'>
-          Cancel
+          {tCommon('actions.cancel')}
         </Button>
       </div>
     </div>

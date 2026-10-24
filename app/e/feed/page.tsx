@@ -30,10 +30,13 @@ import {
   Users,
   X,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export default function FeedPage() {
+  const t = useTranslations('misc.feed');
+  const tCommon = useTranslations('common');
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const [activeTab, setActiveTab] = useState('feed');
@@ -118,10 +121,10 @@ export default function FeedPage() {
 
   // Define recent and suggested searches
   const suggestedSearches = [
-    { icon: <Calendar className='h-4 w-4' />, text: 'Events this weekend' },
-    { icon: <MapPin className='h-4 w-4' />, text: 'Events near me' },
-    { icon: <Users className='h-4 w-4' />, text: 'Popular events' },
-    { icon: <Clock className='h-4 w-4' />, text: 'Upcoming events' },
+    { icon: <Calendar className='h-4 w-4' />, text: t('suggested.weekend') },
+    { icon: <MapPin className='h-4 w-4' />, text: t('suggested.nearMe') },
+    { icon: <Users className='h-4 w-4' />, text: t('suggested.popular') },
+    { icon: <Clock className='h-4 w-4' />, text: t('suggested.upcoming') },
   ];
 
   // Toggle view mode function with useCallback to prevent infinite rerenders
@@ -137,7 +140,7 @@ export default function FeedPage() {
 
     // Set configuration for this specific route
     setTopBarForRoute(pathname, {
-      title: 'Feed',
+      title: t('topBarTitle'),
       showAvatar: true,
       leftMode: 'menu',
       subtitle: '',
@@ -147,13 +150,13 @@ export default function FeedPage() {
           id: 'viewMode',
           icon: feedViewMode === 'card' ? LayoutList : LayoutGrid,
           onClick: toggleViewMode,
-          label: feedViewMode === 'card' ? 'Switch to compact view' : 'Switch to card view',
+          label: feedViewMode === 'card' ? t('switchToCompact') : t('switchToCard'),
         },
         {
           id: 'search',
           icon: Search,
           onClick: () => setShowSearchSheet(true),
-          label: 'Search events',
+          label: t('searchEvents'),
         },
       ],
     });
@@ -162,7 +165,7 @@ export default function FeedPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig, router, feedViewMode]);
+  }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig, router, feedViewMode, t]);
 
   // Fetch events feed
   const { data: rawEvents = [], isLoading, error } = useEventsFeed();
@@ -238,10 +241,10 @@ export default function FeedPage() {
       const newBookmarkedEvents = new Set(bookmarkedEvents);
       if (bookmarkedEvents.has(eventId)) {
         newBookmarkedEvents.delete(eventId);
-        toast.success('Event removed from saved!');
+        toast.success(t('removedFromSaved'));
       } else {
         newBookmarkedEvents.add(eventId);
-        toast.success(`Event saved to "${savedLists[0].name}"!`);
+        toast.success(t('savedTo', { list: savedLists[0].name }));
       }
       setBookmarkedEvents(newBookmarkedEvents);
     } else {
@@ -255,7 +258,7 @@ export default function FeedPage() {
       const newBookmarkedEvents = new Set(bookmarkedEvents);
       newBookmarkedEvents.add(selectedEventId);
       setBookmarkedEvents(newBookmarkedEvents);
-      toast.success(`Event saved to "${listName}"!`);
+      toast.success(t('savedTo', { list: listName }));
     }
     setShowSaveModal(false);
     setSelectedEventId(null);
@@ -305,7 +308,7 @@ export default function FeedPage() {
               className='flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
             >
               <ArrowDownAZ className='mr-1.5 h-3.5 w-3.5' />
-              Sort
+              {t('sort')}
             </button>
 
             {sortMenuOpen && (
@@ -322,7 +325,7 @@ export default function FeedPage() {
                   }`}
                 >
                   <Clock className='mr-2 h-3.5 w-3.5' />
-                  Newest first
+                  {t('newestFirst')}
                 </button>
                 <button
                   onClick={() => {
@@ -336,7 +339,7 @@ export default function FeedPage() {
                   }`}
                 >
                   <Clock className='mr-2 h-3.5 w-3.5' />
-                  Oldest first
+                  {t('oldestFirst')}
                 </button>
               </div>
             )}
@@ -353,7 +356,7 @@ export default function FeedPage() {
               }`}
             >
               <LayoutGrid className='mr-1.5 h-3.5 w-3.5' />
-              Card
+              {t('cardView')}
             </button>
             <button
               onClick={() => setFeedViewMode('compact')}
@@ -364,27 +367,25 @@ export default function FeedPage() {
               }`}
             >
               <LayoutList className='mr-1.5 h-3.5 w-3.5' />
-              List
+              {t('listView')}
             </button>
           </div>
         </div>
 
         {error ? (
           <div className='flex flex-col items-center justify-center px-4 py-12'>
-            <p className='mb-4 text-center text-gray-500 dark:text-neutral-400'>
-              Failed to load events. Please try again.
-            </p>
+            <p className='mb-4 text-center text-gray-500 dark:text-neutral-400'>{t('loadError')}</p>
             <Button onClick={() => window.location.reload()} variant='outline'>
-              Retry
+              {tCommon('actions.retry')}
             </Button>
           </div>
         ) : events.length === 0 && !isLoading ? (
           <div className='flex flex-col items-center justify-center px-4 py-12'>
             <p className='mb-2 text-center text-gray-500 dark:text-neutral-400'>
-              No events in your feed yet
+              {t('emptyTitle')}
             </p>
             <p className='text-center text-sm text-gray-400 dark:text-neutral-400'>
-              Follow other users or create your first event to see updates here
+              {t('emptyDescription')}
             </p>
           </div>
         ) : feedViewMode === 'compact' ? (
@@ -419,7 +420,7 @@ export default function FeedPage() {
       {showSaveModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 dark:bg-black/70'>
           <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
-            <h3 className='mb-4 text-xl font-bold'>Save to List</h3>
+            <h3 className='mb-4 text-xl font-bold'>{t('saveToList')}</h3>
             <div className='space-y-2'>
               {savedLists.map((list) => (
                 <button
@@ -434,7 +435,7 @@ export default function FeedPage() {
                     <span className='font-medium'>{list.name}</span>
                     {list.isDefault && (
                       <span className='rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800 dark:bg-red-950/60 dark:text-red-400'>
-                        Default
+                        {t('defaultList')}
                       </span>
                     )}
                   </div>
@@ -450,7 +451,7 @@ export default function FeedPage() {
               }}
               className='mt-4 w-full'
             >
-              Cancel
+              {tCommon('actions.cancel')}
             </Button>
           </div>
         </div>
@@ -479,7 +480,7 @@ export default function FeedPage() {
                     type='text'
                     value={searchText}
                     onChange={handleSearchChange}
-                    placeholder='Search events, people, places...'
+                    placeholder={t('searchPlaceholder')}
                     className='w-full rounded-full bg-gray-100 py-2 pl-10 pr-4 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-neutral-800 dark:text-neutral-100 dark:caret-neutral-100 dark:placeholder:text-neutral-400 dark:focus:bg-neutral-900'
                     autoFocus
                     onFocus={() => setActiveDetent(2)}
@@ -515,7 +516,7 @@ export default function FeedPage() {
                           // Results
                           <div>
                             <h3 className='mb-4 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                              Results for &quot;{searchText}&quot;
+                              {t('resultsFor', { query: searchText })}
                             </h3>
                             <div className='space-y-2'>
                               {searchResults.map((user) => (
@@ -555,7 +556,7 @@ export default function FeedPage() {
                           // No results
                           <div className='py-8 text-center'>
                             <p className='text-gray-500 dark:text-neutral-400'>
-                              No results found for &quot;{searchText}&quot;
+                              {t('noResultsFor', { query: searchText })}
                             </p>
                           </div>
                         )}
@@ -568,14 +569,14 @@ export default function FeedPage() {
                           <div>
                             <div className='mb-3 flex items-center justify-between'>
                               <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                                Recent
+                                {t('recent')}
                               </h3>
                               {recentSearches.length > 0 && (
                                 <button
                                   onClick={clearRecentSearches}
                                   className='text-xs text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-400'
                                 >
-                                  Clear all
+                                  {t('clearAll')}
                                 </button>
                               )}
                             </div>
@@ -616,7 +617,7 @@ export default function FeedPage() {
                         {/* Suggested Searches */}
                         <div>
                           <h3 className='mb-3 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                            Suggestions
+                            {t('suggestions')}
                           </h3>
                           <div className='space-y-2'>
                             {suggestedSearches.map((suggestion, index) => (
@@ -642,7 +643,7 @@ export default function FeedPage() {
                         {/* Trending */}
                         <div>
                           <h3 className='mb-3 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                            Trending
+                            {t('trending')}
                           </h3>
                           <div className='flex flex-wrap gap-2'>
                             {[

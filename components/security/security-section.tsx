@@ -1,6 +1,11 @@
-import type { SecurityLink, SecuritySectionContent } from '@/components/security/security-content';
+import {
+  SECURITY_CONTACT_EMAIL,
+  type SecurityLink,
+  type SecuritySectionContent,
+} from '@/components/security/security-content';
 import { cn } from '@/lib/utils';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
@@ -44,6 +49,7 @@ interface SecuritySectionProps {
 }
 
 export function SecuritySection({ section }: SecuritySectionProps) {
+  const t = useTranslations('security');
   const headingId = `${section.id}-heading`;
 
   return (
@@ -56,22 +62,24 @@ export function SecuritySection({ section }: SecuritySectionProps) {
         id={headingId}
         className='text-xl font-semibold tracking-tight text-gray-900 dark:text-neutral-100'
       >
-        {section.title}
+        {t(`sections.${section.key}.title`)}
       </h2>
-      <p className='mt-1 text-sm text-gray-500 dark:text-neutral-500'>{section.summary}</p>
+      <p className='mt-1 text-sm text-gray-500 dark:text-neutral-500'>
+        {t(`sections.${section.key}.summary`)}
+      </p>
 
       <ul className='mt-5 space-y-3.5'>
         {section.points.map((point) => (
-          <li key={point.title} className='flex gap-3 text-[15px] leading-relaxed'>
+          <li key={point.key} className='flex gap-3 text-[15px] leading-relaxed'>
             <span
               aria-hidden='true'
               className='mt-[0.6rem] h-1.5 w-1.5 shrink-0 rounded-full bg-red-500 dark:bg-red-400'
             />
             <p className='min-w-0 text-gray-600 dark:text-neutral-400'>
               <span className='font-semibold text-gray-900 dark:text-neutral-100'>
-                {point.title}.
+                {t(`points.${point.key}.title`)}.
               </span>{' '}
-              {point.body}
+              {t(`points.${point.key}.body`, { email: SECURITY_CONTACT_EMAIL })}
               {point.link && (
                 <>
                   {' '}
@@ -82,7 +90,7 @@ export function SecuritySection({ section }: SecuritySectionProps) {
                       FOCUS_RING_CLASS
                     )}
                   >
-                    {point.link.label}
+                    {t(`links.${point.link.labelKey}`)}
                     {point.link.external ? (
                       <ArrowUpRight className='h-3.5 w-3.5' aria-hidden='true' />
                     ) : (
@@ -109,7 +117,7 @@ export function SecuritySection({ section }: SecuritySectionProps) {
                   : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-neutral-100'
               )}
             >
-              {action.label}
+              {t(`links.${action.labelKey}`)}
             </SecurityLinkAnchor>
           ))}
         </div>

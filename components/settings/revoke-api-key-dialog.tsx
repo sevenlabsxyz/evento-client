@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useRevokeApiKey } from '@/lib/hooks/use-api-keys';
 import { toast } from '@/lib/utils/toast';
+import { useTranslations } from 'next-intl';
 
 interface RevokeApiKeyDialogProps {
   open: boolean;
@@ -26,6 +27,8 @@ export function RevokeApiKeyDialog({
   apiKeyId,
   apiKeyName,
 }: RevokeApiKeyDialogProps) {
+  const t = useTranslations('settings');
+  const tCommon = useTranslations('common');
   const revokeApiKey = useRevokeApiKey();
 
   const handleRevoke = async () => {
@@ -33,13 +36,13 @@ export function RevokeApiKeyDialog({
 
     try {
       await revokeApiKey.mutateAsync(apiKeyId);
-      toast.success('API key revoked successfully');
+      toast.success(t('revokeApiKey.success'));
       onOpenChange(false);
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to revoke API key');
+        toast.error(t('revokeApiKey.failed'));
       }
     }
   };
@@ -48,20 +51,21 @@ export function RevokeApiKeyDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Revoke API Key</AlertDialogTitle>
+          <AlertDialogTitle>{t('revokeApiKey.title')}</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to revoke &quot;{apiKeyName}&quot;? This action cannot be undone
-            and any applications using this key will immediately lose access.
+            {t('revokeApiKey.description', { name: apiKeyName ?? '' })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={revokeApiKey.isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={revokeApiKey.isPending}>
+            {tCommon('actions.cancel')}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleRevoke}
             disabled={revokeApiKey.isPending}
             className='bg-red-600 hover:bg-red-700 focus:ring-red-600'
           >
-            {revokeApiKey.isPending ? 'Revoking...' : 'Revoke Key'}
+            {revokeApiKey.isPending ? t('revokeApiKey.revoking') : t('revokeApiKey.confirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

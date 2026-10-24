@@ -11,12 +11,14 @@ import {
 } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useContacts } from '@/lib/hooks/use-contacts';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { logger } from '@/lib/utils/logger';
 import { getWalletPaymentDisplayData } from '@/lib/utils/wallet-payment-display';
 import type { Payment } from '@breeztech/breez-sdk-spark/ssr';
 import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, XCircle } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface TransactionHistoryProps {
@@ -39,6 +41,8 @@ export function TransactionHistory({
   maxTransactions,
 }: TransactionHistoryProps) {
   const { balanceHidden } = useWalletPreferences();
+  const t = useTranslations('wallet');
+  const locale = getIntlLocale(useLocale());
   const { findContactByAddress } = useContacts();
   const [usdPrices, setUsdPrices] = useState<Record<string, number>>({});
 
@@ -126,12 +130,12 @@ export function TransactionHistory({
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffMins < 1) return t('history.justNow');
+    if (diffMins < 60) return t('history.minutesAgo', { count: diffMins });
+    if (diffHours < 24) return t('history.hoursAgo', { count: diffHours });
+    if (diffDays < 7) return t('history.daysAgo', { count: diffDays });
 
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(locale, {
       month: 'short',
       day: 'numeric',
       year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
@@ -159,12 +163,12 @@ export function TransactionHistory({
           <EmptyMedia variant='soft-circle'>
             <Clock className='h-8 w-8' />
           </EmptyMedia>
-          <EmptyTitle className='text-lg sm:text-lg'>No transactions yet</EmptyTitle>
-          <EmptyDescription>Your transaction history will appear here</EmptyDescription>
+          <EmptyTitle className='text-lg sm:text-lg'>{t('history.emptyTitle')}</EmptyTitle>
+          <EmptyDescription>{t('history.emptyDescription')}</EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
           <Button onClick={onRefresh} variant='outline' className='h-11'>
-            Refresh
+            {t('history.refresh')}
           </Button>
         </EmptyContent>
       </Empty>
@@ -230,7 +234,7 @@ export function TransactionHistory({
                           }`}
                         >
                           {isIncoming ? '+' : '-'}
-                          {amountSats.toLocaleString()} sats
+                          {amountSats.toLocaleString(locale)} sats
                         </p>
                         <p className='truncate text-sm text-gray-500 dark:text-neutral-400'>
                           ${usdAmount.toFixed(2)}
@@ -252,7 +256,7 @@ export function TransactionHistory({
             variant='outline'
             className='font-lg h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
           >
-            View All Transactions
+            {t('history.viewAll')}
           </Button>
         </div>
       )}

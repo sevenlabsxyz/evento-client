@@ -7,19 +7,28 @@ import { useContacts } from '@/lib/hooks/use-contacts';
 import type { Contact } from '@/lib/types/wallet';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
-import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-const editContactSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(50, 'Name must be less than 50 characters'),
-  lightningAddress: z
-    .string()
-    .min(1, 'Lightning address is required')
-    .email('Lightning address must be in user@domain format'),
-});
+interface EditContactSchemaMessages {
+  nameRequired: string;
+  nameTooLong: string;
+  addressRequired: string;
+  addressInvalid: string;
+}
 
-type EditContactFormData = z.infer<typeof editContactSchema>;
+const createEditContactSchema = (m: EditContactSchemaMessages) =>
+  z.object({
+    name: z.string().min(1, m.nameRequired).max(50, m.nameTooLong),
+    lightningAddress: z.string().min(1, m.addressRequired).email(m.addressInvalid),
+  });
+
+interface EditContactFormData {
+  name: string;
+  lightningAddress: string;
+}
 
 interface EditContactSheetProps {
   contact: Contact;
@@ -28,7 +37,19 @@ interface EditContactSheetProps {
 }
 
 export function EditContactSheet({ contact, open, onOpenChange }: EditContactSheetProps) {
+  const t = useTranslations('walletFlows');
+  const tCommon = useTranslations('common');
   const { updateContact, isUpdatingContact, findContactByAddress } = useContacts();
+  const editContactSchema = useMemo(
+    () =>
+      createEditContactSchema({
+        nameRequired: t('editContactSheet.errors.nameRequired'),
+        nameTooLong: t('editContactSheet.errors.nameTooLong'),
+        addressRequired: t('editContactSheet.errors.addressRequired'),
+        addressInvalid: t('editContactSheet.errors.addressInvalid'),
+      }),
+    [t]
+  );
 
   const {
     register,
@@ -60,7 +81,7 @@ export function EditContactSheet({ contact, open, onOpenChange }: EditContactShe
     if (existingContact && existingContact.id !== contact.id) {
       setError('lightningAddress', {
         type: 'manual',
-        message: 'A contact with this Lightning address already exists',
+        message: t('editContactSheet.errors.duplicate'),
       });
       return;
     }
@@ -82,17 +103,21 @@ export function EditContactSheet({ contact, open, onOpenChange }: EditContactShe
   const isLoading = isUpdatingContact;
 
   return (
-    <MasterScrollableSheet title='Edit Contact' open={open} onOpenChange={handleOpenChange}>
+    <MasterScrollableSheet
+      title={t('editContactSheet.title')}
+      open={open}
+      onOpenChange={handleOpenChange}
+    >
       <div className='p-6'>
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
           <div className='space-y-2'>
             <label htmlFor='name' className='text-sm font-medium'>
-              Name
+              {t('editContactSheet.nameLabel')}
             </label>
             <Input
               {...register('name')}
               id='name'
-              placeholder='Contact name'
+              placeholder={t('editContactSheet.namePlaceholder')}
               disabled={isLoading}
               className='h-12 rounded-full bg-gray-50 dark:bg-neutral-950'
             />
@@ -103,7 +128,7 @@ export function EditContactSheet({ contact, open, onOpenChange }: EditContactShe
 
           <div className='space-y-2'>
             <label htmlFor='paymentIdentifier' className='text-sm font-medium'>
-              Lightning Address
+              {t('editContactSheet.addressLabel')}
             </label>
             <Input
               {...register('lightningAddress')}
@@ -119,9 +144,7 @@ export function EditContactSheet({ contact, open, onOpenChange }: EditContactShe
                 {errors.lightningAddress.message}
               </p>
             )}
-            <p className='text-xs text-muted-foreground'>
-              Enter a Lightning address in user@domain format
-            </p>
+            <p className='text-xs text-muted-foreground'>{t('editContactSheet.addressHint')}</p>
           </div>
 
           <div className='space-y-3'>
@@ -133,10 +156,10 @@ export function EditContactSheet({ contact, open, onOpenChange }: EditContactShe
               {isUpdatingContact ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Saving...
+                  {t('editContactSheet.saving')}
                 </>
               ) : (
-                'Save Changes'
+                t('editContactSheet.submit')
               )}
             </Button>
             <Button
@@ -146,7 +169,7 @@ export function EditContactSheet({ contact, open, onOpenChange }: EditContactShe
               disabled={isLoading}
               className='h-12 w-full rounded-full'
             >
-              Cancel
+              {tCommon('actions.cancel')}
             </Button>
           </div>
         </form>

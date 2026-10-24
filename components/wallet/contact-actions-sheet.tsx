@@ -18,6 +18,7 @@ import { useEventoCashProfile } from '@/lib/hooks/use-evento-cash-profile';
 import type { Contact } from '@/lib/types/wallet';
 import { cn } from '@/lib/utils';
 import { ChevronRight, Loader2, Pencil, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -34,6 +35,8 @@ export function ContactActionsSheet({
   onOpenChange,
   onEdit,
 }: ContactActionsSheetProps) {
+  const t = useTranslations('walletFlows');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { deleteContact, isDeletingContact } = useContacts();
@@ -77,7 +80,11 @@ export function ContactActionsSheet({
 
   return (
     <>
-      <MasterScrollableSheet title='Contact Options' open={open} onOpenChange={onOpenChange}>
+      <MasterScrollableSheet
+        title={t('contactActionsSheet.title')}
+        open={open}
+        onOpenChange={onOpenChange}
+      >
         <div className='px-4 pb-6'>
           <button
             type='button'
@@ -125,7 +132,7 @@ export function ContactActionsSheet({
               onClick={handleEdit}
             >
               <Pencil className='mr-3 h-4 w-4' />
-              Edit Contact
+              {t('contactActionsSheet.edit')}
             </Button>
 
             <Button
@@ -135,7 +142,7 @@ export function ContactActionsSheet({
               onClick={() => setShowDeleteDialog(true)}
             >
               <Trash2 className='mr-3 h-4 w-4' />
-              Remove Wallet Contact
+              {t('contactActionsSheet.remove')}
             </Button>
 
             <Button
@@ -144,7 +151,7 @@ export function ContactActionsSheet({
               className='mt-2 h-14 w-full text-base font-medium text-gray-600 dark:text-neutral-400'
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {tCommon('actions.cancel')}
             </Button>
           </div>
         </div>
@@ -153,14 +160,15 @@ export function ContactActionsSheet({
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove Wallet Contact</AlertDialogTitle>
+            <AlertDialogTitle>{t('contactActionsSheet.remove')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove `{displayName}` from your wallet contacts? This action
-              cannot be undone.
+              {t('contactActionsSheet.removeConfirm', { name: displayName })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeletingContact}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeletingContact}>
+              {tCommon('actions.cancel')}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeletingContact}
@@ -169,10 +177,10 @@ export function ContactActionsSheet({
               {isDeletingContact ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Removing...
+                  {t('contactActionsSheet.removing')}
                 </>
               ) : (
-                'Remove Wallet Contact'
+                t('contactActionsSheet.remove')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

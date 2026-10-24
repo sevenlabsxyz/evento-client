@@ -2,6 +2,7 @@
 
 import DetachedMenuSheet, { MenuOption } from '@/components/ui/detached-menu-sheet';
 import { Pencil, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface CommentActionsSheetProps {
   isOpen: boolean;
@@ -20,13 +21,14 @@ export function CommentActionsSheet({
   canEdit,
   canDelete,
 }: CommentActionsSheetProps) {
+  const tCommon = useTranslations('common');
   const options: MenuOption[] = [];
 
   if (canEdit) {
     options.push({
       id: 'edit',
       icon: Pencil,
-      label: 'Edit',
+      label: tCommon('actions.edit'),
       onClick: () => {
         onEdit();
         onClose();
@@ -39,7 +41,7 @@ export function CommentActionsSheet({
     options.push({
       id: 'delete',
       icon: Trash2,
-      label: 'Delete',
+      label: tCommon('actions.delete'),
       onClick: () => {
         onDelete();
         onClose();

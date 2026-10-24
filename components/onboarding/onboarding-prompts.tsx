@@ -8,6 +8,7 @@ import { useAuthStore } from '@/lib/stores/auth-store';
 import { Prompt } from '@/lib/types/api';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowDown, ArrowLeft, ArrowUp, Plus, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { OnboardingHeader } from './onboarding-header';
 
@@ -39,6 +40,7 @@ type EditingPrompt = {
 };
 
 export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps) => {
+  const t = useTranslations('onboarding.prompts');
   const { user } = useAuthStore();
   const [view, setView] = useState<'list' | 'answer'>('list');
   const [answeredPrompts, setAnsweredPrompts] = useState<AnsweredPrompt[]>([]);
@@ -182,10 +184,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
           >
-            <OnboardingHeader
-              title='Showcase your personality'
-              description='Answer up to 4 prompts to help others get to know you'
-            />
+            <OnboardingHeader title={t('title')} description={t('description')} />
 
             <div className='mt-6 space-y-4'>
               {/* Loading state */}
@@ -210,7 +209,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                   {answeredPrompts.length > 0 && (
                     <div className='space-y-2'>
                       <h3 className='text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-                        Your Prompts ({answeredPrompts.length}/4)
+                        {t('yourPrompts', { count: answeredPrompts.length })}
                       </h3>
                       {answeredPrompts.map((prompt, index) => (
                         <div
@@ -261,7 +260,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                               onClick={() => handleEditPrompt(prompt)}
                               className='mt-1 text-xs font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
                             >
-                              Edit
+                              {t('edit')}
                             </button>
                           </div>
                         </div>
@@ -273,7 +272,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                   {canAddMore && (
                     <div className='space-y-2'>
                       <h3 className='text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-                        {answeredPrompts.length > 0 ? 'Add More' : 'Choose a Prompt'}
+                        {answeredPrompts.length > 0 ? t('addMore') : t('choosePrompt')}
                       </h3>
 
                       {isLoadingAvailablePrompts ? (
@@ -308,7 +307,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                       ) : (
                         <div className='rounded-xl border border-dashed border-gray-200 bg-gray-50/50 p-4 text-center dark:border-neutral-800 dark:bg-neutral-950/50'>
                           <p className='text-sm text-gray-400 dark:text-neutral-400'>
-                            No more prompts available
+                            {t('noMore')}
                           </p>
                         </div>
                       )}
@@ -319,7 +318,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                   {!canAddMore && (
                     <div className='rounded-lg bg-amber-50 p-2.5 dark:bg-amber-950/40'>
                       <p className='text-center text-xs text-amber-700 dark:text-amber-400'>
-                        Maximum 4 prompts reached. Remove one to add another.
+                        {t('maxReached')}
                       </p>
                     </div>
                   )}
@@ -344,14 +343,14 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
               className='mb-4 flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
             >
               <ArrowLeft className='h-4 w-4' />
-              Back to prompts
+              {t('backToPrompts')}
             </button>
 
             <h2 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>
-              {editingPrompt.isNew ? 'Answer Prompt' : 'Edit Answer'}
+              {editingPrompt.isNew ? t('answerPrompt') : t('editAnswer')}
             </h2>
             <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
-              Share something about yourself
+              {t('shareSomething')}
             </p>
 
             {/* Question */}
@@ -364,7 +363,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
             {/* Answer */}
             <div className='mb-4'>
               <label className='mb-2 block text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                Your Answer
+                {t('yourAnswer')}
               </label>
               <Textarea
                 value={editingPrompt.answer}
@@ -374,13 +373,13 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                     answer: e.target.value,
                   })
                 }
-                placeholder='Share your thoughts...'
+                placeholder={t('answerPlaceholder')}
                 className='min-h-[120px] resize-none text-sm'
                 maxLength={500}
                 autoFocus
               />
               <div className='mt-1.5 flex items-center justify-between text-xs text-gray-400 dark:text-neutral-400'>
-                <span>Minimum 5 characters</span>
+                <span>{t('minChars')}</span>
                 <span>{editingPrompt.answer.length}/500</span>
               </div>
             </div>
@@ -389,10 +388,10 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
             <div className='mb-6 flex items-center justify-between rounded-xl border border-gray-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900'>
               <div>
                 <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-                  Show on profile
+                  {t('showOnProfile')}
                 </p>
                 <p className='text-xs text-gray-500 dark:text-neutral-400'>
-                  Make this visible to others
+                  {t('showOnProfileHint')}
                 </p>
               </div>
               <button
@@ -417,14 +416,14 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
             {/* Save/Cancel Buttons */}
             <div className='flex gap-3'>
               <Button onClick={handleCancel} variant='outline' className='flex-1'>
-                Cancel
+                {t('cancel')}
               </Button>
               <Button
                 onClick={handleSavePrompt}
                 disabled={editingPrompt.answer.length < 5}
                 className='flex-1 bg-red-600 hover:bg-red-700'
               >
-                {editingPrompt.isNew ? 'Add Prompt' : 'Save Changes'}
+                {editingPrompt.isNew ? t('addPrompt') : t('saveChanges')}
               </Button>
             </div>
           </motion.div>

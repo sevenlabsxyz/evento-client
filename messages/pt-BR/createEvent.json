@@ -1,1 +1,255 @@
-{}
+{
+  "aiGenerator": {
+    "error": "Não foi possível gerar a descrição. Tente novamente.",
+    "title": "Descrição com IA",
+    "titleWarning": "Adicione um título ao evento antes de gerar uma descrição",
+    "toolbarLabel": "Gerador de descrições com IA",
+    "loading": "Criando a descrição perfeita para o seu evento...",
+    "customPrompt": "Instruções personalizadas (opcional)",
+    "customPromptHint": "Adicione detalhes específicos que você quer incluir na descrição",
+    "customPromptPlaceholder": "ex.: Inclua informações sobre comida, traje ou estacionamento...",
+    "lengthHeading": "Tamanho da descrição",
+    "lengths": {
+      "short": {
+        "label": "Curta",
+        "description": "2-3 frases"
+      },
+      "medium": {
+        "label": "Média",
+        "description": "4-6 frases"
+      },
+      "long": {
+        "label": "Longa",
+        "description": "7-10 frases"
+      }
+    },
+    "toneHeading": "Tom e estilo",
+    "tones": {
+      "professional": {
+        "label": "Profissional",
+        "description": "Formal e refinado"
+      },
+      "casual": {
+        "label": "Descontraído",
+        "description": "Leve e amigável"
+      },
+      "exciting": {
+        "label": "Empolgante",
+        "description": "Enérgico e entusiasmado"
+      }
+    },
+    "generating": "Gerando...",
+    "generate": "Gerar descrição",
+    "titleRequired": "Adicione um título ao evento para habilitar a geração de descrição",
+    "generated": "Descrição gerada!",
+    "editOptions": "Editar opções",
+    "useDescription": "Usar esta descrição"
+  },
+  "toolbar": {
+    "aiDescription": "Descrição com IA",
+    "link": "Link",
+    "insertElements": "Inserir elementos",
+    "divider": "Divisor",
+    "textStyles": "Estilos de texto",
+    "normalText": "Texto normal",
+    "normalTextAria": "Texto normal",
+    "heading1": "Título 1",
+    "heading2": "Título 2",
+    "heading3": "Título 3",
+    "lists": "Listas",
+    "bulletList": "Lista com marcadores",
+    "bold": "Negrito",
+    "italic": "Itálico",
+    "moreFormatting": "Mais formatação",
+    "strikethrough": "Tachado",
+    "code": "Código",
+    "clearFormatting": "Limpar formatação"
+  },
+  "music": {
+    "enterUrl": "Insira uma URL"
+  },
+  "wavlake": {
+    "invalidUrl": "Insira uma URL válida do Wavlake",
+    "title": "Adicionar faixa ou playlist do Wavlake",
+    "urlLabel": "URL do Wavlake",
+    "hint": "Cole o link de qualquer faixa ou playlist do Wavlake"
+  },
+  "attachment": {
+    "title": "Adicionar música",
+    "editSpotify": "Editar Spotify",
+    "addSpotify": "Adicionar Spotify",
+    "modifySpotifyDescription": "Alterar faixa ou playlist do Spotify",
+    "addSpotifyDescription": "Adicionar faixa ou playlist do Spotify",
+    "editWavlake": "Editar Wavlake",
+    "addWavlake": "Adicionar Wavlake",
+    "modifyWavlakeDescription": "Alterar faixa ou playlist do Wavlake",
+    "addWavlakeDescription": "Adicionar faixa ou playlist do Wavlake"
+  },
+  "capacityConfirm": {
+    "title": "Desativar capacidade?",
+    "turnOff": "Desativar",
+    "question": "Tem certeza de que deseja desativar o limite de capacidade deste evento?",
+    "current": "A capacidade atual está definida para {capacity} participantes.",
+    "description": "Isso removerá todas as restrições de capacidade. Você pode definir uma nova capacidade depois."
+  },
+  "capacity": {
+    "required": "Insira um número para a capacidade",
+    "invalid": "Insira um número válido maior que 0",
+    "title": "Definir capacidade do evento",
+    "label": "Número máximo de participantes",
+    "placeholder": "Insira a capacidade"
+  },
+  "cover": {
+    "selectedGifAlt": "GIF de capa selecionado",
+    "selectedAlt": "Imagem de capa selecionada",
+    "defaultAlt": "Capa padrão do evento",
+    "noImage": "Nenhuma imagem selecionada. Tente novamente.",
+    "tooLarge": "O arquivo é muito grande. Selecione um arquivo com menos de 10MB.",
+    "invalidType": "Selecione um arquivo de imagem válido (PNG, GIF, JPG, JPEG).",
+    "gifTooLarge": "GIFs devem ter menos de 5MB. Escolha um arquivo menor.",
+    "uploaded": "Imagem de capa enviada com sucesso!",
+    "uploadFailed": "Não foi possível enviar a imagem. Tente novamente.",
+    "uploading": "Enviando...",
+    "uploadPhoto": "Enviar foto"
+  },
+  "description": {
+    "placeholder": "Adicione uma descrição...",
+    "title": "Editar descrição"
+  },
+  "created": {
+    "draftTitle": "Rascunho criado!",
+    "eventTitle": "Evento criado!",
+    "draftHint": "Ótimo trabalho. Agora, conclua a configuração e publique quando estiver pronto.",
+    "dateTime": "{date} às {time} PDT",
+    "opening": "Abrindo...",
+    "continueSetup": "Continuar configuração",
+    "viewEventPage": "Ver página do evento",
+    "inviteGuests": "Convidar pessoas"
+  },
+  "overlay": {
+    "logoAlt": "Logo do Evento",
+    "messages": {
+      "creating": "Criando seu evento...",
+      "details": "Configurando os detalhes...",
+      "almostThere": "Quase lá...",
+      "perfect": "Deixando tudo perfeito...",
+      "finalizing": "Finalizando tudo...",
+      "moment": "Só um instante..."
+    }
+  },
+  "eventType": {
+    "title": "Tipo de evento",
+    "rsvp": "Confirmar presença",
+    "rsvpDescription": "Os convidados confirmam presença diretamente.",
+    "registration": "Inscrição",
+    "registrationDescription": "Os convidados enviam uma inscrição antes de participar."
+  },
+  "visibility": {
+    "title": "Visibilidade do evento",
+    "publicDescription": "Qualquer pessoa pode encontrar e participar deste evento",
+    "privateDescription": "Somente quem tiver o link pode participar"
+  },
+  "coverPicker": {
+    "title": "Adicionar imagem de capa",
+    "subtitle": "Escolha na nossa coleção selecionada",
+    "uploadCustom": "Enviar imagem personalizada",
+    "imageAlt": "Imagem de capa",
+    "categories": {
+      "featured": "Destaques",
+      "giphy": "GIFs",
+      "party": "Festa",
+      "social": "Social",
+      "classic": "Clássico",
+      "tech": "Tecnologia"
+    }
+  },
+  "sheets": {
+    "insertElements": "Inserir elementos",
+    "moreFormatting": "Mais formatação",
+    "textStyles": "Estilos de texto"
+  },
+  "linkEdit": {
+    "invalidUrl": "Insira uma URL válida",
+    "title": "Editar link",
+    "urlPlaceholder": "Cole um link (https://...)",
+    "displayText": "Texto exibido (opcional)",
+    "displayTextPlaceholder": "Texto a ser exibido",
+    "openInNewTab": "Abrir em nova aba",
+    "insert": "Inserir"
+  },
+  "location": {
+    "searchPlaceholder": "Busque um local ou endereço",
+    "title": "Escolher local",
+    "selectedAddress": "Endereço selecionado",
+    "gettingLocation": "Obtendo localização...",
+    "useCurrentLocation": "Usar localização atual",
+    "gpsHint": "Vamos usar sua localização GPS atual",
+    "loadingDetails": "Carregando detalhes do local...",
+    "searching": "Buscando...",
+    "addCustom": "Adicionar \"{query}\"",
+    "useAsCustom": "Usar como local personalizado",
+    "emptyHint": "Digite para buscar locais ou adicionar um local personalizado"
+  },
+  "password": {
+    "required": "Insira uma senha",
+    "tooShort": "A senha deve ter pelo menos 4 caracteres",
+    "title": "Proteção por senha",
+    "subtitle": "Exigir senha para ver os detalhes do evento",
+    "protected": "Protegido",
+    "notProtected": "Não protegido",
+    "protectedDescription": "Senha necessária para visualizar",
+    "notProtectedDescription": "Qualquer pessoa com o link pode ver",
+    "label": "Senha do evento",
+    "placeholder": "Digite a senha",
+    "show": "Mostrar senha",
+    "hide": "Ocultar senha",
+    "note": "<strong>Observação:</strong> anfitriões, coanfitriões e convidados que já confirmaram presença com \"Vou\" não precisarão da senha."
+  },
+  "spotify": {
+    "invalidUrl": "Insira uma URL válida do Spotify",
+    "title": "Adicionar faixa ou playlist do Spotify",
+    "urlLabel": "URL do Spotify",
+    "hint": "Cole o link de qualquer faixa ou playlist do Spotify"
+  },
+  "timePicker": {
+    "timezone": "Fuso horário: {timezone}",
+    "clearTime": "Limpar horário"
+  },
+  "timezone": {
+    "title": "Selecionar fuso horário",
+    "searchPlaceholder": "Buscar fuso horário",
+    "common": "Comuns",
+    "all": "Todos os fusos horários",
+    "noResults": "Nenhum fuso horário encontrado"
+  },
+  "page": {
+    "createSubEvent": "Criar subevento",
+    "createEvent": "Criar evento",
+    "goToTicketSetup": "Configurar ingressos",
+    "goToRegistrationSetup": "Configurar inscrição",
+    "draftCreatedToast": "Rascunho criado com sucesso!",
+    "eventCreatedToast": "Evento criado com sucesso!",
+    "createFailed": "Não foi possível criar o evento",
+    "subEventBanner": "Este evento será criado como subevento.",
+    "subEventBannerWithParent": "Este evento será criado como subevento de <strong>{title}</strong>.",
+    "eventTitle": "Título do evento",
+    "eventTitlePlaceholder": "Digite o nome do evento",
+    "starts": "Início",
+    "ends": "Fim",
+    "address": "Endereço",
+    "chooseAddress": "Escolher endereço",
+    "ticketed": "Com ingressos",
+    "capacityValue": "Capacidade {capacity}",
+    "setCapacity": "Definir capacidade",
+    "maxAttendees": "Máximo de participantes: {capacity}",
+    "showCapacityCount": "Mostrar contagem de vagas",
+    "showCapacityCountDescription": "Exibir vagas restantes para os convidados",
+    "description": "Descrição",
+    "descriptionPlaceholder": "Adicione uma descrição sobre este evento...",
+    "submit": "Criar evento",
+    "startDate": "Data de início",
+    "endDate": "Data de término",
+    "startTime": "Horário de início",
+    "endTime": "Horário de término"
+  }
+}

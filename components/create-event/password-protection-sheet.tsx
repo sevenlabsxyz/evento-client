@@ -5,6 +5,7 @@ import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Eye, EyeOff, KeyRound, ShieldCheck, ShieldOff } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface PasswordProtectionSheetProps {
@@ -22,6 +23,8 @@ export default function PasswordProtectionSheet({
   isPasswordProtected,
   currentPassword,
 }: PasswordProtectionSheetProps) {
+  const t = useTranslations('createEvent');
+  const tCommon = useTranslations('common');
   const [enabled, setEnabled] = useState(isPasswordProtected);
   const [password, setPassword] = useState(currentPassword || '');
   const [showPassword, setShowPassword] = useState(false);
@@ -38,12 +41,12 @@ export default function PasswordProtectionSheet({
 
     // Validate password if protection is enabled
     if (enabled && !password.trim()) {
-      setError('Please enter a password');
+      setError(t('password.required'));
       return;
     }
 
     if (enabled && password.trim().length < 4) {
-      setError('Password must be at least 4 characters');
+      setError(t('password.tooShort'));
       return;
     }
 
@@ -76,9 +79,9 @@ export default function PasswordProtectionSheet({
 
               {/* Header */}
               <div className='mb-6'>
-                <h2 className='text-center text-xl font-semibold'>Password Protection</h2>
+                <h2 className='text-center text-xl font-semibold'>{t('password.title')}</h2>
                 <p className='mt-2 text-center text-sm text-gray-500 dark:text-neutral-400'>
-                  Require a password to view event details
+                  {t('password.subtitle')}
                 </p>
               </div>
 
@@ -101,10 +104,12 @@ export default function PasswordProtectionSheet({
                     </div>
                     <div>
                       <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
-                        {enabled ? 'Protected' : 'Not Protected'}
+                        {enabled ? t('password.protected') : t('password.notProtected')}
                       </h3>
                       <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                        {enabled ? 'Password required to view' : 'Anyone with link can view'}
+                        {enabled
+                          ? t('password.protectedDescription')
+                          : t('password.notProtectedDescription')}
                       </p>
                     </div>
                   </div>
@@ -120,14 +125,14 @@ export default function PasswordProtectionSheet({
                       htmlFor='event-password'
                       className='text-sm font-medium dark:text-neutral-300'
                     >
-                      Event Password
+                      {t('password.label')}
                     </label>
                     <div className='relative'>
                       <KeyRound className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
                       <Input
                         id='event-password'
                         type={showPassword ? 'text' : 'password'}
-                        placeholder='Enter password'
+                        placeholder={t('password.placeholder')}
                         className='bg-gray-50 pl-10 pr-10 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                         value={password}
                         onChange={(e) => {
@@ -138,6 +143,7 @@ export default function PasswordProtectionSheet({
                       <button
                         type='button'
                         className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-neutral-400'
+                        aria-label={showPassword ? t('password.hide') : t('password.show')}
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
@@ -152,8 +158,9 @@ export default function PasswordProtectionSheet({
 
                   <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
                     <p className='text-xs text-gray-500 dark:text-neutral-400'>
-                      <strong>Note:</strong> Hosts, co-hosts, and guests who have already
-                      RSVP&apos;d &quot;Yes&quot; will automatically bypass the password.
+                      {t.rich('password.note', {
+                        strong: (chunks) => <strong>{chunks}</strong>,
+                      })}
                     </p>
                   </div>
                 </div>
@@ -161,7 +168,7 @@ export default function PasswordProtectionSheet({
 
               {/* Save Button */}
               <Button onClick={handleSave} className='w-full py-6 text-base'>
-                Save
+                {tCommon('actions.save')}
               </Button>
             </div>
           </DetachedSheet.Content>

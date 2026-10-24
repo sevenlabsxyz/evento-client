@@ -2,6 +2,7 @@ import { apiClient } from '@/lib/api/client';
 import { ApiResponse } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface GalleryLikesResponse {
   likes: number;
@@ -19,6 +20,7 @@ const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
 
 export function useGalleryItemLikes(itemId?: string, eventId?: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   // Query to get likes for a gallery item
   const likesQuery = useQuery({
@@ -111,12 +113,12 @@ export function useGalleryItemLikes(itemId?: string, eventId?: string) {
   // Function to toggle like status
   const toggleLike = () => {
     if (!itemId) {
-      toast.error('Unable to like this image');
+      toast.error(t('galleryLikes.unableToLike'));
       return;
     }
     likeMutation.mutate(undefined, {
       onError: () => {
-        toast.error('Failed to update like. Please try again.');
+        toast.error(t('galleryLikes.updateFailed'));
       },
     });
   };

@@ -12,7 +12,19 @@ export interface ApiEndpointParam {
   name: string;
   location: 'path' | 'query';
   type: string;
-  description: string;
+  /** Key under `developers.api.explorer.params`. */
+  descriptionKey:
+    | 'eventId'
+    | 'rsvpStatus'
+    | 'guestsLimit'
+    | 'offset'
+    | 'usernameNoPrefix'
+    | 'eventsType'
+    | 'eventsLimit'
+    | 'username'
+    | 'from'
+    | 'to'
+    | 'embedLimit';
   required?: boolean;
 }
 
@@ -21,10 +33,16 @@ export interface ApiEndpoint {
   surface: ApiSurface;
   method: 'GET';
   path: string;
-  title: string;
-  description: string;
+  /** Title and description live under `developers.api.explorer.endpoints.<messageKey>`. */
+  messageKey:
+    | 'publicEvent'
+    | 'publicEventGuests'
+    | 'publicUserEvents'
+    | 'embedEvent'
+    | 'embedUserEvents';
   params: ApiEndpointParam[];
-  note?: string;
+  /** Note text lives under `developers.api.explorer.notes.<messageKey>`. */
+  noteKey?: 'publicEventGuests' | 'embedUserEvents';
   request: string;
   response: string;
   docsUrl: string;
@@ -45,18 +63,16 @@ const toJson = (value: unknown) => JSON.stringify(value, null, 2);
 export const API_ENDPOINTS: ApiEndpoint[] = [
   {
     id: 'public-event',
+    messageKey: 'publicEvent',
     surface: 'public',
     method: 'GET',
     path: '/events/{eventId}',
-    title: 'Fetch event',
-    description:
-      'Retrieve detailed information for a published public event, including creator, links, and contribution metadata.',
     params: [
       {
         name: 'eventId',
         location: 'path',
         type: 'string',
-        description: 'Unique event identifier.',
+        descriptionKey: 'eventId',
         required: true,
       },
     ],
@@ -83,39 +99,38 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
   },
   {
     id: 'public-event-guests',
+    messageKey: 'publicEventGuests',
+    noteKey: 'publicEventGuests',
     surface: 'public',
     method: 'GET',
     path: '/events/{eventId}/guests',
-    title: 'Fetch event guests',
-    description: 'Retrieve RSVP guests for a published public event, filtered by RSVP status.',
     params: [
       {
         name: 'eventId',
         location: 'path',
         type: 'string',
-        description: 'Unique event identifier.',
+        descriptionKey: 'eventId',
         required: true,
       },
       {
         name: 'status',
         location: 'query',
         type: 'string',
-        description: 'RSVP filter: yes, maybe, no, or all. Defaults to yes.',
+        descriptionKey: 'rsvpStatus',
       },
       {
         name: 'limit',
         location: 'query',
         type: 'integer',
-        description: 'Results per page, 1–100. Defaults to 10.',
+        descriptionKey: 'guestsLimit',
       },
       {
         name: 'offset',
         location: 'query',
         type: 'integer',
-        description: 'Pagination offset. Defaults to 0.',
+        descriptionKey: 'offset',
       },
     ],
-    note: 'Emails, phone numbers, and private contact details are never returned. Only guests linked to user profiles are included.',
     request: `curl "${PUBLIC_API_BASE_URL}/events/evt_abc123/guests?limit=20&status=yes" \\
   -H "x-evento-api-key: YOUR_API_KEY"`,
     response: toJson({
@@ -136,37 +151,35 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
   },
   {
     id: 'public-user-events',
+    messageKey: 'publicUserEvents',
     surface: 'public',
     method: 'GET',
     path: '/users/{username}/events',
-    title: 'Fetch user events',
-    description:
-      'List public events by username, with upcoming, past, or profile filters and pagination.',
     params: [
       {
         name: 'username',
         location: 'path',
         type: 'string',
-        description: 'Username, case-insensitive, without the @ prefix.',
+        descriptionKey: 'usernameNoPrefix',
         required: true,
       },
       {
         name: 'type',
         location: 'query',
         type: 'string',
-        description: 'Optional filter: upcoming, past, or profile.',
+        descriptionKey: 'eventsType',
       },
       {
         name: 'limit',
         location: 'query',
         type: 'integer',
-        description: 'Results per page, max 100. Defaults to 20.',
+        descriptionKey: 'eventsLimit',
       },
       {
         name: 'offset',
         location: 'query',
         type: 'integer',
-        description: 'Pagination offset. Defaults to 0.',
+        descriptionKey: 'offset',
       },
     ],
     request: `curl "${PUBLIC_API_BASE_URL}/users/johndoe/events?type=upcoming&limit=10" \\
@@ -191,18 +204,16 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
   },
   {
     id: 'embed-event',
+    messageKey: 'embedEvent',
     surface: 'embed',
     method: 'GET',
     path: '/events/{eventId}',
-    title: 'Fetch embed event',
-    description:
-      'Retrieve a compact, embed-optimized event payload by ID — ready for event cards and detail embeds.',
     params: [
       {
         name: 'eventId',
         location: 'path',
         type: 'string',
-        description: 'Unique event identifier.',
+        descriptionKey: 'eventId',
         required: true,
       },
     ],
@@ -227,40 +238,38 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
   },
   {
     id: 'embed-user-events',
+    messageKey: 'embedUserEvents',
     surface: 'embed',
     method: 'GET',
     path: '/users/{username}/events',
-    title: 'Fetch embed user events',
-    description:
-      'Retrieve an embed-optimized event feed for a creator, with optional inclusive date bounds.',
     params: [
       {
         name: 'username',
         location: 'path',
         type: 'string',
-        description: 'Username, case-insensitive.',
+        descriptionKey: 'username',
         required: true,
       },
       {
         name: 'from',
         location: 'query',
         type: 'string',
-        description: 'Inclusive start datetime (ISO 8601).',
+        descriptionKey: 'from',
       },
       {
         name: 'to',
         location: 'query',
         type: 'string',
-        description: 'Inclusive end datetime (ISO 8601).',
+        descriptionKey: 'to',
       },
       {
         name: 'limit',
         location: 'query',
         type: 'integer',
-        description: 'Number of events to return, max 100. Defaults to 50.',
+        descriptionKey: 'embedLimit',
       },
     ],
-    note: 'Each event’s status is computed from its start and end timestamps: upcoming, ongoing, or past.',
+    noteKey: 'embedUserEvents',
     request: `curl "${EMBED_API_BASE_URL}/users/johndoe/events?from=2026-01-01T00:00:00Z&limit=10"`,
     response: toJson({
       success: true,

@@ -1,3 +1,4 @@
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 type WakeLockErrorReason = 'unsupported' | 'request-failed';
@@ -185,7 +186,8 @@ export function useScreenWakeLock({ enabled }: UseScreenWakeLockOptions): UseScr
             active: false,
             supported: true,
             errorReason: 'request-failed',
-            errorMessage: error instanceof Error ? error.message : 'Failed to keep screen awake',
+            errorMessage:
+              error instanceof Error ? error.message : translateHooks('wakeLock.failed'),
           });
         }
         return false;

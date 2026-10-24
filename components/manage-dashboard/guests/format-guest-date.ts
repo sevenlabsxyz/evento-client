@@ -1,8 +1,10 @@
-const guestDateFormatter = new Intl.DateTimeFormat(undefined, {
+import { getIntlLocale } from '@/lib/i18n/active-locale';
+
+const guestDateOptions: Intl.DateTimeFormatOptions = {
   month: 'short',
   day: 'numeric',
   year: 'numeric',
-});
+};
 
 /**
  * Formats an RSVP / invite timestamp for the guest list (e.g. "Oct 23, 2026").
@@ -14,5 +16,5 @@ export function formatGuestDate(isoString: string | null | undefined): string {
   const date = new Date(isoString);
   if (Number.isNaN(date.getTime())) return '';
 
-  return guestDateFormatter.format(date);
+  return new Intl.DateTimeFormat(getIntlLocale(), guestDateOptions).format(date);
 }

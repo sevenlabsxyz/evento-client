@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
 interface WalletWelcomeProps {
@@ -10,6 +11,7 @@ interface WalletWelcomeProps {
 }
 
 export function WalletWelcome({ onSetup, onRestore }: WalletWelcomeProps) {
+  const t = useTranslations('wallet');
   return (
     <div className='relative flex min-h-[calc(100vh-8rem)] flex-col md:min-h-0'>
       <div className='mx-auto flex w-full max-w-sm flex-1 flex-col items-center justify-center px-6 md:px-0'>
@@ -17,7 +19,7 @@ export function WalletWelcome({ onSetup, onRestore }: WalletWelcomeProps) {
           {/* Mascot Image */}
           <Image
             src='/assets/illo/mascot-duo.png'
-            alt='Evento Mascot'
+            alt={t('welcome.mascotAlt')}
             width={330}
             height={330}
             className='md:h-auto md:w-60'
@@ -25,16 +27,14 @@ export function WalletWelcome({ onSetup, onRestore }: WalletWelcomeProps) {
 
           {/* Title & Description */}
           <div className='text-center'>
-            <h1 className='text-3xl font-bold tracking-tight'>Evento Wallet</h1>
-            <p className='mt-2 text-sm text-muted-foreground'>
-              Incredibly simple, secure, and private Bitcoin wallet for modern users.
-            </p>
+            <h1 className='text-3xl font-bold tracking-tight'>{t('welcome.title')}</h1>
+            <p className='mt-2 text-sm text-muted-foreground'>{t('welcome.description')}</p>
           </div>
 
           {/* Buttons */}
           <div className='mt-4 w-full space-y-3'>
             <Button onClick={onSetup} className='h-12 w-full rounded-full text-base'>
-              Create wallet
+              {t('welcome.createWallet')}
               <ArrowRight className='h-4 w-4' />
             </Button>
             <Button
@@ -42,7 +42,7 @@ export function WalletWelcome({ onSetup, onRestore }: WalletWelcomeProps) {
               className='h-12 w-full rounded-full bg-gray-50 text-base dark:bg-neutral-900'
               variant='outline'
             >
-              I already have a wallet
+              {t('welcome.haveWallet')}
             </Button>
           </div>
         </div>

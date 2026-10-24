@@ -3,8 +3,10 @@
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { motion } from 'framer-motion';
 import { Loader2, X } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import type { LnurlPayRequestDetails, RecipientInfo } from '../zap-types';
 
 interface ZapAmountStepProps {
@@ -36,15 +38,19 @@ export function ZapAmountStep({
   onNext,
   onClose,
 }: ZapAmountStepProps) {
+  const t = useTranslations('zap.steps');
+  const tCommon = useTranslations('common');
+  const locale = getIntlLocale(useLocale());
   return (
     <div className='flex flex-col'>
       {/* Header */}
       <div className='flex items-center justify-between p-4 pt-0'>
-        <h2 className='text-xl font-semibold'>Send Zap</h2>
+        <h2 className='text-xl font-semibold'>{t('sendZap')}</h2>
         <div className='flex items-center gap-3'>
           <WalletBalanceDisplay />
           <button
             onClick={onClose}
+            aria-label={tCommon('actions.close')}
             className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <X className='h-5 w-5' />
@@ -84,7 +90,9 @@ export function ZapAmountStep({
 
           {/* Quick Amount Buttons */}
           <div className='space-y-3'>
-            <p className='text-sm font-medium text-gray-600 dark:text-neutral-400'>Select amount</p>
+            <p className='text-sm font-medium text-gray-600 dark:text-neutral-400'>
+              {t('selectAmount')}
+            </p>
             <div className='grid grid-cols-3 gap-3'>
               {quickAmounts.map((amount) => (
                 <motion.button
@@ -98,7 +106,7 @@ export function ZapAmountStep({
                       : 'hover:border-gray-100 dark:hover:border-neutral-700'
                   }`}
                 >
-                  {amount.toLocaleString()}
+                  {amount.toLocaleString(locale)}
                 </motion.button>
               ))}
               <motion.button
@@ -107,7 +115,7 @@ export function ZapAmountStep({
                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                 className='flex h-14 items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 font-semibold transition-all hover:border-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700'
               >
-                Custom
+                {t('custom')}
               </motion.button>
             </div>
           </div>
@@ -116,11 +124,11 @@ export function ZapAmountStep({
           {selectedAmount && (
             <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 text-center dark:border-neutral-800 dark:bg-neutral-950'>
               <p className='text-3xl font-bold text-gray-900 dark:text-neutral-100'>
-                {selectedAmount.toLocaleString()} sats
+                {t('sats', { amount: selectedAmount.toLocaleString(locale) })}
               </p>
               {amountUSD && (
                 <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-                  ≈ ${amountUSD} USD
+                  {t('usdApprox', { amount: amountUSD })}
                 </p>
               )}
             </div>
@@ -130,14 +138,14 @@ export function ZapAmountStep({
           {payRequest && payRequest.commentAllowed > 0 && (
             <div className='space-y-2'>
               <label className='text-sm font-medium text-gray-600 dark:text-neutral-400'>
-                Add a message (optional)
+                {t('messageLabel')}
               </label>
               <textarea
                 value={comment}
                 onChange={(e) =>
                   onCommentChange(e.target.value.slice(0, payRequest.commentAllowed))
                 }
-                placeholder='Say something nice...'
+                placeholder={t('messagePlaceholder')}
                 maxLength={payRequest.commentAllowed}
                 rows={2}
                 className='w-full resize-none rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm transition-colors focus:border-red-300 focus:outline-none focus:ring-1 focus:ring-red-300 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-red-800 dark:focus:ring-red-800'
@@ -157,10 +165,10 @@ export function ZapAmountStep({
             {isPreparing ? (
               <>
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Preparing...
+                {t('preparing')}
               </>
             ) : (
-              'Next'
+              tCommon('actions.next')
             )}
           </Button>
         </div>

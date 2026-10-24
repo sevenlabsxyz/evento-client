@@ -525,15 +525,24 @@ jest.mock('next-intl', () => {
   const actual = jest.requireActual('next-intl');
   const enMessages = jest.requireActual('@/messages/en').default;
   const locale = 'en';
+  // Like next-intl, return referentially stable translators so hooks that list
+  // `t` as a dependency don't re-run on every render.
+  const translators = new Map<string, unknown>();
+  const formatter = actual.createFormatter({ locale });
   return {
     ...actual,
     useLocale: () => locale,
     useMessages: () => enMessages,
     useTimeZone: () => 'UTC',
     useNow: () => new Date(),
-    useTranslations: (namespace?: string) =>
-      actual.createTranslator({ locale, messages: enMessages, namespace }),
-    useFormatter: () => actual.createFormatter({ locale }),
+    useTranslations: (namespace?: string) => {
+      const key = namespace ?? '';
+      if (!translators.has(key)) {
+        translators.set(key, actual.createTranslator({ locale, messages: enMessages, namespace }));
+      }
+      return translators.get(key);
+    },
+    useFormatter: () => formatter,
     NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
   };
 });
@@ -553,3 +562,11 @@ jest.mock('next-intl/server', () => {
     getFormatter: async () => actual.createFormatter({ locale: 'en' }),
   };
 });
+
+// Plain (non-React) lib code translates through the active `hooks` translator;
+// register the English one so those helpers produce real copy in tests.
+{
+  const { setHooksTranslator } = require('@/lib/i18n/active-translator');
+  const { useTranslations } = require('next-intl');
+  setHooksTranslator(useTranslations('hooks'));
+}

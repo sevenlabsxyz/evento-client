@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import type { Editor } from '@tiptap/core';
 import { ChevronDown, Link, Minus, Plus, Sparkles } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { AIDescriptionGeneratorSheet, EventData } from '../ai-description-generator-sheet';
 import { LinkEditSheet } from '../link-edit-sheet';
@@ -23,6 +24,7 @@ export default function SectionFour({
   onOpenLinkEditSheet,
   event,
 }: SectionFourProps) {
+  const t = useTranslations('createEvent');
   const [showLinkSheet, setShowLinkSheet] = useState(false);
   const [showInsertDropdown, setShowInsertDropdown] = useState(false);
   const [showAIDescriptionSheet, setShowAIDescriptionSheet] = useState(false);
@@ -72,7 +74,7 @@ export default function SectionFour({
     <>
       {/* AI DESCRIPTION GENERATOR */}
       <ToolbarButton
-        tooltip='AI Description'
+        tooltip={t('toolbar.aiDescription')}
         onClick={() => setShowAIDescriptionSheet(true)}
         disabled={!event?.title}
         className={!event?.title ? 'cursor-not-allowed opacity-50' : ''}
@@ -83,7 +85,7 @@ export default function SectionFour({
       {/* LINK */}
       <ToolbarButton
         isActive={editor.isActive('link')}
-        tooltip='Link'
+        tooltip={t('toolbar.link')}
         disabled={editor.isActive('codeBlock')}
         onClick={() => {
           if (onOpenLinkEditSheet) {
@@ -108,7 +110,7 @@ export default function SectionFour({
       <div className='relative'>
         <ToolbarButton
           isActive={editor.isActive('codeBlock') || editor.isActive('blockquote')}
-          tooltip='Insert elements'
+          tooltip={t('toolbar.insertElements')}
           className='hidden w-12 md:flex'
           onClick={() => {
             if (onOpenSheet && typeof window !== 'undefined' && window.innerWidth < 768) {
@@ -129,7 +131,7 @@ export default function SectionFour({
               <button onClick={insertDivider} className={cn(DropdownMenuItemClass)}>
                 <span className='flex grow items-center'>
                   <Minus className='mr-2 h-4 w-4' />
-                  Divider
+                  {t('toolbar.divider')}
                 </span>
               </button>
             </div>

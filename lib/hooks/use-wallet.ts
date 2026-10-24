@@ -4,6 +4,7 @@
 const DEBUG_WALLET = false;
 
 import { Env } from '@/lib/constants/env';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
@@ -16,6 +17,7 @@ import {
   logBreezError,
 } from '@/lib/utils/breez-error-handler';
 import { logger } from '@/lib/utils/logger';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 
 let walletInitializationPromise: Promise<void> | null = null;
@@ -148,7 +150,7 @@ async function initializeWalletState({
     return true;
   } catch (err) {
     logBreezError(err, BREEZ_ERROR_CONTEXT.INITIALIZING_WALLET);
-    setError('Failed to load wallet');
+    setError(translateHooks('wallet.failedToLoad'));
     return false;
   } finally {
     setLoading(false);
@@ -176,6 +178,7 @@ async function reencryptSeedAfterUnlock(encryptedSeed: string, password: string)
 }
 
 export function useWallet() {
+  const t = useTranslations('hooks');
   const { walletState, isLoading, error, setWalletState, setLoading, setError } = useWalletStore();
 
   const {
@@ -546,8 +549,9 @@ export function useWallet() {
       return encryptedSeed;
     } catch (err: any) {
       logBreezError(err, 'getting encrypted backup');
-      throw new Error('Invalid password');
+      throw new Error(t('wallet.invalidPassword'));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

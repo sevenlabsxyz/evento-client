@@ -10,6 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import type { EventSales } from '@/lib/types/manage';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { formatFiat } from './sales-summary';
@@ -98,6 +99,7 @@ export function TicketTypeBreakdown({
   ticketTypes,
   discountCodes,
 }: TicketTypeBreakdownProps) {
+  const t = useTranslations('manage');
   const ticketsHref = `/e/${eventId}/manage/tickets`;
   const totalSold = ticketTypes.reduce((sum, type) => sum + type.sold, 0);
   const totalCapacity = ticketTypes.reduce((sum, type) => sum + type.total, 0);
@@ -109,22 +111,24 @@ export function TicketTypeBreakdown({
     <div className='grid gap-4 lg:grid-cols-5'>
       <div className='lg:col-span-3'>
         <Section
-          title='Ticket types'
-          description='Active ticket types. Revenue is estimated at list price before discounts.'
+          title={t('ticketTypeBreakdown.ticketTypesTitle')}
+          description={t('ticketTypeBreakdown.ticketTypesDescription')}
         >
           {ticketTypes.length === 0 ? (
             <EmptySection
-              message='No active ticket types.'
+              message={t('ticketTypeBreakdown.noTicketTypes')}
               href={ticketsHref}
-              linkLabel='Manage tickets'
+              linkLabel={t('ticketTypeBreakdown.manageTickets')}
             />
           ) : (
             <Table>
               <TableHeader>
                 <TableRow className={rowClassName}>
-                  <TableHead className={headClassName}>Type</TableHead>
-                  <TableHead className={headClassName}>Sold</TableHead>
-                  <TableHead className={`${headClassName} text-right`}>Revenue</TableHead>
+                  <TableHead className={headClassName}>{t('ticketTypeBreakdown.type')}</TableHead>
+                  <TableHead className={headClassName}>{t('ticketTypeBreakdown.sold')}</TableHead>
+                  <TableHead className={`${headClassName} text-right`}>
+                    {t('ticketTypeBreakdown.revenue')}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -153,7 +157,7 @@ export function TicketTypeBreakdown({
               <TableFooter className='border-gray-100 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-800/40'>
                 <TableRow className='hover:bg-transparent'>
                   <TableCell className={`${cellClassName} text-gray-900 dark:text-neutral-100`}>
-                    Total
+                    {t('ticketTypeBreakdown.total')}
                   </TableCell>
                   <TableCell
                     className={`${cellClassName} tabular-nums text-gray-700 dark:text-neutral-300`}
@@ -163,7 +167,9 @@ export function TicketTypeBreakdown({
                   <TableCell
                     className={`${cellClassName} whitespace-nowrap text-right tabular-nums text-gray-900 dark:text-neutral-100`}
                   >
-                    {sharedCurrency ? formatFiat(totalRevenue, sharedCurrency) : 'Mixed currencies'}
+                    {sharedCurrency
+                      ? formatFiat(totalRevenue, sharedCurrency)
+                      : t('ticketTypeBreakdown.mixedCurrencies')}
                   </TableCell>
                 </TableRow>
               </TableFooter>
@@ -173,20 +179,23 @@ export function TicketTypeBreakdown({
       </div>
 
       <div className='lg:col-span-2'>
-        <Section title='Discount codes' description='Redemptions against each code’s usage limit.'>
+        <Section
+          title={t('ticketTypeBreakdown.discountCodesTitle')}
+          description={t('ticketTypeBreakdown.discountCodesDescription')}
+        >
           {discountCodes.length === 0 ? (
             <EmptySection
-              message='No discount codes created.'
+              message={t('ticketTypeBreakdown.noDiscountCodes')}
               href={ticketsHref}
-              linkLabel='Create a discount code'
+              linkLabel={t('ticketTypeBreakdown.createDiscountCode')}
             />
           ) : (
             <Table>
               <TableHeader>
                 <TableRow className={rowClassName}>
-                  <TableHead className={headClassName}>Code</TableHead>
-                  <TableHead className={headClassName}>Off</TableHead>
-                  <TableHead className={headClassName}>Used</TableHead>
+                  <TableHead className={headClassName}>{t('ticketTypeBreakdown.code')}</TableHead>
+                  <TableHead className={headClassName}>{t('ticketTypeBreakdown.off')}</TableHead>
+                  <TableHead className={headClassName}>{t('ticketTypeBreakdown.used')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

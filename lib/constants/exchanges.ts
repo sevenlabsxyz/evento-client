@@ -1,3 +1,5 @@
+import { translateHooks } from '@/lib/i18n/active-translator';
+
 export type Exchange = {
   id: string;
   name: string;
@@ -15,7 +17,9 @@ export const REGIONAL_EXCHANGES: Exchange[] = [
   {
     id: 'cash-app',
     name: 'Cash App',
-    description: 'Buy and sell Bitcoin easily',
+    get description() {
+      return translateHooks('exchanges.cashApp');
+    },
     logo: '/assets/partners/cashapp.webp',
     link: 'https://cash.app',
     supportedCountries: ['US', 'GB'],
@@ -24,7 +28,9 @@ export const REGIONAL_EXCHANGES: Exchange[] = [
   {
     id: 'river',
     name: 'River',
-    description: 'Bitcoin-only financial institution',
+    get description() {
+      return translateHooks('exchanges.river');
+    },
     logo: '/assets/partners/river.webp',
     link: 'https://river.com',
     supportedCountries: ['US'],
@@ -33,7 +39,9 @@ export const REGIONAL_EXCHANGES: Exchange[] = [
   {
     id: 'strike',
     name: 'Strike',
-    description: 'Buy Bitcoin instantly with no fees',
+    get description() {
+      return translateHooks('exchanges.strike');
+    },
     logo: '/assets/partners/strike.webp',
     link: 'https://strike.me',
     supportedCountries: ['US', 'GB', 'AR'],
@@ -42,7 +50,9 @@ export const REGIONAL_EXCHANGES: Exchange[] = [
   {
     id: 'flash',
     name: 'Flash',
-    description: 'Neobank for Bitcoin in Jamaica',
+    get description() {
+      return translateHooks('exchanges.flash');
+    },
     logo: '/assets/partners/flash.svg',
     link: 'https://getflash.io/',
     supportedCountries: ['JM'],
@@ -57,7 +67,9 @@ export const GLOBAL_EXCHANGES: Exchange[] = [
   {
     id: 'kraken',
     name: 'Kraken',
-    description: 'Advanced trading platform',
+    get description() {
+      return translateHooks('exchanges.kraken');
+    },
     logo: '/assets/partners/kraken.webp',
     link: 'https://kraken.com',
     supportedCountries: [],
@@ -66,7 +78,9 @@ export const GLOBAL_EXCHANGES: Exchange[] = [
   {
     id: 'coinbase',
     name: 'Coinbase',
-    description: 'Trusted cryptocurrency exchange',
+    get description() {
+      return translateHooks('exchanges.coinbase');
+    },
     logo: '/assets/partners/coinbase.webp',
     link: 'https://coinbase.com',
     supportedCountries: [],

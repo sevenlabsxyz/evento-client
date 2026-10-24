@@ -9,6 +9,7 @@ import {
   useUpdateEventCampaign,
 } from '@/lib/hooks/use-event-campaign';
 import { useWallet } from '@/lib/hooks/use-wallet';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { campaignFormSchema, type CampaignFormData } from '@/lib/schemas/campaign';
 import { useTopBarStore } from '@/lib/stores/topbar-store';
 import { useWalletStore } from '@/lib/stores/wallet-store';
@@ -17,12 +18,15 @@ import { toast } from '@/lib/utils/toast';
 import { redirectToWalletUnlock, showWalletUnlockToast } from '@/lib/utils/wallet-unlock-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, Info, MessageCircle, Zap } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
 export default function CrowdfundingManagementPage() {
   const setTopBarForRoute = useTopBarStore((state) => state.setTopBarForRoute);
+  const t = useTranslations('manageLegacy');
+  const intlLocale = getIntlLocale(useLocale());
   const applyRouteConfig = useTopBarStore((state) => state.applyRouteConfig);
   const params = useParams();
   const pathname = usePathname();
@@ -102,7 +106,10 @@ export default function CrowdfundingManagementPage() {
   const handleSave = useCallback(
     async (data: CampaignFormData) => {
       if (isCreateBlockedByWalletState) {
-        toast.info('Loading your wallet. Try again in a moment.', 'Wallet loading');
+        toast.info(
+          t('crowdfunding.toasts.walletLoading'),
+          t('crowdfunding.toasts.walletLoadingTitle')
+        );
         return;
       }
 
@@ -112,18 +119,15 @@ export default function CrowdfundingManagementPage() {
       }
 
       if (isWalletAddressMissing) {
-        toast.info(
-          'Open your wallet to finish setting up your Lightning address.',
-          'Wallet setup required'
-        );
+        toast.info(t('crowdfunding.toasts.walletSetup'), t('crowdfunding.toasts.walletSetupTitle'));
         router.push('/e/wallet');
         return;
       }
 
       if (isWalletAddressSyncPending) {
         toast.info(
-          'Your wallet address is still syncing. Try again in a moment.',
-          'Syncing wallet'
+          t('crowdfunding.toasts.walletSyncing'),
+          t('crowdfunding.toasts.walletSyncingTitle')
         );
         return;
       }
@@ -139,10 +143,10 @@ export default function CrowdfundingManagementPage() {
 
         if (isUpdate) {
           await updateCampaign.mutateAsync(payload);
-          toast.success('Campaign updated successfully!');
+          toast.success(t('crowdfunding.toasts.updated'));
         } else {
           await createCampaign.mutateAsync(payload);
-          toast.success('Campaign created successfully!');
+          toast.success(t('crowdfunding.toasts.created'));
         }
 
         router.push(`/e/${eventId}/manage`);
@@ -150,8 +154,8 @@ export default function CrowdfundingManagementPage() {
         if (isMissingDestinationAddressError(err)) {
           if (walletState.isConnected) {
             toast.info(
-              'Open your wallet to finish setting up your Lightning address.',
-              'Wallet setup required'
+              t('crowdfunding.toasts.walletSetup'),
+              t('crowdfunding.toasts.walletSetupTitle')
             );
             router.push('/e/wallet');
           } else {
@@ -160,7 +164,12 @@ export default function CrowdfundingManagementPage() {
           return;
         }
 
-        toast.error(err?.message || `Failed to ${isUpdate ? 'update' : 'create'} campaign`);
+        toast.error(
+          err?.message ||
+            (isUpdate
+              ? t('crowdfunding.toasts.updateFailed')
+              : t('crowdfunding.toasts.createFailed'))
+        );
       }
     },
     [
@@ -172,6 +181,7 @@ export default function CrowdfundingManagementPage() {
       isWalletAddressMissing,
       isWalletAddressSyncPending,
       router,
+      t,
       updateCampaign,
       walletState.isConnected,
     ]
@@ -191,7 +201,7 @@ export default function CrowdfundingManagementPage() {
 
   useEffect(() => {
     setTopBarForRoute(pathname, {
-      title: 'Crowdfunding',
+      title: t('crowdfunding.title'),
       leftMode: 'back',
       centerMode: 'title',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
@@ -201,7 +211,7 @@ export default function CrowdfundingManagementPage() {
           id: 'save-crowdfunding',
           icon: Check,
           onClick: () => submitFromTopBarRef.current(),
-          label: 'Save',
+          label: t('crowdfunding.save'),
           disabled: isMutating || isCreateBlockedByWalletState || isWalletAddressSyncPending,
         },
       ],
@@ -214,6 +224,7 @@ export default function CrowdfundingManagementPage() {
     pathname,
     router,
     eventId,
+    t,
   ]);
 
   if (isLoading) {
@@ -251,7 +262,7 @@ export default function CrowdfundingManagementPage() {
       <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <MessageCircle className='mx-auto mb-4 h-8 w-8 text-red-500 dark:text-red-400' />
-          <p className='text-gray-600 dark:text-neutral-400'>Could not load campaign settings</p>
+          <p className='text-gray-600 dark:text-neutral-400'>{t('crowdfunding.loadError')}</p>
         </div>
       </div>
     );
@@ -262,12 +273,10 @@ export default function CrowdfundingManagementPage() {
       <div className='max-w-2xl space-y-4'>
         <div>
           <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-            Crowdfunding
+            {t('crowdfunding.title')}
           </h2>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            {isUpdate
-              ? 'Update your crowdfunding campaign settings below.'
-              : 'Set up a Lightning crowdfunding campaign for your event.'}
+            {isUpdate ? t('crowdfunding.subtitleUpdate') : t('crowdfunding.subtitleCreate')}
           </p>
         </div>
 
@@ -275,21 +284,29 @@ export default function CrowdfundingManagementPage() {
         {isUpdate && campaign && (
           <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
             <h3 className='mb-3 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-              Campaign Progress
+              {t('crowdfunding.progress.title')}
             </h3>
             <div className='space-y-2'>
               <div className='flex justify-between text-sm'>
-                <span className='text-gray-600 dark:text-neutral-400'>Raised</span>
+                <span className='text-gray-600 dark:text-neutral-400'>
+                  {t('crowdfunding.progress.raised')}
+                </span>
                 <span className='font-medium text-gray-900 dark:text-neutral-100'>
-                  {campaign.raised_sats.toLocaleString()} sats
+                  {t('crowdfunding.progress.sats', {
+                    amount: campaign.raised_sats.toLocaleString(intlLocale),
+                  })}
                 </span>
               </div>
               {campaign.goal_sats && (
                 <>
                   <div className='flex justify-between text-sm'>
-                    <span className='text-gray-600 dark:text-neutral-400'>Goal</span>
+                    <span className='text-gray-600 dark:text-neutral-400'>
+                      {t('crowdfunding.progress.goal')}
+                    </span>
                     <span className='font-medium text-gray-900 dark:text-neutral-100'>
-                      {campaign.goal_sats.toLocaleString()} sats
+                      {t('crowdfunding.progress.sats', {
+                        amount: campaign.goal_sats.toLocaleString(intlLocale),
+                      })}
                     </span>
                   </div>
                   <div className='h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-neutral-700'>
@@ -299,12 +316,19 @@ export default function CrowdfundingManagementPage() {
                     />
                   </div>
                   <p className='text-xs text-gray-500 dark:text-neutral-400'>
-                    {campaign.progressPercent.toFixed(1)}% of goal reached
+                    {t('crowdfunding.progress.goalReached', {
+                      percent: campaign.progressPercent.toLocaleString(intlLocale, {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
+                      }),
+                    })}
                   </p>
                 </>
               )}
               <div className='flex justify-between text-sm'>
-                <span className='text-gray-600 dark:text-neutral-400'>Pledges</span>
+                <span className='text-gray-600 dark:text-neutral-400'>
+                  {t('crowdfunding.progress.pledges')}
+                </span>
                 <span className='font-medium text-gray-900 dark:text-neutral-100'>
                   {campaign.pledge_count}
                 </span>
@@ -323,10 +347,10 @@ export default function CrowdfundingManagementPage() {
               </div>
               <div>
                 <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                  Campaign Details
+                  {t('crowdfunding.details.title')}
                 </h3>
                 <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                  Name and describe your campaign
+                  {t('crowdfunding.details.description')}
                 </p>
               </div>
             </div>
@@ -338,13 +362,14 @@ export default function CrowdfundingManagementPage() {
                   htmlFor='campaign-title'
                   className='text-sm font-medium text-gray-700 dark:text-neutral-300'
                 >
-                  Title <span className='text-red-500 dark:text-red-400'>*</span>
+                  {t('crowdfunding.details.titleLabel')}{' '}
+                  <span className='text-red-500 dark:text-red-400'>*</span>
                 </label>
                 <input
                   id='campaign-title'
                   type='text'
                   {...form.register('title')}
-                  placeholder='e.g. Help fund our event'
+                  placeholder={t('crowdfunding.details.titlePlaceholder')}
                   maxLength={200}
                   className='w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
                 />
@@ -361,12 +386,12 @@ export default function CrowdfundingManagementPage() {
                   htmlFor='campaign-description'
                   className='text-sm font-medium text-gray-700 dark:text-neutral-300'
                 >
-                  Description
+                  {t('crowdfunding.details.descriptionLabel')}
                 </label>
                 <textarea
                   id='campaign-description'
                   {...form.register('description')}
-                  placeholder='Tell supporters what this campaign is for...'
+                  placeholder={t('crowdfunding.details.descriptionPlaceholder')}
                   rows={3}
                   className='w-full resize-none rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
                 />
@@ -381,7 +406,7 @@ export default function CrowdfundingManagementPage() {
                 htmlFor='campaign-goal'
                 className='text-sm font-medium text-gray-700 dark:text-neutral-300'
               >
-                Goal (sats)
+                {t('crowdfunding.goal.label')}
               </label>
               <div className='flex items-center gap-3'>
                 <div className='rounded-lg bg-gray-100 px-3 py-2 font-medium text-gray-700 dark:bg-neutral-800 dark:text-neutral-300'>
@@ -391,14 +416,14 @@ export default function CrowdfundingManagementPage() {
                   id='campaign-goal'
                   type='number'
                   {...form.register('goal_sats', { valueAsNumber: true })}
-                  placeholder='Optional'
+                  placeholder={t('crowdfunding.goal.placeholder')}
                   min='1'
                   step='1'
                   className='w-32 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
                 />
               </div>
               <p className='text-xs text-gray-500 dark:text-neutral-400'>
-                Leave empty for an open-ended campaign with no specific target.
+                {t('crowdfunding.goal.hint')}
               </p>
               {form.formState.errors.goal_sats && (
                 <p className='text-sm text-red-500 dark:text-red-400'>
@@ -412,7 +437,7 @@ export default function CrowdfundingManagementPage() {
           <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='space-y-2'>
               <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                Visibility
+                {t('crowdfunding.visibility.label')}
               </label>
               <div className='flex gap-3'>
                 {(['public', 'private'] as const).map((option) => (
@@ -426,14 +451,16 @@ export default function CrowdfundingManagementPage() {
                         : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-950'
                     }`}
                   >
-                    {option === 'public' ? 'Public' : 'Private'}
+                    {option === 'public'
+                      ? t('crowdfunding.visibility.public')
+                      : t('crowdfunding.visibility.private')}
                   </button>
                 ))}
               </div>
               <p className='text-xs text-gray-500 dark:text-neutral-400'>
                 {form.watch('visibility') === 'public'
-                  ? 'Anyone can view and contribute to this campaign.'
-                  : 'Only people with the link can view and contribute.'}
+                  ? t('crowdfunding.visibility.publicHint')
+                  : t('crowdfunding.visibility.privateHint')}
               </p>
             </div>
           </div>
@@ -442,7 +469,7 @@ export default function CrowdfundingManagementPage() {
           <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='space-y-2'>
               <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                Status
+                {t('crowdfunding.status.label')}
               </label>
               <div className='flex gap-3'>
                 {(['active', 'paused'] as const).map((option) => (
@@ -456,14 +483,16 @@ export default function CrowdfundingManagementPage() {
                         : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-950'
                     }`}
                   >
-                    {option === 'active' ? 'Active' : 'Paused'}
+                    {option === 'active'
+                      ? t('crowdfunding.status.active')
+                      : t('crowdfunding.status.paused')}
                   </button>
                 ))}
               </div>
               <p className='text-xs text-gray-500 dark:text-neutral-400'>
                 {form.watch('status') === 'active'
-                  ? 'Campaign is accepting pledges.'
-                  : 'Campaign is paused and not accepting new pledges.'}
+                  ? t('crowdfunding.status.activeHint')
+                  : t('crowdfunding.status.pausedHint')}
               </p>
             </div>
           </div>
@@ -473,17 +502,16 @@ export default function CrowdfundingManagementPage() {
             <div className='mb-2 flex items-center gap-2'>
               <Info className='h-4 w-4 text-amber-700 dark:text-amber-400' />
               <h4 className='font-medium text-amber-900 dark:text-amber-400'>
-                Payment Destination
+                {t('crowdfunding.destination.title')}
               </h4>
             </div>
             <p className='text-sm text-amber-700 dark:text-amber-400'>
-              Funds are sent directly to your Lightning address. The destination is automatically
-              set to your account&apos;s Lightning address and cannot be changed.
+              {t('crowdfunding.destination.description')}
             </p>
             {campaign?.destination_address && (
               <div className='mt-3 rounded-lg bg-amber-100/50 px-3 py-2 dark:bg-amber-950/60'>
                 <p className='text-xs font-medium text-amber-800 dark:text-amber-400'>
-                  Current destination
+                  {t('crowdfunding.destination.current')}
                 </p>
                 <p className='font-mono text-sm text-amber-900 dark:text-amber-400'>
                   {campaign.destination_address}
@@ -498,7 +526,11 @@ export default function CrowdfundingManagementPage() {
             className='h-12 w-full bg-amber-600 text-base font-semibold text-white hover:bg-amber-700'
             disabled={isMutating}
           >
-            {isMutating ? 'Saving...' : isUpdate ? 'Update Campaign' : 'Create Campaign'}
+            {isMutating
+              ? t('crowdfunding.saving')
+              : isUpdate
+                ? t('crowdfunding.update')
+                : t('crowdfunding.create')}
           </Button>
         </form>
       </div>

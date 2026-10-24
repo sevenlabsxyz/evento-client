@@ -3,6 +3,7 @@
 import { apiClient } from '@/lib/api/client';
 import { toast } from '@/lib/utils/toast';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface NotifyWalletInviteArgs {
   recipientUsername: string;
@@ -15,6 +16,8 @@ interface NotifyWalletInviteResponse {
 }
 
 export function useNotifyWalletInvite() {
+  const t = useTranslations('hooks');
+
   return useMutation<NotifyWalletInviteResponse, Error, NotifyWalletInviteArgs>({
     mutationFn: async ({ recipientUsername }) => {
       const response = await apiClient.post<NotifyWalletInviteResponse>('/v1/wallet/notify', {
@@ -22,7 +25,7 @@ export function useNotifyWalletInvite() {
       });
 
       if (!response?.success) {
-        throw new Error(response?.message || 'Failed to send notification');
+        throw new Error(response?.message || t('walletInvite.notifyFailed'));
       }
 
       return response;
@@ -31,11 +34,11 @@ export function useNotifyWalletInvite() {
       // Only show toast for 'sent' status
       // 'already_notified' is handled by UI state
       if (data.status === 'sent') {
-        toast.success("We've let them know!");
+        toast.success(t('walletInvite.notified'));
       }
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to send notification');
+      toast.error(error.message || t('walletInvite.notifyFailed'));
     },
   });
 }

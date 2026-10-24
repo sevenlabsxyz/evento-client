@@ -1,6 +1,8 @@
 'use client';
 
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { EmailBlast } from '@/lib/types/api';
+import { useLocale, useTranslations } from 'next-intl';
 
 type EmailBlastCardData = EmailBlast;
 
@@ -10,9 +12,11 @@ interface EmailBlastCardProps {
 }
 
 export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) {
+  const t = useTranslations('manageLegacy');
+  const locale = useLocale();
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(getIntlLocale(locale), {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -44,17 +48,17 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'scheduled':
-        return 'Scheduled';
+        return t('emailBlast.status.scheduled');
       case 'sending':
-        return 'Sending';
+        return t('emailBlast.status.sending');
       case 'completed':
-        return 'Completed';
+        return t('emailBlast.status.completed');
       case 'failed':
-        return 'Failed';
+        return t('emailBlast.status.failed');
       case 'cancelled':
-        return 'Cancelled';
+        return t('emailBlast.status.cancelled');
       case 'draft':
-        return 'Draft';
+        return t('emailBlast.status.draft');
       default:
         return status.charAt(0).toUpperCase() + status.slice(1);
     }
@@ -68,10 +72,10 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
       <div className='mb-3 flex items-start justify-between'>
         <div className='flex-1'>
           <h3 className='mb-1 font-semibold text-gray-900 dark:text-neutral-100'>
-            {blast.subject || 'No subject'}
+            {blast.subject || t('emailBlast.noSubject')}
           </h3>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            To: {blast.recipientCount ?? 0} recipients
+            {t('emailBlast.card.to', { count: blast.recipientCount ?? 0 })}
           </p>
         </div>
         <span
@@ -100,14 +104,16 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
                     d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'
                   />
                 </svg>
-                Scheduled for: {formatDate(blast.scheduled_for)}
+                {t('emailBlast.card.scheduledFor', { date: formatDate(blast.scheduled_for) })}
               </span>
             </>
           ) : (
-            <>Created: {formatDate(blast.created_at)}</>
+            <>{t('emailBlast.card.created', { date: formatDate(blast.created_at) })}</>
           )}
         </div>
-        <div className='mt-1 text-xs'>ID: {blast.id.substring(0, 8)}...</div>
+        <div className='mt-1 text-xs'>
+          {t('emailBlast.card.id', { id: blast.id.substring(0, 8) })}
+        </div>
       </div>
 
       {/* Delivery Stats */}
@@ -115,14 +121,14 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
         <div className='flex items-center gap-1'>
           <div className='h-2 w-2 rounded-full bg-green-500'></div>
           <span className='text-xs text-gray-600 dark:text-neutral-400'>
-            {blast.delivered ?? 0} delivered
+            {t('emailBlast.card.delivered', { count: blast.delivered ?? 0 })}
           </span>
         </div>
         {(blast.failed ?? 0) > 0 && (
           <div className='flex items-center gap-1'>
             <div className='h-2 w-2 rounded-full bg-red-500 dark:bg-red-600'></div>
             <span className='text-xs text-gray-600 dark:text-neutral-400'>
-              {blast.failed ?? 0} failed
+              {t('emailBlast.card.failed', { count: blast.failed ?? 0 })}
             </span>
           </div>
         )}
@@ -130,7 +136,7 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
           <div className='flex items-center gap-1'>
             <div className='h-2 w-2 rounded-full bg-yellow-500'></div>
             <span className='text-xs text-gray-600 dark:text-neutral-400'>
-              {blast.pending ?? 0} pending
+              {t('emailBlast.card.pending', { count: blast.pending ?? 0 })}
             </span>
           </div>
         )}

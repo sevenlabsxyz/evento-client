@@ -1,1 +1,169 @@
-{}
+{
+  "page": {
+    "title": "Settings",
+    "eyebrow": "Settings",
+    "heading": "Make Evento yours",
+    "description": "Manage your account, preferences, and how Evento works for you.",
+    "opensInNewTab": "(opens in a new tab)"
+  },
+  "sections": {
+    "account": "Account",
+    "preferences": "Preferences",
+    "developer": "Developer",
+    "support": "Support",
+    "about": "About",
+    "dangerZone": "Danger zone"
+  },
+  "rows": {
+    "telegram": {
+      "label": "Telegram",
+      "description": "Log in with Telegram and get event notifications there.",
+      "connected": "Connected"
+    },
+    "darkMode": {
+      "label": "Dark mode",
+      "description": "Use a darker palette across Evento."
+    },
+    "language": {
+      "label": "Language",
+      "description": "Choose the language Evento uses.",
+      "selectTitle": "Choose language",
+      "changing": "Changing language…"
+    },
+    "currency": {
+      "label": "Currency",
+      "description": "Used when showing prices and amounts.",
+      "value": "US Dollar"
+    },
+    "developerMode": {
+      "label": "Developer Mode",
+      "description": "Unlock API keys and technical settings."
+    },
+    "apiKeys": {
+      "label": "API Keys",
+      "description": "Create and revoke keys for Evento integrations."
+    },
+    "talkToUs": {
+      "label": "Talk to us",
+      "description": "Questions, feedback, or a problem? Send us a message."
+    },
+    "share": {
+      "label": "Share to a Friend",
+      "description": "Invite friends to discover events on Evento."
+    },
+    "about": {
+      "label": "About Evento",
+      "description": "Learn more about Evento at evento.so."
+    },
+    "security": {
+      "label": "Security",
+      "description": "How Evento protects your account, wallet, and data."
+    },
+    "terms": {
+      "label": "Terms of Service",
+      "description": "The rules for using Evento."
+    },
+    "privacy": {
+      "label": "Privacy Policy",
+      "description": "How we collect and use your data."
+    },
+    "logOut": {
+      "label": "Log out",
+      "description": "Sign out of Evento on this device."
+    }
+  },
+  "share": {
+    "title": "Evento - Travel Events App",
+    "text": "Check out Evento, the best way to plan and organize your travel events!",
+    "failed": "Unable to share. Please copy the link manually: evento.so"
+  },
+  "toasts": {
+    "developerModeEnabled": "Developer Mode enabled",
+    "developerModeDisabled": "Developer Mode disabled"
+  },
+  "developerModeDialog": {
+    "title": "Enable Developer Mode?",
+    "intro": "Developer Mode is intended for advanced users building integrations with Evento.",
+    "warning": "Enabling this will grant access to API keys and technical settings. Make sure you understand the security implications of managing API credentials.",
+    "confirm": "Enable Developer Mode"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Send us a message and we'll get back to you",
+    "subjectLabel": "Subject *",
+    "subjectPlaceholder": "What's this about?",
+    "messageLabel": "Message *",
+    "messagePlaceholder": "Tell us more about your issue or question...",
+    "attachmentLabel": "Attachment (optional)",
+    "fileSize": "{size} KB",
+    "removeAttachment": "Remove attachment",
+    "uploadPrompt": "Click to upload a file or screenshot",
+    "uploadHint": "PNG, JPG, PDF, DOC up to 10MB",
+    "sending": "Sending...",
+    "submit": "Send Message",
+    "requiredFields": "Please fill in all required fields",
+    "success": "Message sent successfully! We'll get back to you soon.",
+    "failed": "Failed to send message. Please try again."
+  },
+  "telegram": {
+    "subtitle": "Connect your Telegram account",
+    "subtitleConnected": "Your Telegram account is connected",
+    "connectedBody": "Telegram is connected. You can log in with Telegram and receive notifications there.",
+    "connectBody": "Connect Telegram to log in with your Telegram account and receive event notifications via Telegram.",
+    "disconnect": "Disconnect Telegram",
+    "disconnecting": "Disconnecting...",
+    "notConfigured": "{variable} is not configured.",
+    "noSession": "No active session. Please sign in and try again.",
+    "linkFailed": "Failed to link Telegram",
+    "connectFailed": "Failed to connect Telegram",
+    "disconnectFailed": "Failed to disconnect Telegram",
+    "connectedToast": "Telegram connected!",
+    "disconnectedToast": "Telegram disconnected"
+  },
+  "apiKeys": {
+    "title": "API Keys",
+    "description": "Manage your API keys for Evento integrations",
+    "activeCount": "Active Keys: <strong>{count}</strong> / {max}",
+    "createKey": "Create Key",
+    "limitReached": "You've reached the maximum of {max} API keys. Revoke an existing key to create a new one.",
+    "emptyTitle": "No API Keys",
+    "emptyDescription": "Create your first API key to start integrating with Evento",
+    "createFirstKey": "Create Your First Key",
+    "statusActive": "Active",
+    "statusRevoked": "Revoked",
+    "created": "Created:",
+    "lastUsed": "Last used:",
+    "never": "Never",
+    "invalidDate": "Invalid date",
+    "revokeKey": "Revoke Key"
+  },
+  "createApiKey": {
+    "title": "Create API Key",
+    "description": "Give your API key a descriptive name to help you identify it later.",
+    "nameLabel": "Name *",
+    "namePlaceholder": "e.g., Production API Key",
+    "nameHint": "Maximum {max} characters",
+    "nameRequired": "Please enter a name for your API key",
+    "creating": "Creating...",
+    "submit": "Create Key",
+    "success": "API key created successfully",
+    "failed": "Failed to create API key",
+    "createdTitle": "API Key Created",
+    "createdDescription": "Your API key has been created successfully.",
+    "copyNow": "Make sure to copy it now. You won't be able to see it again!",
+    "keyLabel": "API Key",
+    "copyKey": "Copy API key",
+    "copied": "API key copied to clipboard",
+    "copyFailed": "Failed to copy API key",
+    "storeSecurely": "<strong>Important:</strong> Store this API key securely. It will not be shown again after you close this dialog.",
+    "savedKey": "I've Saved My Key"
+  },
+  "revokeApiKey": {
+    "title": "Revoke API Key",
+    "description": "Are you sure you want to revoke \"{name}\"? This action cannot be undone and any applications using this key will immediately lose access.",
+    "revoking": "Revoking...",
+    "confirm": "Revoke Key",
+    "success": "API key revoked successfully",
+    "failed": "Failed to revoke API key"
+  }
+}

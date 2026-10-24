@@ -7,8 +7,12 @@ import { cn } from '@/lib/utils';
 import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { formatDistanceToNowStrict } from 'date-fns';
+import { enUS, es, ptBR } from 'date-fns/locale';
 import { Check, MapPin, Users, X } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+
+const DATE_FNS_LOCALES = { en: enUS, 'pt-BR': ptBR, es } as const;
 
 interface MasterInviteCardProps {
   invite: EventInvite;
@@ -18,6 +22,8 @@ interface MasterInviteCardProps {
 
 export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCardProps) {
   const router = useRouter();
+  const t = useTranslations('hub');
+  const locale = useLocale();
   const event = invite.events;
 
   const { timeWithTz: eventTimeWithTz } = formatEventDateFromParts({
@@ -31,7 +37,10 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
   });
 
   // Get relative time for when invite was sent (short format)
-  const invitedAgo = formatDistanceToNowStrict(new Date(invite.created_at), { addSuffix: true })
+  const invitedAgo = formatDistanceToNowStrict(new Date(invite.created_at), {
+    addSuffix: true,
+    locale: DATE_FNS_LOCALES[locale as keyof typeof DATE_FNS_LOCALES] ?? enUS,
+  })
     .replace(' seconds', 's')
     .replace(' second', 's')
     .replace(' minutes', 'm')
@@ -133,10 +142,10 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
             className='w-full rounded-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             <Users className='mr-1.5 h-4 w-4' />
-            RSVP
+            {t('invites.rsvp')}
           </Button>
           <Button variant='outline' onClick={handleViewEvent} className='w-full rounded-full'>
-            View Event
+            {t('invites.viewEvent')}
           </Button>
         </div>
       ) : (
@@ -155,13 +164,13 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
             {invite.response === 'going' && <Check className='mr-1 h-3 w-3' />}
             {invite.response === 'not_going' && <X className='mr-1 h-3 w-3' />}
             {invite.response === 'going'
-              ? 'Going'
+              ? t('invites.response.going')
               : invite.response === 'maybe'
-                ? 'Maybe'
-                : 'Not Going'}
+                ? t('invites.response.maybe')
+                : t('invites.response.notGoing')}
           </span>
           <Button size='sm' variant='outline' onClick={handleViewEvent}>
-            View Event
+            {t('invites.viewEvent')}
           </Button>
         </div>
       )}

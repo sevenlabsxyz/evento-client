@@ -1,1 +1,140 @@
-{}
+{
+  "search": {
+    "topBarTitle": "Buscar",
+    "heading": "Encuentra usuarios de Evento",
+    "subheading": "Busca por nombre de usuario o nombre",
+    "placeholder": "Buscar usuarios...",
+    "searchAsYouType": "Busca mientras escribes",
+    "searching": "Buscando...",
+    "resultCount": "{count, plural, one {# resultado} other {# resultados}}",
+    "noResults": "Sin resultados",
+    "noUsersFound": "No se encontraron usuarios",
+    "noUsersMatching": "Ningún usuario coincide con \"{query}\""
+  },
+  "feed": {
+    "topBarTitle": "Feed",
+    "switchToCompact": "Cambiar a vista compacta",
+    "switchToCard": "Cambiar a vista de tarjetas",
+    "searchEvents": "Buscar eventos",
+    "removedFromSaved": "¡Evento eliminado de guardados!",
+    "savedTo": "¡Evento guardado en \"{list}\"!",
+    "sort": "Ordenar",
+    "newestFirst": "Más recientes primero",
+    "oldestFirst": "Más antiguos primero",
+    "cardView": "Tarjetas",
+    "listView": "Lista",
+    "loadError": "No se pudieron cargar los eventos. Inténtalo de nuevo.",
+    "emptyTitle": "Aún no hay eventos en tu feed",
+    "emptyDescription": "Sigue a otros usuarios o crea tu primer evento para ver novedades aquí",
+    "saveToList": "Guardar en lista",
+    "defaultList": "Predeterminada",
+    "searchPlaceholder": "Buscar eventos, personas, lugares...",
+    "resultsFor": "Resultados para \"{query}\"",
+    "noResultsFor": "No se encontraron resultados para \"{query}\"",
+    "recent": "Recientes",
+    "clearAll": "Borrar todo",
+    "suggestions": "Sugerencias",
+    "trending": "Tendencias",
+    "suggested": {
+      "weekend": "Eventos este fin de semana",
+      "nearMe": "Eventos cerca de mí",
+      "popular": "Eventos populares",
+      "upcoming": "Próximos eventos"
+    }
+  },
+  "contact": {
+    "topBarTitle": "Ayuda y soporte",
+    "requiredFields": "Completa todos los campos obligatorios",
+    "sent": "¡Mensaje enviado con éxito! Te responderemos pronto.",
+    "sendFailed": "No se pudo enviar el mensaje. Inténtalo de nuevo.",
+    "subject": "Asunto *",
+    "subjectPlaceholder": "¿De qué se trata?",
+    "message": "Mensaje *",
+    "messagePlaceholder": "Cuéntanos más sobre tu problema o pregunta...",
+    "sending": "Enviando...",
+    "send": "Enviar mensaje"
+  },
+  "stats": {
+    "emptyTitle": "No hay eventos registrados en tus estadísticas",
+    "emptyDescription": "Las calcularemos en cuanto termine tu próximo evento",
+    "events": "Eventos",
+    "countries": "Países",
+    "cities": "Ciudades",
+    "categories": "Categorías",
+    "mutuals": "En común",
+    "connections": "Conexiones",
+    "total": "Total",
+    "mutualsMet": "Contactos en común",
+    "shared": "Compartidos",
+    "international": "Internacionales",
+    "domestic": "Nacionales",
+    "visited": "Visitados",
+    "worldTotal": "Total mundial",
+    "mostVisited": "Más visitados",
+    "showVisitedCountries": "Mostrar países visitados",
+    "eventCategories": "Categorías de eventos",
+    "popularCategories": "Categorías populares",
+    "noCategories": "Aún no hay categorías de eventos",
+    "close": "Cerrar",
+    "share": "Compartir"
+  },
+  "error": {
+    "title": "Algo salió mal",
+    "description": "Ocurrió un error inesperado. Inténtalo de nuevo.",
+    "tryAgain": "Intentar de nuevo"
+  },
+  "legal": {
+    "titles": {
+      "terms": "Términos del Servicio",
+      "privacy": "Política de Privacidad"
+    },
+    "metaTitle": "{title} | Evento",
+    "dates": "Fecha de vigencia: {effective} | Última actualización: {updated}",
+    "tableOfContents": "Índice",
+    "englishOnly": "Este documento se proporciona en inglés.",
+    "links": {
+      "terms": "Leer los Términos del Servicio",
+      "privacy": "Leer la Política de Privacidad",
+      "security": "Leer el resumen de seguridad"
+    }
+  },
+  "eventCard": {
+    "postedBy": "Publicado por @{username} {time}",
+    "shareEvent": "Compartir evento",
+    "copyLink": "Copiar enlace",
+    "viewProfile": "Ver perfil",
+    "shareText": "Mira este evento: {title}",
+    "linkCopied": "¡Enlace copiado al portapapeles!"
+  },
+  "eventCompactItem": {
+    "viewEvent": "Ver {title}"
+  },
+  "masterEventCard": {
+    "byHost": "por <strong>@{name}</strong>",
+    "capacity": "Capacidad {count}"
+  },
+  "eventSearchSheet": {
+    "title": "Eventos",
+    "placeholder": "Buscar eventos",
+    "tabs": {
+      "all": "Todos",
+      "attending": "Asistiré",
+      "hosting": "Organizo",
+      "drafts": "Borradores"
+    },
+    "upcoming": "Próximos",
+    "past": "Pasados",
+    "latest": "Recientes",
+    "oldest": "Antiguos",
+    "loadError": "No se pudieron cargar los eventos",
+    "noMatch": "No se encontraron eventos para \"{query}\"",
+    "emptyByFilter": {
+      "upcoming": "No se encontraron próximos eventos",
+      "attending": "No hay eventos a los que asistirás",
+      "hosting": "No hay eventos que organices",
+      "drafts": "No se encontraron borradores"
+    },
+    "loading": "Cargando...",
+    "loadMore": "Cargar más"
+  }
+}

@@ -6,9 +6,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useSendPayment } from '@/lib/hooks/use-wallet-payments';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { logger } from '@/lib/utils/logger';
 import { AlertTriangle, ShieldAlert } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 
 interface BitrefillPaymentConfirmationSheetProps {
@@ -32,6 +34,10 @@ export function BitrefillPaymentConfirmationSheet({
   onConfirm,
   onCancel,
 }: BitrefillPaymentConfirmationSheetProps) {
+  const t = useTranslations('walletFlows');
+  const tCommon = useTranslations('common');
+  const intlLocale = getIntlLocale(useLocale());
+  const formatSats = (sats: number) => sats.toLocaleString(intlLocale);
   const { walletState } = useWallet();
   const { prepareSend, sendPayment, feeEstimate, isLoading: isSending, error } = useSendPayment();
 
@@ -70,14 +76,14 @@ export function BitrefillPaymentConfirmationSheet({
         logger.error('Failed to parse invoice', {
           error: err instanceof Error ? err.message : String(err),
         });
-        setPaymentError(err.message || 'Failed to parse invoice');
+        setPaymentError(err.message || t('bitrefillPaymentConfirmationSheet.errors.parseInvoice'));
       } finally {
         setIsLoadingInvoice(false);
       }
     };
 
     parseAndPrepare();
-  }, [open, paymentUri, prepareSend]);
+  }, [open, paymentUri, prepareSend, t]);
 
   // Calculate total with fees
   const totalFees = feeEstimate
@@ -104,9 +110,9 @@ export function BitrefillPaymentConfirmationSheet({
       logger.error('Payment failed', {
         error: err instanceof Error ? err.message : String(err),
       });
-      setPaymentError(err.message || 'Payment failed');
+      setPaymentError(err.message || t('bitrefillPaymentConfirmationSheet.errors.paymentFailed'));
     }
-  }, [invoiceDetails, walletState.hasBackup, sendPayment, onConfirm]);
+  }, [invoiceDetails, walletState.hasBackup, sendPayment, onConfirm, t]);
 
   // Handle backup warning continue (proceed without backup)
   const handleProceedWithoutBackup = useCallback(async () => {
@@ -121,9 +127,9 @@ export function BitrefillPaymentConfirmationSheet({
       logger.error('Payment failed', {
         error: err instanceof Error ? err.message : String(err),
       });
-      setPaymentError(err.message || 'Payment failed');
+      setPaymentError(err.message || t('bitrefillPaymentConfirmationSheet.errors.paymentFailed'));
     }
-  }, [invoiceDetails, sendPayment, onConfirm]);
+  }, [invoiceDetails, sendPayment, onConfirm, t]);
 
   // Reset state when sheet closes
   useEffect(() => {
@@ -154,10 +160,11 @@ export function BitrefillPaymentConfirmationSheet({
                   </div>
                 </div>
 
-                <h2 className='mb-2 text-center text-xl font-semibold'>Backup Required</h2>
+                <h2 className='mb-2 text-center text-xl font-semibold'>
+                  {t('bitrefillPaymentConfirmationSheet.backupRequired.title')}
+                </h2>
                 <p className='mb-6 text-center text-sm text-gray-600 dark:text-neutral-400'>
-                  We recommend backing up your wallet before making your first payment. If you lose
-                  access to your device, you&apos;ll need your backup to recover your funds.
+                  {t('bitrefillPaymentConfirmationSheet.backupRequired.description')}
                 </p>
 
                 <div className='space-y-3'>
@@ -166,7 +173,7 @@ export function BitrefillPaymentConfirmationSheet({
                     variant='outline'
                     className='h-12 w-full rounded-full'
                   >
-                    Go Back & Backup
+                    {t('bitrefillPaymentConfirmationSheet.backupRequired.goBack')}
                   </Button>
                   <Button
                     onClick={handleProceedWithoutBackup}
@@ -174,7 +181,9 @@ export function BitrefillPaymentConfirmationSheet({
                     className='h-12 w-full rounded-full text-gray-500 dark:text-neutral-400'
                     disabled={isSending}
                   >
-                    {isSending ? 'Processing...' : 'Continue Without Backup'}
+                    {isSending
+                      ? t('bitrefillPaymentConfirmationSheet.processing')
+                      : t('bitrefillPaymentConfirmationSheet.backupRequired.continueWithout')}
                   </Button>
                 </div>
               </div>
@@ -197,7 +206,9 @@ export function BitrefillPaymentConfirmationSheet({
               </div>
 
               <div className='mb-6 flex items-center justify-between'>
-                <h2 className='text-lg font-semibold'>Confirm Purchase</h2>
+                <h2 className='text-lg font-semibold'>
+                  {t('bitrefillPaymentConfirmationSheet.title')}
+                </h2>
                 <WalletBalanceDisplay size='sm' />
               </div>
 
@@ -219,28 +230,44 @@ export function BitrefillPaymentConfirmationSheet({
                       ${invoiceDetails.amountUSD.toFixed(2)}
                     </div>
                     <div className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-                      {invoiceDetails.amountSats.toLocaleString()} sats
+                      {t('bitrefillPaymentConfirmationSheet.sats', {
+                        amount: formatSats(invoiceDetails.amountSats),
+                      })}
                     </div>
                   </div>
 
                   {/* Fee Breakdown */}
                   <div className='mb-6 space-y-2 rounded-lg border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
                     <div className='flex justify-between text-sm'>
-                      <span className='text-gray-500 dark:text-neutral-400'>Amount</span>
+                      <span className='text-gray-500 dark:text-neutral-400'>
+                        {t('bitrefillPaymentConfirmationSheet.amount')}
+                      </span>
                       <span className='font-medium'>
-                        {invoiceDetails.amountSats.toLocaleString()} sats
+                        {t('bitrefillPaymentConfirmationSheet.sats', {
+                          amount: formatSats(invoiceDetails.amountSats),
+                        })}
                       </span>
                     </div>
                     <div className='flex justify-between text-sm'>
-                      <span className='text-gray-500 dark:text-neutral-400'>Network Fee</span>
-                      <span className='font-medium'>{totalFees.toLocaleString()} sats</span>
+                      <span className='text-gray-500 dark:text-neutral-400'>
+                        {t('bitrefillPaymentConfirmationSheet.networkFee')}
+                      </span>
+                      <span className='font-medium'>
+                        {t('bitrefillPaymentConfirmationSheet.sats', {
+                          amount: formatSats(totalFees),
+                        })}
+                      </span>
                     </div>
                     <div className='border-t border-gray-100 pt-2 dark:border-neutral-800'>
                       <div className='flex justify-between'>
-                        <span className='font-bold text-gray-900 dark:text-neutral-100'>Total</span>
+                        <span className='font-bold text-gray-900 dark:text-neutral-100'>
+                          {t('bitrefillPaymentConfirmationSheet.total')}
+                        </span>
                         <div className='flex flex-col'>
                           <span className='text-lg font-bold text-gray-900 dark:text-neutral-100'>
-                            {totalAmount.toLocaleString()} sats
+                            {t('bitrefillPaymentConfirmationSheet.sats', {
+                              amount: formatSats(totalAmount),
+                            })}
                           </span>
                           <span className='text-right text-sm text-gray-500 dark:text-neutral-400'>
                             ${invoiceDetails.amountUSD.toFixed(2)}
@@ -255,8 +282,10 @@ export function BitrefillPaymentConfirmationSheet({
                     <div className='mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950/40'>
                       <AlertTriangle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-500 dark:text-red-400' />
                       <p className='text-sm text-red-600 dark:text-red-400'>
-                        Insufficient balance. You need {totalAmount.toLocaleString()} sats but only
-                        have {walletState.balance.toLocaleString()} sats.
+                        {t('bitrefillPaymentConfirmationSheet.insufficientBalance', {
+                          required: formatSats(totalAmount),
+                          balance: formatSats(walletState.balance),
+                        })}
                       </p>
                     </div>
                   )}
@@ -271,8 +300,7 @@ export function BitrefillPaymentConfirmationSheet({
 
                   {/* Warning Text */}
                   <p className='mb-6 text-center text-xs text-gray-500 dark:text-neutral-400'>
-                    Lightning payments are instant and irreversible. Please verify the amount before
-                    confirming.
+                    {t('bitrefillPaymentConfirmationSheet.irreversibleWarning')}
                   </p>
                 </>
               ) : null}
@@ -291,10 +319,12 @@ export function BitrefillPaymentConfirmationSheet({
                   }
                 >
                   {isSending
-                    ? 'Processing...'
+                    ? t('bitrefillPaymentConfirmationSheet.processing')
                     : invoiceDetails
-                      ? `Pay ${invoiceDetails.amountSats.toLocaleString()} sats`
-                      : 'Confirm Payment'}
+                      ? t('bitrefillPaymentConfirmationSheet.pay', {
+                          amount: formatSats(invoiceDetails.amountSats),
+                        })
+                      : t('bitrefillPaymentConfirmationSheet.confirmPayment')}
                 </Button>
                 <Button
                   onClick={onCancel}
@@ -302,7 +332,7 @@ export function BitrefillPaymentConfirmationSheet({
                   className='h-12 w-full rounded-full'
                   disabled={isSending}
                 >
-                  Cancel
+                  {tCommon('actions.cancel')}
                 </Button>
               </div>
             </div>

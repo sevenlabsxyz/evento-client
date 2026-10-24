@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Check, Loader2, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
 interface BadgesManagementSheetProps {
@@ -20,6 +21,8 @@ interface BadgesManagementSheetProps {
 const MAX_DISPLAY_SLOTS = 5;
 
 export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const { data: userBadges, isLoading } = useUserBadges();
   const batchUpdateMutation = useBatchUpdateUserBadges();
 
@@ -76,7 +79,7 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
     // Find first empty slot
     const emptySlotIndex = displaySlots.findIndex((slot) => slot === null);
     if (emptySlotIndex === -1) {
-      toast.error('All display slots are full. Remove a badge first.');
+      toast.error(t('badges.manage.slotsFull'));
       return;
     }
 
@@ -124,11 +127,11 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
         });
 
       await batchUpdateMutation.mutateAsync(updates);
-      toast.success('Badges updated successfully');
+      toast.success(t('badges.manage.updated'));
       onClose();
     } catch (error) {
       logger.error('Failed to update badges', { error });
-      toast.error('Failed to update badges');
+      toast.error(t('badges.manage.updateFailed'));
     }
   };
 
@@ -155,14 +158,16 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
 
   return (
     <MasterScrollableSheet
-      title='Badges'
+      title={t('badges.title')}
       open={isOpen}
       onOpenChange={(open) => !open && handleClose()}
       headerLeft={
         <div>
-          <h2 className='text-xl font-semibold dark:text-neutral-100'>Manage Badges</h2>
+          <h2 className='text-xl font-semibold dark:text-neutral-100'>
+            {t('badges.manage.title')}
+          </h2>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            {displayCount} of {MAX_DISPLAY_SLOTS} slots used
+            {t('badges.manage.slotsUsed', { used: displayCount, total: MAX_DISPLAY_SLOTS })}
           </p>
         </div>
       }
@@ -189,11 +194,9 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
         </div>
       ) : !userBadges || userBadges.length === 0 ? (
         <div className='flex flex-col items-center justify-center py-12'>
-          <p className='text-gray-500 dark:text-neutral-400'>
-            You haven&apos;t earned any badges yet.
-          </p>
+          <p className='text-gray-500 dark:text-neutral-400'>{t('badges.manage.emptyTitle')}</p>
           <p className='text-sm text-gray-400 dark:text-neutral-400'>
-            Keep using Evento to earn badges!
+            {t('badges.manage.emptyBody')}
           </p>
         </div>
       ) : (
@@ -201,10 +204,10 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
           {/* Display Slots Section */}
           <div className='mb-8'>
             <h3 className='mb-3 text-sm font-semibold text-gray-700 dark:text-neutral-300'>
-              Display on Profile
+              {t('badges.manage.displayOnProfile')}
             </h3>
             <p className='mb-4 text-xs text-gray-500 dark:text-neutral-400'>
-              Tap a slot to remove a badge. Badges appear on your profile in this order.
+              {t('badges.manage.displayHint')}
             </p>
             <div className='flex gap-3'>
               {displaySlots.map((badgeId, index) => {
@@ -242,10 +245,10 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
           {availableBadges.length > 0 && (
             <div className='mb-8'>
               <h3 className='mb-3 text-sm font-semibold text-gray-700 dark:text-neutral-300'>
-                Available Badges
+                {t('badges.manage.available')}
               </h3>
               <p className='mb-4 text-xs text-gray-500 dark:text-neutral-400'>
-                Tap a badge to add it to your profile display.
+                {t('badges.manage.availableHint')}
               </p>
               <div className='flex flex-wrap gap-4'>
                 {availableBadges.map((userBadge) => (
@@ -274,14 +277,14 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
               {isSaving ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Saving...
+                  {t('saving')}
                 </>
               ) : (
-                'Save'
+                tCommon('actions.save')
               )}
             </Button>
             <Button onClick={handleClose} variant='outline' className='w-full'>
-              Cancel
+              {tCommon('actions.cancel')}
             </Button>
           </div>
         </>

@@ -13,6 +13,7 @@ import { getEventCoverDisplayUrl } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import debounce from 'lodash.debounce';
 import { Link2, Search } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -35,6 +36,7 @@ function LinkableEventRow({
   onLink: () => void;
   isLinking: boolean;
 }) {
+  const t = useTranslations('manageLegacy');
   const { date, timeWithTz } = formatEventDateFromParts({
     year: event.start_date_year,
     month: event.start_date_month,
@@ -64,7 +66,7 @@ function LinkableEventRow({
           </h4>
           {event.status === 'draft' && (
             <span className='shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950/60 dark:text-amber-400'>
-              Draft
+              {t('linkSubEvent.draft')}
             </span>
           )}
         </div>
@@ -81,7 +83,7 @@ function LinkableEventRow({
         disabled={isLinking}
       >
         <Link2 className='mr-1 h-4 w-4' />
-        {isLinking ? 'Linking...' : 'Link'}
+        {isLinking ? t('linkSubEvent.linking') : t('linkSubEvent.link')}
       </Button>
     </div>
   );
@@ -93,6 +95,7 @@ export default function LinkSubEventSheet({
   parentEventId,
   linkedEventIds,
 }: LinkSubEventSheetProps) {
+  const t = useTranslations('manageLegacy');
   const [searchText, setSearchText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<LinkableFilter>('hosting');
@@ -156,7 +159,7 @@ export default function LinkSubEventSheet({
           onClick={() => activeQuery.fetchNextPage()}
           disabled={activeQuery.isFetchingNextPage}
         >
-          {activeQuery.isFetchingNextPage ? 'Loading...' : 'Load more'}
+          {activeQuery.isFetchingNextPage ? t('linkSubEvent.loading') : t('linkSubEvent.loadMore')}
         </Button>
       </div>
     );
@@ -166,9 +169,9 @@ export default function LinkSubEventSheet({
     setLinkingEventId(event.id);
     try {
       await linkSubEvent.mutateAsync({ parentEventId, subEventId: event.id });
-      toast.success(`"${event.title}" linked as sub event`);
+      toast.success(t('linkSubEvent.toasts.linked', { title: event.title }));
     } catch (error: any) {
-      toast.error(error?.message || 'Failed to link sub event');
+      toast.error(error?.message || t('linkSubEvent.toasts.linkFailed'));
     } finally {
       setLinkingEventId(null);
     }
@@ -176,7 +179,7 @@ export default function LinkSubEventSheet({
 
   return (
     <MasterScrollableSheet
-      title='Link Existing Event'
+      title={t('linkSubEvent.title')}
       open={isOpen}
       onOpenChange={(open) => !open && onClose()}
       headerSecondary={
@@ -188,7 +191,7 @@ export default function LinkSubEventSheet({
               ref={searchInputRef}
               className='h-10 w-full rounded-full border-none bg-gray-100 px-10 py-0 text-sm text-gray-800 outline-none dark:bg-neutral-800 dark:text-neutral-200 dark:placeholder:text-neutral-400'
               type='text'
-              placeholder='Search your events'
+              placeholder={t('linkSubEvent.searchPlaceholder')}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
@@ -205,7 +208,7 @@ export default function LinkSubEventSheet({
                   : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
-              Hosting
+              {t('linkSubEvent.filters.hosting')}
             </button>
             <button
               onClick={() => setFilter('drafts')}
@@ -216,7 +219,7 @@ export default function LinkSubEventSheet({
                   : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
-              Drafts
+              {t('linkSubEvent.filters.drafts')}
             </button>
           </div>
         </div>
@@ -242,22 +245,22 @@ export default function LinkSubEventSheet({
       ) : activeQuery.error ? (
         <div className='flex flex-col items-center justify-center py-12'>
           <div className='text-center text-base text-gray-600 dark:text-neutral-400'>
-            Failed to load your events
+            {t('linkSubEvent.loadFailed')}
           </div>
         </div>
       ) : events.length === 0 ? (
         <div className='flex flex-col items-center justify-center py-12'>
           <div className='text-center text-base text-gray-600 dark:text-neutral-400'>
             {activeQuery.hasNextPage
-              ? 'No linkable events loaded yet'
+              ? t('linkSubEvent.empty.notLoadedYet')
               : searchText.trim()
-                ? `No events found matching "${searchText}"`
-                : 'No events available to link'}
+                ? t('linkSubEvent.empty.noMatches', { query: searchText })
+                : t('linkSubEvent.empty.noneAvailable')}
           </div>
           <p className='mt-2 text-center text-sm text-gray-500 dark:text-neutral-400'>
             {activeQuery.hasNextPage
-              ? 'Load more to keep checking your remaining events.'
-              : 'Only your own events without a parent event can be linked.'}
+              ? t('linkSubEvent.empty.loadMoreHint')
+              : t('linkSubEvent.empty.onlyOwnHint')}
           </p>
           {renderLoadMoreButton('mt-4')}
         </div>

@@ -25,6 +25,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { CohostInvite, VerificationStatus } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { Clock, Crown, Loader2, Plus, Trash2, UserPlus, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -34,6 +35,7 @@ export default function HostsManagementPage() {
   const router = useRouter();
   const pathname = usePathname();
   const eventId = params.id as string;
+  const t = useTranslations('manageLegacy');
 
   const [isInviteSheetOpen, setIsInviteSheetOpen] = useState(false);
   const [removingHostId, setRemovingHostId] = useState<string | null>(null);
@@ -79,16 +81,16 @@ export default function HostsManagementPage() {
   const handleRemoveHost = async (hostId: string) => {
     if (removingHostId) return;
 
-    const confirmed = window.confirm('Are you sure you want to remove this cohost?');
+    const confirmed = window.confirm(t('hosts.removeConfirm'));
     if (!confirmed) return;
 
     setRemovingHostId(hostId);
     try {
       await apiClient.delete(`/v1/events/${eventId}/hosts`, { data: { hostId } });
-      toast.success('Cohost removed');
+      toast.success(t('hosts.toasts.removed'));
       refetchHosts();
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Failed to remove cohost');
+      toast.error(err?.response?.data?.message || t('hosts.toasts.removeFailed'));
     } finally {
       setRemovingHostId(null);
     }
@@ -97,7 +99,7 @@ export default function HostsManagementPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Hosts',
+      title: t('hosts.title'),
       leftMode: 'back',
       showAvatar: false,
       subtitle: '',
@@ -108,7 +110,7 @@ export default function HostsManagementPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig, router, eventId]);
+  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig, router, eventId, t]);
 
   if (isLoading) {
     return (
@@ -131,16 +133,16 @@ export default function HostsManagementPage() {
       <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-            Event Not Found
+            {t('hosts.notFound.title')}
           </h1>
           <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            The event you&apos;re trying to manage doesn&apos;t exist.
+            {t('hosts.notFound.description')}
           </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
-            Go Back
+            {t('hosts.notFound.goBack')}
           </button>
         </div>
       </div>
@@ -155,20 +157,22 @@ export default function HostsManagementPage() {
         <div className='max-w-2xl space-y-4'>
           <div className='flex flex-wrap items-start justify-between gap-3'>
             <div className='min-w-0'>
-              <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Cohosts</h2>
+              <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+                {t('hosts.heading')}
+              </h2>
               <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                Manage who can co-host and help run this event.
+                {t('hosts.description')}
               </p>
             </div>
             <Button onClick={handleAddCoHost} variant='secondary' className='gap-2 rounded-xl'>
               <UserPlus className='h-4 w-4' />
-              Invite Cohost
+              {t('hosts.inviteCohost')}
             </Button>
           </div>
 
           <div className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
             <h3 className='mb-3 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-              Hosts
+              {t('hosts.hostsTitle')}
             </h3>
             {hosts.length > 0 ? (
               <div className='space-y-3'>
@@ -211,7 +215,7 @@ export default function HostsManagementPage() {
                               {isCreator && (
                                 <span className='flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-950/60 dark:text-amber-400'>
                                   <Crown className='h-3 w-3' />
-                                  Creator
+                                  {t('hosts.creator')}
                                 </span>
                               )}
                             </div>
@@ -226,7 +230,9 @@ export default function HostsManagementPage() {
                           onClick={() => handleRemoveHost(host.id)}
                           disabled={removingHostId === host.id}
                           className='flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-200 hover:text-red-500 disabled:opacity-50 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-red-400'
-                          aria-label={`Remove ${host.name || host.username}`}
+                          aria-label={t('hosts.removeAria', {
+                            name: host.name || host.username || '',
+                          })}
                         >
                           <Trash2 className='h-4 w-4' />
                         </button>
@@ -244,16 +250,16 @@ export default function HostsManagementPage() {
                   <Plus className='h-8 w-8 text-gray-400 dark:text-neutral-400' />
                 </div>
                 <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
-                  No Hosts
+                  {t('hosts.empty.title')}
                 </h3>
                 <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
-                  Add cohosts to help you manage this event
+                  {t('hosts.empty.description')}
                 </p>
                 <button
                   onClick={handleAddCoHost}
                   className='rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 >
-                  Add Cohost
+                  {t('hosts.empty.addCohost')}
                 </button>
               </div>
             )}
@@ -262,7 +268,7 @@ export default function HostsManagementPage() {
           {pendingInvites.length > 0 && (
             <div className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
               <h3 className='mb-3 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                Pending Invites
+                {t('hosts.pendingInvites.title')}
               </h3>
               <div className='space-y-2'>
                 {pendingInvites.map((invite) => {
@@ -288,7 +294,9 @@ export default function HostsManagementPage() {
                             : invite.invitee_email}
                         </p>
                         <p className='text-xs text-gray-500 dark:text-neutral-400'>
-                          {isCancelling ? 'Cancelling...' : 'Pending cohost invite'}
+                          {isCancelling
+                            ? t('hosts.pendingInvites.cancelling')
+                            : t('hosts.pendingInvites.pending')}
                         </p>
                       </div>
                       <button
@@ -316,24 +324,25 @@ export default function HostsManagementPage() {
       <AlertDialog open={!!inviteToCancel} onOpenChange={() => setInviteToCancel(null)}>
         <AlertDialogContent className='max-w-sm rounded-2xl'>
           <AlertDialogHeader>
-            <AlertDialogTitle>Cancel Invite?</AlertDialogTitle>
+            <AlertDialogTitle>{t('hosts.cancelDialog.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to cancel the cohost invitation to{' '}
-              <span className='font-medium text-gray-900 dark:text-neutral-100'>
-                {inviteToCancel?.invitee?.username
+              {t.rich('hosts.cancelDialog.description', {
+                invitee: inviteToCancel?.invitee?.username
                   ? `@${inviteToCancel.invitee.username}`
-                  : inviteToCancel?.invitee_email}
-              </span>
-              ? This action cannot be undone.
+                  : (inviteToCancel?.invitee_email ?? ''),
+                strong: (chunks) => (
+                  <span className='font-medium text-gray-900 dark:text-neutral-100'>{chunks}</span>
+                ),
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Keep Invite</AlertDialogCancel>
+            <AlertDialogCancel>{t('hosts.cancelDialog.keep')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmCancelInvite}
               className='bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
             >
-              Cancel Invite
+              {t('hosts.cancelDialog.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

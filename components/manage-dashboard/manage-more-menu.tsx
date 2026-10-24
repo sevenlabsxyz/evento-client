@@ -16,16 +16,25 @@ import { getErrorMessage } from '@/lib/utils/error-message';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { CircleX, Copy, CopyPlus, MoreHorizontal } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export async function copyEventLink(eventId: string): Promise<void> {
+interface CopyEventLinkMessages {
+  success: string;
+  error: string;
+}
+
+export async function copyEventLink(
+  eventId: string,
+  messages: CopyEventLinkMessages
+): Promise<void> {
   try {
     await navigator.clipboard.writeText(getAbsoluteAppUrl(`/e/${eventId}`));
-    toast.success('Event link copied to clipboard');
+    toast.success(messages.success);
   } catch (error) {
     logger.error('Failed to copy event link', { error, eventId });
-    toast.error('Could not copy the event link');
+    toast.error(messages.error);
   }
 }
 
@@ -34,6 +43,7 @@ interface ManageMoreMenuProps {
 }
 
 export function ManageMoreMenu({ event }: ManageMoreMenuProps) {
+  const t = useTranslations('manage');
   const router = useRouter();
   const duplicateEvent = useDuplicateEvent();
   const [showCancelModal, setShowCancelModal] = useState(false);
@@ -42,11 +52,11 @@ export function ManageMoreMenu({ event }: ManageMoreMenuProps) {
   const handleDuplicate = () => {
     duplicateEvent.mutate(event.id, {
       onSuccess: (duplicated) => {
-        toast.success('Event duplicated as a draft');
+        toast.success(t('moreMenu.duplicated'));
         router.push(`/e/${duplicated.id}/manage`);
       },
       onError: (error) => {
-        toast.error(getErrorMessage(error) || 'Failed to duplicate event');
+        toast.error(getErrorMessage(error) || t('moreMenu.duplicateFailed'));
       },
     });
   };
@@ -59,19 +69,26 @@ export function ManageMoreMenu({ event }: ManageMoreMenuProps) {
             variant='outline'
             size='icon'
             className='h-9 w-9 shrink-0 rounded-full dark:bg-neutral-900 dark:hover:bg-neutral-800'
-            aria-label='More event actions'
+            aria-label={t('moreMenu.ariaLabel')}
           >
             <MoreHorizontal className='h-4 w-4' />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-52'>
-          <DropdownMenuItem onSelect={() => void copyEventLink(event.id)}>
+          <DropdownMenuItem
+            onSelect={() =>
+              void copyEventLink(event.id, {
+                success: t('moreMenu.linkCopied'),
+                error: t('moreMenu.linkCopyFailed'),
+              })
+            }
+          >
             <Copy className='mr-2 h-4 w-4' />
-            Copy event link
+            {t('moreMenu.copyLink')}
           </DropdownMenuItem>
           <DropdownMenuItem disabled={duplicateEvent.isPending} onSelect={handleDuplicate}>
             <CopyPlus className='mr-2 h-4 w-4' />
-            {duplicateEvent.isPending ? 'Duplicating...' : 'Duplicate event'}
+            {duplicateEvent.isPending ? t('moreMenu.duplicating') : t('moreMenu.duplicate')}
           </DropdownMenuItem>
           {!isArchived && (
             <>
@@ -81,7 +98,7 @@ export function ManageMoreMenu({ event }: ManageMoreMenuProps) {
                 className='text-red-600 focus:bg-red-50 focus:text-red-700 dark:text-red-400 dark:focus:bg-red-950/40 dark:focus:text-red-300'
               >
                 <CircleX className='mr-2 h-4 w-4' />
-                Cancel event
+                {t('moreMenu.cancelEvent')}
               </DropdownMenuItem>
             </>
           )}

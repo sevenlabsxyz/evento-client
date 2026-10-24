@@ -15,6 +15,7 @@ import {
   UserPlus,
   type LucideIcon,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
 interface QuickActionsProps {
@@ -34,6 +35,7 @@ interface QuickAction {
 }
 
 export function QuickActions({ dashboard, onInviteGuests }: QuickActionsProps) {
+  const t = useTranslations('manage');
   const router = useRouter();
   const duplicateEvent = useDuplicateEvent();
   const eventId = dashboard.event.id;
@@ -42,26 +44,26 @@ export function QuickActions({ dashboard, onInviteGuests }: QuickActionsProps) {
   const handleDuplicate = async () => {
     try {
       const duplicated = await duplicateEvent.mutateAsync(eventId);
-      toast.success('Event duplicated as a draft');
+      toast.success(t('quickActions.duplicatedToast'));
       router.push(`/e/${duplicated.id}/manage`);
     } catch (error) {
-      toast.error(getErrorMessage(error) || 'Failed to duplicate event');
+      toast.error(getErrorMessage(error) || t('quickActions.duplicateFailed'));
     }
   };
 
   const actions: QuickAction[] = [
     {
       id: 'invite',
-      label: 'Invite guests',
-      hint: 'Send invites to people you know',
+      label: t('quickActions.invite.label'),
+      hint: t('quickActions.invite.hint'),
       icon: UserPlus,
       iconClassName: 'bg-blue-100 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400',
       onClick: onInviteGuests,
     },
     {
       id: 'email-blast',
-      label: 'Send email blast',
-      hint: 'Message your guests by email',
+      label: t('quickActions.emailBlast.label'),
+      hint: t('quickActions.emailBlast.hint'),
       icon: Mail,
       iconClassName: 'bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400',
       onClick: () => router.push(`${base}/email-blast`),
@@ -70,8 +72,8 @@ export function QuickActions({ dashboard, onInviteGuests }: QuickActionsProps) {
       ? [
           {
             id: 'check-in',
-            label: 'Check in guests',
-            hint: 'Scan tickets at the door',
+            label: t('quickActions.checkIn.label'),
+            hint: t('quickActions.checkIn.hint'),
             icon: ScanLine,
             iconClassName: 'bg-teal-100 text-teal-600 dark:bg-teal-950/60 dark:text-teal-400',
             onClick: () => router.push(`${base}/check-in`),
@@ -80,16 +82,18 @@ export function QuickActions({ dashboard, onInviteGuests }: QuickActionsProps) {
       : []),
     {
       id: 'edit-details',
-      label: 'Edit details',
-      hint: 'Update time, place and description',
+      label: t('quickActions.editDetails.label'),
+      hint: t('quickActions.editDetails.hint'),
       icon: PencilLine,
       iconClassName: 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400',
       onClick: () => router.push(`${base}/details`),
     },
     {
       id: 'duplicate',
-      label: duplicateEvent.isPending ? 'Duplicating…' : 'Duplicate event',
-      hint: 'Copy this event as a new draft',
+      label: duplicateEvent.isPending
+        ? t('quickActions.duplicate.loading')
+        : t('quickActions.duplicate.label'),
+      hint: t('quickActions.duplicate.hint'),
       icon: Copy,
       iconClassName: 'bg-purple-100 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400',
       onClick: handleDuplicate,
@@ -101,7 +105,7 @@ export function QuickActions({ dashboard, onInviteGuests }: QuickActionsProps) {
   return (
     <section className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
       <h2 className='mb-3 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-        Quick actions
+        {t('quickActions.title')}
       </h2>
       <ul className='-mx-2 space-y-0.5'>
         {actions.map((action) => {

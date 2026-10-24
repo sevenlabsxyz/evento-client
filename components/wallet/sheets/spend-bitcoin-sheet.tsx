@@ -9,6 +9,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { logger } from '@/lib/utils/logger';
 import { Loader2, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BitrefillPaymentConfirmationSheet } from './bitrefill-payment-confirmation-sheet';
 import { BitrefillPaymentStatusSheet } from './bitrefill-payment-status-sheet';
@@ -27,6 +28,7 @@ type PaymentStatus = 'idle' | 'processing' | 'success' | 'error';
 type DeliveryStatus = 'partial_delivery' | 'all_delivered' | 'all_error' | null;
 
 export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps) {
+  const t = useTranslations('walletFlows');
   const { user } = useAuth();
   const { refreshBalance } = useWallet();
 
@@ -222,7 +224,7 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
 
               {/* Header with Balance */}
               <div className='flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900'>
-                <h2 className='text-xl font-semibold'>Spend Bitcoin</h2>
+                <h2 className='text-xl font-semibold'>{t('spendBitcoinSheet.title')}</h2>
                 <div className='flex items-center gap-3'>
                   <WalletBalanceDisplay />
                   <button

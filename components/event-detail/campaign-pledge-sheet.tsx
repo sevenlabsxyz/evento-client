@@ -6,11 +6,13 @@ import { useCreatePledgeIntent, usePledgeStatus } from '@/lib/hooks/use-campaign
 import { useEventCampaign } from '@/lib/hooks/use-event-campaign';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useSendPayment } from '@/lib/hooks/use-wallet-payments';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { queryKeys } from '@/lib/query-client';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { CheckCircle2, Copy, Loader2, QrCode, RotateCcw, Wallet, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const QUICK_AMOUNTS = [21, 100, 500, 1000, 5000];
@@ -25,10 +27,12 @@ interface CampaignPledgeSheetProps {
 }
 
 function formatSats(sats: number): string {
-  return sats.toLocaleString();
+  return sats.toLocaleString(getIntlLocale());
 }
 
 export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPledgeSheetProps) {
+  const t = useTranslations('eventSocial');
+  const tCommon = useTranslations('common');
   const queryClient = useQueryClient();
   const [step, setStep] = useState<PledgeStep>('amount');
   const [invoiceView, setInvoiceView] = useState<InvoiceView>('options');
@@ -104,23 +108,23 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
           setStep('invoice');
         },
         onError: () => {
-          toast.error('Failed to create pledge. Please try again.');
+          toast.error(t('pledge.createFailed'));
         },
       }
     );
-  }, [selectedAmount, eventId, createPledge]);
+  }, [selectedAmount, eventId, createPledge, t]);
 
   const handleCopyInvoice = useCallback(async () => {
     if (!invoice) return;
     try {
       await navigator.clipboard.writeText(invoice);
       setCopied(true);
-      toast.success('Invoice copied to clipboard');
+      toast.success(t('pledge.invoiceCopied'));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error('Failed to copy invoice');
+      toast.error(t('pledge.copyFailed'));
     }
-  }, [invoice]);
+  }, [invoice, t]);
 
   const handleTryAgain = useCallback(() => {
     setPledgeId('');
@@ -135,7 +139,9 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
   const renderAmountStep = () => (
     <div className='px-4 pb-6'>
       <p className='mb-6 text-sm text-gray-600 dark:text-neutral-400'>
-        {campaign?.title ? `Contribute to "${campaign.title}"` : 'Choose an amount to contribute'}
+        {campaign?.title
+          ? t('pledge.contributeTo', { title: campaign.title })
+          : t('pledge.chooseAmount')}
       </p>
 
       {/* Quick amounts grid */}
@@ -154,7 +160,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
             <span className='text-lg font-bold tabular-nums text-gray-900 dark:text-neutral-100'>
               {formatSats(amount)}
             </span>
-            <span className='text-xs text-gray-500 dark:text-neutral-400'>sats</span>
+            <span className='text-xs text-gray-500 dark:text-neutral-400'>{t('pledge.sats')}</span>
           </button>
         ))}
       </div>
@@ -173,12 +179,14 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
         {createPledge.isPending ? (
           <>
             <Loader2 className='h-4 w-4 animate-spin' />
-            Creating invoice…
+            {t('pledge.creatingInvoice')}
           </>
         ) : (
           <>
             <Zap className='h-4 w-4' />
-            {selectedAmount ? `Contribute ${formatSats(selectedAmount)} sats` : 'Select an amount'}
+            {selectedAmount
+              ? t('pledge.contributeAmount', { amount: formatSats(selectedAmount) })
+              : t('pledge.selectAmount')}
           </>
         )}
       </button>
@@ -191,14 +199,17 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       await sendPayment(invoice);
       // Payment sent — the pledge status poller will advance to 'settled'
     } catch {
-      toast.error('Payment failed. Try copying the invoice instead.');
+      toast.error(t('pledge.walletPaymentFailed'));
     }
-  }, [invoice, sendPayment]);
+  }, [invoice, sendPayment, t]);
 
   const renderInvoiceOptionsView = () => (
     <div className='flex flex-col gap-3 px-4 pb-6'>
       <p className='mb-2 text-center text-sm text-gray-600 dark:text-neutral-400'>
-        Pay <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span>
+        {t.rich('pledge.payAmount', {
+          amount: formatSats(selectedAmount ?? 0),
+          strong: (chunks) => <span className='font-semibold'>{chunks}</span>,
+        })}
       </p>
 
       {/* Pay with Evento wallet */}
@@ -221,10 +232,10 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
         </div>
         <div>
           <p className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-            {isWalletPaying ? 'Paying…' : 'Pay with Evento wallet'}
+            {isWalletPaying ? t('pledge.paying') : t('pledge.payWithWallet')}
           </p>
           <p className='text-xs text-gray-500 dark:text-neutral-400'>
-            {walletState.isConnected ? 'Instant payment from your balance' : 'Wallet not connected'}
+            {walletState.isConnected ? t('pledge.walletInstant') : t('pledge.walletNotConnected')}
           </p>
         </div>
       </button>
@@ -238,9 +249,11 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
           <QrCode className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
         </div>
         <div>
-          <p className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>View QR code</p>
+          <p className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+            {t('pledge.viewQr')}
+          </p>
           <p className='text-xs text-gray-500 dark:text-neutral-400'>
-            Scan or copy for any Lightning wallet
+            {t('pledge.viewQrDescription')}
           </p>
         </div>
       </button>
@@ -248,7 +261,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       {/* Waiting indicator */}
       <div className='mt-2 flex items-center justify-center gap-2 text-sm text-gray-400 dark:text-neutral-400'>
         <Loader2 className='h-4 w-4 animate-spin' />
-        Waiting for payment…
+        {t('pledge.waitingForPayment')}
       </div>
     </div>
   );
@@ -259,11 +272,13 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
         onClick={() => setInvoiceView('options')}
         className='mb-4 flex items-center gap-1 self-start text-sm text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
       >
-        ← Back
+        ← {tCommon('actions.back')}
       </button>
       <p className='mb-4 text-center text-sm text-gray-600 dark:text-neutral-400'>
-        Scan or copy the invoice to pay{' '}
-        <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span>
+        {t.rich('pledge.scanToPay', {
+          amount: formatSats(selectedAmount ?? 0),
+          strong: (chunks) => <span className='font-semibold'>{chunks}</span>,
+        })}
       </p>
 
       {/* QR Code */}
@@ -279,12 +294,12 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
         {copied ? (
           <>
             <CheckCircle2 className='h-4 w-4 text-emerald-500 dark:text-emerald-400' />
-            Copied!
+            {t('pledge.copied')}
           </>
         ) : (
           <>
             <Copy className='h-4 w-4' />
-            Copy invoice
+            {t('pledge.copyInvoice')}
           </>
         )}
       </button>
@@ -292,7 +307,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       {/* Waiting indicator */}
       <div className='flex items-center gap-2 text-sm text-gray-500 dark:text-neutral-400'>
         <Loader2 className='h-4 w-4 animate-spin' />
-        Waiting for payment…
+        {t('pledge.waitingForPayment')}
       </div>
     </div>
   );
@@ -305,11 +320,14 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/60'>
         <CheckCircle2 className='h-8 w-8 text-emerald-600 dark:text-emerald-400' />
       </div>
-      <h3 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>Thank you!</h3>
+      <h3 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>
+        {t('pledge.thankYou')}
+      </h3>
       <p className='text-center text-sm text-gray-600 dark:text-neutral-400'>
-        Your contribution of{' '}
-        <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span> has been
-        received.
+        {t.rich('pledge.received', {
+          amount: formatSats(selectedAmount ?? 0),
+          strong: (chunks) => <span className='font-semibold'>{chunks}</span>,
+        })}
       </p>
     </div>
   );
@@ -320,17 +338,17 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
         <RotateCcw className='h-8 w-8 text-red-500 dark:text-red-400' />
       </div>
       <h3 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>
-        Invoice expired
+        {t('pledge.expiredTitle')}
       </h3>
       <p className='mb-6 text-center text-sm text-gray-600 dark:text-neutral-400'>
-        The payment window has closed. You can try again with a new invoice.
+        {t('pledge.expiredDescription')}
       </p>
       <button
         onClick={handleTryAgain}
         className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:active:bg-neutral-300'
       >
         <RotateCcw className='h-4 w-4' />
-        Try again
+        {t('pledge.tryAgain')}
       </button>
     </div>
   );
@@ -340,16 +358,18 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60'>
         <RotateCcw className='h-8 w-8 text-red-500 dark:text-red-400' />
       </div>
-      <h3 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>Payment failed</h3>
+      <h3 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>
+        {t('pledge.failedTitle')}
+      </h3>
       <p className='mb-6 text-center text-sm text-gray-600 dark:text-neutral-400'>
-        We could not confirm this payment. You can try again with a new invoice.
+        {t('pledge.failedDescription')}
       </p>
       <button
         onClick={handleTryAgain}
         className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:active:bg-neutral-300'
       >
         <RotateCcw className='h-4 w-4' />
-        Try again
+        {t('pledge.tryAgain')}
       </button>
     </div>
   );
@@ -363,11 +383,11 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
   };
 
   const stepTitle: Record<PledgeStep, string> = {
-    amount: 'Contribute',
-    invoice: 'Pay Invoice',
-    settled: 'Payment Received',
-    expired: 'Invoice Expired',
-    failed: 'Payment Failed',
+    amount: t('pledge.steps.amount'),
+    invoice: t('pledge.steps.invoice'),
+    settled: t('pledge.steps.settled'),
+    expired: t('pledge.steps.expired'),
+    failed: t('pledge.steps.failed'),
   };
 
   return (

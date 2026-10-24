@@ -4,11 +4,13 @@ import { EventoQRCode } from '@/components/ui/evento-qr-code';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { useCreatePledgeIntent, usePledgeStatus } from '@/lib/hooks/use-campaign-pledge';
 import { useProfileCampaign } from '@/lib/hooks/use-profile-campaign';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { queryKeys } from '@/lib/query-client';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { CheckCircle2, Copy, Loader2, RotateCcw, Zap } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const QUICK_AMOUNTS = [21, 100, 500, 1000, 5000];
@@ -21,8 +23,8 @@ interface ProfileCampaignPledgeSheetProps {
   onOpenChange: (open: boolean) => void;
 }
 
-function formatSats(sats: number): string {
-  return sats.toLocaleString();
+function formatSats(sats: number, locale: string): string {
+  return sats.toLocaleString(getIntlLocale(locale));
 }
 
 export function ProfileCampaignPledgeSheet({
@@ -30,6 +32,8 @@ export function ProfileCampaignPledgeSheet({
   open,
   onOpenChange,
 }: ProfileCampaignPledgeSheetProps) {
+  const t = useTranslations('profile');
+  const locale = useLocale();
   const queryClient = useQueryClient();
   const [step, setStep] = useState<PledgeStep>('amount');
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
@@ -95,23 +99,23 @@ export function ProfileCampaignPledgeSheet({
           setStep('invoice');
         },
         onError: () => {
-          toast.error('Failed to create pledge. Please try again.');
+          toast.error(t('campaign.pledge.createFailed'));
         },
       }
     );
-  }, [selectedAmount, createPledge, userId]);
+  }, [selectedAmount, createPledge, userId, t]);
 
   const handleCopyInvoice = useCallback(async () => {
     if (!invoice) return;
     try {
       await navigator.clipboard.writeText(invoice);
       setCopied(true);
-      toast.success('Invoice copied to clipboard');
+      toast.success(t('campaign.pledge.invoiceCopied'));
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error('Failed to copy invoice');
+      toast.error(t('campaign.pledge.copyInvoiceFailed'));
     }
-  }, [invoice]);
+  }, [invoice, t]);
 
   const handleTryAgain = useCallback(() => {
     setPledgeId('');
@@ -125,7 +129,9 @@ export function ProfileCampaignPledgeSheet({
   const renderAmountStep = () => (
     <div className='px-4 pb-6'>
       <p className='mb-6 text-sm text-gray-600 dark:text-neutral-400'>
-        {campaign?.title ? `Contribute to "${campaign.title}"` : 'Choose an amount to contribute'}
+        {campaign?.title
+          ? t('campaign.pledge.contributeTo', { title: campaign.title })
+          : t('campaign.pledge.chooseAmount')}
       </p>
 
       {/* Quick amounts grid */}
@@ -142,7 +148,7 @@ export function ProfileCampaignPledgeSheet({
             )}
           >
             <span className='text-lg font-bold tabular-nums text-gray-900 dark:text-neutral-100'>
-              {formatSats(amount)}
+              {formatSats(amount, locale)}
             </span>
             <span className='text-xs text-gray-500 dark:text-neutral-400'>sats</span>
           </button>
@@ -163,12 +169,16 @@ export function ProfileCampaignPledgeSheet({
         {createPledge.isPending ? (
           <>
             <Loader2 className='h-4 w-4 animate-spin' />
-            Creating invoice…
+            {t('campaign.pledge.creatingInvoice')}
           </>
         ) : (
           <>
             <Zap className='h-4 w-4' />
-            {selectedAmount ? `Contribute ${formatSats(selectedAmount)} sats` : 'Select an amount'}
+            {selectedAmount
+              ? t('campaign.pledge.contributeAmount', {
+                  amount: formatSats(selectedAmount, locale),
+                })
+              : t('campaign.pledge.selectAmount')}
           </>
         )}
       </button>
@@ -178,8 +188,10 @@ export function ProfileCampaignPledgeSheet({
   const renderInvoiceStep = () => (
     <div className='flex flex-col items-center px-4 pb-6'>
       <p className='mb-4 text-center text-sm text-gray-600 dark:text-neutral-400'>
-        Scan or copy the invoice to pay{' '}
-        <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span>
+        {t.rich('campaign.pledge.scanToPay', {
+          amount: formatSats(selectedAmount ?? 0, locale),
+          strong: (chunks) => <span className='font-semibold'>{chunks}</span>,
+        })}
       </p>
 
       {/* QR Code */}
@@ -195,12 +207,12 @@ export function ProfileCampaignPledgeSheet({
         {copied ? (
           <>
             <CheckCircle2 className='h-4 w-4 text-emerald-500 dark:text-emerald-400' />
-            Copied!
+            {t('copiedBang')}
           </>
         ) : (
           <>
             <Copy className='h-4 w-4' />
-            Copy invoice
+            {t('campaign.pledge.copyInvoice')}
           </>
         )}
       </button>
@@ -208,7 +220,7 @@ export function ProfileCampaignPledgeSheet({
       {/* Waiting indicator */}
       <div className='flex items-center gap-2 text-sm text-gray-500 dark:text-neutral-400'>
         <Loader2 className='h-4 w-4 animate-spin' />
-        Waiting for payment…
+        {t('campaign.pledge.waiting')}
       </div>
     </div>
   );
@@ -218,11 +230,14 @@ export function ProfileCampaignPledgeSheet({
       <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/60'>
         <CheckCircle2 className='h-8 w-8 text-emerald-600 dark:text-emerald-400' />
       </div>
-      <h3 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>Thank you!</h3>
+      <h3 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>
+        {t('campaign.pledge.thankYou')}
+      </h3>
       <p className='text-center text-sm text-gray-600 dark:text-neutral-400'>
-        Your contribution of{' '}
-        <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span> has been
-        received.
+        {t.rich('campaign.pledge.received', {
+          amount: formatSats(selectedAmount ?? 0, locale),
+          strong: (chunks) => <span className='font-semibold'>{chunks}</span>,
+        })}
       </p>
     </div>
   );
@@ -233,17 +248,17 @@ export function ProfileCampaignPledgeSheet({
         <RotateCcw className='h-8 w-8 text-red-500 dark:text-red-400' />
       </div>
       <h3 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>
-        Invoice expired
+        {t('campaign.pledge.expiredHeading')}
       </h3>
       <p className='mb-6 text-center text-sm text-gray-600 dark:text-neutral-400'>
-        The payment window has closed. You can try again with a new invoice.
+        {t('campaign.pledge.expiredBody')}
       </p>
       <button
         onClick={handleTryAgain}
         className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:active:bg-neutral-300'
       >
         <RotateCcw className='h-4 w-4' />
-        Try again
+        {t('campaign.pledge.tryAgain')}
       </button>
     </div>
   );
@@ -256,10 +271,10 @@ export function ProfileCampaignPledgeSheet({
   };
 
   const stepTitle: Record<PledgeStep, string> = {
-    amount: 'Contribute',
-    invoice: 'Pay Invoice',
-    settled: 'Payment Received',
-    expired: 'Invoice Expired',
+    amount: t('campaign.pledge.titles.amount'),
+    invoice: t('campaign.pledge.titles.invoice'),
+    settled: t('campaign.pledge.titles.settled'),
+    expired: t('campaign.pledge.titles.expired'),
   };
 
   return (

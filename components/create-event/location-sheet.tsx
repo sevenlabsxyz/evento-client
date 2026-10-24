@@ -3,6 +3,7 @@ import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { LocationData, useGooglePlaces } from '@/lib/hooks/use-google-places';
 import { debugLog } from '@/lib/utils/debug';
 import { Check, Loader2, MapPin, Plus, Search } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface LocationSheetProps {
@@ -20,6 +21,7 @@ export default function LocationSheet({
   onLocationSelect,
   selectedLocation,
 }: LocationSheetProps) {
+  const t = useTranslations('createEvent');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSelectingPlace, setIsSelectingPlace] = useState(false);
   const [isGettingCurrentLocation, setIsGettingCurrentLocation] = useState(false);
@@ -105,7 +107,7 @@ export default function LocationSheet({
       <Search className='absolute left-7 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
       <input
         type='text'
-        placeholder='Search for a place or address'
+        placeholder={t('location.searchPlaceholder')}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         className='h-11 w-full rounded-xl bg-gray-100 pl-11 pr-4 text-base outline-none placeholder:text-gray-400 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-400'
@@ -116,7 +118,7 @@ export default function LocationSheet({
 
   return (
     <MasterScrollableSheet
-      title='Choose Location'
+      title={t('location.title')}
       open={isOpen}
       onOpenChange={(open) => !open && onClose()}
       headerSecondary={searchHeader}
@@ -136,7 +138,7 @@ export default function LocationSheet({
                 {selectedLocation.formatted || selectedLocation.name || selectedLocation.city}
               </div>
               <div className='truncate text-sm text-gray-500 dark:text-neutral-400'>
-                Selected address
+                {t('location.selectedAddress')}
               </div>
             </div>
           </button>
@@ -157,10 +159,12 @@ export default function LocationSheet({
             </div>
             <div className='min-w-0 flex-1'>
               <div className='truncate font-medium text-gray-900 dark:text-neutral-100'>
-                {isGettingCurrentLocation ? 'Getting location...' : 'Use current location'}
+                {isGettingCurrentLocation
+                  ? t('location.gettingLocation')
+                  : t('location.useCurrentLocation')}
               </div>
               <div className='truncate text-sm text-gray-500 dark:text-neutral-400'>
-                {error || "We'll use your current GPS location"}
+                {error || t('location.gpsHint')}
               </div>
             </div>
           </button>
@@ -171,7 +175,7 @@ export default function LocationSheet({
           <div className='flex items-center justify-center gap-2 py-4'>
             <Loader2 className='h-5 w-5 animate-spin text-gray-400 dark:text-neutral-500' />
             <span className='text-sm text-gray-500 dark:text-neutral-400'>
-              {isSelectingPlace ? 'Loading place details...' : 'Searching...'}
+              {isSelectingPlace ? t('location.loadingDetails') : t('location.searching')}
             </span>
           </div>
         )}
@@ -212,10 +216,10 @@ export default function LocationSheet({
                 </div>
                 <div className='min-w-0 flex-1'>
                   <div className='truncate font-medium text-gray-900 dark:text-neutral-100'>
-                    Add &quot;{searchQuery}&quot;
+                    {t('location.addCustom', { query: searchQuery })}
                   </div>
                   <div className='truncate text-sm text-gray-500 dark:text-neutral-400'>
-                    Use as custom location
+                    {t('location.useAsCustom')}
                   </div>
                 </div>
               </button>
@@ -224,9 +228,7 @@ export default function LocationSheet({
         ) : !searchQuery && isScriptLoaded ? (
           /* Empty state - prompt to search */
           <div className='px-4 py-6 text-center'>
-            <p className='text-sm text-gray-500 dark:text-neutral-400'>
-              Type to search for places or add a custom location
-            </p>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('location.emptyHint')}</p>
           </div>
         ) : null}
       </div>

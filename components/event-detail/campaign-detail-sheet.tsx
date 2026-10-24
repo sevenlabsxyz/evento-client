@@ -6,7 +6,9 @@ import { Progress } from '@/components/ui/progress';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useEventCampaignFeed } from '@/lib/hooks/use-campaign-feed';
 import { useEventCampaign } from '@/lib/hooks/use-event-campaign';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { Info, Users, Zap } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { CampaignPledgeSheet } from './campaign-pledge-sheet';
 
@@ -28,22 +30,36 @@ interface CreatorDetails {
 function formatSatsAbbreviated(sats: number): string {
   if (sats >= 1_000_000) return `${(sats / 1_000_000).toFixed(1)}M`;
   if (sats >= 1_000) return `${(sats / 1_000).toFixed(sats >= 10_000 ? 0 : 1)}k`;
-  return sats.toLocaleString();
+  return sats.toLocaleString(getIntlLocale());
 }
 
-function timeAgo(dateStr: string | null): string {
-  if (!dateStr) return '';
+type TimeAgo = { key: 'justNow' } | { key: 'minutesAgo' | 'hoursAgo' | 'daysAgo'; count: number };
+
+function timeAgo(dateStr: string): TimeAgo {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return { key: 'justNow' };
+  if (mins < 60) return { key: 'minutesAgo', count: mins };
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return { key: 'hoursAgo', count: hours };
   const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  return { key: 'daysAgo', count: days };
+}
+
+function TimeAgoText({ date }: { date: string }) {
+  const t = useTranslations('eventSocial');
+  const ago = timeAgo(date);
+  return (
+    <p className='text-xs text-gray-400 dark:text-neutral-400'>
+      {ago.key === 'justNow'
+        ? t('campaignDetail.timeAgo.justNow')
+        : t(`campaignDetail.timeAgo.${ago.key}`, { count: ago.count })}
+    </p>
+  );
 }
 
 export function CampaignDetailSheet({ eventId, open, onOpenChange }: CampaignDetailSheetProps) {
+  const t = useTranslations('eventSocial');
   const { data: campaign } = useEventCampaign(eventId);
   const { data: feed } = useEventCampaignFeed(eventId);
   const [activeTab, setActiveTab] = useState<'details' | 'contributors'>('details');
@@ -62,7 +78,7 @@ export function CampaignDetailSheet({ eventId, open, onOpenChange }: CampaignDet
   return (
     <>
       <MasterScrollableSheet
-        title={campaign.title || 'Crowdfunding'}
+        title={campaign.title || t('campaign.defaultTitle')}
         open={open}
         onOpenChange={onOpenChange}
         headerSecondary={
@@ -87,7 +103,9 @@ export function CampaignDetailSheet({ eventId, open, onOpenChange }: CampaignDet
               )}
               <div className='min-w-0'>
                 <p className='truncate text-sm font-medium text-gray-900 dark:text-neutral-100'>
-                  {creatorDetails?.name || creatorDetails?.username || 'Campaign organizer'}
+                  {creatorDetails?.name ||
+                    creatorDetails?.username ||
+                    t('campaignDetail.organizerFallback')}
                 </p>
                 {creatorDetails?.username && (
                   <p className='truncate text-xs text-gray-500 dark:text-neutral-400'>
@@ -100,8 +118,16 @@ export function CampaignDetailSheet({ eventId, open, onOpenChange }: CampaignDet
             {/* Tabs */}
             <AnimatedTabs
               tabs={[
-                { title: 'Details', icon: Info, onClick: () => setActiveTab('details') },
-                { title: 'Contributors', icon: Users, onClick: () => setActiveTab('contributors') },
+                {
+                  title: t('campaignDetail.tabs.details'),
+                  icon: Info,
+                  onClick: () => setActiveTab('details'),
+                },
+                {
+                  title: t('campaignDetail.tabs.contributors'),
+                  icon: Users,
+                  onClick: () => setActiveTab('contributors'),
+                },
               ]}
               selected={['details', 'contributors'].indexOf(activeTab)}
             />
@@ -116,7 +142,7 @@ export function CampaignDetailSheet({ eventId, open, onOpenChange }: CampaignDet
               className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:active:bg-neutral-300'
             >
               <Zap className='h-4 w-4' />
-              Contribute
+              {t('campaignDetail.contribute')}
             </button>
           </div>
         }
@@ -160,6 +186,8 @@ function DetailsTabContent({
   hasGoal: boolean;
   progressPercent: number;
 }) {
+  const t = useTranslations('eventSocial');
+  const locale = useLocale();
   return (
     <div className='space-y-5'>
       {/* Stats */}
@@ -168,12 +196,18 @@ function DetailsTabContent({
           <span className='text-2xl font-bold tabular-nums text-gray-900 dark:text-neutral-100'>
             {formatSatsAbbreviated(campaign.raised_sats)}
           </span>
-          <span className='text-sm text-gray-500 dark:text-neutral-400'>sats raised</span>
+          <span className='text-sm text-gray-500 dark:text-neutral-400'>
+            {t('campaignDetail.satsRaised')}
+          </span>
           {hasGoal && (
             <>
-              <span className='text-sm text-gray-400 dark:text-neutral-400'>of</span>
+              <span className='text-sm text-gray-400 dark:text-neutral-400'>
+                {t('campaignDetail.of')}
+              </span>
               <span className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                {formatSatsAbbreviated(campaign.goal_sats!)} goal
+                {t('campaignDetail.goal', {
+                  amount: formatSatsAbbreviated(campaign.goal_sats!),
+                })}
               </span>
             </>
           )}
@@ -189,17 +223,18 @@ function DetailsTabContent({
         )}
 
         <p className='text-sm text-gray-500 dark:text-neutral-400'>
-          {campaign.pledge_count} {campaign.pledge_count === 1 ? 'contribution' : 'contributions'}
+          {t('campaignDetail.contributionCount', { count: campaign.pledge_count })}
         </p>
       </div>
 
       {/* Created date — lower hierarchy */}
       <p className='text-xs italic tracking-wide text-gray-400 dark:text-neutral-400'>
-        Created{' '}
-        {new Date(campaign.created_at).toLocaleDateString('en-US', {
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric',
+        {t('campaignDetail.created', {
+          date: new Date(campaign.created_at).toLocaleDateString(getIntlLocale(locale), {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+          }),
         })}
       </p>
 
@@ -225,6 +260,7 @@ function ContributorsTabContent({
     settled_at: string | null;
   }[];
 }) {
+  const t = useTranslations('eventSocial');
   if (feed.length === 0) {
     return (
       <div className='flex flex-col items-center justify-center py-16 text-center'>
@@ -232,10 +268,10 @@ function ContributorsTabContent({
           <Zap className='h-6 w-6' />
         </div>
         <h3 className='mb-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-          No contributions yet
+          {t('campaignDetail.emptyTitle')}
         </h3>
         <p className='max-w-xs text-sm text-gray-500 dark:text-neutral-400'>
-          Be the first to contribute to this campaign.
+          {t('campaignDetail.emptyDescription')}
         </p>
       </div>
     );
@@ -255,13 +291,9 @@ function ContributorsTabContent({
 
           <div className='min-w-0 flex-1'>
             <p className='truncate text-sm font-medium text-gray-900 dark:text-neutral-100'>
-              {item.payer_username ? `@${item.payer_username}` : 'Anonymous'}
+              {item.payer_username ? `@${item.payer_username}` : t('campaignDetail.anonymous')}
             </p>
-            {item.settled_at && (
-              <p className='text-xs text-gray-400 dark:text-neutral-400'>
-                {timeAgo(item.settled_at)}
-              </p>
-            )}
+            {item.settled_at && <TimeAgoText date={item.settled_at} />}
           </div>
 
           <div className='flex shrink-0 items-center gap-1 text-sm font-semibold tabular-nums text-amber-600 dark:text-amber-400'>

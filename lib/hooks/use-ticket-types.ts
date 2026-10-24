@@ -5,6 +5,7 @@ import type { CreateTicketTypeInput, TicketType, UpdateTicketTypeInput } from '@
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 export type UpdateTicketTypeVariables = { ticketTypeId: string } & UpdateTicketTypeInput;
 
@@ -33,6 +34,7 @@ export function useTicketTypes(eventId: string) {
 
 export function useCreateTicketType(eventId: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (input: CreateTicketTypeInput): Promise<TicketType> => {
@@ -45,7 +47,7 @@ export function useCreateTicketType(eventId: string) {
         return response.data;
       }
 
-      throw new Error('Failed to create ticket type');
+      throw new Error(t('tickets.createFailed'));
     },
     onSuccess: () => {
       invalidateTicketingQueries(queryClient, eventId);
@@ -58,6 +60,7 @@ export function useCreateTicketType(eventId: string) {
 
 export function useUpdateTicketType(eventId: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async ({
@@ -73,7 +76,7 @@ export function useUpdateTicketType(eventId: string) {
         return response.data;
       }
 
-      throw new Error('Failed to update ticket type');
+      throw new Error(t('tickets.updateFailed'));
     },
     onSuccess: () => {
       invalidateTicketingQueries(queryClient, eventId);

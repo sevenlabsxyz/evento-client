@@ -1,3 +1,4 @@
+import { getLocale, getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 
 import type { LegalDocument } from './legal-documents';
@@ -14,15 +15,23 @@ interface LegalDocumentPageProps {
   document: LegalDocument;
 }
 
-export function LegalDocumentPage({ document }: LegalDocumentPageProps) {
+export async function LegalDocumentPage({ document }: LegalDocumentPageProps) {
+  const t = await getTranslations('misc.legal');
+  const locale = await getLocale();
+
   return (
     <main className='min-h-screen bg-background text-foreground'>
       <div className='mx-auto w-full max-w-4xl px-4 py-10 sm:px-6 lg:px-8'>
         <header className='mb-10 border-b pb-6'>
-          <h1 className='text-3xl font-semibold tracking-tight sm:text-4xl'>{document.title}</h1>
+          <h1 className='text-3xl font-semibold tracking-tight sm:text-4xl'>
+            {t(`titles.${document.id}`)}
+          </h1>
+          {locale !== 'en' && (
+            <p className='mt-3 text-sm font-medium text-muted-foreground'>{t('englishOnly')}</p>
+          )}
           <p className='mt-3 text-base leading-7 text-muted-foreground'>{document.summary}</p>
           <p className='mt-4 text-sm text-muted-foreground'>
-            Effective date: {document.effectiveDate} | Last updated: {document.lastUpdated}
+            {t('dates', { effective: document.effectiveDate, updated: document.lastUpdated })}
           </p>
         </header>
 
@@ -35,7 +44,7 @@ export function LegalDocumentPage({ document }: LegalDocumentPageProps) {
         </section>
 
         <section className='mb-10 rounded-xl border p-5 sm:p-6'>
-          <h2 className='text-lg font-medium'>Table of contents</h2>
+          <h2 className='text-lg font-medium'>{t('tableOfContents')}</h2>
           <ul className='mt-4 grid gap-2 text-sm sm:grid-cols-2'>
             {document.sections.map((section) => {
               const id = slugify(section.title);
@@ -96,7 +105,7 @@ export function LegalDocumentPage({ document }: LegalDocumentPageProps) {
                   href={link.href}
                   className='text-sm font-medium underline underline-offset-4'
                 >
-                  {link.label}
+                  {t(`links.${link.id}`)}
                 </Link>
               ))}
             </div>

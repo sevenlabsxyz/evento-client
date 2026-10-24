@@ -1,1 +1,183 @@
-{}
+{
+  "page": {
+    "title": "Evento Início",
+    "loadErrorTitle": "Não foi possível carregar seu início",
+    "loadErrorFallback": "Algo deu errado ao carregar os dados do seu início.",
+    "tryAgain": "Tentar novamente"
+  },
+  "greeting": {
+    "morning": "Bom dia",
+    "afternoon": "Boa tarde",
+    "evening": "Boa noite",
+    "morningName": "Bom dia, {name}",
+    "afternoonName": "Boa tarde, {name}",
+    "eveningName": "Boa noite, {name}",
+    "eventsThisWeek": "{count, plural, one {# evento esta semana} other {# eventos esta semana}}",
+    "nothingThisWeekUpcoming": "Nada na sua agenda esta semana · {count} em breve",
+    "nothingThisWeek": "Nada na sua agenda esta semana",
+    "findEvents": "Encontrar eventos",
+    "create": "Criar"
+  },
+  "build": {
+    "title": "Crie com o Evento",
+    "description": "API pública, embeds e um servidor MCP para agentes de IA."
+  },
+  "blog": {
+    "railTitle": "Do blog",
+    "allPosts": "Todos os posts",
+    "galleryTitle": "Novidades do Evento",
+    "previous": "Posts anteriores",
+    "next": "Próximos posts"
+  },
+  "getStarted": {
+    "title": "Primeiros passos",
+    "subtitle": "Alguns passos para deixar o Evento com a sua cara",
+    "progress": "{completed} de {total}",
+    "progressLabel": "Progresso dos primeiros passos",
+    "completedLabel": "{title} (concluído)",
+    "steps": {
+      "create": {
+        "title": "Crie seu primeiro evento",
+        "description": "Organize um encontro, festa ou aula"
+      },
+      "follow": {
+        "title": "Siga anfitriões",
+        "description": "Veja os eventos deles no seu feed"
+      },
+      "wallet": {
+        "title": "Configure sua carteira",
+        "description": "Envie e receba sats"
+      },
+      "profile": {
+        "title": "Complete seu perfil",
+        "description": "Adicione uma foto e uma bio"
+      }
+    }
+  },
+  "myEvents": {
+    "title": "Meus eventos",
+    "searchAria": "Buscar meus eventos",
+    "loadError": "Não foi possível carregar os próximos eventos",
+    "viewAll": "Ver todos os eventos",
+    "viewAllCount": "Ver todos os eventos ({count})",
+    "tabs": {
+      "upcoming": "Próximos",
+      "hosting": "Organizando",
+      "drafts": "Rascunhos",
+      "past": "Passados"
+    },
+    "empty": {
+      "upcoming": {
+        "title": "Nenhum evento próximo",
+        "description": "Confirme presença em eventos ou crie o seu",
+        "cta": "Encontrar eventos"
+      },
+      "hosting": {
+        "title": "Você não está organizando eventos",
+        "description": "Crie um evento para começar",
+        "cta": "Criar evento"
+      },
+      "drafts": {
+        "title": "Nenhum rascunho",
+        "description": "Seus rascunhos aparecerão aqui",
+        "cta": "Criar evento"
+      },
+      "past": {
+        "title": "Nenhum evento passado",
+        "description": "Eventos que você organizou ou participou aparecerão aqui"
+      }
+    }
+  },
+  "discover": {
+    "title": "Descobrir",
+    "viewAll": "Ver todos",
+    "viewAllCount": "Ver todos ({count})",
+    "loadError": "Não foi possível carregar os eventos",
+    "tryAgain": "Tentar novamente",
+    "sheetEmpty": "Nenhum evento para mostrar ainda.",
+    "filters": {
+      "featured": {
+        "title": "Destaques",
+        "description": "Eventos selecionados e o que vem por aí",
+        "sheetTitle": "Feed Descobrir"
+      },
+      "week": {
+        "title": "Esta semana",
+        "description": "Começando nos próximos 7 dias",
+        "sheetTitle": "Esta semana"
+      },
+      "following": {
+        "title": "Seguindo",
+        "description": "Próximos eventos de anfitriões que você segue",
+        "sheetTitle": "Feed de quem você segue"
+      }
+    },
+    "empty": {
+      "week": {
+        "title": "Nada começando esta semana",
+        "description": "Nenhum dos eventos em destaque começa nos próximos 7 dias. Confira os Destaques ou busque algo perto de você.",
+        "seeFeatured": "Ver destaques"
+      },
+      "following": {
+        "title": "Siga anfitriões para ver os eventos deles aqui",
+        "description": "Quando pessoas que você segue publicarem eventos, eles aparecerão neste feed.",
+        "findHosts": "Encontrar anfitriões"
+      },
+      "featured": {
+        "title": "Nenhum evento em destaque no momento",
+        "description": "Volte em breve ou busque eventos e anfitriões no Evento."
+      },
+      "searchEvents": "Buscar eventos"
+    }
+  },
+  "upNext": {
+    "label": "A seguir",
+    "noUpcoming": "Nenhum evento próximo",
+    "browse": "Veja o que está rolando",
+    "happeningNow": "Acontecendo agora",
+    "today": "Hoje",
+    "todayAt": "Hoje {time}",
+    "tomorrow": "Amanhã",
+    "tomorrowAt": "Amanhã {time}",
+    "view": "Ver",
+    "manage": "Gerenciar",
+    "directions": "Como chegar"
+  },
+  "needsResponse": {
+    "title": "Aguardando sua resposta",
+    "seeAll": "Ver todos",
+    "someone": "Alguém",
+    "eventUnavailable": "Detalhes do evento indisponíveis",
+    "cohostInvite": "Convite de coanfitrião",
+    "eventInvite": "Convite para evento",
+    "redirecting": "Redirecionando",
+    "redirectingMessage": "Levando você para este evento agora",
+    "accept": "Aceitar",
+    "decline": "Recusar",
+    "rsvp": "Confirmar presença",
+    "view": "Ver",
+    "cohostError": "Convites de coanfitrião estão temporariamente indisponíveis.",
+    "eventError": "Convites para eventos estão temporariamente indisponíveis."
+  },
+  "invites": {
+    "sheetTitle": "Convites para eventos",
+    "waiting": "Aguardando ({count})",
+    "archive": "Arquivo",
+    "pendingError": "Não foi possível carregar os convites pendentes",
+    "noPending": "Nenhum convite pendente",
+    "caughtUp": "Você está em dia!",
+    "noResponded": "Nenhum convite respondido",
+    "respondedHint": "Os convites que você responder aparecerão aqui",
+    "detailTitle": "Convite para evento",
+    "invitedYou": "convidou você para um evento em {date} às {time}",
+    "tbd": "A definir",
+    "rsvp": "Confirmar presença",
+    "view": "Ver",
+    "viewEvent": "Ver evento",
+    "response": {
+      "going": "Vou",
+      "maybe": "Talvez",
+      "notGoing": "Não vou"
+    }
+  }
+}

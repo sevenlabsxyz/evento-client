@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { reportErrorAlert } from '@/lib/observability/error-alert-client';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef } from 'react';
 export default function Error({
   error,
@@ -10,6 +11,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations('misc.error');
   // Guard to prevent resending the same error on rerender
   const reportedRef = useRef<Error | null>(null);
 
@@ -28,12 +30,10 @@ export default function Error({
 
   return (
     <div className='flex min-h-[60vh] flex-col items-center justify-center p-6 text-center'>
-      <h2 className='mb-2 text-lg font-semibold'>Something went wrong</h2>
-      <p className='mb-4 text-sm text-muted-foreground'>
-        An unexpected error occurred. Please try again.
-      </p>
+      <h2 className='mb-2 text-lg font-semibold'>{t('title')}</h2>
+      <p className='mb-4 text-sm text-muted-foreground'>{t('description')}</p>
       <Button onClick={() => reset()} variant='default'>
-        Try again
+        {t('tryAgain')}
       </Button>
     </div>
   );

@@ -4,6 +4,7 @@ import { CohostInvite, CohostInviteTarget } from '@/lib/types/api';
 
 import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface EventHostApiItem {
   event_id: string;
@@ -59,6 +60,7 @@ interface CohostInvitesResponse {
 
 export function useSendCohostInvites(eventId: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (payload: { invites: CohostInviteTarget[]; message?: string }) => {
@@ -70,15 +72,13 @@ export function useSendCohostInvites(eventId: string) {
     },
     onSuccess: (data) => {
       const count = data?.data?.sent ?? 0;
-      toast.success(
-        count ? `Sent ${count} cohost invite${count === 1 ? '' : 's'}` : 'Invites sent'
-      );
+      toast.success(count ? t('cohostInvites.sent', { count }) : t('cohostInvites.invitesSent'));
       queryClient.invalidateQueries({ queryKey: queryKeys.eventCohostInvites(eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.cohostInvites });
       queryClient.invalidateQueries({ queryKey: queryKeys.hub });
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to send cohost invites');
+      toast.error(err?.response?.data?.message || t('cohostInvites.sendFailed'));
     },
   });
 }
@@ -116,6 +116,7 @@ export function useMyCohostInvites(
 
 export function useAcceptCohostInvite() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (inviteId: string) => {
@@ -137,13 +138,14 @@ export function useAcceptCohostInvite() {
       }
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to accept invite');
+      toast.error(err?.response?.data?.message || t('cohostInvites.acceptFailed'));
     },
   });
 }
 
 export function useRejectCohostInvite() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (inviteId: string) => {
@@ -151,18 +153,19 @@ export function useRejectCohostInvite() {
       return res.data;
     },
     onSuccess: () => {
-      toast.success('Invitation declined');
+      toast.success(t('cohostInvites.declined'));
       queryClient.invalidateQueries({ queryKey: queryKeys.myCohostInvites() });
       queryClient.invalidateQueries({ queryKey: queryKeys.hub });
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to decline invite');
+      toast.error(err?.response?.data?.message || t('cohostInvites.declineFailed'));
     },
   });
 }
 
 export function useCancelCohostInvite(eventId: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (inviteId: string) => {
@@ -170,13 +173,13 @@ export function useCancelCohostInvite(eventId: string) {
       return res.data;
     },
     onSuccess: () => {
-      toast.success('Invite cancelled');
+      toast.success(t('cohostInvites.cancelled'));
       queryClient.invalidateQueries({ queryKey: queryKeys.eventCohostInvites(eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.cohostInvites });
       queryClient.invalidateQueries({ queryKey: queryKeys.hub });
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to cancel invite');
+      toast.error(err?.response?.data?.message || t('cohostInvites.cancelFailed'));
     },
   });
 }

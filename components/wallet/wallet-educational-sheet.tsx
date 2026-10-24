@@ -3,6 +3,7 @@
 import EnhancedBlogContent from '@/components/blog/enhanced-blog-content';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
 export interface EducationalArticle {
@@ -36,6 +37,7 @@ export function WalletEducationalSheet({
   open,
   onOpenChange,
 }: WalletEducationalSheetProps) {
+  const tCommon = useTranslations('common');
   if (!article) return null;
 
   return (
@@ -73,7 +75,7 @@ export function WalletEducationalSheet({
             variant='outline'
             className='font-lg h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
           >
-            Done
+            {tCommon('actions.done')}
           </Button>
         </div>
       </div>

@@ -1,1 +1,65 @@
-{}
+{
+  "meta": {
+    "title": "Blog — Evento",
+    "description": "Product updates, hosting guides, and stories from the Evento community — the social platform for events.",
+    "postFallbackTitle": "Blog Post",
+    "postUnavailable": "Unable to load blog post details",
+    "postFallbackDescription": "Read this blog post on Evento."
+  },
+  "topBarTitle": "Blog",
+  "index": {
+    "eyebrow": "Evento Blog",
+    "title": "Stories from the Evento community",
+    "subtitle": "Product updates, hosting guides, and ideas for bringing people together.",
+    "storyCount": "{count, plural, one {story} other {stories}}",
+    "filterLabel": "Filter stories by topic",
+    "allTopics": "All",
+    "emptyTitle": "No stories yet",
+    "emptyDescription": "We’re working on our first posts. Check back soon.",
+    "noStoriesInTag": "No stories in {tag}",
+    "noStoriesInTopic": "No stories in this topic",
+    "emptyTopicDescription": "Try another topic, or browse everything we’ve published.",
+    "viewAllStories": "View all stories",
+    "loadErrorTitle": "Couldn't load the blog",
+    "loadErrorDescription": "Something went wrong while loading stories. Please try again later.",
+    "moreInTag": "More in {tag}",
+    "moreStories": "More stories"
+  },
+  "card": {
+    "featured": "Featured",
+    "latest": "Latest",
+    "readStory": "Read story"
+  },
+  "post": {
+    "breadcrumb": "Breadcrumb",
+    "share": "Share",
+    "copyLink": "Copy link",
+    "shareText": "Check out this blog post: {title}",
+    "shareLinkCopied": "Blog post link copied to clipboard!",
+    "shareFailed": "Failed to share blog post",
+    "linkCopied": "Link copied to clipboard",
+    "copyFailed": "Failed to copy link",
+    "tags": "Tags",
+    "enjoyingTitle": "Enjoying this article?",
+    "enjoyingBody": "Pass it along to someone who'd like it.",
+    "keepReading": "Keep reading",
+    "allPosts": "All posts",
+    "loadErrorTitle": "Couldn't load this post",
+    "loadErrorMessage": "Failed to load blog post. Please try again later.",
+    "backToBlog": "Back to the blog",
+    "loading": "Loading post"
+  },
+  "author": {
+    "aboutLabel": "About the author",
+    "writtenBy": "Written by"
+  },
+  "toc": {
+    "onThisPage": "On this page"
+  },
+  "content": {
+    "openImage": "Open image",
+    "openImageNamed": "Open image: {alt}",
+    "imagePreview": "Image preview",
+    "imagePreviewNamed": "Image preview: {alt}"
+  }
+}

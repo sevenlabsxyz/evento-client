@@ -3,9 +3,11 @@
 import { CashAppSVGIcon } from '@/components/icons/cashapp';
 import { PayPalSVGIcon } from '@/components/icons/paypal';
 import { VenmoSVGIcon } from '@/components/icons/venmo';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
 import { ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { ReactNode, useState } from 'react';
 import ContributionPaymentSheet from './contribution-payment-sheet';
 import { EventSection } from './event-section';
@@ -36,7 +38,7 @@ const PAYMENT_METHOD_CONFIG: Record<string, PaymentMethodConfig> = {
 };
 
 function formatUSD(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(getIntlLocale(), {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
@@ -45,6 +47,7 @@ function formatUSD(amount: number): string {
 }
 
 export default function EventContributions({ eventData, eventId }: EventContributionsProps) {
+  const t = useTranslations('eventSocial');
   const [showPaymentSheet, setShowPaymentSheet] = useState(false);
   const contributionMethods = getContributionMethods(eventData);
   const hasContributions = contributionMethods.length > 0;
@@ -56,7 +59,7 @@ export default function EventContributions({ eventData, eventId }: EventContribu
 
   return (
     <>
-      <EventSection title='Contributions' variant='plain'>
+      <EventSection title={t('contributions.title')} variant='plain'>
         <button
           type='button'
           onClick={() => setShowPaymentSheet(true)}
@@ -79,11 +82,12 @@ export default function EventContributions({ eventData, eventId }: EventContribu
             </div>
             <div className='min-w-0 text-left'>
               <p className='truncate text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                {cost > 0 ? `Suggested: ${formatUSD(cost)}` : 'Contributions welcome'}
+                {cost > 0
+                  ? t('contributions.suggested', { amount: formatUSD(cost) })
+                  : t('contributions.welcome')}
               </p>
               <p className='text-sm text-gray-500 dark:text-neutral-500'>
-                {contributionMethods.length} payment method
-                {contributionMethods.length > 1 ? 's' : ''} available
+                {t('contributions.methodsAvailable', { count: contributionMethods.length })}
               </p>
             </div>
           </div>

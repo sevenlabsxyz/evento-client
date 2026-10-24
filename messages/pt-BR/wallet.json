@@ -1,1 +1,354 @@
-{}
+{
+  "page": {
+    "title": "Carteira",
+    "description": "Envie, receba e acompanhe seus bitcoins.",
+    "wakeLockEnabled": "Tela sempre ativa",
+    "keepScreenAwake": "Manter tela ativa",
+    "unlockRedirectHint": "Desbloqueie sua carteira e levaremos você de volta automaticamente.",
+    "createRedirectHint": "Crie sua carteira e levaremos você de volta automaticamente.",
+    "unlockedRedirecting": "Carteira desbloqueada. Levando você de volta...",
+    "depositClaimed": "Depósito resgatado! {amount} sats adicionados ao seu saldo",
+    "onchainReceivedTitle": "Fundos onchain recebidos",
+    "onchainReceivedBody": "Toque em \"Acelerar\" abaixo para resgatar seus fundos agora.",
+    "seedUnavailable": "Não foi possível recuperar a frase de recuperação. Entre em contato com o suporte.",
+    "unsupportedQr": "Não é possível ler este tipo de QR code",
+    "buyBitcoin": "Comprar Bitcoin",
+    "buySell": "Comprar / Vender",
+    "moneyIncoming": "Dinheiro a caminho",
+    "incomingDescription": "Você recebeu fundos onchain. Toque abaixo para pagar uma pequena taxa e resgatá-los na sua carteira instantaneamente.",
+    "speedItUp": "Acelerar!",
+    "bitcoinTools": "Ferramentas Bitcoin",
+    "contacts": "Contatos",
+    "addContact": "Adicionar contato",
+    "allContacts": "Todos os contatos",
+    "viewAllContacts": "Ver todos os contatos",
+    "security": "Segurança",
+    "backup": "Backup",
+    "backedUp": "Com backup",
+    "notBackedUp": "Sem backup",
+    "walletSettings": "Configurações da carteira",
+    "walletSettingsDescription": "Opções de bloqueio, privacidade e backup",
+    "transactions": "Transações",
+    "recentTransactions": "Transações recentes",
+    "walletContacts": "Contatos da carteira",
+    "newContact": "Novo contato"
+  },
+  "settings": {
+    "topBarTitle": "Configurações da carteira",
+    "beta": "Beta",
+    "locked": "Carteira bloqueada",
+    "deleted": "Carteira excluída",
+    "title": "Configurações da carteira",
+    "description": "Opções de segurança, privacidade e dispositivo para sua carteira Evento.",
+    "security": "Segurança",
+    "securityDescription": "Bloqueio, backups e o que fica visível na tela.",
+    "lockWallet": "Bloquear carteira",
+    "lockWalletDescription": "Exigir senha para acessar",
+    "backupStatus": "Status do backup",
+    "hideBalance": "Ocultar saldo e valores",
+    "hideBalanceDescription": "Mantenha os valores ocultos em toda a carteira.",
+    "dangerZone": "Zona de perigo",
+    "dangerZoneDescription": "Ações irreversíveis para este dispositivo.",
+    "deleteWallet": "Excluir carteira",
+    "deleteWalletDescription": "Isso excluirá permanentemente sua carteira deste dispositivo. Certifique-se de ter feito backup da carteira antes de continuar.",
+    "cannotUndo": "Esta ação não pode ser desfeita",
+    "deleteConfirmDescription": "Sua carteira será excluída permanentemente deste dispositivo. Certifique-se de ter feito backup da sua frase de recuperação antes de continuar.",
+    "confirmDelete": "Sim, excluir carteira"
+  },
+  "balance": {
+    "registering": "Registrando..."
+  },
+  "actions": {
+    "receive": "Receber",
+    "send": "Enviar",
+    "scan": "Escanear"
+  },
+  "balanceDisplay": {
+    "available": "disponível"
+  },
+  "desktop": {
+    "eyebrow": "Carteira Evento",
+    "preWallet": {
+      "welcome": {
+        "title": "Uma carteira Bitcoin que só você controla",
+        "description": "Envie e receba bitcoin via Lightning, direto no Evento. Sua carteira fica neste dispositivo e só você tem acesso a ela."
+      },
+      "setup": {
+        "title": "Configure sua carteira",
+        "description": "Escolha um PIN para proteger sua carteira neste dispositivo. Depois, faça o backup para sempre poder recuperar seus fundos."
+      },
+      "restore": {
+        "title": "Restaure sua carteira",
+        "description": "Cole seu backup criptografado ou sua frase de recuperação de 12 palavras para recuperar o acesso aos seus fundos neste dispositivo."
+      },
+      "backup": {
+        "title": "Faça backup da sua carteira",
+        "description": "Sua frase de recuperação é a única forma de recuperar seus fundos se você perder o acesso a este dispositivo."
+      },
+      "unlock": {
+        "title": "Desbloqueie sua carteira",
+        "description": "Sua carteira está bloqueada neste dispositivo. Digite seu PIN para continuar."
+      }
+    },
+    "points": {
+      "selfCustodial": {
+        "title": "Autocustodial",
+        "description": "O Evento não armazena as informações da sua carteira. Só você tem acesso a ela."
+      },
+      "lightningAddress": {
+        "title": "Seu próprio endereço Lightning",
+        "description": "Receba pagamentos em um endereço @evento.cash pessoal."
+      },
+      "pinProtected": {
+        "title": "Protegida por PIN",
+        "description": "Bloqueie a carteira quando quiser e desbloqueie com seu PIN."
+      },
+      "recoverable": {
+        "title": "Sempre recuperável",
+        "description": "Restaure em qualquer dispositivo com seu backup criptografado ou frase de recuperação de 12 palavras."
+      }
+    }
+  },
+  "education": {
+    "bitcoinBasics": "Noções básicas de Bitcoin"
+  },
+  "loading": {
+    "messages": {
+      "gettingReady": "Preparando tudo para você...",
+      "preparingWallet": "Preparando sua carteira...",
+      "almostThere": "Quase lá...",
+      "makingMagic": "Fazendo a mágica acontecer...",
+      "superpowers": "Ativando seus superpoderes financeiros...",
+      "futureOfMoney": "Conectando ao futuro do dinheiro...",
+      "wakingUp": "Sua carteira está acordando...",
+      "brewing": "Preparando algo bom...",
+      "justAMoment": "Só um momento...",
+      "digitalVault": "Carregando seu cofre digital..."
+    },
+    "slowConnection": "Isso pode demorar mais em conexões lentas.",
+    "doNotRefresh": "Não atualize a página.",
+    "logoAlt": "Logo do Evento"
+  },
+  "pin": {
+    "minLength": "O PIN deve ter pelo menos 6 dígitos",
+    "mismatch": "Os PINs não coincidem",
+    "createTitle": "Crie um PIN",
+    "confirmTitle": "Confirme seu PIN",
+    "confirmDescription": "Digite seu PIN novamente para confirmar",
+    "enterTitle": "Digite seu PIN",
+    "enterPin": "Digite seu PIN",
+    "enterPassword": "Digite sua senha",
+    "adminPasswordPlaceholder": "Digite a senha de administrador"
+  },
+  "restore": {
+    "invalidInput": "Insira um backup válido ou uma frase de recuperação de 12 palavras",
+    "success": "Carteira restaurada com sucesso!",
+    "invalidBackupOrPin": "Backup ou PIN inválido",
+    "failed": "Falha ao restaurar a carteira",
+    "title": "Acesse sua carteira",
+    "intro": "O backup da carteira é o que permite abrir sua carteira Bitcoin em um novo dispositivo.",
+    "introPaste": "Se você salvou seu código de backup ou sua frase de 12 palavras ao criar sua carteira Evento, cole aqui para recuperar o acesso.",
+    "inputLabel": "Backup ou frase de recuperação",
+    "inputPlaceholder": "Insira seu backup criptografado ou frase de recuperação de 12 palavras",
+    "encryptedDetected": "Backup criptografado detectado",
+    "seedDetected": "Frase de recuperação detectada",
+    "invalidFormat": "Formato inválido",
+    "enterPinDescription": "Digite o PIN usado para criptografar este backup",
+    "restoring": "Restaurando...",
+    "restoreWallet": "Restaurar carteira",
+    "createPinDescription": "Crie um PIN de 6 dígitos para proteger sua carteira",
+    "complete": "Concluir"
+  },
+  "setup": {
+    "success": "Carteira criada com sucesso!",
+    "failed": "Falha ao criar a carteira",
+    "missingApiKey": "A chave de API do Breez está ausente. Entre em contato com o suporte.",
+    "initFailed": "Falha ao inicializar a carteira. Atualize a página e tente novamente.",
+    "failedTitle": "Falha na configuração",
+    "goBack": "Voltar",
+    "creatingTitle": "Criando carteira",
+    "creatingDescription": "Configurando sua carteira...",
+    "createPinDescription": "Defina um PIN de 6 dígitos para proteger sua carteira",
+    "important": "Importante",
+    "rememberPin": "Lembre-se deste PIN! Você vai precisar dele para acessar sua carteira.",
+    "createWallet": "Criar carteira"
+  },
+  "unlock": {
+    "failed": "Falha ao desbloquear a carteira",
+    "adminTitle": "Digite a senha de administrador",
+    "pinTitle": "Digite o PIN da carteira",
+    "adminMode": "Modo administrador ativado",
+    "unlocking": "Desbloqueando...",
+    "unlock": "Desbloquear",
+    "useDifferentWallet": "Usar outra carteira",
+    "startFreshTitle": "Começar do zero?",
+    "beforeContinue": "Antes de continuar...",
+    "removeInfo": "Isso removerá sua carteira deste dispositivo. Certifique-se de ter sua frase de backup salva em um lugar seguro antes de continuar.",
+    "noRecovery": "Sem sua frase de backup, não há como recuperar seus fundos. O Evento não armazena as informações da sua carteira — só você tem acesso a ela.",
+    "understandContinue": "Entendi, continuar",
+    "areYouSure": "Tem certeza?",
+    "cannotUndo": "Isso não pode ser desfeito. Depois de removida, você precisará da sua frase de backup para acessar esta carteira novamente.",
+    "removeWallet": "Remover carteira"
+  },
+  "welcome": {
+    "mascotAlt": "Mascote do Evento",
+    "title": "Carteira Evento",
+    "description": "Uma carteira Bitcoin incrivelmente simples, segura e privada para usuários modernos.",
+    "createWallet": "Criar carteira",
+    "haveWallet": "Já tenho uma carteira"
+  },
+  "backupCallout": {
+    "title": "Proteja sua carteira",
+    "description": "Faça backup para proteger seus fundos"
+  },
+  "seedBackup": {
+    "copied": "Frase de recuperação copiada",
+    "copyFailed": "Falha ao copiar a frase de recuperação",
+    "confirmRequired": "Confirme que você salvou sua frase de recuperação",
+    "success": "Backup da carteira feito com sucesso!",
+    "title": "Sua frase de recuperação",
+    "description": "Anote estas 12 palavras em ordem e guarde-as em segurança",
+    "keepPrivate": "Mantenha isto em sigilo",
+    "keepPrivateDescription": "Qualquer pessoa com estas palavras pode acessar sua carteira. Guarde-as com segurança offline.",
+    "hide": "Ocultar",
+    "show": "Mostrar",
+    "copiedButton": "Copiado!",
+    "copyToClipboard": "Copiar",
+    "savedConfirm": "Salvei minha frase de recuperação em um lugar seguro"
+  },
+  "quickTools": {
+    "buySell": "Comprar / Vender",
+    "spend": "Gastar",
+    "earn": "Ganhar",
+    "converter": "Conversor"
+  },
+  "scanner": {
+    "startingCamera": "Iniciando câmera..."
+  },
+  "beta": {
+    "title": "Software beta",
+    "badge": "BETA",
+    "subtitle": "Informações importantes sobre a Carteira Evento",
+    "riskTitle": "Use por sua conta e risco",
+    "riskBody": "A Carteira Evento está em fase de testes beta. Embora busquemos confiabilidade, podem ocorrer bugs ou comportamentos inesperados.",
+    "whatIsBeta": "O que é beta?",
+    "whatIsBetaBody": "Um software beta tem todos os recursos, mas ainda está em testes. Você pode encontrar bugs, problemas de desempenho ou comportamentos inesperados enquanto melhoramos a carteira.",
+    "bestPractices": "Boas práticas",
+    "practiceBackup": "Sempre faça backup da sua carteira e guarde sua frase de recuperação com segurança",
+    "practiceSmall": "Comece com valores pequenos para testar o funcionamento",
+    "practiceReport": "Relate qualquer problema ou bug que encontrar para nos ajudar a melhorar",
+    "practiceUpdate": "Mantenha seu app atualizado com a versão mais recente",
+    "thanks": "Obrigado por ser um dos primeiros testadores! Seu feedback nos ajuda a criar uma experiência de carteira melhor para todos."
+  },
+  "history": {
+    "justNow": "Agora mesmo",
+    "minutesAgo": "há {count} min",
+    "hoursAgo": "há {count} h",
+    "daysAgo": "há {count} d",
+    "emptyTitle": "Nenhuma transação ainda",
+    "emptyDescription": "Seu histórico de transações aparecerá aqui",
+    "refresh": "Atualizar",
+    "viewAll": "Ver todas as transações",
+    "sheetTitle": "Histórico de transações"
+  },
+  "incomingFunds": {
+    "swapCompleted": "Swap concluído com sucesso!",
+    "claimSubmitted": "Resgate enviado — ele será concluído automaticamente.",
+    "requiredFee": "necessário: {amount} sats",
+    "feeLimit": "limite: {amount} sats",
+    "feeExceeded": "A taxa de resgate excederia a taxa máxima selecionada. Uma nova tentativa será feita automaticamente dentro do seu limite de taxa.",
+    "feeExceededWithDetail": "A taxa de resgate excederia a taxa máxima selecionada. Uma nova tentativa será feita automaticamente dentro do seu limite de taxa. ({detail})",
+    "deferredWithMessage": "Resgate adiado: {reason} ({message})",
+    "deferred": "Resgate adiado: {reason}",
+    "title": "Fundos a receber",
+    "allSet": "Tudo certo!",
+    "noPending": "Nenhum fundo pendente. Convertemos Bitcoin para Lightning automaticamente quando as taxas estão baixas.",
+    "onItsWay": "Seu Bitcoin está a caminho! Ele será adicionado ao seu saldo automaticamente quando a rede desafogar. Quer mais rápido? Pague uma pequena taxa para recebê-lo agora.",
+    "needsAction": "Requer ação",
+    "pending": "Pendente",
+    "swapping": "Convertendo...",
+    "getItNow": "Receber agora",
+    "autoSwapDelayed": "Conversão automática adiada",
+    "feeExceedsLimit": "A taxa de rede de {amount} sats excede o limite de resgate automático — resgate manualmente ou aguarde taxas menores",
+    "outputNotFound": "Saída da transação não encontrada",
+    "unknownError": "Erro desconhecido"
+  },
+  "details": {
+    "received": "Recebido",
+    "sent": "Enviado",
+    "status": {
+      "completed": "Concluído",
+      "pending": "Pendente",
+      "failed": "Falhou"
+    },
+    "copied": "{label} copiado!",
+    "copyFailed": "Falha ao copiar",
+    "senderComment": "Comentário do remetente",
+    "description": "Descrição",
+    "savedContact": "Contato salvo",
+    "username": "Nome de usuário",
+    "lightningAddress": "Endereço Lightning",
+    "provider": "Provedor",
+    "title": "Detalhes da transação",
+    "satsTooltip": "Satoshis (sats) são a menor unidade do Bitcoin. 100.000.000 sats = 1 Bitcoin.",
+    "time": "Horário",
+    "type": "Tipo",
+    "statusLabel": "Status",
+    "totalFees": "Taxas totais",
+    "feesTooltip": "Taxas de rede pagas para processar esta transação Lightning.",
+    "invoice": "Fatura",
+    "invoiceTooltip": "Uma fatura Lightning é uma solicitação de pagamento que contém o valor, o destino e outros detalhes do pagamento.",
+    "advanced": "Detalhes avançados",
+    "paymentHash": "Hash do pagamento",
+    "paymentHashCopy": "Hash do pagamento",
+    "paymentHashTooltip": "Um identificador único para este pagamento Lightning, derivado da pré-imagem.",
+    "preimage": "Pré-imagem",
+    "preimageTooltip": "O valor secreto que comprova que este pagamento foi concluído. É a prova criptográfica do pagamento.",
+    "destinationNode": "Nó de destino",
+    "destinationNodeCopy": "Nó de destino",
+    "destinationTooltip": "A chave pública do nó Lightning que recebeu este pagamento.",
+    "transactionId": "ID da transação",
+    "transactionIdTooltip": "O identificador único desta transação na sua carteira."
+  },
+  "backupChoice": {
+    "invalidPassword": "Senha inválida",
+    "invalidPin": "PIN inválido",
+    "backupCopied": "Backup copiado",
+    "shareTitle": "Backup da carteira",
+    "backupShared": "Backup compartilhado com sucesso",
+    "backupShareFailed": "Falha ao compartilhar o backup",
+    "backupDownloaded": "Backup baixado",
+    "confirmBackupRequired": "Confirme que você salvou seu backup",
+    "noWallet": "Nenhuma carteira encontrada",
+    "phraseShareTitle": "Frase de recuperação",
+    "phraseShared": "Frase de recuperação compartilhada com sucesso",
+    "phraseShareFailed": "Falha ao compartilhar a frase de recuperação",
+    "phraseDownloaded": "Frase de recuperação baixada",
+    "titles": {
+      "choice": "Escolha o método de backup",
+      "password": "Faça backup da carteira",
+      "backup": "Backup criptografado",
+      "seedPin": "Ver frase de recuperação",
+      "seedView": "Sua frase de recuperação"
+    },
+    "recommended": "Recomendado",
+    "encryptedDescription": "Backup protegido por PIN que você pode salvar na nuvem.",
+    "advanced": "Avançado",
+    "phraseDescription": "Anote sua frase de recuperação de 12 palavras (também conhecida como seed phrase)",
+    "onlyWay": "Seu backup é a única forma de recuperar seus fundos se você perder o acesso a este dispositivo.",
+    "phraseWarning": "Se você escolher a opção de frase de recuperação e perdê-la, perderá o acesso aos seus fundos.",
+    "exportPasswordPrompt": "Digite sua senha de administrador para exportar o backup criptografado",
+    "exportPinPrompt": "Digite seu PIN para exportar o backup criptografado",
+    "verifying": "Verificando...",
+    "saveSecurely": "Salve este backup criptografado em um local seguro",
+    "encryptedLabel": "Backup criptografado da carteira",
+    "copy": "Copiar",
+    "save": "Salvar",
+    "whyBackup": "Por que fazer backup?",
+    "whyBackupBody": "Se você perder seu dispositivo, esquecer seu PIN ou precisar restaurar sua carteira em um novo dispositivo, este backup criptografado é a única forma de recuperar seus fundos. Guarde-o bem!",
+    "confirmEncrypted": "Salvei meu backup criptografado em um local seguro. Entendo que precisarei deste backup E do meu PIN para restaurar minha carteira.",
+    "savedBackup": "Salvei meu backup",
+    "viewPasswordPrompt": "Digite sua senha de administrador para ver sua frase de recuperação",
+    "viewPinPrompt": "Digite seu PIN para ver sua frase de recuperação"
+  }
+}

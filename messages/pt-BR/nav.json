@@ -1,1 +1,60 @@
-{}
+{
+  "sidebar": {
+    "createEvent": "Criar evento",
+    "developers": "Desenvolvedores",
+    "items": {
+      "events": "Eventos",
+      "search": "Buscar",
+      "lists": "Listas",
+      "wallet": "Carteira",
+      "api": "API",
+      "mcp": "MCP para agentes de IA",
+      "apiKeys": "Chaves de API",
+      "blog": "Blog",
+      "security": "Segurança",
+      "store": "Loja",
+      "settings": "Configurações"
+    },
+    "hideSidebar": "Ocultar barra lateral",
+    "showSidebar": "Mostrar barra lateral",
+    "opensInNewTab": "(abre em uma nova aba)"
+  },
+  "sidebarRight": {
+    "calendar": "Calendário"
+  },
+  "theme": {
+    "label": "Tema",
+    "light": "Claro",
+    "dark": "Escuro",
+    "lightTheme": "Tema claro",
+    "darkTheme": "Tema escuro",
+    "switchToLight": "Mudar para o tema claro",
+    "switchToDark": "Mudar para o tema escuro"
+  },
+  "user": {
+    "fallbackName": "Usuário do Evento",
+    "avatarAlt": "Usuário",
+    "welcome": "Boas-vindas ao Evento",
+    "logOut": "Sair"
+  },
+  "bottomTabs": {
+    "events": "Eventos",
+    "wallet": "Carteira",
+    "create": "Criar",
+    "search": "Buscar",
+    "profile": "Perfil",
+    "avatarAlt": "Eu"
+  },
+  "logout": {
+    "title": "Sair",
+    "walletWarningTitle": "Atenção: dados da carteira",
+    "walletOnDevice": "Você tem uma carteira configurada neste dispositivo.",
+    "walletDeleteWarning": "Sair vai apagar permanentemente os dados da sua carteira deste dispositivo, incluindo sua frase de recuperação criptografada.",
+    "backupReminder": "Confira se você tem um backup!",
+    "backupLoss": "Sem um backup, você perderá o acesso aos seus fundos para sempre.",
+    "confirmMessage": "Tem certeza de que quer sair? Você precisará entrar novamente para acessar sua conta.",
+    "backUpFirst": "Fazer backup da carteira antes",
+    "loggingOut": "Saindo...",
+    "confirm": "Sair"
+  }
+}

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Loader2, UploadCloud } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRef, useState } from 'react';
 
 interface CoverUploaderProps {
@@ -17,23 +18,24 @@ interface CoverUploaderProps {
 export default function CoverUploader({
   onCoverUploaded,
   className = '',
-  buttonText = 'Upload Photo',
+  buttonText,
   buttonVariant = 'secondary',
   showIcon = true,
 }: CoverUploaderProps) {
+  const t = useTranslations('createEvent');
   const [isLoading, setIsLoading] = useState(false);
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
-      toast.error('No image selected. Please try again.');
+      toast.error(t('cover.noImage'));
       return;
     }
 
     // Validate file size (10MB limit)
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('File is too large, please select a file less than 10MB.');
+      toast.error(t('cover.tooLarge'));
       event.target.value = '';
       return;
     }
@@ -44,7 +46,7 @@ export default function CoverUploader({
     const isGif = file.type === 'image/gif';
 
     if (!isValidType) {
-      toast.error('Please select a valid image file (PNG, GIF, JPG, JPEG).');
+      toast.error(t('cover.invalidType'));
       event.target.value = '';
       return;
     }
@@ -52,7 +54,7 @@ export default function CoverUploader({
     // For GIFs, check if they're under the size limit
     if (isGif && file.size > 5 * 1024 * 1024) {
       // 5MB limit for GIFs
-      toast.error('GIFs must be smaller than 5MB. Please choose a smaller file.');
+      toast.error(t('cover.gifTooLarge'));
       event.target.value = '';
       return;
     }
@@ -76,13 +78,13 @@ export default function CoverUploader({
 
       if (result.image) {
         onCoverUploaded(result.image);
-        toast.success('Cover image uploaded successfully!');
+        toast.success(t('cover.uploaded'));
       } else {
         throw new Error(result.message || 'Upload failed');
       }
     } catch (error) {
       logger.error('Cover upload error', { error });
-      toast.error('Could not upload image. Please try again.');
+      toast.error(t('cover.uploadFailed'));
     } finally {
       setIsLoading(false);
       // Reset the input
@@ -115,12 +117,12 @@ export default function CoverUploader({
         {isLoading ? (
           <>
             <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-            Uploading...
+            {t('cover.uploading')}
           </>
         ) : (
           <>
             {showIcon && <UploadCloud className='mr-2 h-4 w-4' />}
-            {buttonText}
+            {buttonText ?? t('cover.uploadPhoto')}
           </>
         )}
       </Button>

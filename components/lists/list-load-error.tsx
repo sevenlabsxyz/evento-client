@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { AlertTriangle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface ListLoadErrorProps {
   title: string;
@@ -8,6 +9,7 @@ interface ListLoadErrorProps {
 }
 
 export function ListLoadError({ title, message, onRetry }: ListLoadErrorProps) {
+  const tCommon = useTranslations('common');
   return (
     <div
       role='alert'
@@ -24,7 +26,7 @@ export function ListLoadError({ title, message, onRetry }: ListLoadErrorProps) {
         onClick={onRetry}
         className='bg-white dark:bg-neutral-900 dark:hover:bg-neutral-800'
       >
-        Try again
+        {tCommon('actions.tryAgain')}
       </Button>
     </div>
   );

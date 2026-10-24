@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useEventInvitesList } from '@/lib/hooks/use-event-invites-list';
+import type { Translator } from '@/lib/i18n/types';
 import type {
   EventDashboard,
   EventInvitePerson,
@@ -14,73 +15,48 @@ import type {
 import { cn } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { Loader2, Mail, Search, UserPlus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { formatGuestDate } from './format-guest-date';
 
+type ManageT = Translator<'manage'>;
+
 const FILTERS: Array<{
   id: EventInviteStatusFilter;
-  label: string;
   countKey: keyof EventDashboard['invites'];
 }> = [
-  { id: 'all', label: 'All', countKey: 'total' },
-  { id: 'pending', label: 'Pending', countKey: 'pending' },
-  { id: 'responded', label: 'Responded', countKey: 'responded' },
-  { id: 'expired', label: 'Expired', countKey: 'expired' },
+  { id: 'all', countKey: 'total' },
+  { id: 'pending', countKey: 'pending' },
+  { id: 'responded', countKey: 'responded' },
+  { id: 'expired', countKey: 'expired' },
 ];
 
-const STATUS_BADGES: Record<EventInviteRecord['status'], { label: string; className: string }> = {
-  pending: {
-    label: 'Pending',
-    className: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300',
-  },
-  responded: {
-    label: 'Responded',
-    className: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300',
-  },
-  expired: {
-    label: 'Expired',
-    className: 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400',
-  },
+const STATUS_BADGE_CLASSES: Record<EventInviteRecord['status'], string> = {
+  pending: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300',
+  responded: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300',
+  expired: 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400',
 };
 
-const RESPONSE_BADGES: Record<
-  NonNullable<EventInviteRecord['response']>,
-  { label: string; className: string }
-> = {
-  yes: {
-    label: 'Going',
-    className: 'bg-green-100 text-green-700 dark:bg-green-950/60 dark:text-green-300',
-  },
-  maybe: {
-    label: 'Maybe',
-    className: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300',
-  },
-  no: {
-    label: 'Not going',
-    className: 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300',
-  },
+const RESPONSE_BADGE_CLASSES: Record<NonNullable<EventInviteRecord['response']>, string> = {
+  yes: 'bg-green-100 text-green-700 dark:bg-green-950/60 dark:text-green-300',
+  maybe: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300',
+  no: 'bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300',
 };
 
-const EMPTY_FILTER_COPY: Record<Exclude<EventInviteStatusFilter, 'all'>, string> = {
-  pending: 'No invites are waiting for a response.',
-  responded: 'No one has responded to an invite yet.',
-  expired: 'No invites have expired.',
-};
-
-function getPersonName(person: EventInvitePerson): string {
-  return person.name || person.username || 'Evento user';
+function getPersonName(person: EventInvitePerson, t: ManageT): string {
+  return person.name || person.username || t('invitedGuestsList.eventoUser');
 }
 
-function getInviteeLabel(invite: EventInviteRecord): string {
-  if (invite.invitee) return getPersonName(invite.invitee);
-  return invite.invitee_email || 'Unknown invitee';
+function getInviteeLabel(invite: EventInviteRecord, t: ManageT): string {
+  if (invite.invitee) return getPersonName(invite.invitee, t);
+  return invite.invitee_email || t('invitedGuestsList.unknownInvitee');
 }
 
-function getInviteeSublabel(invite: EventInviteRecord): string {
+function getInviteeSublabel(invite: EventInviteRecord, t: ManageT): string {
   if (invite.invitee) {
     return invite.invitee.username ? `@${invite.invitee.username}` : '';
   }
-  return 'Email invite';
+  return t('invitedGuestsList.emailInvite');
 }
 
 function matchesSearch(invite: EventInviteRecord, query: string): boolean {
@@ -102,6 +78,8 @@ interface InvitedGuestsListProps {
 }
 
 export function InvitedGuestsList({ eventId, counts, onInvite }: InvitedGuestsListProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
   const [filter, setFilter] = useState<EventInviteStatusFilter>('all');
   const [search, setSearch] = useState('');
   const { data, isLoading, error, refetch, isRefetching } = useEventInvitesList(eventId, filter);
@@ -121,14 +99,14 @@ export function InvitedGuestsList({ eventId, counts, onInvite }: InvitedGuestsLi
           <Mail className='h-5 w-5 text-gray-500 dark:text-neutral-400' />
         </div>
         <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-          No invites sent yet
+          {t('invitedGuestsList.emptyTitle')}
         </p>
         <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-          Invite people by username or email and track their responses here.
+          {t('invitedGuestsList.emptyBody')}
         </p>
         <Button type='button' size='sm' onClick={onInvite} className='mt-4'>
           <UserPlus />
-          Invite guests
+          {t('invitedGuestsList.inviteGuests')}
         </Button>
       </div>
     );
@@ -136,7 +114,7 @@ export function InvitedGuestsList({ eventId, counts, onInvite }: InvitedGuestsLi
 
   return (
     <section
-      aria-label='Invited guests'
+      aria-label={t('invitedGuestsList.sectionLabel')}
       className='overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
     >
       <div className='space-y-3 border-b border-gray-100 p-4 dark:border-neutral-800'>
@@ -146,13 +124,17 @@ export function InvitedGuestsList({ eventId, counts, onInvite }: InvitedGuestsLi
             type='search'
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder='Search invitees...'
-            aria-label='Search invited guests'
+            placeholder={t('invitedGuestsList.searchPlaceholder')}
+            aria-label={t('invitedGuestsList.searchLabel')}
             className='h-10 rounded-xl bg-gray-50 pl-9 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-500'
           />
         </div>
 
-        <div role='tablist' aria-label='Filter invites' className='flex gap-2 overflow-x-auto'>
+        <div
+          role='tablist'
+          aria-label={t('invitedGuestsList.filterLabel')}
+          className='flex gap-2 overflow-x-auto'
+        >
           {FILTERS.map((option) => {
             const isActive = filter === option.id;
 
@@ -170,7 +152,9 @@ export function InvitedGuestsList({ eventId, counts, onInvite }: InvitedGuestsLi
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
                 )}
               >
-                {option.label}
+                {option.id === 'all'
+                  ? tCommon('labels.all')
+                  : t(`invitedGuestsList.status.${option.id}`)}
                 {counts ? (
                   <span
                     className={cn(
@@ -194,10 +178,10 @@ export function InvitedGuestsList({ eventId, counts, onInvite }: InvitedGuestsLi
       ) : error ? (
         <div className='px-4 py-10 text-center'>
           <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-            Couldn&apos;t load invites
+            {t('invitedGuestsList.loadErrorTitle')}
           </p>
           <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-            {getErrorMessage(error) || 'Something went wrong. Please try again.'}
+            {getErrorMessage(error) || t('invitedGuestsList.loadErrorFallback')}
           </p>
           <Button
             type='button'
@@ -208,18 +192,18 @@ export function InvitedGuestsList({ eventId, counts, onInvite }: InvitedGuestsLi
             className='mt-4 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800'
           >
             {isRefetching ? <Loader2 className='animate-spin' /> : null}
-            Try again
+            {tCommon('actions.tryAgain')}
           </Button>
         </div>
       ) : invites.length === 0 ? (
         <div className='px-4 py-10 text-center'>
           <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-            No invites match
+            {t('invitedGuestsList.noMatchTitle')}
           </p>
           <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
             {query || filter === 'all'
-              ? 'Try a different name, username, or email.'
-              : EMPTY_FILTER_COPY[filter]}
+              ? t('invitedGuestsList.noMatchBody')
+              : t(`invitedGuestsList.emptyFilter.${filter}`)}
           </p>
         </div>
       ) : (
@@ -231,12 +215,16 @@ export function InvitedGuestsList({ eventId, counts, onInvite }: InvitedGuestsLi
                 <InviteeAvatar invite={invite} />
                 <div className='min-w-0 flex-1'>
                   <p className='truncate text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                    {getInviteeLabel(invite)}
+                    {getInviteeLabel(invite, t)}
                   </p>
                   <p className='truncate text-xs text-gray-500 dark:text-neutral-400'>
                     {[
-                      getInviteeSublabel(invite),
-                      invite.inviter ? `Invited by ${getPersonName(invite.inviter)}` : '',
+                      getInviteeSublabel(invite, t),
+                      invite.inviter
+                        ? t('invitedGuestsList.invitedBy', {
+                            name: getPersonName(invite.inviter, t),
+                          })
+                        : '',
                     ]
                       .filter(Boolean)
                       .join(' · ')}
@@ -244,7 +232,7 @@ export function InvitedGuestsList({ eventId, counts, onInvite }: InvitedGuestsLi
                   <div className='mt-1.5 flex flex-wrap items-center gap-1.5'>
                     <InviteBadges invite={invite} />
                     <span className='text-xs text-gray-500 dark:text-neutral-400'>
-                      Sent {formatGuestDate(invite.created_at)}
+                      {t('invitedGuestsList.sentOn', { date: formatGuestDate(invite.created_at) })}
                     </span>
                   </div>
                 </div>
@@ -257,22 +245,22 @@ export function InvitedGuestsList({ eventId, counts, onInvite }: InvitedGuestsLi
             <thead className='border-b border-gray-100 text-xs font-medium uppercase tracking-wide text-gray-500 dark:border-neutral-800 dark:text-neutral-400'>
               <tr>
                 <th scope='col' className='px-4 py-2.5 font-medium'>
-                  Invitee
+                  {t('invitedGuestsList.columns.invitee')}
                 </th>
                 <th scope='col' className='px-4 py-2.5 font-medium'>
-                  Invited by
+                  {t('invitedGuestsList.columns.invitedBy')}
                 </th>
                 <th scope='col' className='px-4 py-2.5 font-medium'>
-                  Status
+                  {t('invitedGuestsList.columns.status')}
                 </th>
                 <th scope='col' className='px-4 py-2.5 text-right font-medium'>
-                  Sent
+                  {t('invitedGuestsList.columns.sent')}
                 </th>
               </tr>
             </thead>
             <tbody className='divide-y divide-gray-100 dark:divide-neutral-800'>
               {invites.map((invite) => {
-                const sublabel = getInviteeSublabel(invite);
+                const sublabel = getInviteeSublabel(invite, t);
 
                 return (
                   <tr key={invite.id}>
@@ -281,7 +269,7 @@ export function InvitedGuestsList({ eventId, counts, onInvite }: InvitedGuestsLi
                         <InviteeAvatar invite={invite} />
                         <div className='min-w-0 max-w-[18rem]'>
                           <p className='truncate font-semibold text-gray-900 dark:text-neutral-100'>
-                            {getInviteeLabel(invite)}
+                            {getInviteeLabel(invite, t)}
                           </p>
                           {sublabel ? (
                             <p className='truncate text-xs text-gray-500 dark:text-neutral-400'>
@@ -304,7 +292,7 @@ export function InvitedGuestsList({ eventId, counts, onInvite }: InvitedGuestsLi
                             }}
                           />
                           <span className='max-w-[12rem] truncate text-gray-700 dark:text-neutral-300'>
-                            {getPersonName(invite.inviter)}
+                            {getPersonName(invite.inviter, t)}
                           </span>
                         </div>
                       ) : (
@@ -353,17 +341,26 @@ function InviteeAvatar({ invite }: { invite: EventInviteRecord }) {
 }
 
 function InviteBadges({ invite }: { invite: EventInviteRecord }) {
-  const status = STATUS_BADGES[invite.status];
-  const response = invite.response ? RESPONSE_BADGES[invite.response] : null;
+  const t = useTranslations('manage');
 
   return (
     <>
-      <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', status.className)}>
-        {status.label}
+      <span
+        className={cn(
+          'rounded-full px-2 py-0.5 text-xs font-medium',
+          STATUS_BADGE_CLASSES[invite.status]
+        )}
+      >
+        {t(`invitedGuestsList.status.${invite.status}`)}
       </span>
-      {response ? (
-        <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', response.className)}>
-          {response.label}
+      {invite.response ? (
+        <span
+          className={cn(
+            'rounded-full px-2 py-0.5 text-xs font-medium',
+            RESPONSE_BADGE_CLASSES[invite.response]
+          )}
+        >
+          {t(`invitedGuestsList.response.${invite.response}`)}
         </span>
       ) : null}
     </>
@@ -371,8 +368,10 @@ function InviteBadges({ invite }: { invite: EventInviteRecord }) {
 }
 
 function InvitedGuestsSkeleton() {
+  const t = useTranslations('manage');
+
   return (
-    <div aria-busy='true' aria-label='Loading invites'>
+    <div aria-busy='true' aria-label={t('invitedGuestsList.loadingLabel')}>
       {Array.from({ length: 5 }).map((_, index) => (
         <div
           key={index}

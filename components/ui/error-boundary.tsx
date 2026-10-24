@@ -3,6 +3,7 @@
 import { reportErrorAlert } from '@/lib/observability/error-alert-client';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
+import { useTranslations } from 'next-intl';
 import { Component, ErrorInfo, ReactNode } from 'react';
 interface Props {
   children: ReactNode;
@@ -10,13 +11,24 @@ interface Props {
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
+interface ErrorBoundaryCopy {
+  toast: string;
+  title: string;
+  description: string;
+  tryAgain: string;
+}
+
+interface InnerProps extends Props {
+  copy: ErrorBoundaryCopy;
+}
+
 interface State {
   hasError: boolean;
   error?: Error;
 }
 
-export class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
+class ErrorBoundaryInner extends Component<InnerProps, State> {
+  constructor(props: InnerProps) {
     super(props);
     this.state = { hasError: false };
   }
@@ -48,7 +60,7 @@ export class ErrorBoundary extends Component<Props, State> {
     }
 
     // Show user-friendly error message (existing behavior preserved)
-    toast.error('Something went wrong. Please try again.');
+    toast.error(this.props.copy.toast);
   }
 
   render() {
@@ -60,16 +72,16 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className='flex flex-col items-center justify-center p-6 text-center'>
           <div className='mb-2 text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-            Something went wrong
+            {this.props.copy.title}
           </div>
           <div className='mb-4 text-sm text-gray-600 dark:text-neutral-400'>
-            We&apos;re sorry, but there was an error loading this content.
+            {this.props.copy.description}
           </div>
           <button
             className='rounded-lg bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
             onClick={() => this.setState({ hasError: false, error: undefined })}
           >
-            Try again
+            {this.props.copy.tryAgain}
           </button>
         </div>
       );
@@ -77,6 +89,22 @@ export class ErrorBoundary extends Component<Props, State> {
 
     return this.props.children;
   }
+}
+
+export function ErrorBoundary(props: Props) {
+  const t = useTranslations('zap.errorBoundary');
+  const tCommon = useTranslations('common');
+  return (
+    <ErrorBoundaryInner
+      {...props}
+      copy={{
+        toast: tCommon('toasts.genericError'),
+        title: tCommon('states.error'),
+        description: t('description'),
+        tryAgain: tCommon('actions.tryAgain'),
+      }}
+    />
+  );
 }
 
 /**

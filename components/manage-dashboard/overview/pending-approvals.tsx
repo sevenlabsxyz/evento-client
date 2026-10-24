@@ -14,6 +14,7 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { Check, ChevronRight, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 interface PendingApprovalsProps {
@@ -22,6 +23,8 @@ interface PendingApprovalsProps {
 }
 
 export function PendingApprovals({ eventId, pendingCount }: PendingApprovalsProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
   const queryClient = useQueryClient();
   const { data, isLoading, error } = useRegistrationSubmissions(eventId, {
     status: 'pending',
@@ -41,10 +44,10 @@ export function PendingApprovals({ eventId, pendingCount }: PendingApprovalsProp
     try {
       if (action === 'approve') {
         await approveRegistration.mutateAsync(variables);
-        toast.success(`Approved ${submission.name}`);
+        toast.success(t('pendingApprovals.approvedToast', { name: submission.name }));
       } else {
         await denyRegistration.mutateAsync(variables);
-        toast.success(`Denied ${submission.name}`);
+        toast.success(t('pendingApprovals.deniedToast', { name: submission.name }));
       }
       await queryClient.invalidateQueries({ queryKey: queryKeys.eventDashboard(eventId) });
     } catch (reviewError) {
@@ -53,7 +56,12 @@ export function PendingApprovals({ eventId, pendingCount }: PendingApprovalsProp
         registrationId: submission.id,
         error: reviewError,
       });
-      toast.error(getErrorMessage(reviewError) || `Failed to ${action} registration`);
+      toast.error(
+        getErrorMessage(reviewError) ||
+          (action === 'approve'
+            ? t('pendingApprovals.approveFailed')
+            : t('pendingApprovals.denyFailed'))
+      );
     }
   };
 
@@ -63,7 +71,7 @@ export function PendingApprovals({ eventId, pendingCount }: PendingApprovalsProp
     <section className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
       <div className='mb-3 flex items-center justify-between gap-2'>
         <h2 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-          Pending approvals
+          {t('pendingApprovals.title')}
           <span className='ml-2 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-950/60 dark:text-blue-400'>
             {pendingCount}
           </span>
@@ -72,7 +80,7 @@ export function PendingApprovals({ eventId, pendingCount }: PendingApprovalsProp
           href={submissionsHref}
           className='flex items-center gap-0.5 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-neutral-100'
         >
-          View all
+          {tCommon('actions.viewAll')}
           <ChevronRight className='h-4 w-4' />
         </Link>
       </div>
@@ -91,11 +99,9 @@ export function PendingApprovals({ eventId, pendingCount }: PendingApprovalsProp
           ))}
         </div>
       ) : error ? (
-        <p className='text-sm text-red-600 dark:text-red-400'>
-          Couldn&apos;t load pending registrations.
-        </p>
+        <p className='text-sm text-red-600 dark:text-red-400'>{t('pendingApprovals.loadError')}</p>
       ) : submissions.length === 0 ? (
-        <p className='text-sm text-gray-500 dark:text-neutral-400'>No pending registrations.</p>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('pendingApprovals.empty')}</p>
       ) : (
         <ul className='divide-y divide-gray-100 dark:divide-neutral-800'>
           {submissions.map((submission) => {
@@ -126,7 +132,7 @@ export function PendingApprovals({ eventId, pendingCount }: PendingApprovalsProp
                     className='h-8 w-8 p-0 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800'
                     disabled={busyId !== null}
                     onClick={() => handleReview(submission, 'deny')}
-                    aria-label={`Deny ${submission.name}`}
+                    aria-label={t('pendingApprovals.denyLabel', { name: submission.name })}
                   >
                     <X className='h-4 w-4 text-red-600 dark:text-red-400' />
                   </Button>
@@ -137,7 +143,9 @@ export function PendingApprovals({ eventId, pendingCount }: PendingApprovalsProp
                     onClick={() => handleReview(submission, 'approve')}
                   >
                     <Check className='h-4 w-4' />
-                    {isBusy && approveRegistration.isPending ? 'Approving…' : 'Approve'}
+                    {isBusy && approveRegistration.isPending
+                      ? t('pendingApprovals.approving')
+                      : t('pendingApprovals.approve')}
                   </Button>
                 </div>
               </li>

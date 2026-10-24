@@ -1,1 +1,65 @@
-{}
+{
+  "meta": {
+    "title": "Blog — Evento",
+    "description": "Novidades do produto, guias para anfitriões e histórias da comunidade Evento — a plataforma social para eventos.",
+    "postFallbackTitle": "Post do blog",
+    "postUnavailable": "Não foi possível carregar os detalhes do post",
+    "postFallbackDescription": "Leia este post no blog do Evento."
+  },
+  "topBarTitle": "Blog",
+  "index": {
+    "eyebrow": "Blog do Evento",
+    "title": "Histórias da comunidade Evento",
+    "subtitle": "Novidades do produto, guias para anfitriões e ideias para reunir pessoas.",
+    "storyCount": "{count, plural, one {história} other {histórias}}",
+    "filterLabel": "Filtrar histórias por tema",
+    "allTopics": "Todas",
+    "emptyTitle": "Nenhuma história ainda",
+    "emptyDescription": "Estamos preparando nossos primeiros posts. Volte em breve.",
+    "noStoriesInTag": "Nenhuma história em {tag}",
+    "noStoriesInTopic": "Nenhuma história neste tema",
+    "emptyTopicDescription": "Tente outro tema ou veja tudo o que já publicamos.",
+    "viewAllStories": "Ver todas as histórias",
+    "loadErrorTitle": "Não foi possível carregar o blog",
+    "loadErrorDescription": "Algo deu errado ao carregar as histórias. Tente novamente mais tarde.",
+    "moreInTag": "Mais em {tag}",
+    "moreStories": "Mais histórias"
+  },
+  "card": {
+    "featured": "Destaque",
+    "latest": "Mais recente",
+    "readStory": "Ler história"
+  },
+  "post": {
+    "breadcrumb": "Navegação estrutural",
+    "share": "Compartilhar",
+    "copyLink": "Copiar link",
+    "shareText": "Confira este post do blog: {title}",
+    "shareLinkCopied": "Link do post copiado para a área de transferência!",
+    "shareFailed": "Não foi possível compartilhar o post",
+    "linkCopied": "Link copiado para a área de transferência",
+    "copyFailed": "Não foi possível copiar o link",
+    "tags": "Tags",
+    "enjoyingTitle": "Está gostando deste artigo?",
+    "enjoyingBody": "Envie para alguém que também vai gostar.",
+    "keepReading": "Continue lendo",
+    "allPosts": "Todos os posts",
+    "loadErrorTitle": "Não foi possível carregar este post",
+    "loadErrorMessage": "Falha ao carregar o post. Tente novamente mais tarde.",
+    "backToBlog": "Voltar ao blog",
+    "loading": "Carregando post"
+  },
+  "author": {
+    "aboutLabel": "Sobre o autor",
+    "writtenBy": "Escrito por"
+  },
+  "toc": {
+    "onThisPage": "Nesta página"
+  },
+  "content": {
+    "openImage": "Abrir imagem",
+    "openImageNamed": "Abrir imagem: {alt}",
+    "imagePreview": "Visualização da imagem",
+    "imagePreviewNamed": "Visualização da imagem: {alt}"
+  }
+}

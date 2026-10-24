@@ -3,9 +3,11 @@
 import { Button } from '@/components/ui/button';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { Share, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 
 export default function StatsPage() {
+  const t = useTranslations('misc.stats');
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
 
@@ -78,42 +80,41 @@ export default function StatsPage() {
           size='icon'
           className='absolute right-4 top-4 rounded-full text-white hover:bg-gray-800'
           onClick={() => router.back()}
+          aria-label={t('close')}
         >
           <X className='h-6 w-6' />
         </Button>
 
         {/* Empty State Message */}
         <div className='mt-8 px-6 text-center text-white'>
-          <h1 className='mb-4 text-2xl font-bold'>No events recorded in your stats</h1>
-          <p className='mb-12 text-gray-300 dark:text-neutral-400'>
-            We will calculate it as soon as your next event is completed
-          </p>
+          <h1 className='mb-4 text-2xl font-bold'>{t('emptyTitle')}</h1>
+          <p className='mb-12 text-gray-300 dark:text-neutral-400'>{t('emptyDescription')}</p>
 
           {/* Stats Grid */}
           <div className='mb-8 grid grid-cols-3 gap-8'>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.events}</div>
-              <div className='text-gray-300 dark:text-neutral-400'>Events</div>
+              <div className='text-gray-300 dark:text-neutral-400'>{t('events')}</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.countries}</div>
-              <div className='text-gray-300 dark:text-neutral-400'>Countries</div>
+              <div className='text-gray-300 dark:text-neutral-400'>{t('countries')}</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.cities}</div>
-              <div className='text-gray-300 dark:text-neutral-400'>Cities</div>
+              <div className='text-gray-300 dark:text-neutral-400'>{t('cities')}</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.categories}</div>
-              <div className='text-gray-300 dark:text-neutral-400'>Categories</div>
+              <div className='text-gray-300 dark:text-neutral-400'>{t('categories')}</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.mutuals}</div>
-              <div className='text-gray-300 dark:text-neutral-400'>Mutuals</div>
+              <div className='text-gray-300 dark:text-neutral-400'>{t('mutuals')}</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>0</div>
-              <div className='text-gray-300 dark:text-neutral-400'>Connections</div>
+              <div className='text-gray-300 dark:text-neutral-400'>{t('connections')}</div>
             </div>
           </div>
         </div>
@@ -124,8 +125,8 @@ export default function StatsPage() {
         {/* Total Card */}
         <div className='rounded-2xl bg-white p-6 dark:bg-neutral-900'>
           <div className='mb-6 flex items-center justify-between'>
-            <h2 className='text-2xl font-bold'>Total</h2>
-            <Button variant='ghost' size='icon' className='h-8 w-8'>
+            <h2 className='text-2xl font-bold'>{t('total')}</h2>
+            <Button variant='ghost' size='icon' className='h-8 w-8' aria-label={t('share')}>
               <Share className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
             </Button>
           </div>
@@ -135,13 +136,15 @@ export default function StatsPage() {
               <div className='mb-2 text-6xl font-bold text-indigo-600 dark:text-indigo-400'>
                 {stats.events}
               </div>
-              <div className='font-medium text-indigo-600 dark:text-indigo-400'>Events</div>
+              <div className='font-medium text-indigo-600 dark:text-indigo-400'>{t('events')}</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-6xl font-bold text-gray-400 dark:text-neutral-400'>
                 {stats.mutuals}
               </div>
-              <div className='font-medium text-gray-400 dark:text-neutral-400'>Mutuals Met</div>
+              <div className='font-medium text-gray-400 dark:text-neutral-400'>
+                {t('mutualsMet')}
+              </div>
             </div>
           </div>
 
@@ -149,15 +152,15 @@ export default function StatsPage() {
           <div className='grid grid-cols-3 gap-6'>
             <div className='text-center'>
               <CircularProgress percentage={stats.shared} />
-              <div className='mt-3 font-semibold'>Shared</div>
+              <div className='mt-3 font-semibold'>{t('shared')}</div>
             </div>
             <div className='text-center'>
               <CircularProgress percentage={stats.international} />
-              <div className='mt-3 font-semibold'>International</div>
+              <div className='mt-3 font-semibold'>{t('international')}</div>
             </div>
             <div className='text-center'>
               <CircularProgress percentage={stats.domestic} />
-              <div className='mt-3 font-semibold'>Domestic</div>
+              <div className='mt-3 font-semibold'>{t('domestic')}</div>
             </div>
           </div>
         </div>
@@ -165,8 +168,8 @@ export default function StatsPage() {
         {/* Countries Card */}
         <div className='rounded-2xl bg-white p-6 dark:bg-neutral-900'>
           <div className='mb-6 flex items-center justify-between'>
-            <h2 className='text-2xl font-bold'>Countries</h2>
-            <Button variant='ghost' size='icon' className='h-8 w-8'>
+            <h2 className='text-2xl font-bold'>{t('countries')}</h2>
+            <Button variant='ghost' size='icon' className='h-8 w-8' aria-label={t('share')}>
               <Share className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
             </Button>
           </div>
@@ -177,13 +180,15 @@ export default function StatsPage() {
                 <div className='mb-2 text-5xl font-bold text-red-500 dark:text-red-400'>
                   {stats.countries}
                 </div>
-                <div className='font-medium text-red-500 dark:text-red-400'>Visited</div>
+                <div className='font-medium text-red-500 dark:text-red-400'>{t('visited')}</div>
               </div>
               <div className='text-center'>
                 <div className='mb-2 text-5xl font-bold text-gray-400 dark:text-neutral-400'>
                   249
                 </div>
-                <div className='font-medium text-gray-400 dark:text-neutral-400'>World total</div>
+                <div className='font-medium text-gray-400 dark:text-neutral-400'>
+                  {t('worldTotal')}
+                </div>
               </div>
             </div>
             <div className='text-center'>
@@ -195,20 +200,22 @@ export default function StatsPage() {
           </div>
 
           <div className='mb-6'>
-            <h3 className='mb-4 font-medium text-gray-500 dark:text-neutral-400'>Most visited</h3>
+            <h3 className='mb-4 font-medium text-gray-500 dark:text-neutral-400'>
+              {t('mostVisited')}
+            </h3>
             {/* Empty state for most visited countries */}
           </div>
 
           <Button variant='ghost' className='w-full font-semibold text-red-500 dark:text-red-400'>
-            Show Visited Countries
+            {t('showVisitedCountries')}
           </Button>
         </div>
 
         {/* Event Categories Card */}
         <div className='rounded-2xl bg-white p-6 dark:bg-neutral-900'>
           <div className='mb-6 flex items-center justify-between'>
-            <h2 className='text-2xl font-bold'>Event Categories</h2>
-            <Button variant='ghost' size='icon' className='h-8 w-8'>
+            <h2 className='text-2xl font-bold'>{t('eventCategories')}</h2>
+            <Button variant='ghost' size='icon' className='h-8 w-8' aria-label={t('share')}>
               <Share className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
             </Button>
           </div>
@@ -218,22 +225,22 @@ export default function StatsPage() {
               <div className='mb-2 text-4xl font-bold text-blue-600 dark:text-blue-400'>
                 {stats.categories}
               </div>
-              <div className='font-medium text-blue-600 dark:text-blue-400'>Categories</div>
+              <div className='font-medium text-blue-600 dark:text-blue-400'>{t('categories')}</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold text-green-600 dark:text-green-400'>
                 {stats.mutuals}
               </div>
-              <div className='font-medium text-green-600 dark:text-green-400'>Mutuals</div>
+              <div className='font-medium text-green-600 dark:text-green-400'>{t('mutuals')}</div>
             </div>
           </div>
 
           <div className='mt-6'>
             <h3 className='mb-4 font-medium text-gray-500 dark:text-neutral-400'>
-              Popular categories
+              {t('popularCategories')}
             </h3>
             <div className='text-center text-sm text-gray-400 dark:text-neutral-400'>
-              No event categories yet
+              {t('noCategories')}
             </div>
           </div>
         </div>

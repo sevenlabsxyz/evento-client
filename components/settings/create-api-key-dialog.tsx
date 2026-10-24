@@ -1,7 +1,5 @@
 'use client';
 
-'use client';
-
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -17,6 +15,7 @@ import { useCreateApiKey } from '@/lib/hooks/use-api-keys';
 import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
 import { Check, Copy } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface CreateApiKeyDialogProps {
@@ -25,6 +24,8 @@ interface CreateApiKeyDialogProps {
 }
 
 export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogProps) {
+  const t = useTranslations('settings');
+  const tCommon = useTranslations('common');
   const MotionButton = motion(Button);
   const [name, setName] = useState('');
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
@@ -45,19 +46,19 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
     e.preventDefault();
 
     if (!name.trim()) {
-      toast.error('Please enter a name for your API key');
+      toast.error(t('createApiKey.nameRequired'));
       return;
     }
 
     try {
       const result = await createApiKey.mutateAsync({ name: name.trim() });
       setGeneratedKey(result.key);
-      toast.success('API key created successfully');
+      toast.success(t('createApiKey.success'));
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to create API key');
+        toast.error(t('createApiKey.failed'));
       }
     }
   };
@@ -68,12 +69,12 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
     try {
       await navigator.clipboard.writeText(generatedKey);
       setCopied(true);
-      toast.success('API key copied to clipboard');
+      toast.success(t('createApiKey.copied'));
 
       // Reset copied state after 2 seconds
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      toast.error('Failed to copy API key');
+      toast.error(t('createApiKey.copyFailed'));
     }
   };
 
@@ -87,19 +88,17 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
         {!generatedKey ? (
           <>
             <DialogHeader>
-              <DialogTitle>Create API Key</DialogTitle>
-              <DialogDescription>
-                Give your API key a descriptive name to help you identify it later.
-              </DialogDescription>
+              <DialogTitle>{t('createApiKey.title')}</DialogTitle>
+              <DialogDescription>{t('createApiKey.description')}</DialogDescription>
             </DialogHeader>
 
             <form onSubmit={handleSubmit}>
               <div className='space-y-4 py-4'>
                 <div className='space-y-2'>
-                  <Label htmlFor='name'>Name *</Label>
+                  <Label htmlFor='name'>{t('createApiKey.nameLabel')}</Label>
                   <Input
                     id='name'
-                    placeholder='e.g., Production API Key'
+                    placeholder={t('createApiKey.namePlaceholder')}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     maxLength={50}
@@ -108,7 +107,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                     className='dark:focus-visible:ring-offset-neutral-900'
                   />
                   <p className='text-xs text-gray-500 dark:text-neutral-400'>
-                    Maximum 50 characters
+                    {t('createApiKey.nameHint', { max: 50 })}
                   </p>
                 </div>
               </div>
@@ -120,14 +119,14 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                   onClick={handleClose}
                   disabled={createApiKey.isPending}
                 >
-                  Cancel
+                  {tCommon('actions.cancel')}
                 </Button>
                 <Button
                   type='submit'
                   disabled={!name.trim() || createApiKey.isPending}
                   className='bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 >
-                  {createApiKey.isPending ? 'Creating...' : 'Create Key'}
+                  {createApiKey.isPending ? t('createApiKey.creating') : t('createApiKey.submit')}
                 </Button>
               </DialogFooter>
             </form>
@@ -135,18 +134,18 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>API Key Created</DialogTitle>
+              <DialogTitle>{t('createApiKey.createdTitle')}</DialogTitle>
               <DialogDescription className='space-y-2'>
-                <span className='block'>Your API key has been created successfully.</span>
+                <span className='block'>{t('createApiKey.createdDescription')}</span>
                 <span className='block font-semibold text-red-600 dark:text-red-400'>
-                  Make sure to copy it now. You won&apos;t be able to see it again!
+                  {t('createApiKey.copyNow')}
                 </span>
               </DialogDescription>
             </DialogHeader>
 
             <div className='space-y-4 py-4'>
               <div className='space-y-2'>
-                <Label htmlFor='api-key'>API Key</Label>
+                <Label htmlFor='api-key'>{t('createApiKey.keyLabel')}</Label>
                 <div className='relative'>
                   <Input
                     id='api-key'
@@ -160,6 +159,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                     variant='ghost'
                     onClick={handleCopy}
                     whileTap={{ scale: 1 }}
+                    aria-label={t('createApiKey.copyKey')}
                     className='absolute right-0 top-0 h-full w-10 origin-center rounded-l-none rounded-r-md'
                   >
                     {copied ? (
@@ -173,8 +173,9 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
 
               <div className='rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/40'>
                 <p className='text-sm text-red-800 dark:text-red-400'>
-                  <strong>Important:</strong> Store this API key securely. It will not be shown
-                  again after you close this dialog.
+                  {t.rich('createApiKey.storeSecurely', {
+                    strong: (chunks) => <strong>{chunks}</strong>,
+                  })}
                 </p>
               </div>
             </div>
@@ -184,7 +185,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                 onClick={handleClose}
                 className='bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
-                I&apos;ve Saved My Key
+                {t('createApiKey.savedKey')}
               </Button>
             </DialogFooter>
           </>

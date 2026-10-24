@@ -3,6 +3,7 @@
 import { EventWithUser } from '@/lib/types/api';
 import { buildSubEventCalendar } from '@/lib/utils/sub-event-calendar';
 import { CalendarDays, PlusIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { EventCompactItem } from '../event-compact-item';
@@ -29,6 +30,8 @@ export default function EventSubEvents({
   subEventsLoading,
   subEventsError,
 }: EventSubEventsProps) {
+  const t = useTranslations('event');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -50,14 +53,14 @@ export default function EventSubEvents({
 
   return (
     <EventSection
-      title='Sub-events'
+      title={t('subEvents.title')}
       variant='plain'
       action={
         <>
           {hasCalendar && !subEventsLoading && (
             <Button type='button' variant='outline' size='sm' onClick={() => setCalendarOpen(true)}>
               <CalendarDays className='h-4 w-4' />
-              View Calendar
+              {t('subEvents.viewCalendar')}
             </Button>
           )}
           {isHost && (
@@ -65,7 +68,7 @@ export default function EventSubEvents({
               variant='secondary'
               size='icon'
               className='h-9 w-9'
-              aria-label='Manage sub events'
+              aria-label={t('subEvents.manage')}
               onClick={() => router.push(`/e/${eventId}/manage/sub-events`)}
             >
               <PlusIcon className='h-4 w-4' />
@@ -115,13 +118,13 @@ export default function EventSubEvents({
                 className='h-10 w-full rounded-xl bg-gray-50 dark:bg-neutral-800'
                 onClick={() => setIsExpanded((expanded) => !expanded)}
               >
-                {isExpanded ? 'Show less' : 'View all'}
+                {isExpanded ? tCommon('actions.showLess') : tCommon('actions.viewAll')}
               </Button>
             )}
           </div>
         ) : (
           <div className='rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-6 text-center dark:border-neutral-800 dark:bg-neutral-800/40'>
-            <p className='text-sm text-gray-500 dark:text-neutral-500'>No sub-events yet.</p>
+            <p className='text-sm text-gray-500 dark:text-neutral-500'>{t('subEvents.empty')}</p>
           </div>
         )}
       </div>

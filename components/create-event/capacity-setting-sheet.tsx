@@ -1,4 +1,5 @@
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface CapacitySettingSheetProps {
@@ -14,18 +15,20 @@ export default function CapacitySettingSheet({
   onSave,
   initialCapacity = '',
 }: CapacitySettingSheetProps) {
+  const t = useTranslations('createEvent');
+  const tCommon = useTranslations('common');
   const [capacity, setCapacity] = useState(initialCapacity);
   const [error, setError] = useState('');
 
   const handleSave = () => {
     if (!capacity.trim()) {
-      setError('Please enter a capacity number');
+      setError(t('capacity.required'));
       return;
     }
 
     const num = parseInt(capacity.trim());
     if (isNaN(num) || num <= 0) {
-      setError('Please enter a valid number greater than 0');
+      setError(t('capacity.invalid'));
       return;
     }
 
@@ -67,14 +70,14 @@ export default function CapacitySettingSheet({
                     onClick={handleClose}
                     className='font-medium text-red-500 dark:text-red-400'
                   >
-                    Cancel
+                    {tCommon('actions.cancel')}
                   </button>
-                  <h2 className='text-lg font-semibold'>Set Event Capacity</h2>
+                  <h2 className='text-lg font-semibold'>{t('capacity.title')}</h2>
                   <button
                     onClick={handleSave}
                     className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white dark:bg-red-600'
                   >
-                    Save
+                    {tCommon('actions.save')}
                   </button>
                 </div>
               </div>
@@ -83,7 +86,7 @@ export default function CapacitySettingSheet({
               <div className='space-y-4'>
                 <div className='space-y-2'>
                   <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                    Maximum number of attendees
+                    {t('capacity.label')}
                   </label>
 
                   {/* Quick select buttons */}
@@ -110,7 +113,7 @@ export default function CapacitySettingSheet({
                       setCapacity(e.target.value);
                       setError('');
                     }}
-                    placeholder='Enter capacity'
+                    placeholder={t('capacity.placeholder')}
                     className='w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                     min='1'
                     autoFocus

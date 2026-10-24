@@ -2,6 +2,7 @@
 
 import { EventDetail } from '@/lib/types/event';
 import { sanitizeRichText } from '@/lib/utils/sanitize';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { EventSection } from './event-section';
@@ -11,6 +12,8 @@ interface EventDescriptionProps {
 }
 
 export default function EventDescription({ event }: EventDescriptionProps) {
+  const t = useTranslations('event');
+  const tCommon = useTranslations('common');
   const [expanded, setExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
   // Sanitized after mount: DOMPurify can't run during SSR (no window), so raw
@@ -46,7 +49,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
   if (!event.description || event.description === '<p></p>') return null;
 
   return (
-    <EventSection title='About'>
+    <EventSection title={t('description.title')}>
       {/* Description with collapsible behavior */}
       <div className='space-y-4'>
         <div className='relative'>
@@ -75,7 +78,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
               onClick={() => setExpanded(true)}
               className='h-10 w-full rounded-xl bg-gray-50 dark:bg-neutral-800'
             >
-              Read more
+              {tCommon('actions.readMore')}
             </Button>
           </div>
         )}
@@ -89,7 +92,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
               onClick={() => setExpanded(false)}
               className='h-10 w-full rounded-xl bg-gray-50 dark:bg-neutral-800'
             >
-              Show less
+              {tCommon('actions.showLess')}
             </Button>
           </div>
         )}

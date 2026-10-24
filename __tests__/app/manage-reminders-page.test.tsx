@@ -1,6 +1,6 @@
 import EventRemindersPage from '@/app/e/[id]/manage/reminders/page';
 import {
-  FOURTH_REMINDER_ERROR,
+  getFourthReminderError,
   useEventReminders,
   useUpdateEventReminders,
 } from '@/lib/hooks/use-event-reminders';
@@ -108,7 +108,7 @@ describe('EventRemindersPage', () => {
 
     fireEvent.click(screen.getByLabelText('3 days before'));
 
-    expect(mockToast.error).toHaveBeenCalledWith(FOURTH_REMINDER_ERROR);
+    expect(mockToast.error).toHaveBeenCalledWith(getFourthReminderError());
     expect(screen.getByLabelText('3 days before')).toHaveAttribute('aria-checked', 'false');
   });
 

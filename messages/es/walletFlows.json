@@ -1,1 +1,289 @@
-{}
+{
+  "sendLightningSheet": {
+    "toasts": {
+      "enterInvoice": "Ingresa una factura o dirección Lightning",
+      "noSupportedBip21Method": "No se encontró un método de pago compatible en la URI BIP21",
+      "unsupportedPaymentType": "Tipo de pago no compatible",
+      "minimumAmount": "El monto mínimo es {amount} sats",
+      "maximumAmount": "El monto máximo es {amount} sats",
+      "unknownInputType": "No se pudo preparar el pago: tipo de entrada desconocido",
+      "paymentSent": "¡Pago enviado!",
+      "sendFailed": "No se pudo enviar el pago",
+      "scannerUnavailable": "Escáner de QR no disponible"
+    },
+    "confirmTitle": "Confirmar pago",
+    "sendingToBitcoinAddress": "Enviando a dirección Bitcoin",
+    "sendingTo": "Enviando a",
+    "description": "Descripción",
+    "comment": "Comentario",
+    "mode": "Modo",
+    "sendAll": "Enviar todo",
+    "speed": "Velocidad",
+    "speeds": {
+      "slow": "lenta",
+      "medium": "media",
+      "fast": "rápida"
+    },
+    "speedEta": {
+      "slow": "~1 hora",
+      "medium": "~30 minutos",
+      "fast": "~10 minutos"
+    },
+    "networkFee": "Comisión de red",
+    "recipientReceives": "El destinatario recibe",
+    "total": "Total",
+    "irreversibleWarning": "Este pago no se puede revertir. Verifica los detalles antes de confirmar.",
+    "sending": "Enviando...",
+    "processingPayment": "Procesando pago...",
+    "inputPlaceholder": "Factura Lightning, dirección Lightning o dirección onchain",
+    "validating": "Validando...",
+    "invoiceDetected": "Factura detectada",
+    "scanQrCode": "Escanear código QR",
+    "loading": "Cargando...",
+    "contacts": "Contactos",
+    "selectFee": "Seleccionar comisión",
+    "feeSpeedHint": "Elige la velocidad de tu transacción Bitcoin. Las velocidades más rápidas tienen comisiones más altas.",
+    "feeLabel": "comisión",
+    "feeBreakdown": "Desglose de comisiones ({speed})",
+    "networkFeeLine": "Comisión de red:",
+    "swapServiceFeeLine": "Comisión del servicio de swap:",
+    "totalFeeLine": "Comisión total:",
+    "addComment": "Agregar comentario",
+    "commentPlaceholder": "Agrega un comentario (máx. {max} caracteres)",
+    "optionalMessage": "Mensaje opcional",
+    "preparing": "Preparando...",
+    "stablecoin": "Stablecoin",
+    "chainLabel": "Red {chainId}",
+    "stablecoinTransfer": "Transferencia de stablecoin",
+    "stablecoinNotReadyTitle": "Los envíos de stablecoin aún no están disponibles",
+    "stablecoinNotReadyBody": "Evento reconoció esta dirección como una dirección de stablecoin cross-chain, pero el envío de USDT o USDC desde la billetera aún no está disponible.",
+    "detectedAddress": "Dirección detectada",
+    "stablecoinRequirements": "Necesitamos selección de ruta, vencimiento de cotización, visualización de comisiones y confirmación de slippage antes de poder enviarlo de forma segura.",
+    "enterDifferentAddress": "Ingresar otra dirección",
+    "srTitle": "Enviar pago"
+  },
+  "scanQrSheet": {
+    "clipboardEmpty": "El portapapeles está vacío",
+    "clipboardUnavailable": "No se pudo acceder al portapapeles. Pega manualmente.",
+    "title": "Escanear código QR",
+    "closeScanner": "Cerrar escáner",
+    "pasteFromClipboard": "Pegar del portapapeles",
+    "pasting": "Pegando...",
+    "paste": "Pegar",
+    "instructions": "Apunta tu cámara a un código QR",
+    "supportedFormats": "QR de pago Lightning, LNURL o Bitcoin"
+  },
+  "amountInputSheet": {
+    "title": "Ingresa el monto",
+    "wholeNumber": "Ingresa un número entero de sats",
+    "minimum": "Mínimo: {amount, number} sats",
+    "maximum": "Máximo: {amount, number} sats",
+    "range": "Rango: {min, number} - {max, number} sats",
+    "satsAmount": "{amount, number} sats",
+    "convert": "Convertir",
+    "sendAll": "Enviar todo ({amount, number} sats)",
+    "preparing": "Preparando...",
+    "next": "Siguiente"
+  },
+  "receiveInvoiceSheet": {
+    "title": "Recibir",
+    "onchain": "Onchain",
+    "generateAddressFailed": "No se pudo generar la dirección Bitcoin",
+    "createInvoiceFailed": "No se pudo crear la factura",
+    "copiedToClipboard": "Copiado al portapapeles",
+    "copyFailed": "No se pudo copiar",
+    "paymentReceived": "¡Pago recibido!",
+    "successfullyReceived": "Recibiste {amount, number} sats correctamente",
+    "satsAmount": "{amount, number} sats",
+    "registeringAddress": "Registrando tu dirección Lightning...",
+    "mayTakeMoments": "Esto puede tardar unos momentos",
+    "lightningInvoice": "Factura Lightning",
+    "lightningAddress": "Dirección Lightning",
+    "invoiceCopied": "¡Factura copiada!",
+    "addressCopied": "¡Dirección copiada!",
+    "usdAndSats": "US${usd} · {amount, number} sats",
+    "receiveAnyAmount": "Recibir cualquier monto",
+    "addAmount": "Agregar monto",
+    "generatingAddress": "Generando dirección Bitcoin...",
+    "bitcoinAddress": "Dirección Bitcoin",
+    "tryAgain": "Intentar de nuevo"
+  },
+  "receiveLnurlWithdrawSheet": {
+    "title": "Recibir Bitcoin",
+    "missingDetails": "Faltan los detalles del retiro LNURL",
+    "withdrawFailed": "El retiro falló",
+    "receiveFailed": "No se pudieron recibir los fondos",
+    "chooseAmount": "Elegir monto",
+    "receiving": "Recibiendo...",
+    "confirmAndReceive": "Confirmar y recibir",
+    "bitcoinReceived": "Bitcoin recibido",
+    "satsArrived": "Tus sats llegaron a tu billetera Evento.",
+    "satsAmount": "{amount, number} sats",
+    "description": "Descripción",
+    "receiveFunds": "Recibir fondos",
+    "amount": "Monto",
+    "minimum": "Mínimo",
+    "maximum": "Máximo",
+    "fromProvider": "de {provider}"
+  },
+  "addContactSheet": {
+    "title": "Agregar contacto",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Nombre del contacto",
+    "addressLabel": "Dirección Lightning",
+    "addressHint": "Ingresa una dirección Lightning con el formato usuario@dominio (p. ej., alice@evento.cash)",
+    "saving": "Guardando...",
+    "submit": "Guardar contacto",
+    "errors": {
+      "nameRequired": "El nombre es obligatorio",
+      "nameTooLong": "El nombre debe tener menos de 50 caracteres",
+      "addressRequired": "La dirección Lightning es obligatoria",
+      "addressInvalid": "La dirección Lightning debe tener el formato usuario@dominio",
+      "duplicate": "Ya existe un contacto con esta dirección Lightning"
+    }
+  },
+  "editContactSheet": {
+    "title": "Editar contacto",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Nombre del contacto",
+    "addressLabel": "Dirección Lightning",
+    "addressHint": "Ingresa una dirección Lightning con el formato usuario@dominio",
+    "saving": "Guardando...",
+    "submit": "Guardar cambios",
+    "errors": {
+      "nameRequired": "El nombre es obligatorio",
+      "nameTooLong": "El nombre debe tener menos de 50 caracteres",
+      "addressRequired": "La dirección Lightning es obligatoria",
+      "addressInvalid": "La dirección Lightning debe tener el formato usuario@dominio",
+      "duplicate": "Ya existe un contacto con esta dirección Lightning"
+    }
+  },
+  "contactActionsSheet": {
+    "title": "Opciones del contacto",
+    "edit": "Editar contacto",
+    "remove": "Eliminar contacto de la billetera",
+    "removeConfirm": "¿Seguro que quieres eliminar `{name}` de los contactos de tu billetera? Esta acción no se puede deshacer.",
+    "removing": "Eliminando..."
+  },
+  "contactAutocomplete": {
+    "placeholder": "Buscar contactos...",
+    "empty": "No se encontraron contactos",
+    "heading": "Contactos"
+  },
+  "contactItem": {
+    "editAria": "Editar contacto",
+    "deleteAria": "Eliminar contacto"
+  },
+  "contactsList": {
+    "emptyTitle": "Aún no tienes contactos",
+    "emptyDescription": "Agrega contactos para enviar pagos rápidamente a amigos y familiares",
+    "addContact": "Agregar contacto"
+  },
+  "saveContactPrompt": {
+    "title": "¿Guardar a {name} como contacto?",
+    "description": "Agrega {address} a tus contactos para facilitar pagos futuros.",
+    "save": "Guardar",
+    "skip": "Omitir"
+  },
+  "bitrefillPaymentConfirmationSheet": {
+    "errors": {
+      "parseInvoice": "No se pudo leer la factura",
+      "paymentFailed": "El pago falló"
+    },
+    "backupRequired": {
+      "title": "Respaldo requerido",
+      "description": "Te recomendamos respaldar tu billetera antes de hacer tu primer pago. Si pierdes el acceso a tu dispositivo, necesitarás tu respaldo para recuperar tus fondos.",
+      "goBack": "Volver y respaldar",
+      "continueWithout": "Continuar sin respaldo"
+    },
+    "processing": "Procesando...",
+    "title": "Confirmar compra",
+    "sats": "{amount} sats",
+    "amount": "Monto",
+    "networkFee": "Comisión de red",
+    "total": "Total",
+    "insufficientBalance": "Saldo insuficiente. Necesitas {required} sats, pero solo tienes {balance} sats.",
+    "irreversibleWarning": "Los pagos Lightning son instantáneos e irreversibles. Verifica el monto antes de confirmar.",
+    "pay": "Pagar {amount} sats",
+    "confirmPayment": "Confirmar pago"
+  },
+  "bitrefillPaymentStatusSheet": {
+    "processing": {
+      "title": "Procesando pago",
+      "message": "Tu pago se está procesando. Esto suele tardar solo unos segundos."
+    },
+    "success": {
+      "title": "¡Compra completada!",
+      "allDelivered": "Tu tarjeta de regalo se entregó correctamente. Las instrucciones se enviaron a tu correo, pero también puedes leerlas ahora haciendo clic abajo.",
+      "partialDelivery": "Algunos artículos se entregaron. Consulta Bitrefill para más detalles sobre los artículos restantes.",
+      "deliveryIssue": "Hubo un problema con la entrega. Se procesará un reembolso automáticamente.",
+      "default": "Tu pago se realizó correctamente. Tu compra se entregará en breve."
+    },
+    "error": {
+      "title": "El pago falló",
+      "refund": "No pudimos completar tu compra. No te preocupes: se procesará un reembolso automáticamente a tu billetera.",
+      "generic": "Algo salió mal con tu pago. Inténtalo de nuevo o contacta a soporte si el problema persiste."
+    }
+  },
+  "speedUpSheet": {
+    "title": "Acelerar",
+    "incoming": "Tienes <strong>{amount} sats</strong> en camino",
+    "youWillReceive": "Recibirás <strong>{amount} sats</strong>",
+    "speeds": {
+      "fast": "Rápido",
+      "normal": "Normal",
+      "slow": "Lento",
+      "custom": "Personalizado"
+    },
+    "eta": {
+      "fast": "~10 minutos",
+      "normal": "~1 hora",
+      "slow": "~12 horas"
+    },
+    "optionDetail": "{eta} • comisión de ~{fee} sats",
+    "optionDetailLoading": "{eta} • ...",
+    "customDescription": "Define tu propia tarifa",
+    "feeRateLabel": "Tarifa (sat/vbyte)",
+    "feeRatePlaceholder": "Ingresa la tarifa",
+    "estimatedFee": "Comisión estimada: ~{amount} sats",
+    "currentRates": "Tarifas actuales de la red",
+    "processing": "Procesando..."
+  },
+  "btcConverterSheet": {
+    "usdCopied": "¡Valor en USD copiado!",
+    "btcCopied": "¡Valor en BTC copiado!",
+    "satsCopied": "¡Valor en sats copiado!",
+    "currentPrice": "Precio actual del BTC",
+    "loadingPrice": "Cargando precio del BTC...",
+    "satsLabel": "Satoshis (sats)"
+  },
+  "earnBitcoinSheet": {
+    "title": "Gana Bitcoin",
+    "howItWorks": "Cómo funciona",
+    "step1": "Usa una app asociada para ganar Bitcoin",
+    "step2": "Envía tus ganancias a <strong>{address}</strong>",
+    "step3": "Úsalo dentro de Evento"
+  },
+  "buySellBitcoinSheet": {
+    "enterAmountToBuy": "Ingresa un monto para comprar",
+    "unlockWalletFirst": "Desbloquea tu billetera primero",
+    "cashAppStartFailed": "No se pudo iniciar la compra en Cash App",
+    "titleBuy": "Comprar Bitcoin",
+    "titleBuySell": "Comprar/Vender Bitcoin",
+    "cashAppDescription": "Compra Bitcoin en Cash App y envíalo a tu billetera de Evento.",
+    "amount": "Monto",
+    "estimatingSats": "Estimando sats...",
+    "estimatedSats": "Estimado: {sats, number} sats",
+    "enterUsdAmount": "Ingresa un monto en USD para estimar los sats.",
+    "preparingCashApp": "Preparando Cash App",
+    "openCashApp": "Abrir Cash App",
+    "continueToCashApp": "Continuar a Cash App",
+    "availableInRegion": "Disponible en tu región",
+    "detectingLocation": "Detectando tu ubicación...",
+    "noRegionalExchanges": "No hay exchanges regionales disponibles para tu ubicación.",
+    "global": "Global"
+  },
+  "spendBitcoinSheet": {
+    "title": "Gasta Bitcoin"
+  }
+}

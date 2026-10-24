@@ -1,1 +1,140 @@
-{}
+{
+  "search": {
+    "topBarTitle": "Search",
+    "heading": "Find Evento Users",
+    "subheading": "Search by username or name",
+    "placeholder": "Search for users...",
+    "searchAsYouType": "Search as you type",
+    "searching": "Searching...",
+    "resultCount": "{count, plural, one {# result} other {# results}}",
+    "noResults": "No results",
+    "noUsersFound": "No users found",
+    "noUsersMatching": "No users matching \"{query}\""
+  },
+  "feed": {
+    "topBarTitle": "Feed",
+    "switchToCompact": "Switch to compact view",
+    "switchToCard": "Switch to card view",
+    "searchEvents": "Search events",
+    "removedFromSaved": "Event removed from saved!",
+    "savedTo": "Event saved to \"{list}\"!",
+    "sort": "Sort",
+    "newestFirst": "Newest first",
+    "oldestFirst": "Oldest first",
+    "cardView": "Card",
+    "listView": "List",
+    "loadError": "Failed to load events. Please try again.",
+    "emptyTitle": "No events in your feed yet",
+    "emptyDescription": "Follow other users or create your first event to see updates here",
+    "saveToList": "Save to List",
+    "defaultList": "Default",
+    "searchPlaceholder": "Search events, people, places...",
+    "resultsFor": "Results for \"{query}\"",
+    "noResultsFor": "No results found for \"{query}\"",
+    "recent": "Recent",
+    "clearAll": "Clear all",
+    "suggestions": "Suggestions",
+    "trending": "Trending",
+    "suggested": {
+      "weekend": "Events this weekend",
+      "nearMe": "Events near me",
+      "popular": "Popular events",
+      "upcoming": "Upcoming events"
+    }
+  },
+  "contact": {
+    "topBarTitle": "Help & Support",
+    "requiredFields": "Please fill in all required fields",
+    "sent": "Message sent successfully! We'll get back to you soon.",
+    "sendFailed": "Failed to send message. Please try again.",
+    "subject": "Subject *",
+    "subjectPlaceholder": "What's this about?",
+    "message": "Message *",
+    "messagePlaceholder": "Tell us more about your issue or question...",
+    "sending": "Sending...",
+    "send": "Send Message"
+  },
+  "stats": {
+    "emptyTitle": "No events recorded in your stats",
+    "emptyDescription": "We will calculate it as soon as your next event is completed",
+    "events": "Events",
+    "countries": "Countries",
+    "cities": "Cities",
+    "categories": "Categories",
+    "mutuals": "Mutuals",
+    "connections": "Connections",
+    "total": "Total",
+    "mutualsMet": "Mutuals Met",
+    "shared": "Shared",
+    "international": "International",
+    "domestic": "Domestic",
+    "visited": "Visited",
+    "worldTotal": "World total",
+    "mostVisited": "Most visited",
+    "showVisitedCountries": "Show Visited Countries",
+    "eventCategories": "Event Categories",
+    "popularCategories": "Popular categories",
+    "noCategories": "No event categories yet",
+    "close": "Close",
+    "share": "Share"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again.",
+    "tryAgain": "Try again"
+  },
+  "legal": {
+    "titles": {
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
+    },
+    "metaTitle": "{title} | Evento",
+    "dates": "Effective date: {effective} | Last updated: {updated}",
+    "tableOfContents": "Table of contents",
+    "englishOnly": "This document is provided in English.",
+    "links": {
+      "terms": "Read Terms of Service",
+      "privacy": "Read Privacy Policy",
+      "security": "Read Security overview"
+    }
+  },
+  "eventCard": {
+    "postedBy": "Posted by @{username} {time}",
+    "shareEvent": "Share Event",
+    "copyLink": "Copy Link",
+    "viewProfile": "View Profile",
+    "shareText": "Check out this event: {title}",
+    "linkCopied": "Link copied to clipboard!"
+  },
+  "eventCompactItem": {
+    "viewEvent": "View {title}"
+  },
+  "masterEventCard": {
+    "byHost": "by <strong>@{name}</strong>",
+    "capacity": "Capacity {count}"
+  },
+  "eventSearchSheet": {
+    "title": "Events",
+    "placeholder": "Search events",
+    "tabs": {
+      "all": "All",
+      "attending": "Attending",
+      "hosting": "Hosting",
+      "drafts": "Drafts"
+    },
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "latest": "Latest",
+    "oldest": "Oldest",
+    "loadError": "Failed to load events",
+    "noMatch": "No events found matching \"{query}\"",
+    "emptyByFilter": {
+      "upcoming": "No upcoming events found",
+      "attending": "No attending events found",
+      "hosting": "No hosting events found",
+      "drafts": "No drafts events found"
+    },
+    "loading": "Loading...",
+    "loadMore": "Load more"
+  }
+}

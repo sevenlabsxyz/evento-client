@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
@@ -163,11 +164,12 @@ export function InterestsSelector({
   categories,
   initialSelectedInterests = [],
   onChange,
-  mainTitle = 'Select your interests.',
+  mainTitle,
   hideTitle = false,
   className = 'bg-white dark:bg-neutral-900',
   contentClassName = 'mx-auto max-w-[570px]',
 }: InterestsSelectorProps) {
+  const t = useTranslations('zap.ui');
   const [selectedItems, setSelectedItems] = useState<string[]>(
     Array.from(new Set(initialSelectedInterests))
   );
@@ -191,7 +193,7 @@ export function InterestsSelector({
     <div className={className}>
       {!hideTitle && (
         <h1 className='mb-6 text-left text-2xl font-bold text-gray-900 dark:text-neutral-100 md:text-center'>
-          {mainTitle}
+          {mainTitle ?? t('selectInterests')}
         </h1>
       )}
       <div className={contentClassName}>

@@ -1,6 +1,8 @@
 'use client';
 
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { ArrowRight, Check, Clock, Loader2, X } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';
@@ -22,6 +24,8 @@ interface EventCreatedModalProps {
 }
 
 export default function EventCreatedModal({ isOpen, onClose, eventData }: EventCreatedModalProps) {
+  const t = useTranslations('createEvent');
+  const intlLocale = getIntlLocale(useLocale());
   const router = useRouter();
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -30,7 +34,7 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
   if (!isOpen) return null;
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(intlLocale, {
       month: 'short',
       day: '2-digit',
       year: 'numeric',
@@ -79,7 +83,7 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
 
           {/* Title */}
           <h1 className='mb-4 text-2xl font-medium text-gray-500 dark:text-neutral-400'>
-            {isDraft ? 'Draft Created!' : 'Event Created!'}
+            {isDraft ? t('created.draftTitle') : t('created.eventTitle')}
           </h1>
 
           {/* Event Name */}
@@ -89,7 +93,7 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
 
           {isDraft && (
             <p className='mb-8 max-w-sm text-base text-gray-600 dark:text-neutral-400'>
-              Great work. Next up, complete setup and publish when you are ready.
+              {t('created.draftHint')}
             </p>
           )}
 
@@ -97,7 +101,10 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
           <div className='mb-16 flex items-center gap-2 text-gray-500 dark:text-neutral-400'>
             <Clock className='h-5 w-5' />
             <span className='text-lg'>
-              {formatDate(eventData.date)} at {formatTime(eventData.time)} PDT
+              {t('created.dateTime', {
+                date: formatDate(eventData.date),
+                time: formatTime(eventData.time),
+              })}
             </span>
           </div>
 
@@ -109,8 +116,9 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
               className='h-14 w-full rounded-full text-lg'
             >
               {isNavigating
-                ? 'Opening...'
-                : eventData.ctaLabel || (isDraft ? 'Continue Setup' : 'View Event Page')}
+                ? t('created.opening')
+                : eventData.ctaLabel ||
+                  (isDraft ? t('created.continueSetup') : t('created.viewEventPage'))}
               {isNavigating ? (
                 <Loader2 className='ml-2 h-4 w-4 animate-spin' />
               ) : (
@@ -124,7 +132,7 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
                 disabled={isNavigating}
                 className='w-full py-4 text-lg font-medium text-gray-500 dark:text-neutral-400'
               >
-                Invite Guests
+                {t('created.inviteGuests')}
               </button>
             )}
           </div>

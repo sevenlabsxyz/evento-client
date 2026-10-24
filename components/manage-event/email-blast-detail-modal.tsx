@@ -2,9 +2,11 @@
 
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { EmailBlast } from '@/lib/types/api';
 import { sanitizeRichText } from '@/lib/utils/sanitize';
 import { AlertCircle, CheckCircle, Users, XCircle } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface EmailBlastDetailModalProps {
@@ -24,6 +26,9 @@ export default function EmailBlastDetailModal({
   onCancelRequested,
   isCancelling = false,
 }: EmailBlastDetailModalProps) {
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
+  const locale = useLocale();
   // Sanitized after mount: DOMPurify can't run during SSR (no window), so raw
   // HTML must never reach dangerouslySetInnerHTML on the server. Empty until
   // the effect below replaces it with the sanitized value.
@@ -37,7 +42,7 @@ export default function EmailBlastDetailModal({
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(getIntlLocale(locale), {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -72,17 +77,36 @@ export default function EmailBlastDetailModal({
       ? Math.round(((blast.delivered ?? 0) / (blast.recipientCount ?? 0)) * 100)
       : 0;
 
-  const statusLabel = blast.status.charAt(0).toUpperCase() + blast.status.slice(1);
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'scheduled':
+        return t('emailBlast.status.scheduled');
+      case 'sending':
+        return t('emailBlast.status.sending');
+      case 'completed':
+        return t('emailBlast.status.completed');
+      case 'failed':
+        return t('emailBlast.status.failed');
+      case 'cancelled':
+        return t('emailBlast.status.cancelled');
+      case 'draft':
+        return t('emailBlast.status.draft');
+      default:
+        return status.charAt(0).toUpperCase() + status.slice(1);
+    }
+  };
+
+  const statusLabel = getStatusLabel(blast.status);
   const scheduleLabel =
     blast.status === 'scheduled' && blast.scheduled_for
       ? formatDate(blast.scheduled_for)
-      : 'Send as soon as possible';
+      : t('emailBlast.sendAsap');
   const canEditOrCancel = blast.status === 'scheduled';
   const isSendingInProgress = blast.status === 'sending';
 
   return (
     <MasterScrollableSheet
-      title='Email Blast Details'
+      title={t('emailBlast.detail.title')}
       open={isOpen}
       onOpenChange={(open) => !open && onClose()}
       contentClassName='p-6'
@@ -90,7 +114,7 @@ export default function EmailBlastDetailModal({
         canEditOrCancel ? (
           <div className='grid grid-cols-2 gap-3 border-t border-gray-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
             <Button type='button' variant='outline' onClick={() => onEditRequested?.(blast)}>
-              Edit
+              {tCommon('actions.edit')}
             </Button>
             <Button
               type='button'
@@ -98,12 +122,12 @@ export default function EmailBlastDetailModal({
               onClick={() => onCancelRequested?.(blast)}
               disabled={isCancelling}
             >
-              {isCancelling ? 'Cancelling...' : 'Cancel'}
+              {isCancelling ? t('emailBlast.cancelling') : tCommon('actions.cancel')}
             </Button>
           </div>
         ) : isSendingInProgress ? (
           <div className='border-t border-gray-100 bg-white p-4 text-center text-sm text-gray-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400'>
-            Sending in progress
+            {t('emailBlast.detail.sendingInProgress')}
           </div>
         ) : undefined
       }
@@ -121,15 +145,15 @@ export default function EmailBlastDetailModal({
         <div className='rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
           <div className='border-b border-gray-100 px-4 py-3 dark:border-neutral-800'>
             <p className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-              Title
+              {t('emailBlast.detail.titleLabel')}
             </p>
             <p className='mt-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-              {blast.subject || 'No subject'}
+              {blast.subject || t('emailBlast.noSubject')}
             </p>
           </div>
           <div className='border-b border-gray-100 px-4 py-3 dark:border-neutral-800'>
             <p className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-              Scheduled For Sending
+              {t('emailBlast.detail.scheduledForSending')}
             </p>
             <p className='mt-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
               {scheduleLabel}
@@ -137,7 +161,7 @@ export default function EmailBlastDetailModal({
           </div>
           <div className='border-b border-gray-100 px-4 py-3 dark:border-neutral-800'>
             <p className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-              Created
+              {t('emailBlast.detail.created')}
             </p>
             <p className='mt-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
               {formatDate(blast.created_at)}
@@ -145,7 +169,7 @@ export default function EmailBlastDetailModal({
           </div>
           <div className='px-4 py-3'>
             <p className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-              ID
+              {t('emailBlast.detail.id')}
             </p>
             <p className='mt-1 break-all text-base font-semibold text-gray-900 dark:text-neutral-100'>
               {blast.id}
@@ -158,14 +182,15 @@ export default function EmailBlastDetailModal({
       <div className='mb-6'>
         <h4 className='mb-3 flex items-center gap-2 font-semibold text-gray-900 dark:text-neutral-100'>
           <Users className='h-4 w-4' />
-          Recipients
+          {t('emailBlast.detail.recipients')}
         </h4>
         <div className='rounded-lg bg-gray-50 p-4 dark:bg-neutral-950'>
           <p className='mb-2 text-sm text-gray-700 dark:text-neutral-300'>
-            <strong>Target:</strong> {blast.recipients || 'All Recipients'}
+            <strong>{t('emailBlast.detail.target')}</strong>{' '}
+            {blast.recipients || t('emailBlast.detail.allRecipients')}
           </p>
           <p className='text-sm text-gray-700 dark:text-neutral-300'>
-            <strong>Total Recipients:</strong> {blast.recipientCount ?? 0}
+            <strong>{t('emailBlast.detail.totalRecipients')}</strong> {blast.recipientCount ?? 0}
           </p>
         </div>
       </div>
@@ -173,14 +198,14 @@ export default function EmailBlastDetailModal({
       {/* Delivery Statistics */}
       <div className='mb-6'>
         <h4 className='mb-3 font-semibold text-gray-900 dark:text-neutral-100'>
-          Delivery Statistics
+          {t('emailBlast.detail.deliveryStatistics')}
         </h4>
         <div className='mb-4 grid grid-cols-2 gap-4'>
           <div className='rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-950/40'>
             <div className='mb-1 flex items-center gap-2'>
               <CheckCircle className='h-4 w-4 text-green-600 dark:text-green-400' />
               <span className='text-sm font-medium text-green-900 dark:text-green-400'>
-                Delivered
+                {t('emailBlast.status.delivered')}
               </span>
             </div>
             <p className='text-2xl font-bold text-green-600 dark:text-green-400'>
@@ -192,7 +217,9 @@ export default function EmailBlastDetailModal({
             <div className='rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/40'>
               <div className='mb-1 flex items-center gap-2'>
                 <XCircle className='h-4 w-4 text-red-600 dark:text-red-400' />
-                <span className='text-sm font-medium text-red-900 dark:text-red-400'>Failed</span>
+                <span className='text-sm font-medium text-red-900 dark:text-red-400'>
+                  {t('emailBlast.status.failed')}
+                </span>
               </div>
               <p className='text-2xl font-bold text-red-600 dark:text-red-400'>
                 {blast.failed ?? 0}
@@ -205,7 +232,7 @@ export default function EmailBlastDetailModal({
               <div className='mb-1 flex items-center gap-2'>
                 <AlertCircle className='h-4 w-4 text-yellow-600 dark:text-yellow-400' />
                 <span className='text-sm font-medium text-yellow-900 dark:text-yellow-400'>
-                  Pending
+                  {t('emailBlast.status.pending')}
                 </span>
               </div>
               <p className='text-2xl font-bold text-yellow-600 dark:text-yellow-400'>
@@ -218,7 +245,7 @@ export default function EmailBlastDetailModal({
         <div className='rounded-lg bg-gray-50 p-4 dark:bg-neutral-950'>
           <div className='mb-2 flex items-center justify-between'>
             <span className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-              Delivery Rate
+              {t('emailBlast.detail.deliveryRate')}
             </span>
             <span className='text-sm font-bold text-gray-900 dark:text-neutral-100'>
               {deliveryRate}%
@@ -235,7 +262,9 @@ export default function EmailBlastDetailModal({
 
       {/* Message Preview */}
       <div className='mb-6'>
-        <h4 className='mb-3 font-semibold text-gray-900 dark:text-neutral-100'>Message</h4>
+        <h4 className='mb-3 font-semibold text-gray-900 dark:text-neutral-100'>
+          {t('emailBlast.detail.message')}
+        </h4>
         <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
           <div
             className='prose prose-sm max-w-none text-gray-700 dark:text-neutral-300'

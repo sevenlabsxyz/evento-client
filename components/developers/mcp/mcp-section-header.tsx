@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
 interface McpSectionHeaderProps {
@@ -52,6 +53,8 @@ interface McpDocsLinkProps {
 
 /** Quiet external link to a docs page, used in section headers and cards. */
 export function McpDocsLink({ href, children }: McpDocsLinkProps) {
+  const t = useTranslations('developers.mcp');
+
   return (
     <a
       href={href}
@@ -61,7 +64,7 @@ export function McpDocsLink({ href, children }: McpDocsLinkProps) {
     >
       {children}
       <span aria-hidden='true'>↗</span>
-      <span className='sr-only'>(opens in a new tab)</span>
+      <span className='sr-only'>{t('opensInNewTab')}</span>
     </a>
   );
 }

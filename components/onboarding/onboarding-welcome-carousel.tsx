@@ -5,40 +5,39 @@ import type { CarouselApi } from '@/components/ui/carousel';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Calendar, Sparkles, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface CarouselSlide {
   icon: React.ReactNode;
-  title: string;
-  description: string;
+  titleKey: 'discoverTitle' | 'walletTitle' | 'connectTitle';
+  descriptionKey: 'discoverDescription' | 'walletDescription' | 'connectDescription';
   color: string;
 }
 
 const slides: CarouselSlide[] = [
   {
     icon: <Calendar className='h-16 w-16' />,
-    title: 'Discover Amazing Events',
-    description:
-      "Find and attend events that match your interests. From concerts to conferences, discover what's happening around you.",
+    titleKey: 'discoverTitle',
+    descriptionKey: 'discoverDescription',
     color: 'text-blue-600 dark:text-blue-400',
   },
   {
     icon: <Zap className='h-16 w-16' />,
-    title: 'Built-in Lightning Wallet',
-    description:
-      'Send and receive Bitcoin instantly with your built-in Lightning wallet. Pay for tickets, tip creators, and manage your funds seamlessly.',
+    titleKey: 'walletTitle',
+    descriptionKey: 'walletDescription',
     color: 'text-orange-600 dark:text-orange-400',
   },
   {
     icon: <Sparkles className='h-16 w-16' />,
-    title: 'Connect & Share',
-    description:
-      'Connect with friends, share your experiences, and build your community. Evento brings people together through shared experiences.',
+    titleKey: 'connectTitle',
+    descriptionKey: 'connectDescription',
     color: 'text-purple-600 dark:text-purple-400',
   },
 ];
 
 export const OnboardingWelcomeCarousel = () => {
+  const t = useTranslations('onboarding.welcome');
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
@@ -71,9 +70,9 @@ export const OnboardingWelcomeCarousel = () => {
     >
       <div className='mb-6 text-center'>
         <h2 className='mb-2 text-3xl font-bold text-gray-900 dark:text-neutral-100'>
-          Welcome to Evento!
+          {t('title')}
         </h2>
-        <p className='text-gray-600 dark:text-neutral-400'>Here&apos;s what you can do</p>
+        <p className='text-gray-600 dark:text-neutral-400'>{t('subtitle')}</p>
       </div>
 
       {/* Navigation Arrows */}
@@ -98,10 +97,10 @@ export const OnboardingWelcomeCarousel = () => {
               <div className='flex flex-col items-center rounded-2xl bg-gradient-to-br from-gray-50 to-white p-8 shadow-sm dark:from-neutral-950 dark:to-neutral-900 dark:ring-1 dark:ring-neutral-800'>
                 <div className={`mb-6 ${slide.color}`}>{slide.icon}</div>
                 <h3 className='mb-4 text-center text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-                  {slide.title}
+                  {t(slide.titleKey)}
                 </h3>
                 <p className='text-center leading-relaxed text-gray-600 dark:text-neutral-400'>
-                  {slide.description}
+                  {t(slide.descriptionKey)}
                 </p>
               </div>
             </CarouselItem>
@@ -120,14 +119,14 @@ export const OnboardingWelcomeCarousel = () => {
                 ? 'w-8 bg-red-600'
                 : 'w-2 bg-gray-300 hover:bg-gray-400 dark:bg-neutral-600 dark:hover:bg-neutral-500'
             }`}
-            aria-label={`Go to slide ${index + 1}`}
+            aria-label={t('goToSlide', { number: index + 1 })}
           />
         ))}
       </div>
 
       {/* Progress Text */}
       <div className='mt-4 text-sm text-gray-500 dark:text-neutral-400'>
-        {currentSlide + 1} of {slides.length}
+        {t('progress', { current: currentSlide + 1, total: slides.length })}
       </div>
     </motion.div>
   );

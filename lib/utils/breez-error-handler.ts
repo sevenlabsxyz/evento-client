@@ -1,3 +1,4 @@
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { logger } from '@/lib/utils/logger';
 
 /**
@@ -78,169 +79,138 @@ export interface BreezErrorInfo {
   category: 'network' | 'payment' | 'balance' | 'validation' | 'provider' | 'unknown';
 }
 
+type BreezMessageKey = Exclude<keyof IntlMessages['hooks']['breez'], 'contexts'>;
+type BreezContextKey = keyof IntlMessages['hooks']['breez']['contexts'];
+
 /**
  * Error message dictionary for common Breez SDK errors
- * Maps error patterns to user-friendly messages
+ * Maps error patterns to user-friendly message keys (`hooks.breez.*`)
  */
 const ERROR_MESSAGES: Record<
   string,
   {
-    message: string;
+    messageKey: BreezMessageKey;
     category: BreezErrorInfo['category'];
     shouldRetry: boolean;
   }
 > = {
   // Network/Connection errors
-  network: {
-    message: 'Network connection issue. Please check your internet and try again.',
-    category: 'network',
-    shouldRetry: true,
-  },
-  timeout: {
-    message: 'Request timed out. Please try again.',
-    category: 'network',
-    shouldRetry: true,
-  },
-  connection: {
-    message: 'Unable to connect to the Lightning network. Please try again later.',
-    category: 'network',
-    shouldRetry: true,
-  },
-  offline: {
-    message: 'You appear to be offline. Please check your internet connection.',
-    category: 'network',
-    shouldRetry: true,
-  },
+  network: { messageKey: 'network', category: 'network', shouldRetry: true },
+  timeout: { messageKey: 'timeout', category: 'network', shouldRetry: true },
+  connection: { messageKey: 'connection', category: 'network', shouldRetry: true },
+  offline: { messageKey: 'offline', category: 'network', shouldRetry: true },
 
   // Payment errors
-  insufficient: {
-    message: 'Insufficient balance to complete this payment.',
-    category: 'balance',
-    shouldRetry: false,
-  },
-  'invoice expired': {
-    message: 'This invoice has expired. Please request a new one.',
-    category: 'payment',
-    shouldRetry: false,
-  },
+  insufficient: { messageKey: 'insufficient', category: 'balance', shouldRetry: false },
+  'invoice expired': { messageKey: 'invoiceExpired', category: 'payment', shouldRetry: false },
   'invoice already paid': {
-    message: 'This invoice has already been paid.',
+    messageKey: 'invoiceAlreadyPaid',
     category: 'payment',
     shouldRetry: false,
   },
-  'payment failed': {
-    message: 'Payment failed. Please try again or contact support if the issue persists.',
-    category: 'payment',
-    shouldRetry: true,
-  },
-  'no route': {
-    message: 'Unable to find a payment route. The recipient may be offline or unreachable.',
-    category: 'payment',
-    shouldRetry: true,
-  },
-  'route not found': {
-    message: 'Unable to find a payment route. Please try again later.',
-    category: 'payment',
-    shouldRetry: true,
-  },
-  'amount too low': {
-    message: 'Payment amount is too low. Please increase the amount.',
-    category: 'validation',
-    shouldRetry: false,
-  },
-  'amount too high': {
-    message: 'Payment amount exceeds the maximum allowed. Please reduce the amount.',
-    category: 'validation',
-    shouldRetry: false,
-  },
+  'payment failed': { messageKey: 'paymentFailed', category: 'payment', shouldRetry: true },
+  'no route': { messageKey: 'noRoute', category: 'payment', shouldRetry: true },
+  'route not found': { messageKey: 'routeNotFound', category: 'payment', shouldRetry: true },
+  'amount too low': { messageKey: 'amountTooLow', category: 'validation', shouldRetry: false },
+  'amount too high': { messageKey: 'amountTooHigh', category: 'validation', shouldRetry: false },
   'amount out of range': {
-    message: 'Payment amount is outside the acceptable range.',
+    messageKey: 'amountOutOfRange',
     category: 'validation',
     shouldRetry: false,
   },
 
   // Validation errors
-  invalid: {
-    message: 'Invalid input. Please check your entry and try again.',
-    category: 'validation',
-    shouldRetry: false,
-  },
-  malformed: {
-    message: 'Invalid format. Please check your entry and try again.',
-    category: 'validation',
-    shouldRetry: false,
-  },
-  'not found': {
-    message: 'Resource not found. Please verify the information and try again.',
-    category: 'validation',
-    shouldRetry: false,
-  },
+  invalid: { messageKey: 'invalidInput', category: 'validation', shouldRetry: false },
+  malformed: { messageKey: 'malformed', category: 'validation', shouldRetry: false },
+  'not found': { messageKey: 'notFound', category: 'validation', shouldRetry: false },
 
   // Provider/SDK errors
   'sdk not connected': {
-    message: 'Wallet not connected. Please unlock your wallet and try again.',
+    messageKey: 'sdkNotConnected',
     category: 'provider',
     shouldRetry: false,
   },
   'sdk initialization': {
-    message: 'Wallet initialization failed. Please refresh the page and try again.',
+    messageKey: 'sdkInitialization',
     category: 'provider',
     shouldRetry: true,
   },
-  breez: {
-    message: 'Our payment provider reported an error. Please try again later.',
-    category: 'provider',
-    shouldRetry: true,
-  },
-  spark: {
-    message: 'Our payment provider reported an error. Please try again later.',
-    category: 'provider',
-    shouldRetry: true,
-  },
-  provider: {
-    message: 'Our payment provider reported an error. Please try again later.',
-    category: 'provider',
-    shouldRetry: true,
-  },
+  breez: { messageKey: 'provider', category: 'provider', shouldRetry: true },
+  spark: { messageKey: 'provider', category: 'provider', shouldRetry: true },
+  provider: { messageKey: 'provider', category: 'provider', shouldRetry: true },
   'service unavailable': {
-    message: 'Service temporarily unavailable. Please try again in a few moments.',
+    messageKey: 'serviceUnavailable',
     category: 'provider',
     shouldRetry: true,
   },
-  'rate limit': {
-    message: 'Too many requests. Please wait a moment and try again.',
-    category: 'provider',
-    shouldRetry: true,
-  },
+  'rate limit': { messageKey: 'rateLimit', category: 'provider', shouldRetry: true },
 
   // Lightning address errors
   'lightning address': {
-    message: 'Invalid Lightning address. Please check the address and try again.',
+    messageKey: 'invalidLightningAddress',
     category: 'validation',
     shouldRetry: false,
   },
   'address not available': {
-    message: 'This Lightning address is already taken. Please choose a different one.',
+    messageKey: 'lightningAddressTaken',
     category: 'validation',
     shouldRetry: false,
   },
   'address unavailable': {
-    message: 'This Lightning address is already taken. Please choose a different one.',
+    messageKey: 'lightningAddressTaken',
     category: 'validation',
     shouldRetry: false,
   },
 
   // Deposit/claim errors
-  'fee too high': {
-    message: 'Transaction fee is too high. Please try again later when fees are lower.',
-    category: 'payment',
-    shouldRetry: true,
-  },
-  'claim failed': {
-    message: 'Failed to claim deposit. Please try again or contact support.',
-    category: 'payment',
-    shouldRetry: true,
-  },
+  'fee too high': { messageKey: 'feeTooHigh', category: 'payment', shouldRetry: true },
+  'claim failed': { messageKey: 'claimFailed', category: 'payment', shouldRetry: true },
+};
+
+/**
+ * Caller-supplied contexts (`getBreezErrorMessage(err, '<context>')`) mapped
+ * to full translated sentences (`hooks.breez.contexts.*`). English text is
+ * `Failed to <context>. Please try again.`; unknown contexts fall back to the
+ * generic `hooks.breez.unexpected` message.
+ */
+const CONTEXT_MESSAGES: Record<string, BreezContextKey> = {
+  'create invoice': 'createInvoice',
+  'prepare payment': 'preparePayment',
+  'send payment': 'sendPayment',
+  'fetch payment history': 'fetchPaymentHistory',
+  'send zap': 'sendZap',
+  'load Lightning address': 'loadLightningAddress',
+  'check Lightning address availability': 'checkLightningAddressAvailability',
+  'register Lightning address': 'registerLightningAddress',
+  'delete Lightning address': 'deleteLightningAddress',
+  'list contacts': 'listContacts',
+  'add contact': 'addContact',
+  'update contact': 'updateContact',
+  'delete contact': 'deleteContact',
+  'create wallet': 'createWallet',
+  'restore wallet': 'restoreWallet',
+  'unlock wallet': 'unlockWallet',
+  'lock wallet': 'lockWallet',
+  'refresh balance': 'refreshBalance',
+  'connect to wallet': 'connectToWallet',
+  'disconnect wallet': 'disconnectWallet',
+  'fetch balance': 'fetchBalance',
+  'generate payment method': 'generatePaymentMethod',
+  'wait for payment': 'waitForPayment',
+  'prepare send-all payment': 'prepareSendAllPayment',
+  'parse input': 'parseInput',
+  'prepare Lightning address payment': 'prepareLightningAddressPayment',
+  'send Lightning address payment': 'sendLightningAddressPayment',
+  'receive LNURL withdraw': 'receiveLnurlWithdraw',
+  'fetch wallet info': 'fetchWalletInfo',
+  'fetch Lightning address': 'fetchLightningAddress',
+  'fetch unclaimed deposits': 'fetchUnclaimedDeposits',
+  'claim deposit': 'claimDeposit',
+  'refund deposit': 'refundDeposit',
+  'start Cash App purchase': 'startCashAppPurchase',
+  'parse payment input': 'parsePaymentInput',
+  'prepare Bitcoin payment': 'prepareBitcoinPayment',
+  'load incoming funds': 'loadIncomingFunds',
 };
 
 /**
@@ -309,7 +279,7 @@ export function handleBreezError(error: any, context?: string): BreezErrorInfo {
 
   if (match) {
     return {
-      userMessage: match.message,
+      userMessage: translateHooks(`breez.${match.messageKey}`),
       originalError,
       shouldRetry: match.shouldRetry,
       category: match.category,
@@ -319,7 +289,7 @@ export function handleBreezError(error: any, context?: string): BreezErrorInfo {
   // If it's a recognized SDK error but no specific match, use generic provider message
   if (isSdkError) {
     return {
-      userMessage: 'Our payment provider reported an error. Please try again later.',
+      userMessage: translateHooks('breez.provider'),
       originalError,
       shouldRetry: true,
       category: 'provider',
@@ -328,9 +298,10 @@ export function handleBreezError(error: any, context?: string): BreezErrorInfo {
 
   // For non-SDK errors, return a generic message
   return {
-    userMessage: context
-      ? `Failed to ${context}. Please try again.`
-      : 'An unexpected error occurred. Please try again.',
+    userMessage:
+      context && CONTEXT_MESSAGES[context]
+        ? translateHooks(`breez.contexts.${CONTEXT_MESSAGES[context]}`)
+        : translateHooks('breez.unexpected'),
     originalError,
     shouldRetry: true,
     category: 'unknown',

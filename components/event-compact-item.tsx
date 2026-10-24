@@ -13,6 +13,7 @@ import {
   Pin,
   PinOff,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import type { KeyboardEvent } from 'react';
 import { Button } from './ui/button';
@@ -41,6 +42,7 @@ export function EventCompactItem({
   onPin,
   onMenuClick,
 }: EventCompactItemProps) {
+  const t = useTranslations('misc.eventCompactItem');
   const router = useRouter();
   const { date, timeWithTz } = formatEventDateFromParts({
     year: event.start_date_year,
@@ -68,7 +70,7 @@ export function EventCompactItem({
       className='group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:hover:bg-neutral-800'
       role={variant === 'sub-event' ? 'link' : undefined}
       tabIndex={variant === 'sub-event' ? 0 : undefined}
-      aria-label={variant === 'sub-event' ? `View ${event.title}` : undefined}
+      aria-label={variant === 'sub-event' ? t('viewEvent', { title: event.title }) : undefined}
       onClick={handleEventClick}
       onKeyDown={handleEventKeyDown}
     >

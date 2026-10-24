@@ -10,6 +10,7 @@ import { useEventComments } from '@/lib/hooks/use-event-comments';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { ImageIcon, MessageCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -18,6 +19,7 @@ type ModerationTab = 'comments' | 'photos';
 const TABS: ModerationTab[] = ['comments', 'photos'];
 
 export default function EventModerationPage() {
+  const t = useTranslations('manage');
   const params = useParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -32,7 +34,7 @@ export default function EventModerationPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Comments & photos',
+      title: t('moderationPage.title'),
       leftMode: 'back',
       centerMode: 'title',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
@@ -44,21 +46,21 @@ export default function EventModerationPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
+  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute, t]);
 
   const commentCount = commentsLoading ? null : countComments(comments ?? []);
   const photoCount = photosLoading ? null : (photos?.length ?? 0);
   const formatTabTitle = (label: string, count: number | null) =>
-    count === null ? label : `${label} (${count})`;
+    count === null ? label : t('moderationPage.tabWithCount', { label, count });
 
   return (
     <div className='space-y-4 py-4 md:py-6'>
       <div>
         <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-          Comments &amp; photos
+          {t('moderationPage.title')}
         </h2>
         <p className='text-sm text-gray-500 dark:text-neutral-400'>
-          Review what guests post on your event page and remove anything that doesn&apos;t belong.
+          {t('moderationPage.description')}
         </p>
       </div>
 
@@ -67,12 +69,12 @@ export default function EventModerationPage() {
           expanded
           tabs={[
             {
-              title: formatTabTitle('Comments', commentCount),
+              title: formatTabTitle(t('moderationPage.comments'), commentCount),
               icon: MessageCircle,
               onClick: () => setActiveTab('comments'),
             },
             {
-              title: formatTabTitle('Photos', photoCount),
+              title: formatTabTitle(t('moderationPage.photos'), photoCount),
               icon: ImageIcon,
               onClick: () => setActiveTab('photos'),
             },

@@ -10,6 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useTranslations } from 'next-intl';
 
 interface EmailBlastCancelConfirmationProps {
   open: boolean;
@@ -24,23 +25,26 @@ export default function EmailBlastCancelConfirmation({
   onConfirm,
   isCancelling,
 }: EmailBlastCancelConfirmationProps) {
+  const t = useTranslations('manageLegacy');
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Cancel scheduled blast?</AlertDialogTitle>
+          <AlertDialogTitle>{t('emailBlast.cancelDialog.title')}</AlertDialogTitle>
           <AlertDialogDescription>
-            This will cancel the scheduled blast and it will not be sent.
+            {t('emailBlast.cancelDialog.description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isCancelling}>Keep Scheduled</AlertDialogCancel>
+          <AlertDialogCancel disabled={isCancelling}>
+            {t('emailBlast.cancelDialog.keep')}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             disabled={isCancelling}
             className='bg-red-600 hover:bg-red-700 focus:ring-red-600 dark:text-white'
           >
-            {isCancelling ? 'Cancelling...' : 'Cancel Blast'}
+            {isCancelling ? t('emailBlast.cancelling') : t('emailBlast.cancelDialog.confirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

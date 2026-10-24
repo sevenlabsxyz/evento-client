@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
 import { ArrowRightLeft, Bitcoin, ShoppingCart, Star } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type QuickTool = {
   id: 'converter' | 'buy-sell' | 'spend' | 'earn';
-  label: string;
+  labelKey: 'buySell' | 'spend' | 'earn' | 'converter';
   icon: React.ElementType;
   iconBg: string;
   iconColor: string;
@@ -12,28 +13,28 @@ type QuickTool = {
 const quickTools: QuickTool[] = [
   {
     id: 'buy-sell',
-    label: 'Buy / Sell',
+    labelKey: 'buySell',
     icon: Bitcoin,
     iconBg: 'bg-gray-50 dark:bg-neutral-950',
     iconColor: 'text-gray-600 dark:text-neutral-400',
   },
   {
     id: 'spend',
-    label: 'Spend',
+    labelKey: 'spend',
     icon: ShoppingCart,
     iconBg: 'bg-gray-50 dark:bg-neutral-950',
     iconColor: 'text-gray-600 dark:text-neutral-400',
   },
   {
     id: 'earn',
-    label: 'Earn',
+    labelKey: 'earn',
     icon: Star,
     iconBg: 'bg-gray-50 dark:bg-neutral-950',
     iconColor: 'text-gray-600 dark:text-neutral-400',
   },
   {
     id: 'converter',
-    label: 'Converter',
+    labelKey: 'converter',
     icon: ArrowRightLeft,
     iconBg: 'bg-gray-50 dark:bg-neutral-950',
     iconColor: 'text-gray-600 dark:text-neutral-400',
@@ -45,16 +46,17 @@ type QuickToolsSectionProps = {
   buySellLabel?: string;
 };
 
-export function QuickToolsSection({
-  onToolClick,
-  buySellLabel = 'Buy / Sell',
-}: QuickToolsSectionProps) {
+export function QuickToolsSection({ onToolClick, buySellLabel }: QuickToolsSectionProps) {
+  const t = useTranslations('wallet');
   return (
     <div className='space-y-3 pb-4 pt-2 md:pb-0'>
       <div className='grid grid-cols-4 gap-1'>
         {quickTools.map((tool) => {
           const Icon = tool.icon;
-          const label = tool.id === 'buy-sell' ? buySellLabel : tool.label;
+          const label =
+            tool.id === 'buy-sell' && buySellLabel
+              ? buySellLabel
+              : t(`quickTools.${tool.labelKey}`);
 
           return (
             <div

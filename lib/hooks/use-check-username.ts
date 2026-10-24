@@ -1,6 +1,7 @@
 import { apiClient } from '@/lib/api/client';
 import { ApiResponse } from '@/lib/types/api';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface UsernameCheckResponse {
   available: boolean;
@@ -11,6 +12,7 @@ interface UsernameCheckResponse {
  * Hook to check username availability
  */
 export function useCheckUsername() {
+  const t = useTranslations('hooks');
   return useMutation({
     mutationFn: async (username: string) => {
       // Clean username
@@ -20,21 +22,21 @@ export function useCheckUsername() {
       if (cleanUsername.length < 3) {
         return {
           available: false,
-          message: 'Username must be at least 3 characters',
+          message: t('username.tooShort'),
         };
       }
 
       if (cleanUsername.length > 20) {
         return {
           available: false,
-          message: 'Username must be less than 20 characters',
+          message: t('username.tooLong'),
         };
       }
 
       if (!/^[a-zA-Z0-9_]+$/.test(cleanUsername)) {
         return {
           available: false,
-          message: 'Username can only contain letters, numbers, and underscores',
+          message: t('username.invalidChars'),
         };
       }
 
@@ -53,7 +55,7 @@ export function useCheckUsername() {
         // For other errors, assume username is not available
         return {
           available: false,
-          message: 'Unable to check username availability',
+          message: t('username.checkFailed'),
         };
       }
     },

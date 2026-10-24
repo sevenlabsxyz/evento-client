@@ -1,1 +1,461 @@
-{}
+{
+  "copy": {
+    "copiedToClipboard": "{label} copiado para a área de transferência",
+    "copyFailed": "Falha ao copiar",
+    "copiedAria": "{label} copiado",
+    "copyAria": "Copiar {label}"
+  },
+  "mcp": {
+    "meta": {
+      "title": "Servidor MCP — Evento",
+      "description": "Conecte o Evento ao Claude Desktop, Cursor, OpenClaw e outros clientes MCP. Liste os eventos de um usuário e consulte detalhes de eventos pelo seu agente de IA com o servidor MCP público do Evento."
+    },
+    "opensInNewTab": "(abre em uma nova aba)",
+    "setupGuide": "Guia de configuração",
+    "createApiKey": "Criar uma chave de API",
+    "required": "Obrigatório",
+    "optional": "Opcional",
+    "terminal": "Terminal",
+    "hero": {
+      "title": "Conecte o Evento ao seu agente favorito",
+      "description": "O servidor MCP público do Evento permite que o Claude Desktop, o Cursor e outros clientes MCP listem os eventos de um usuário e consultem todos os detalhes de um evento — pela API pública autenticada do Evento, usando sua própria chave de API.",
+      "viewTools": "Ver ferramentas",
+      "highlights": {
+        "local": "Roda localmente via stdio",
+        "apiKey": "Sua chave de API em cada requisição",
+        "tools": "2 ferramentas públicas",
+        "anyClient": "Funciona com qualquer cliente MCP stdio"
+      }
+    },
+    "cta": {
+      "title": "Leve seus eventos para o seu agente",
+      "description": "Gere uma chave de API, compile o servidor e consulte eventos do Evento direto do seu agente."
+    },
+    "flow": {
+      "eyebrow": "Como funciona",
+      "title": "Uma ponte leve entre seu agente e o Evento",
+      "description": "O servidor é um adaptador MCP via stdio. Ele transforma chamadas de ferramentas em requisições autenticadas à API pública — sem nenhuma camada MCP hospedada no meio.",
+      "architecture": "Arquitetura",
+      "eachCall": "O que acontece em cada chamada",
+      "nodes": {
+        "client": {
+          "kicker": "Cliente MCP",
+          "title": "Seu agente",
+          "detail": "Claude Desktop, Cursor ou qualquer cliente compatível com servidores stdio."
+        },
+        "server": {
+          "kicker": "Roda na sua máquina",
+          "title": "Servidor MCP do Evento",
+          "detail": "Valida os argumentos das ferramentas, injeta sua chave de API, faz novas tentativas e normaliza as respostas."
+        },
+        "api": {
+          "kicker": "Autenticada",
+          "title": "API pública do Evento",
+          "detail": "Cada ferramenta corresponde a uma rota /public/v1. Sem acesso direto ao banco de dados, nada é armazenado."
+        }
+      },
+      "connectors": {
+        "stdio": "stdio · tools/call",
+        "apiRequest": "Requisição à API + sua chave"
+      },
+      "steps": {
+        "list": "Seu cliente chama tools/list e o servidor retorna as ferramentas do Evento.",
+        "call": "Seu cliente chama tools/call com o nome de uma ferramenta e os argumentos.",
+        "validate": "O executor valida os argumentos e preenche os parâmetros da rota.",
+        "request": "Ele envia uma requisição autenticada à API com tempo limite e política de novas tentativas.",
+        "normalize": "A resposta de sucesso ou erro é normalizada de volta em uma resposta MCP."
+      }
+    },
+    "setup": {
+      "eyebrow": "Configuração",
+      "title": "Funcionando em dois passos",
+      "description": "Compile o servidor uma vez e aponte qualquer cliente MCP compatível com stdio para ele.",
+      "quickstart": "Início rápido",
+      "requirementsLabel": "Requisitos",
+      "requirements": {
+        "node": "Node.js 18+",
+        "npm": "npm",
+        "apiKey": "Chave de API de desenvolvedor do Evento",
+        "stdioClient": "Qualquer cliente MCP compatível com stdio"
+      },
+      "build": {
+        "title": "Compile o servidor",
+        "description": "Clone e compile, depois defina <code>PUBLIC_API_KEY</code> no <code>.env</code>. Execute <code>npm start</code> para iniciá-lo sozinho.",
+        "copyLabel": "Comandos de instalação",
+        "environment": "Ambiente"
+      },
+      "connect": {
+        "title": "Conecte seu cliente",
+        "description": "Os clientes MCP usam o mesmo bloco de servidor; o OpenClaw usa a skill do Evento."
+      }
+    },
+    "clients": {
+      "chooseClient": "Escolha seu cliente MCP",
+      "bestPractices": {
+        "absolutePath": "Use um caminho absoluto em args",
+        "localEnv": "Mantenha PUBLIC_API_KEY na configuração env local do cliente",
+        "restart": "Reinicie o cliente após alterar a configuração"
+      },
+      "claudeDesktop": {
+        "label": "Claude Desktop",
+        "target": "claude_desktop_config.json",
+        "copyLabel": "Configuração do Claude Desktop",
+        "docsLabel": "Documentação de configuração do cliente",
+        "steps": {
+          "s1": "Adicione o bloco do servidor ao claude_desktop_config.json.",
+          "s2": "Aponte args para o caminho absoluto de dist/index.js e defina PUBLIC_API_KEY.",
+          "s3": "Salve e reinicie o Claude Desktop."
+        }
+      },
+      "cursor": {
+        "label": "Cursor",
+        "target": "Configurações MCP do Cursor",
+        "copyLabel": "Configuração do Cursor",
+        "docsLabel": "Documentação de configuração do cliente",
+        "steps": {
+          "s1": "Adicione o mesmo bloco de servidor nas configurações MCP do Cursor.",
+          "s2": "Aponte args para o caminho absoluto de dist/index.js e defina PUBLIC_API_KEY.",
+          "s3": "Reinicie o Cursor."
+        }
+      },
+      "other": {
+        "label": "Outros clientes MCP",
+        "target": "Configuração de servidor stdio",
+        "copyLabel": "Configuração do servidor MCP",
+        "docsLabel": "Documentação de configuração do cliente",
+        "steps": {
+          "s1": "Encontre onde seu cliente configura servidores MCP stdio.",
+          "s2": "Use os mesmos campos command, args e env mostrados aqui.",
+          "s3": "Reinicie o cliente após alterar a configuração."
+        }
+      },
+      "openclaw": {
+        "label": "OpenClaw",
+        "target": "Terminal",
+        "copyLabel": "Comandos de instalação do OpenClaw",
+        "docsLabel": "Guia para adicionar ao OpenClaw",
+        "steps": {
+          "s1": "O OpenClaw reaproveita o SKILL.md do Evento a partir do workspace de skills.",
+          "s2": "Crie a pasta da skill e copie o SKILL.md para ela.",
+          "s3": "Se o OpenClaw já estiver rodando, reinicie sua sessão ou gateway para carregá-la."
+        }
+      }
+    },
+    "tools": {
+      "eyebrow": "Ferramentas",
+      "title": "O que seu agente pode fazer",
+      "description": "Cada ferramenta corresponde a uma rota autenticada da API pública do Evento.",
+      "reference": "Referência das ferramentas",
+      "inputs": "Entradas",
+      "descriptions": {
+        "listEvents": "Lista os eventos de um usuário.",
+        "getEvent": "Busca os detalhes de um evento pelo ID."
+      }
+    },
+    "examples": {
+      "eyebrow": "Na prática",
+      "title": "Pergunte em linguagem natural",
+      "description": "Seu agente escolhe a ferramenta certa e preenche as entradas com base no que você pede.",
+      "tryPrompt": "Experimente um prompt",
+      "quoted": "“{prompt}”",
+      "yourAgent": "Seu agente",
+      "illustrative": "Ilustrativo",
+      "caption": "Conversa de exemplo. As respostas reais são montadas a partir dos dados de eventos que a API do Evento retorna.",
+      "you": "Você",
+      "agent": "Agente",
+      "called": "Chamou <code>{tool}</code>",
+      "prompts": {
+        "userEvents": {
+          "prompt": "Mostre os eventos de satoshi",
+          "reply": "Aqui estão os eventos que encontrei para satoshi:"
+        },
+        "myUpcoming": {
+          "prompt": "Liste meus próximos eventos",
+          "reply": "Veja o que vem por aí para você:"
+        },
+        "getEvent": {
+          "prompt": "Busque o evento evt_abc123",
+          "reply": "Aqui estão os detalhes de evt_abc123:"
+        }
+      }
+    },
+    "skill": {
+      "eyebrow": "Skill do agente",
+      "title": "Ensine seu agente com o SKILL.md",
+      "description": "Um arquivo de skill mantido pela equipe diz ao seu agente quando recorrer às ferramentas do Evento e como usá-las com segurança.",
+      "useItTo": "Use para",
+      "notFor": "Não serve para",
+      "getSkill": "Obter a skill",
+      "useWithOpenClaw": "Usar com o OpenClaw",
+      "installForClaude": "Instalar para o Claude",
+      "copyLabel": "Comandos de instalação da skill",
+      "projectLocal": "Usa skills locais do projeto? Copie para <code>.claude/skills/evento-public-mcp/SKILL.md</code>.",
+      "useCases": {
+        "listEvents": "Listar eventos de um nome de usuário",
+        "getEvent": "Obter detalhes de um evento a partir de um ID evt_*",
+        "configure": "Configurar clientes MCP para o Evento",
+        "troubleshoot": "Resolver ferramentas ausentes ou falhas de autenticação"
+      },
+      "nonGoals": {
+        "adminRoutes": "Rotas da API exclusivas para administradores",
+        "database": "Acesso direto ao banco de dados",
+        "bypassAuth": "Contornar a autenticação por chave de API"
+      }
+    },
+    "troubleshooting": {
+      "eyebrow": "Solução de problemas",
+      "title": "Se algo der errado",
+      "description": "As correções mais comuns e como o servidor se comporta quando as requisições falham.",
+      "docsLink": "Testes e solução de problemas",
+      "verify": "Verifique sua configuração",
+      "copyLabel": "Comandos de teste",
+      "items": {
+        "missingKey": {
+          "title": "Chave de API ausente",
+          "fix": "Defina PUBLIC_API_KEY no bloco env do cliente MCP."
+        },
+        "toolsHidden": {
+          "title": "Ferramentas não aparecem",
+          "fix": "Execute npm run build, confirme que dist/index.js existe, use um caminho absoluto em args e reinicie o cliente."
+        },
+        "apiErrors": {
+          "title": "Erros da API",
+          "fix": "Verifique o escopo da chave e EVENTO_API_BASE_URL, depois rode o smoke check com um nome de usuário conhecido."
+        }
+      },
+      "reliability": {
+        "title": "Novas tentativas e erros",
+        "items": {
+          "statusRetries": "Tenta novamente respostas 408, 429 e 5xx",
+          "networkRetries": "Tenta novamente em timeouts, falhas de DNS e conexões redefinidas",
+          "isError": "Chamadas com falha retornam isError: true com um payload estruturado",
+          "noPersistence": "Sem acesso ao banco de dados e sem persistência na camada MCP"
+        }
+      },
+      "security": {
+        "title": "Mantenha sua chave segura",
+        "items": {
+          "localEnv": "Guarde as chaves de API na configuração env local, nunca no controle de versão",
+          "rotate": "Troque as chaves periodicamente",
+          "monitor": "Monitore o uso em relação aos limites de requisições"
+        }
+      }
+    }
+  },
+  "api": {
+    "meta": {
+      "title": "API do Evento — Crie em cima dos seus eventos",
+      "description": "Busque eventos públicos, feeds de organizadores e listas de convidados com a API pública do Evento, ou incorpore eventos em qualquer lugar com a Embed API, sem autenticação e com CORS habilitado."
+    },
+    "opensInNewTab": "(abre em uma nova aba)",
+    "request": "Requisição",
+    "response": "Resposta",
+    "hero": {
+      "title": "Crie em cima dos seus eventos",
+      "description": "Leve eventos públicos, feeds de organizadores e listas de convidados para o seu produto — ou coloque eventos direto em qualquer site com endpoints de embed sem autenticação e prontos para CORS.",
+      "readDocs": "Ler a documentação",
+      "getApiKey": "Obter uma chave de API",
+      "developerMode": "Ative o <strong>Modo desenvolvedor</strong> em <link>Configurações → Avançado</link> para ter suas chaves de API sempre à mão.",
+      "responseExcerpt": "Resposta · trecho",
+      "facts": {
+        "surfaces": "APIs disponíveis",
+        "endpoints": "endpoints GET",
+        "requestsPerDay": "requisições / dia por chave"
+      }
+    },
+    "surfaces": {
+      "eyebrow": "Duas APIs",
+      "title": "Escolha a API certa para cada caso",
+      "description": "Use a API pública no seu backend para dados completos e a Embed API direto no navegador para widgets.",
+      "baseUrl": "URL base:",
+      "public": {
+        "name": "Public API",
+        "tagline": "Dados de eventos e usuários somente leitura para integrações de servidor de terceiros.",
+        "badge": "Chave de API",
+        "snippetLabel": "Cabeçalhos da requisição",
+        "snippetCaption": "Cabeçalho da requisição",
+        "points": {
+          "p1": "Autenticação com chaves de API Unkey via <code>x-evento-api-key</code> ou <code>Authorization: Bearer</code>",
+          "p2": "Payloads completos com metadados do criador, links, contribuições e paginação",
+          "p3": "Detalhes de eventos, listas de eventos de organizadores e listas de convidados",
+          "p4": "Faça requisições com chave no servidor — nunca exponha uma chave em JavaScript no cliente"
+        },
+        "links": {
+          "overview": "Visão geral da Public API",
+          "secondary": "Autenticação"
+        }
+      },
+      "embed": {
+        "name": "Embed API",
+        "tagline": "Respostas sem autenticação e compatíveis com CORS para widgets e embeds no cliente.",
+        "badge": "Sem autenticação · CORS",
+        "snippetLabel": "Cabeçalhos CORS",
+        "snippetCaption": "Cabeçalhos da resposta",
+        "points": {
+          "p1": "Não exige chave de API — seguro para renderização no cliente",
+          "p2": "Acesso entre origens para <code>GET</code> e <code>OPTIONS</code>",
+          "p3": "Payloads enxutos com um <code>status</code> calculado: upcoming, ongoing ou past",
+          "p4": "Combina com os componentes de card, lista e calendário de eventos do <code>evento-embed-react</code>"
+        },
+        "links": {
+          "overview": "Visão geral da Embed API",
+          "secondary": "Componentes React"
+        }
+      }
+    },
+    "explorer": {
+      "eyebrow": "Endpoints",
+      "title": "Cinco endpoints GET, um formato de resposta consistente",
+      "description": "Explore cada endpoint com requisições reais e trechos de respostas da documentação de referência.",
+      "apiReference": "Referência da API",
+      "tablistLabel": "Endpoints da API",
+      "parameters": "Parâmetros",
+      "required": "Obrigatório",
+      "fullReference": "Referência completa",
+      "locations": {
+        "path": "path",
+        "query": "query"
+      },
+      "endpoints": {
+        "publicEvent": {
+          "title": "Buscar evento",
+          "description": "Obtenha informações detalhadas de um evento público publicado, incluindo criador, links e metadados de contribuições."
+        },
+        "publicEventGuests": {
+          "title": "Buscar convidados do evento",
+          "description": "Obtenha os convidados de um evento público publicado, filtrados pelo status de confirmação de presença."
+        },
+        "publicUserEvents": {
+          "title": "Buscar eventos do usuário",
+          "description": "Liste eventos públicos por nome de usuário, com filtros upcoming, past ou profile e paginação."
+        },
+        "embedEvent": {
+          "title": "Buscar evento para embed",
+          "description": "Obtenha um payload de evento compacto e otimizado para embed pelo ID — pronto para cards e embeds de detalhes."
+        },
+        "embedUserEvents": {
+          "title": "Buscar eventos do usuário para embed",
+          "description": "Obtenha um feed de eventos otimizado para embed de um criador, com limites de data inclusivos opcionais."
+        }
+      },
+      "params": {
+        "eventId": "Identificador único do evento.",
+        "rsvpStatus": "Filtro de presença: yes, maybe, no ou all. Padrão: yes.",
+        "guestsLimit": "Resultados por página, de 1 a 100. Padrão: 10.",
+        "offset": "Deslocamento da paginação. Padrão: 0.",
+        "usernameNoPrefix": "Nome de usuário, sem diferenciar maiúsculas e minúsculas, sem o prefixo @.",
+        "eventsType": "Filtro opcional: upcoming, past ou profile.",
+        "eventsLimit": "Resultados por página, máximo de 100. Padrão: 20.",
+        "username": "Nome de usuário, sem diferenciar maiúsculas e minúsculas.",
+        "from": "Data e hora inicial inclusiva (ISO 8601).",
+        "to": "Data e hora final inclusiva (ISO 8601).",
+        "embedLimit": "Número de eventos a retornar, máximo de 100. Padrão: 50."
+      },
+      "notes": {
+        "publicEventGuests": "E-mails, telefones e dados de contato privados nunca são retornados. Apenas convidados vinculados a perfis de usuário são incluídos.",
+        "embedUserEvents": "O status de cada evento é calculado a partir dos horários de início e fim: upcoming, ongoing ou past."
+      }
+    },
+    "codePanel": {
+      "codeLanguage": "Linguagem do código",
+      "copySnippet": "Copiar trecho {label}",
+      "copiedAnnouncement": "Trecho copiado para a área de transferência",
+      "copyFailedTitle": "Não foi possível copiar o trecho",
+      "copyFailedDescription": "Copie manualmente do bloco de código."
+    },
+    "useCases": {
+      "eyebrow": "O que você pode criar",
+      "title": "De widgets a insights da comunidade",
+      "description": "Padrões de integração direto dos guias do Evento.",
+      "codeExamples": "Exemplos de código",
+      "items": {
+        "discovery": {
+          "title": "Plataforma de descoberta de eventos",
+          "description": "Reúna eventos de contas de criadores e IDs de eventos públicos e armazene as respostas em cache para manter as páginas rápidas."
+        },
+        "widgets": {
+          "title": "Calendários e widgets",
+          "description": "Renderize calendários e cards de eventos seguros para o navegador com a Embed API — sem precisar de chave de API."
+        },
+        "detailViews": {
+          "title": "Páginas de detalhes de eventos",
+          "description": "Crie páginas de detalhes com metadados do criador, links do Spotify e Wavlake e identificadores de contribuição."
+        },
+        "community": {
+          "title": "Inteligência de comunidade",
+          "description": "Meça a conversão de presença por status, a proporção de verificados e os participantes recorrentes entre eventos."
+        },
+        "profiles": {
+          "title": "Perfis de organizadores",
+          "description": "Mostre os eventos futuros e passados de um criador nas páginas de perfil com o filtro type."
+        },
+        "sync": {
+          "title": "Exportação e sincronização de calendários",
+          "description": "Transforme agendas públicas em calendários e feeds externos e atualize caches locais."
+        }
+      }
+    },
+    "contracts": {
+      "eyebrow": "Contratos compartilhados",
+      "title": "Previsível por natureza",
+      "description": "As duas APIs compartilham o mesmo formato de resposta de sucesso e erro e as mesmas convenções de códigos de status. As chaves da API pública informam sua cota nos cabeçalhos da resposta.",
+      "rateLimits": {
+        "title": "Limites de requisições",
+        "description": "Ao passar do limite você recebe um <code>429</code> — tente novamente com backoff exponencial e enfileire requisições ao se aproximar da cota diária.",
+        "snippetLabel": "Cabeçalhos de limite de requisições",
+        "snippetCaption": "Cabeçalhos da resposta",
+        "docsLink": "Limites de requisições"
+      },
+      "envelope": {
+        "title": "Formato da resposta",
+        "description": "Verifique <code>success</code>, registre a <code>message</code> legível e leia seu payload em <code>data</code>. Listas incluem <code>pagination</code>.",
+        "docsLink": "Formato da resposta",
+        "tabs": {
+          "success": "Sucesso",
+          "error": "Erro",
+          "list": "Lista"
+        }
+      },
+      "statusCodes": {
+        "title": "Códigos de status",
+        "description": "Semântica HTTP padrão. Recursos privados ou não publicados retornam <code>404</code>, e uma chave ausente ou revogada retorna <code>401</code>.",
+        "docsLink": "Tratamento de erros"
+      }
+    },
+    "getStarted": {
+      "eyebrow": "Primeiros passos",
+      "title": "Sua primeira requisição está a três passos",
+      "steps": {
+        "developerMode": {
+          "title": "Ative o Modo desenvolvedor",
+          "description": "Ative em Configurações → Avançado para exibir as chaves de API nas suas configurações.",
+          "link": "Abrir configurações"
+        },
+        "createKey": {
+          "title": "Crie uma chave de API",
+          "description": "Dê um nome e copie na hora — as chaves são exibidas só uma vez. Até 10 chaves ativas por conta.",
+          "link": "Gerenciar chaves de API"
+        },
+        "firstRequest": {
+          "title": "Faça sua primeira requisição",
+          "description": "Envie a chave no cabeçalho x-evento-api-key a partir do seu servidor. Chamadas bem-sucedidas retornam success: true com seu payload em data.",
+          "link": "Seguir o início rápido"
+        }
+      },
+      "docs": {
+        "quickstart": {
+          "title": "Início rápido",
+          "description": "Crie uma chave de API e faça sua primeira requisição à API pública."
+        },
+        "authentication": {
+          "title": "Autenticação",
+          "description": "Formatos de cabeçalho, fluxos de autenticação por API e práticas de segurança."
+        },
+        "dataModels": {
+          "title": "Modelos de dados",
+          "description": "Esquemas canônicos dos objetos de evento, convidado e paginação."
+        }
+      }
+    }
+  }
+}

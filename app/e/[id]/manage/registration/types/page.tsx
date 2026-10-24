@@ -15,6 +15,7 @@ import {
   Type,
   Youtube,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 
 type QuestionType =
@@ -43,32 +44,33 @@ export default function ChooseQuestionTypePage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
+  const t = useTranslations('manageLegacy');
 
   const basicQuestions: QuestionTypeOption[] = [
     {
       key: 'text',
-      label: 'Text',
+      label: t('registration.questionTypes.text'),
       icon: <Type className='h-6 w-6' />,
       iconBg: 'bg-red-100 dark:bg-red-950/60',
       iconColor: 'text-red-600 dark:text-red-400',
     },
     {
       key: 'long_text',
-      label: 'Long Text',
+      label: t('registration.questionTypes.longText'),
       icon: <FileText className='h-6 w-6' />,
       iconBg: 'bg-red-100 dark:bg-red-950/60',
       iconColor: 'text-red-600 dark:text-red-400',
     },
     {
       key: 'single_select',
-      label: 'Single Select',
+      label: t('registration.questionTypes.singleSelect'),
       icon: <List className='h-6 w-6' />,
       iconBg: 'bg-blue-100 dark:bg-blue-950/60',
       iconColor: 'text-blue-600 dark:text-blue-400',
     },
     {
       key: 'multi_select',
-      label: 'Multi Select',
+      label: t('registration.questionTypes.multiSelect'),
       icon: <CheckSquare className='h-6 w-6' />,
       iconBg: 'bg-blue-100 dark:bg-blue-950/60',
       iconColor: 'text-blue-600 dark:text-blue-400',
@@ -82,14 +84,14 @@ export default function ChooseQuestionTypePage() {
     },
     {
       key: 'phone',
-      label: 'Phone Number',
+      label: t('registration.questionTypes.phone'),
       icon: <Phone className='h-6 w-6' />,
       iconBg: 'bg-green-100 dark:bg-green-950/60',
       iconColor: 'text-green-600 dark:text-green-400',
     },
     {
       key: 'checkbox',
-      label: 'Checkbox',
+      label: t('registration.questionTypes.checkbox'),
       icon: <Square className='h-6 w-6' />,
       iconBg: 'bg-yellow-100 dark:bg-yellow-950/60',
       iconColor: 'text-yellow-600 dark:text-yellow-400',
@@ -130,7 +132,7 @@ export default function ChooseQuestionTypePage() {
   const otherQuestions: QuestionTypeOption[] = [
     {
       key: 'company',
-      label: 'Company',
+      label: t('registration.questionTypes.company'),
       icon: <Building className='h-6 w-6' />,
       iconBg: 'bg-blue-100 dark:bg-blue-950/60',
       iconColor: 'text-blue-600 dark:text-blue-400',
@@ -189,26 +191,28 @@ export default function ChooseQuestionTypePage() {
         </button>
         <div>
           <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-            Choose Question Type
+            {t('registrationTypes.title')}
           </h2>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            Pick the kind of question guests answer when they register.
+            {t('registrationTypes.subtitle')}
           </p>
         </div>
       </div>
 
       {/* Content */}
       <div className='max-w-2xl space-y-4'>
-        {renderQuestionSection('Basic', basicQuestions)}
-        {renderQuestionSection('Social Profile', socialProfileQuestions)}
+        {renderQuestionSection(t('registrationTypes.sections.basic'), basicQuestions)}
+        {renderQuestionSection(
+          t('registrationTypes.sections.socialProfile'),
+          socialProfileQuestions
+        )}
 
         {/* Social Profile Note */}
         <p className='px-1 text-sm text-gray-500 dark:text-neutral-400'>
-          We will retrieve the information automatically if the guest has set it on their Luma
-          profile.
+          {t('registrationTypes.socialNote')}
         </p>
 
-        {renderQuestionSection('Other', otherQuestions)}
+        {renderQuestionSection(t('registrationTypes.sections.other'), otherQuestions)}
       </div>
     </div>
   );

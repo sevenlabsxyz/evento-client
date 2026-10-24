@@ -3,7 +3,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { getAppUrl } from '@/lib/utils/app-url';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages } from 'next-intl/server';
+import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import type React from 'react';
@@ -16,41 +16,46 @@ const inter = Inter({
 });
 const appUrl = getAppUrl();
 
-export const metadata: Metadata = {
-  metadataBase: new URL(appUrl),
-  title: 'Evento - Events made social',
-  description: 'Create, manage and oversee events and communities',
-  generator: 'v0.dev',
-  twitter: {
-    title: 'Evento - Events made social',
-    card: 'summary_large_image',
-    site: '@evento',
-    creator: '@evento_so',
-    images: 'https://i.imgur.com/dTclM4m.png',
-  },
-  openGraph: {
-    type: 'website',
-    url: 'https://app.evento.so',
-    title: 'Evento - Events made social',
-    description: 'Events made social.',
-    siteName: 'Evento - Events made social',
-    images: [
-      {
-        url: 'https://i.imgur.com/dTclM4m.png',
-      },
-    ],
-  },
-  manifest: '/manifest.json',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'black-translucent',
-    title: 'Evento',
-  },
-  icons: {
-    icon: '/icon.png',
-    apple: '/assets/pwa/icon@512px.png',
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('common.meta');
+  const title = t('title');
+
+  return {
+    metadataBase: new URL(appUrl),
+    title,
+    description: t('description'),
+    generator: 'v0.dev',
+    twitter: {
+      title,
+      card: 'summary_large_image',
+      site: '@evento',
+      creator: '@evento_so',
+      images: 'https://i.imgur.com/dTclM4m.png',
+    },
+    openGraph: {
+      type: 'website',
+      url: 'https://app.evento.so',
+      title,
+      description: t('shortDescription'),
+      siteName: title,
+      images: [
+        {
+          url: 'https://i.imgur.com/dTclM4m.png',
+        },
+      ],
+    },
+    manifest: '/manifest.json',
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'black-translucent',
+      title: 'Evento',
+    },
+    icons: {
+      icon: '/icon.png',
+      apple: '/assets/pwa/icon@512px.png',
+    },
+  };
+}
 
 export const viewport = {
   themeColor: [

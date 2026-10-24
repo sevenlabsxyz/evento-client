@@ -18,6 +18,7 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { type ReactNode, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
@@ -30,34 +31,13 @@ type DiscoverFilter = 'featured' | 'week' | 'following';
 
 interface DiscoverFilterConfig {
   id: DiscoverFilter;
-  title: string;
   icon: LucideIcon;
-  description: string;
-  sheetTitle: string;
 }
 
 const DISCOVER_FILTERS: DiscoverFilterConfig[] = [
-  {
-    id: 'featured',
-    title: 'Featured',
-    icon: Sparkles,
-    description: 'Hand-picked events and what’s coming up next',
-    sheetTitle: 'Discover Feed',
-  },
-  {
-    id: 'week',
-    title: 'This week',
-    icon: CalendarDays,
-    description: 'Starting in the next 7 days',
-    sheetTitle: 'This Week',
-  },
-  {
-    id: 'following',
-    title: 'Following',
-    icon: Users,
-    description: 'Upcoming events from hosts you follow',
-    sheetTitle: 'Follow Feed',
-  },
+  { id: 'featured', icon: Sparkles },
+  { id: 'week', icon: CalendarDays },
+  { id: 'following', icon: Users },
 ];
 
 interface DiscoverSectionProps {
@@ -123,6 +103,7 @@ function DiscoverGridSkeleton({ count }: { count: number }) {
 }
 
 function DiscoverErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const t = useTranslations('hub');
   return (
     <div
       role='alert'
@@ -130,7 +111,7 @@ function DiscoverErrorState({ message, onRetry }: { message: string; onRetry?: (
     >
       <div className='mb-1 flex items-center gap-2 text-sm font-semibold'>
         <AlertTriangle className='h-4 w-4' aria-hidden='true' />
-        Could not load events
+        {t('discover.loadError')}
       </div>
       <p className='text-sm text-amber-800 dark:text-amber-400'>{message}</p>
       {onRetry && (
@@ -141,7 +122,7 @@ function DiscoverErrorState({ message, onRetry }: { message: string; onRetry?: (
           onClick={onRetry}
           className='mt-3 border-amber-300 bg-white text-amber-900 hover:bg-amber-100 dark:border-amber-800 dark:bg-transparent dark:text-amber-300 dark:hover:bg-amber-950'
         >
-          Try again
+          {t('discover.tryAgain')}
         </Button>
       )}
     </div>
@@ -190,6 +171,7 @@ export function DiscoverSection({
   discoverTotalCount,
   discoverError,
 }: DiscoverSectionProps) {
+  const t = useTranslations('hub');
   const isMobile = useIsMobile();
   const [activeFilter, setActiveFilter] = useState<DiscoverFilter>('featured');
   const [showFeedSheet, setShowFeedSheet] = useState(false);
@@ -257,8 +239,8 @@ export function DiscoverSection({
         return (
           <DiscoverEmptyState
             icon={CalendarDays}
-            title='Nothing starting this week'
-            description='None of the events we’re highlighting start in the next 7 days. Check Featured or search for something nearby.'
+            title={t('discover.empty.week.title')}
+            description={t('discover.empty.week.description')}
           >
             <Button
               type='button'
@@ -267,29 +249,29 @@ export function DiscoverSection({
               onClick={() => setActiveFilter('featured')}
               className='dark:hover:bg-neutral-800'
             >
-              See featured
+              {t('discover.empty.week.seeFeatured')}
             </Button>
-            <SearchEventsLink label='Search events' />
+            <SearchEventsLink label={t('discover.empty.searchEvents')} />
           </DiscoverEmptyState>
         );
       case 'following':
         return (
           <DiscoverEmptyState
             icon={Users}
-            title='Follow hosts to see their events here'
-            description='When people you follow publish events, they’ll show up in this feed.'
+            title={t('discover.empty.following.title')}
+            description={t('discover.empty.following.description')}
           >
-            <SearchEventsLink label='Find hosts' />
+            <SearchEventsLink label={t('discover.empty.following.findHosts')} />
           </DiscoverEmptyState>
         );
       default:
         return (
           <DiscoverEmptyState
             icon={Sparkles}
-            title='No featured events right now'
-            description='Check back soon, or search for events and hosts on Evento.'
+            title={t('discover.empty.featured.title')}
+            description={t('discover.empty.featured.description')}
           >
-            <SearchEventsLink label='Search events' />
+            <SearchEventsLink label={t('discover.empty.searchEvents')} />
           </DiscoverEmptyState>
         );
     }
@@ -307,9 +289,11 @@ export function DiscoverSection({
             id='discover-heading'
             className='text-xl font-semibold text-gray-900 dark:text-neutral-100'
           >
-            Discover
+            {t('discover.title')}
           </h2>
-          <p className='text-sm text-gray-500 dark:text-neutral-400'>{activeConfig.description}</p>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>
+            {t(`discover.filters.${activeConfig.id}.description`)}
+          </p>
         </div>
         {canViewAll && (
           <Button
@@ -319,8 +303,9 @@ export function DiscoverSection({
             onClick={() => setShowFeedSheet(true)}
             className='shrink-0 text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-800'
           >
-            View all
-            {viewAllCount ? ` (${viewAllCount})` : ''}
+            {viewAllCount
+              ? t('discover.viewAllCount', { count: viewAllCount })
+              : t('discover.viewAll')}
             <ArrowRight className='h-4 w-4' aria-hidden='true' />
           </Button>
         )}
@@ -329,7 +314,7 @@ export function DiscoverSection({
       <AnimatedTabs
         expanded={!isMobile}
         tabs={DISCOVER_FILTERS.map((filter) => ({
-          title: filter.title,
+          title: t(`discover.filters.${filter.id}.title`),
           icon: filter.icon,
           onClick: () => setActiveFilter(filter.id),
         }))}
@@ -354,7 +339,7 @@ export function DiscoverSection({
       )}
 
       <MasterScrollableSheet
-        title={activeConfig.sheetTitle}
+        title={t(`discover.filters.${activeConfig.id}.sheetTitle`)}
         open={showFeedSheet}
         onOpenChange={setShowFeedSheet}
       >
@@ -382,7 +367,7 @@ export function DiscoverSection({
             <DiscoverErrorState message={sheetError} onRetry={() => void forYouQuery.refetch()} />
           ) : sheetGroups.length === 0 ? (
             <p className='py-12 text-center text-sm text-gray-500 dark:text-neutral-400'>
-              No events to show yet.
+              {t('discover.sheetEmpty')}
             </p>
           ) : (
             sheetGroups.map((group) => (

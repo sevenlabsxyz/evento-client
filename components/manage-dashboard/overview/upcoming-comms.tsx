@@ -1,10 +1,11 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import { EVENT_REMINDER_OFFSET_LABELS, type EventReminderOffset } from '@/lib/types/api';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import type { EventDashboard } from '@/lib/types/manage';
 import { cn } from '@/lib/utils';
 import { Bell, ChevronRight, Mail } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 interface UpcomingCommsProps {
@@ -15,12 +16,17 @@ type ReminderState = 'sent' | 'past' | 'upcoming' | 'unscheduled';
 
 const OFFSET_UNIT_MS: Record<string, number> = { h: 60 * 60 * 1000, d: 24 * 60 * 60 * 1000 };
 
-function offsetToMs(offset: string): number | null {
+function parseOffset(offset: string): { count: number; unit: 'h' | 'd' } | null {
   const match = /^(\d+)([hd])$/.exec(offset);
-  return match ? Number(match[1]) * OFFSET_UNIT_MS[match[2]] : null;
+  return match ? { count: Number(match[1]), unit: match[2] as 'h' | 'd' } : null;
 }
 
-function formatDateTime(value: string | number, timeZone: string | null) {
+function offsetToMs(offset: string): number | null {
+  const parsed = parseOffset(offset);
+  return parsed ? parsed.count * OFFSET_UNIT_MS[parsed.unit] : null;
+}
+
+function formatDateTime(value: string | number, timeZone: string | null, intlLocale: string) {
   const options: Intl.DateTimeFormatOptions = {
     weekday: 'short',
     month: 'short',
@@ -29,35 +35,33 @@ function formatDateTime(value: string | number, timeZone: string | null) {
     minute: '2-digit',
   };
   try {
-    return new Intl.DateTimeFormat(undefined, {
+    return new Intl.DateTimeFormat(intlLocale, {
       ...options,
       timeZone: timeZone ?? undefined,
     }).format(new Date(value));
   } catch {
-    return new Intl.DateTimeFormat(undefined, options).format(new Date(value));
+    return new Intl.DateTimeFormat(intlLocale, options).format(new Date(value));
   }
 }
 
-const STATE_BADGE: Record<ReminderState, { label: string; className: string }> = {
+const STATE_BADGE: Record<ReminderState, { className: string }> = {
   sent: {
-    label: 'Sent',
     className: 'bg-green-100 text-green-700 dark:bg-green-950/60 dark:text-green-400',
   },
   past: {
-    label: 'Passed',
     className: 'bg-gray-100 text-gray-500 dark:bg-neutral-800 dark:text-neutral-400',
   },
   upcoming: {
-    label: 'Scheduled',
     className: 'bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400',
   },
   unscheduled: {
-    label: 'Needs date',
     className: 'bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400',
   },
 };
 
 export function UpcomingComms({ dashboard }: UpcomingCommsProps) {
+  const t = useTranslations('manage');
+  const intlLocale = getIntlLocale(useLocale());
   const { event, communications } = dashboard;
   const base = `/e/${event.id}/manage`;
   const { blasts, reminders } = communications;
@@ -75,10 +79,12 @@ export function UpcomingComms({ dashboard }: UpcomingCommsProps) {
           : sendAt <= now
             ? 'past'
             : 'upcoming';
-      const label =
-        offset in EVENT_REMINDER_OFFSET_LABELS
-          ? EVENT_REMINDER_OFFSET_LABELS[offset as EventReminderOffset]
-          : `${offset} before`;
+      const parsed = parseOffset(offset);
+      const label = parsed
+        ? parsed.unit === 'h'
+          ? t('upcomingComms.hoursBefore', { count: parsed.count })
+          : t('upcomingComms.daysBefore', { count: parsed.count })
+        : t('upcomingComms.offsetBefore', { offset });
       return { offset, sendAt, state, label };
     })
     .sort((a, b) => (a.sendAt ?? Number.MAX_SAFE_INTEGER) - (b.sendAt ?? Number.MAX_SAFE_INTEGER));
@@ -86,7 +92,7 @@ export function UpcomingComms({ dashboard }: UpcomingCommsProps) {
   return (
     <section className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
       <h2 className='mb-3 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-        Upcoming communications
+        {t('upcomingComms.title')}
       </h2>
 
       <Link
@@ -98,14 +104,24 @@ export function UpcomingComms({ dashboard }: UpcomingCommsProps) {
         </span>
         <span className='min-w-0 flex-1'>
           <span className='block text-sm font-medium text-gray-900 dark:text-neutral-100'>
-            {blasts.nextScheduledFor ? 'Next email blast' : 'No blasts scheduled'}
+            {blasts.nextScheduledFor
+              ? t('upcomingComms.nextBlast')
+              : t('upcomingComms.noBlastsScheduled')}
           </span>
           <span className='block truncate text-xs text-gray-500 dark:text-neutral-400'>
             {blasts.nextScheduledFor
-              ? `${formatDateTime(blasts.nextScheduledFor, event.timezone)}${
-                  blasts.scheduled > 1 ? ` · ${blasts.scheduled - 1} more scheduled` : ''
-                }`
-              : `${blasts.completed} sent${blasts.failed > 0 ? ` · ${blasts.failed} failed` : ''}`}
+              ? blasts.scheduled > 1
+                ? t('upcomingComms.nextBlastWithMore', {
+                    date: formatDateTime(blasts.nextScheduledFor, event.timezone, intlLocale),
+                    count: blasts.scheduled - 1,
+                  })
+                : formatDateTime(blasts.nextScheduledFor, event.timezone, intlLocale)
+              : blasts.failed > 0
+                ? t('upcomingComms.blastsSentFailed', {
+                    sent: blasts.completed,
+                    failed: blasts.failed,
+                  })
+                : t('upcomingComms.blastsSent', { count: blasts.completed })}
           </span>
         </span>
         <ChevronRight className='h-4 w-4 shrink-0 text-gray-400 dark:text-neutral-500' />
@@ -122,12 +138,12 @@ export function UpcomingComms({ dashboard }: UpcomingCommsProps) {
         </span>
         <span className='min-w-0 flex-1'>
           <span className='block text-sm font-medium text-gray-900 dark:text-neutral-100'>
-            Guest reminders
+            {t('upcomingComms.guestReminders')}
           </span>
           <span className='block truncate text-xs text-gray-500 dark:text-neutral-400'>
             {reminderRows.length > 0
-              ? `${reminderRows.length} configured`
-              : 'No reminders configured'}
+              ? t('upcomingComms.remindersConfigured', { count: reminderRows.length })
+              : t('upcomingComms.noReminders')}
           </span>
         </span>
         <ChevronRight className='h-4 w-4 shrink-0 text-gray-400 dark:text-neutral-500' />
@@ -150,7 +166,7 @@ export function UpcomingComms({ dashboard }: UpcomingCommsProps) {
                 </span>
                 {row.sendAt !== null && (
                   <span className='block truncate text-xs text-gray-500 dark:text-neutral-400'>
-                    {formatDateTime(row.sendAt, event.timezone)}
+                    {formatDateTime(row.sendAt, event.timezone, intlLocale)}
                   </span>
                 )}
               </span>
@@ -160,7 +176,7 @@ export function UpcomingComms({ dashboard }: UpcomingCommsProps) {
                   STATE_BADGE[row.state].className
                 )}
               >
-                {STATE_BADGE[row.state].label}
+                {t(`upcomingComms.states.${row.state}`)}
               </span>
             </li>
           ))}

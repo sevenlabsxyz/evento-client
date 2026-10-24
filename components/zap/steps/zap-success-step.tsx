@@ -1,8 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface ZapSuccessStepProps {
   selectedAmount: number;
@@ -11,6 +13,9 @@ interface ZapSuccessStepProps {
 }
 
 export function ZapSuccessStep({ selectedAmount, recipientName, onClose }: ZapSuccessStepProps) {
+  const t = useTranslations('zap.steps');
+  const tCommon = useTranslations('common');
+  const locale = getIntlLocale(useLocale());
   return (
     <div className='flex flex-col'>
       {/* Content */}
@@ -29,7 +34,7 @@ export function ZapSuccessStep({ selectedAmount, recipientName, onClose }: ZapSu
           transition={{ delay: 0.2 }}
           className='mt-6 text-2xl font-bold text-gray-900 dark:text-neutral-100'
         >
-          Zap Sent!
+          {t('zapSent')}
         </motion.p>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
@@ -37,7 +42,7 @@ export function ZapSuccessStep({ selectedAmount, recipientName, onClose }: ZapSu
           transition={{ delay: 0.3 }}
           className='mt-2 text-lg text-gray-600 dark:text-neutral-400'
         >
-          {selectedAmount.toLocaleString()} sats to {recipientName}
+          {t('sentTo', { amount: selectedAmount.toLocaleString(locale), name: recipientName })}
         </motion.p>
 
         <motion.div
@@ -50,7 +55,7 @@ export function ZapSuccessStep({ selectedAmount, recipientName, onClose }: ZapSu
             onClick={onClose}
             className='h-12 w-full rounded-full bg-gray-900 font-semibold text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
           >
-            Done
+            {tCommon('actions.done')}
           </Button>
         </motion.div>
       </div>

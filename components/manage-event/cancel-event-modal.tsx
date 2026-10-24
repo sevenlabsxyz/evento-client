@@ -5,6 +5,7 @@ import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { useCancelEvent } from '@/lib/hooks/use-cancel-event';
 import { toast } from '@/lib/utils/toast';
 import { AlertTriangle, Trash2, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -24,6 +25,8 @@ export default function CancelEventModal({
   const [sendEmail, setSendEmail] = useState(true);
   const router = useRouter();
   const cancelEventMutation = useCancelEvent();
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
 
   const handleConfirm = () => {
     cancelEventMutation.mutate(
@@ -32,8 +35,8 @@ export default function CancelEventModal({
         onSuccess: () => {
           toast.success(
             sendEmail
-              ? 'Event canceled. Notification emails have been sent to attendees.'
-              : 'Event canceled successfully.'
+              ? t('cancelEvent.toasts.canceledWithEmails')
+              : t('cancelEvent.toasts.canceled')
           );
 
           onClose();
@@ -41,7 +44,7 @@ export default function CancelEventModal({
           router.push('/e/hub');
         },
         onError: () => {
-          toast.error('Failed to cancel event. Please try again.');
+          toast.error(t('cancelEvent.toasts.failed'));
         },
       }
     );
@@ -65,7 +68,7 @@ export default function CancelEventModal({
               {/* Header with close button */}
               <div className='mb-4 flex items-center justify-between'>
                 <h2 className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-                  Cancel Event
+                  {t('cancelEvent.title')}
                 </h2>
                 <button
                   onClick={onClose}
@@ -85,19 +88,22 @@ export default function CancelEventModal({
               {/* Description */}
               <div className='mb-6 space-y-4 text-center'>
                 <p className='text-gray-600 dark:text-neutral-400'>
-                  You are about to cancel <strong>{eventTitle || 'this event'}</strong>.
+                  {t.rich('cancelEvent.aboutToCancel', {
+                    title: eventTitle || t('cancelEvent.thisEvent'),
+                    strong: (chunks) => <strong>{chunks}</strong>,
+                  })}
                 </p>
 
                 {/* Warning Text */}
                 <div className='rounded-xl bg-red-50 p-4 text-left dark:bg-red-950/40'>
                   <p className='mb-2 font-medium text-red-600 dark:text-red-400'>
-                    Warning: This can&apos;t be undone.
+                    {t('cancelEvent.warning')}
                   </p>
                   <ul className='list-disc space-y-1 pl-5 text-sm text-gray-700 dark:text-neutral-300'>
-                    <li>The event will be marked as cancelled and hidden from guests</li>
-                    <li>Guests will no longer be able to view the event or RSVP</li>
-                    <li>Linked sub-events will be detached from this event</li>
-                    <li>You won&apos;t be able to reopen it from Evento</li>
+                    <li>{t('cancelEvent.consequences.hidden')}</li>
+                    <li>{t('cancelEvent.consequences.noAccess')}</li>
+                    <li>{t('cancelEvent.consequences.subEvents')}</li>
+                    <li>{t('cancelEvent.consequences.noReopen')}</li>
                   </ul>
                 </div>
               </div>
@@ -107,10 +113,10 @@ export default function CancelEventModal({
                 <div className='flex items-center justify-between'>
                   <div className='flex-1'>
                     <h3 className='mb-1 font-medium text-gray-900 dark:text-neutral-100'>
-                      Notify attendees via email
+                      {t('cancelEvent.notifyTitle')}
                     </h3>
                     <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                      Email guests who RSVP&apos;d yes or maybe about the cancellation
+                      {t('cancelEvent.notifyDescription')}
                     </p>
                   </div>
                   <button
@@ -136,18 +142,18 @@ export default function CancelEventModal({
                 size='lg'
               >
                 {cancelEventMutation.isPending ? (
-                  <span className='animate-pulse'>Cancelling...</span>
+                  <span className='animate-pulse'>{t('cancelEvent.cancelling')}</span>
                 ) : (
                   <>
                     <Trash2 className='mr-2 h-5 w-5' />
-                    Cancel Event
+                    {t('cancelEvent.title')}
                   </>
                 )}
               </Button>
 
               {/* Close button */}
               <Button variant='outline' onClick={onClose} className='mt-3 w-full'>
-                Close
+                {tCommon('actions.close')}
               </Button>
             </div>
           </DetachedSheet.Content>

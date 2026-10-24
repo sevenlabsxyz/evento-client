@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import React from 'react';
 
 interface SubmitButtonProps {
@@ -17,6 +18,7 @@ export function SubmitButton({
   className = '',
   type = 'button',
 }: SubmitButtonProps) {
+  const t = useTranslations('zap.ui');
   return (
     <button
       type={type}
@@ -24,7 +26,7 @@ export function SubmitButton({
       disabled={disabled || loading}
       className={`w-full rounded-full bg-red-500 py-3 font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-neutral-600 dark:disabled:text-neutral-300 ${className}`}
     >
-      {loading ? 'Loading...' : children}
+      {loading ? t('loading') : children}
     </button>
   );
 }

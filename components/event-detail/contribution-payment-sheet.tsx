@@ -4,10 +4,12 @@ import { CashAppSVGIcon } from '@/components/icons/cashapp';
 import { PayPalSVGIcon } from '@/components/icons/paypal';
 import { VenmoSVGIcon } from '@/components/icons/venmo';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ExternalLink } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { ReactNode, useEffect, useState } from 'react';
 import { DetachedSheet } from '../ui/detached-sheet';
 
@@ -59,7 +61,7 @@ const PAYMENT_METHOD_CONFIG: Record<string, PaymentMethodConfig> = {
 };
 
 function formatUSD(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(getIntlLocale(), {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
@@ -72,6 +74,8 @@ export default function ContributionPaymentSheet({
   onClose,
   eventData,
 }: ContributionPaymentSheetProps) {
+  const t = useTranslations('eventSocial');
+  const tCommon = useTranslations('common');
   const { isMobile } = useMediaQuery();
   const contributionMethods = getContributionMethods(eventData);
   const suggestedCost = eventData.cost ?? 0;
@@ -109,12 +113,12 @@ export default function ContributionPaymentSheet({
               </div>
 
               <VisuallyHidden.Root asChild>
-                <DetachedSheet.Title>Contribution</DetachedSheet.Title>
+                <DetachedSheet.Title>{t('contributionSheet.title')}</DetachedSheet.Title>
               </VisuallyHidden.Root>
 
               <div className='mb-6 text-center'>
                 <p className='mb-2 text-sm text-gray-500 dark:text-neutral-400'>
-                  Support the host with a contribution
+                  {t('contributionSheet.subtitle')}
                 </p>
                 {suggestedCost > 0 ? (
                   <>
@@ -153,18 +157,18 @@ export default function ContributionPaymentSheet({
                       onClick={() => setIsEditingAmount(true)}
                       className='mt-2 text-sm text-red-500 underline dark:text-red-400'
                     >
-                      Change amount
+                      {t('contributionSheet.changeAmount')}
                     </button>
                   </>
                 ) : (
                   <p className='text-lg font-medium text-gray-700 dark:text-neutral-300'>
-                    Any amount is appreciated
+                    {t('contributionSheet.anyAmount')}
                   </p>
                 )}
               </div>
 
               <p className='mb-4 text-center text-sm text-gray-500 dark:text-neutral-400'>
-                Choose how you&apos;d like to contribute:
+                {t('contributionSheet.chooseMethod')}
               </p>
 
               <div className='space-y-3'>
@@ -207,7 +211,7 @@ export default function ContributionPaymentSheet({
                 onClick={onClose}
                 className='mt-6 w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-950'
               >
-                Close
+                {tCommon('actions.close')}
               </button>
             </div>
           </DetachedSheet.Content>

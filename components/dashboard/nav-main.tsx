@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowUpRight, LucideIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -22,6 +23,7 @@ export interface NavMainItem {
 }
 
 export function NavMain({ items, label }: { items: NavMainItem[]; label?: string }) {
+  const t = useTranslations('nav');
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
 
@@ -49,7 +51,7 @@ export function NavMain({ items, label }: { items: NavMainItem[]; label?: string
                     >
                       {item.icon && <item.icon />}
                       <span className='min-w-0 flex-1 truncate'>{item.title}</span>
-                      <span className='sr-only'>(opens in a new tab)</span>
+                      <span className='sr-only'>{t('sidebar.opensInNewTab')}</span>
                       <ArrowUpRight
                         aria-hidden='true'
                         className='ml-auto !size-3.5 text-sidebar-foreground/50 group-data-[collapsible=icon]:hidden'

@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { useTranslations } from 'next-intl';
 
 interface DateTimeActionsSheetProps {
   open: boolean;
@@ -18,6 +19,8 @@ export function DateTimeActionsSheet({
   onAddToCalendar,
   onCopyDateTime,
 }: DateTimeActionsSheetProps) {
+  const t = useTranslations('event');
+  const tCommon = useTranslations('common');
   const handleAddToCalendar = () => {
     onAddToCalendar();
     onOpenChange(false);
@@ -29,7 +32,7 @@ export function DateTimeActionsSheet({
   };
 
   return (
-    <MasterScrollableSheet title='Date & Time' open={open} onOpenChange={onOpenChange}>
+    <MasterScrollableSheet title={t('dateTimeSheet.title')} open={open} onOpenChange={onOpenChange}>
       <div className='px-4 pb-6'>
         <p className='mb-5 whitespace-pre-line text-sm text-gray-600 dark:text-neutral-400'>
           {dateTimeText}
@@ -42,7 +45,7 @@ export function DateTimeActionsSheet({
             className='h-14 w-full justify-start text-base font-medium'
             onClick={handleAddToCalendar}
           >
-            Add to Calendar
+            {t('dateTimeSheet.addToCalendar')}
           </Button>
 
           <Button
@@ -51,7 +54,7 @@ export function DateTimeActionsSheet({
             className='h-14 w-full justify-start text-base font-medium'
             onClick={handleCopyDateTime}
           >
-            Copy Date/Time
+            {t('dateTimeSheet.copyDateTime')}
           </Button>
 
           <Button
@@ -60,7 +63,7 @@ export function DateTimeActionsSheet({
             className='mt-2 h-14 w-full text-base font-medium text-gray-600 dark:text-neutral-400'
             onClick={() => onOpenChange(false)}
           >
-            Cancel
+            {tCommon('actions.cancel')}
           </Button>
         </div>
       </div>

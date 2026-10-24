@@ -1,1 +1,78 @@
-{}
+{
+  "flow": {
+    "usernameCharsWarning": "Só letras e números são permitidos no nome de usuário.",
+    "usernameLengthWarning": "O nome de usuário deve ter no máximo 20 caracteres.",
+    "noImageSelected": "Nenhuma imagem selecionada. Tente novamente.",
+    "imageUploaded": "Imagem enviada com sucesso",
+    "imageUploadFailed": "Não foi possível enviar a imagem. Tente novamente ou pule esta etapa.",
+    "fileTooLarge": "Arquivo muito grande. Selecione um arquivo com menos de 10 MB.",
+    "completeToast": "Boas-vindas ao Evento! Seu perfil está pronto.",
+    "completeError": "Ocorreu um problema ao concluir a configuração do seu perfil.",
+    "stepOf": "Etapa {step} de {total}",
+    "exitSetup": "Sair da configuração",
+    "back": "Voltar",
+    "saving": "Salvando...",
+    "continue": "Continuar",
+    "skip": "Pular",
+    "completeSetup": "Concluir configuração",
+    "skipAndFinish": "Pular e concluir"
+  },
+  "name": {
+    "title": "Digite seu nome",
+    "description": "Diga a todos como você quer ser chamado.",
+    "placeholder": "Machado de Assis"
+  },
+  "username": {
+    "title": "Escolha um nome de usuário",
+    "description": "Este será seu identificador único no Evento. Você pode alterar seu @usuário a qualquer momento nas Configurações do perfil.",
+    "reserved": "Este nome de usuário é reservado e não pode ser usado",
+    "invalid": "Nome de usuário inválido",
+    "taken": "Este nome de usuário já está em uso",
+    "available": "Ótimo! Este nome de usuário está disponível"
+  },
+  "avatar": {
+    "title": "Envie uma foto de perfil",
+    "description": "Ajude as pessoas a reconhecerem você nos eventos.",
+    "uploadAria": "Enviar foto de perfil",
+    "loading": "Carregando...",
+    "tapToUpload": "Toque para enviar"
+  },
+  "interests": {
+    "title": "Quais são seus interesses?",
+    "description": "Selecione temas para personalizar seu feed (você pode pular esta etapa)"
+  },
+  "prompts": {
+    "title": "Mostre sua personalidade",
+    "description": "Responda até 4 perguntas para que as pessoas conheçam você",
+    "yourPrompts": "Suas perguntas ({count}/4)",
+    "edit": "Editar",
+    "addMore": "Adicionar mais",
+    "choosePrompt": "Escolha uma pergunta",
+    "noMore": "Não há mais perguntas disponíveis",
+    "maxReached": "Limite de 4 perguntas atingido. Remova uma para adicionar outra.",
+    "backToPrompts": "Voltar para as perguntas",
+    "answerPrompt": "Responder pergunta",
+    "editAnswer": "Editar resposta",
+    "shareSomething": "Conte algo sobre você",
+    "yourAnswer": "Sua resposta",
+    "answerPlaceholder": "Compartilhe o que você pensa...",
+    "minChars": "Mínimo de 5 caracteres",
+    "showOnProfile": "Mostrar no perfil",
+    "showOnProfileHint": "Deixe visível para outras pessoas",
+    "cancel": "Cancelar",
+    "addPrompt": "Adicionar pergunta",
+    "saveChanges": "Salvar alterações"
+  },
+  "welcome": {
+    "title": "Boas-vindas ao Evento!",
+    "subtitle": "Veja o que você pode fazer",
+    "goToSlide": "Ir para o slide {number}",
+    "progress": "{current} de {total}",
+    "discoverTitle": "Descubra eventos incríveis",
+    "discoverDescription": "Encontre e participe de eventos que combinam com seus interesses. De shows a conferências, descubra o que está rolando perto de você.",
+    "walletTitle": "Carteira Lightning integrada",
+    "walletDescription": "Envie e receba Bitcoin na hora com sua carteira Lightning integrada. Pague ingressos, dê gorjetas a criadores e gerencie seus fundos sem complicação.",
+    "connectTitle": "Conecte-se e compartilhe",
+    "connectDescription": "Conecte-se com amigos, compartilhe suas experiências e construa sua comunidade. O Evento une as pessoas por meio de experiências compartilhadas."
+  }
+}

@@ -1,1 +1,289 @@
-{}
+{
+  "sendLightningSheet": {
+    "toasts": {
+      "enterInvoice": "Please enter a Lightning invoice or address",
+      "noSupportedBip21Method": "No supported payment method found in BIP21 URI",
+      "unsupportedPaymentType": "Unsupported payment type",
+      "minimumAmount": "Minimum amount is {amount} sats",
+      "maximumAmount": "Maximum amount is {amount} sats",
+      "unknownInputType": "Unable to prepare payment - unknown input type",
+      "paymentSent": "Payment sent!",
+      "sendFailed": "Failed to send payment",
+      "scannerUnavailable": "QR scanner not available"
+    },
+    "confirmTitle": "Confirm Payment",
+    "sendingToBitcoinAddress": "Sending to Bitcoin Address",
+    "sendingTo": "Sending to",
+    "description": "Description",
+    "comment": "Comment",
+    "mode": "Mode",
+    "sendAll": "Send All",
+    "speed": "Speed",
+    "speeds": {
+      "slow": "slow",
+      "medium": "medium",
+      "fast": "fast"
+    },
+    "speedEta": {
+      "slow": "~1 hour",
+      "medium": "~30 minutes",
+      "fast": "~10 minutes"
+    },
+    "networkFee": "Network Fee",
+    "recipientReceives": "Recipient receives",
+    "total": "Total",
+    "irreversibleWarning": "This payment cannot be reversed. Please verify the details before confirming.",
+    "sending": "Sending...",
+    "processingPayment": "Processing payment...",
+    "inputPlaceholder": "Lightning invoice, Lightning address, or onchain address",
+    "validating": "Validating...",
+    "invoiceDetected": "Invoice detected",
+    "scanQrCode": "Scan QR Code",
+    "loading": "Loading...",
+    "contacts": "Contacts",
+    "selectFee": "Select Fee",
+    "feeSpeedHint": "Choose the speed of your Bitcoin transaction. Faster speeds have higher fees.",
+    "feeLabel": "fee",
+    "feeBreakdown": "Fee Breakdown ({speed})",
+    "networkFeeLine": "Network fee:",
+    "swapServiceFeeLine": "Swap service fee:",
+    "totalFeeLine": "Total fee:",
+    "addComment": "Add Comment",
+    "commentPlaceholder": "Add a comment (max {max} characters)",
+    "optionalMessage": "Optional message",
+    "preparing": "Preparing...",
+    "stablecoin": "Stablecoin",
+    "chainLabel": "Chain {chainId}",
+    "stablecoinTransfer": "Stablecoin Transfer",
+    "stablecoinNotReadyTitle": "Stablecoin sends are not ready",
+    "stablecoinNotReadyBody": "Evento recognized this as a cross-chain stablecoin address, but sending USDT or USDC from the wallet is not available yet.",
+    "detectedAddress": "Detected address",
+    "stablecoinRequirements": "We need route selection, quote expiry, fee display, and slippage confirmation before this can be sent safely.",
+    "enterDifferentAddress": "Enter Different Address",
+    "srTitle": "Send Payment"
+  },
+  "scanQrSheet": {
+    "clipboardEmpty": "Clipboard is empty",
+    "clipboardUnavailable": "Unable to access clipboard. Please paste manually.",
+    "title": "Scan QR Code",
+    "closeScanner": "Close scanner",
+    "pasteFromClipboard": "Paste from clipboard",
+    "pasting": "Pasting...",
+    "paste": "Paste",
+    "instructions": "Point your camera at a QR code",
+    "supportedFormats": "Lightning, LNURL, or Bitcoin payment QR"
+  },
+  "amountInputSheet": {
+    "title": "Enter Amount",
+    "wholeNumber": "Enter a whole number of sats",
+    "minimum": "Minimum: {amount, number} sats",
+    "maximum": "Maximum: {amount, number} sats",
+    "range": "Range: {min, number} - {max, number} sats",
+    "satsAmount": "{amount, number} sats",
+    "convert": "Convert",
+    "sendAll": "Send All ({amount, number} sats)",
+    "preparing": "Preparing...",
+    "next": "Next"
+  },
+  "receiveInvoiceSheet": {
+    "title": "Receive",
+    "onchain": "Onchain",
+    "generateAddressFailed": "Failed to generate Bitcoin address",
+    "createInvoiceFailed": "Failed to create invoice",
+    "copiedToClipboard": "Copied to clipboard",
+    "copyFailed": "Failed to copy",
+    "paymentReceived": "Payment Received!",
+    "successfullyReceived": "You successfully received {amount, number} sats",
+    "satsAmount": "{amount, number} sats",
+    "registeringAddress": "Registering your Lightning address...",
+    "mayTakeMoments": "This may take a few moments",
+    "lightningInvoice": "Lightning Invoice",
+    "lightningAddress": "Lightning Address",
+    "invoiceCopied": "Invoice copied!",
+    "addressCopied": "Address copied!",
+    "usdAndSats": "${usd} · {amount, number} sats",
+    "receiveAnyAmount": "Receive Any Amount",
+    "addAmount": "Add Amount",
+    "generatingAddress": "Generating Bitcoin address...",
+    "bitcoinAddress": "Bitcoin Address",
+    "tryAgain": "Try Again"
+  },
+  "receiveLnurlWithdrawSheet": {
+    "title": "Receive Bitcoin",
+    "missingDetails": "Missing LNURL withdraw details",
+    "withdrawFailed": "Withdraw failed",
+    "receiveFailed": "Failed to receive funds",
+    "chooseAmount": "Choose amount",
+    "receiving": "Receiving...",
+    "confirmAndReceive": "Confirm and receive",
+    "bitcoinReceived": "Bitcoin received",
+    "satsArrived": "Your sats arrived in your Evento wallet.",
+    "satsAmount": "{amount, number} sats",
+    "description": "Description",
+    "receiveFunds": "Receive funds",
+    "amount": "Amount",
+    "minimum": "Minimum",
+    "maximum": "Maximum",
+    "fromProvider": "from {provider}"
+  },
+  "addContactSheet": {
+    "title": "Add Contact",
+    "nameLabel": "Name",
+    "namePlaceholder": "Contact name",
+    "addressLabel": "Lightning Address",
+    "addressHint": "Enter a Lightning address in user@domain format (e.g., alice@evento.cash)",
+    "saving": "Saving...",
+    "submit": "Save Contact",
+    "errors": {
+      "nameRequired": "Name is required",
+      "nameTooLong": "Name must be less than 50 characters",
+      "addressRequired": "Lightning address is required",
+      "addressInvalid": "Lightning address must be in user@domain format",
+      "duplicate": "A contact with this Lightning address already exists"
+    }
+  },
+  "editContactSheet": {
+    "title": "Edit Contact",
+    "nameLabel": "Name",
+    "namePlaceholder": "Contact name",
+    "addressLabel": "Lightning Address",
+    "addressHint": "Enter a Lightning address in user@domain format",
+    "saving": "Saving...",
+    "submit": "Save Changes",
+    "errors": {
+      "nameRequired": "Name is required",
+      "nameTooLong": "Name must be less than 50 characters",
+      "addressRequired": "Lightning address is required",
+      "addressInvalid": "Lightning address must be in user@domain format",
+      "duplicate": "A contact with this Lightning address already exists"
+    }
+  },
+  "contactActionsSheet": {
+    "title": "Contact Options",
+    "edit": "Edit Contact",
+    "remove": "Remove Wallet Contact",
+    "removeConfirm": "Are you sure you want to remove `{name}` from your wallet contacts? This action cannot be undone.",
+    "removing": "Removing..."
+  },
+  "contactAutocomplete": {
+    "placeholder": "Search contacts...",
+    "empty": "No contacts found",
+    "heading": "Contacts"
+  },
+  "contactItem": {
+    "editAria": "Edit contact",
+    "deleteAria": "Delete contact"
+  },
+  "contactsList": {
+    "emptyTitle": "No contacts yet",
+    "emptyDescription": "Add contacts to quickly send payments to friends and family",
+    "addContact": "Add Contact"
+  },
+  "saveContactPrompt": {
+    "title": "Save {name} as contact?",
+    "description": "Add {address} to your contacts for easy future payments.",
+    "save": "Save",
+    "skip": "Skip"
+  },
+  "bitrefillPaymentConfirmationSheet": {
+    "errors": {
+      "parseInvoice": "Failed to parse invoice",
+      "paymentFailed": "Payment failed"
+    },
+    "backupRequired": {
+      "title": "Backup Required",
+      "description": "We recommend backing up your wallet before making your first payment. If you lose access to your device, you'll need your backup to recover your funds.",
+      "goBack": "Go Back & Backup",
+      "continueWithout": "Continue Without Backup"
+    },
+    "processing": "Processing...",
+    "title": "Confirm Purchase",
+    "sats": "{amount} sats",
+    "amount": "Amount",
+    "networkFee": "Network Fee",
+    "total": "Total",
+    "insufficientBalance": "Insufficient balance. You need {required} sats but only have {balance} sats.",
+    "irreversibleWarning": "Lightning payments are instant and irreversible. Please verify the amount before confirming.",
+    "pay": "Pay {amount} sats",
+    "confirmPayment": "Confirm Payment"
+  },
+  "bitrefillPaymentStatusSheet": {
+    "processing": {
+      "title": "Processing Payment",
+      "message": "Your payment is being processed. This usually takes just a few seconds."
+    },
+    "success": {
+      "title": "Purchase Complete!",
+      "allDelivered": "Your gift card has been delivered successfully. Instructions were sent to your email but you can also read them now by clicking below.",
+      "partialDelivery": "Some items were delivered. Please check Bitrefill for more details about remaining items.",
+      "deliveryIssue": "There was an issue with delivery. A refund will be processed automatically.",
+      "default": "Your payment was successful. Your purchase will be delivered shortly."
+    },
+    "error": {
+      "title": "Payment Failed",
+      "refund": "We couldn't complete your purchase. Don't worry - a refund will be processed automatically to your wallet.",
+      "generic": "Something went wrong with your payment. Please try again or contact support if the issue persists."
+    }
+  },
+  "speedUpSheet": {
+    "title": "Speed It Up",
+    "incoming": "You have <strong>{amount} sats</strong> incoming",
+    "youWillReceive": "You will receive <strong>{amount} sats</strong>",
+    "speeds": {
+      "fast": "Fast",
+      "normal": "Normal",
+      "slow": "Slow",
+      "custom": "Custom"
+    },
+    "eta": {
+      "fast": "~10 minutes",
+      "normal": "~1 hour",
+      "slow": "~12 hours"
+    },
+    "optionDetail": "{eta} • ~{fee} sats fee",
+    "optionDetailLoading": "{eta} • ...",
+    "customDescription": "Set your own fee rate",
+    "feeRateLabel": "Fee Rate (sat/vbyte)",
+    "feeRatePlaceholder": "Enter fee rate",
+    "estimatedFee": "Estimated fee: ~{amount} sats",
+    "currentRates": "Current network rates",
+    "processing": "Processing..."
+  },
+  "btcConverterSheet": {
+    "usdCopied": "USD value copied!",
+    "btcCopied": "BTC value copied!",
+    "satsCopied": "SATS value copied!",
+    "currentPrice": "Current BTC Price",
+    "loadingPrice": "Loading BTC price...",
+    "satsLabel": "Satoshis (sats)"
+  },
+  "earnBitcoinSheet": {
+    "title": "Earn Bitcoin",
+    "howItWorks": "How It Works",
+    "step1": "Use a partner app to earn Bitcoin",
+    "step2": "Send your earnings to <strong>{address}</strong>",
+    "step3": "Use it inside Evento"
+  },
+  "buySellBitcoinSheet": {
+    "enterAmountToBuy": "Enter an amount to buy",
+    "unlockWalletFirst": "Unlock your wallet first",
+    "cashAppStartFailed": "Failed to start Cash App purchase",
+    "titleBuy": "Buy Bitcoin",
+    "titleBuySell": "Buy/Sell Bitcoin",
+    "cashAppDescription": "Buy Bitcoin in Cash App and send it to your Evento wallet.",
+    "amount": "Amount",
+    "estimatingSats": "Estimating sats...",
+    "estimatedSats": "Estimated {sats, number} sats",
+    "enterUsdAmount": "Enter a USD amount to estimate sats.",
+    "preparingCashApp": "Preparing Cash App",
+    "openCashApp": "Open Cash App",
+    "continueToCashApp": "Continue to Cash App",
+    "availableInRegion": "Available in Your Region",
+    "detectingLocation": "Detecting your location...",
+    "noRegionalExchanges": "No regional exchanges available for your location.",
+    "global": "Global"
+  },
+  "spendBitcoinSheet": {
+    "title": "Spend Bitcoin"
+  }
+}

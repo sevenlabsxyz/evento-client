@@ -11,6 +11,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import type { TicketType } from '@/lib/types/manage';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { AlertTriangle, Plus, Ticket } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -20,6 +21,8 @@ export default function EventTicketsPage() {
   const router = useRouter();
   const eventId = params.id as string;
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
   const {
     data: dashboard,
     isLoading: isDashboardLoading,
@@ -38,7 +41,7 @@ export default function EventTicketsPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Tickets',
+      title: t('ticketsPage.title'),
       leftMode: 'back',
       centerMode: 'title',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
@@ -50,7 +53,7 @@ export default function EventTicketsPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
+  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute, t]);
 
   const openCreateSheet = () => {
     setEditingTicketType(null);
@@ -82,10 +85,10 @@ export default function EventTicketsPage() {
       <div className='space-y-4 py-4 md:py-6'>
         <div className='rounded-2xl border border-gray-200 bg-white p-6 text-center dark:border-neutral-800 dark:bg-neutral-900'>
           <h2 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-            Tickets unavailable
+            {t('ticketsPage.unavailableTitle')}
           </h2>
           <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-            {getErrorMessage(dashboardError) || 'We couldn’t load this event.'}
+            {getErrorMessage(dashboardError) || t('ticketsPage.loadEventError')}
           </p>
           <Button
             type='button'
@@ -94,7 +97,7 @@ export default function EventTicketsPage() {
             onClick={() => void refetchDashboard()}
             className='mt-4 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800'
           >
-            Try again
+            {tCommon('actions.tryAgain')}
           </Button>
         </div>
       </div>
@@ -109,12 +112,12 @@ export default function EventTicketsPage() {
             <Ticket className='h-6 w-6 text-gray-500 dark:text-neutral-400' />
           </div>
           <h2 className='mt-4 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-            Ticketing isn&apos;t enabled for this event
+            {t('ticketsPage.notTicketedTitle')}
           </h2>
           <p className='mx-auto mt-1 max-w-sm text-sm text-gray-500 dark:text-neutral-400'>
-            Ticket types and discount codes only apply to ticketed events. This event uses{' '}
-            {dashboard.event.type === 'registration' ? 'registration' : 'RSVPs'}, so guests join
-            without buying a ticket.
+            {dashboard.event.type === 'registration'
+              ? t('ticketsPage.notTicketedRegistration')
+              : t('ticketsPage.notTicketedRsvp')}
           </p>
           <Button
             type='button'
@@ -123,7 +126,7 @@ export default function EventTicketsPage() {
             onClick={() => router.push(`/e/${eventId}/manage`)}
             className='mt-6 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800'
           >
-            Back to overview
+            {t('ticketsPage.backToOverview')}
           </Button>
         </div>
       </div>
@@ -155,11 +158,10 @@ export default function EventTicketsPage() {
           <AlertTriangle className='mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400' />
           <div>
             <p className='text-sm font-semibold text-amber-900 dark:text-amber-200'>
-              Add a ticket type to publish
+              {t('ticketsPage.publishRequirementTitle')}
             </p>
             <p className='mt-0.5 text-sm text-amber-800 dark:text-amber-300'>
-              Draft ticketed events need at least one active ticket type before they can be
-              published.
+              {t('ticketsPage.publishRequirementDescription')}
             </p>
           </div>
         </div>
@@ -169,17 +171,21 @@ export default function EventTicketsPage() {
         <div className='flex items-center justify-between gap-3'>
           <div>
             <h2 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-              Ticket types
+              {t('ticketsPage.ticketTypesHeading')}
             </h2>
             <p className='text-sm text-gray-500 dark:text-neutral-400'>
               {activeTicketTypes.length > 0
-                ? `${activeTicketTypes.length} active · ${totalSold} / ${totalCapacity} sold`
-                : 'Set the tickets guests can buy.'}
+                ? t('ticketsPage.ticketTypesSummary', {
+                    active: activeTicketTypes.length,
+                    sold: totalSold,
+                    capacity: totalCapacity,
+                  })
+                : t('ticketsPage.ticketTypesSubtitle')}
             </p>
           </div>
           <Button type='button' size='sm' onClick={openCreateSheet} className='shrink-0'>
             <Plus />
-            Add ticket type
+            {t('ticketsPage.addTicketType')}
           </Button>
         </div>
 
@@ -191,7 +197,7 @@ export default function EventTicketsPage() {
         ) : ticketTypesError ? (
           <div className='rounded-2xl border border-gray-200 bg-white p-4 text-center dark:border-neutral-800 dark:bg-neutral-900'>
             <p className='text-sm text-gray-600 dark:text-neutral-400'>
-              {getErrorMessage(ticketTypesError) || 'Could not load ticket types.'}
+              {getErrorMessage(ticketTypesError) || t('ticketsPage.loadTicketTypesError')}
             </p>
             <Button
               type='button'
@@ -200,17 +206,17 @@ export default function EventTicketsPage() {
               onClick={() => void refetchTicketTypes()}
               className='mt-3 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800'
             >
-              Try again
+              {tCommon('actions.tryAgain')}
             </Button>
           </div>
         ) : allTicketTypes.length === 0 ? (
           <div className='rounded-2xl border border-dashed border-gray-200 bg-white px-4 py-8 text-center dark:border-neutral-800 dark:bg-neutral-900'>
             <Ticket className='mx-auto h-6 w-6 text-gray-400 dark:text-neutral-500' />
             <p className='mt-2 text-sm font-medium text-gray-900 dark:text-neutral-100'>
-              No ticket types yet
+              {t('ticketsPage.emptyTitle')}
             </p>
             <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-              Create general admission, VIP, or free tiers with their own price and quantity.
+              {t('ticketsPage.emptyDescription')}
             </p>
           </div>
         ) : (

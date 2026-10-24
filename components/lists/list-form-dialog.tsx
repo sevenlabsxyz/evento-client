@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { toast } from '@/lib/utils/toast';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { FormEvent, useEffect, useId, useState } from 'react';
 import { LIST_DESCRIPTION_MAX_LENGTH, LIST_NAME_MAX_LENGTH, validateListName } from './list-utils';
 
@@ -42,6 +43,8 @@ export function ListFormDialog({
   list,
   onCreated,
 }: ListFormDialogProps) {
+  const t = useTranslations('lists');
+  const tCommon = useTranslations('common');
   const isMobile = useIsMobile();
   const formId = useId();
   const nameId = `${formId}-name`;
@@ -70,11 +73,12 @@ export function ListFormDialog({
   }, [open, list?.id]);
 
   const validationError = validateListName(name, lists, list?.id);
-  const visibleError = serverError ?? (showValidation ? validationError : null);
-  const title = isRename ? 'Rename list' : 'New list';
-  const subtitle = isRename
-    ? 'Update the name or description of this list.'
-    : 'Group saved events however you like — a trip, a scene, a weekend.';
+  const validationMessage = validationError
+    ? t(`nameErrors.${validationError}`, { max: LIST_NAME_MAX_LENGTH })
+    : null;
+  const visibleError = serverError ?? (showValidation ? validationMessage : null);
+  const title = isRename ? t('form.renameTitle') : t('form.newTitle');
+  const subtitle = isRename ? t('form.renameSubtitle') : t('form.newSubtitle');
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (isPending) return;
@@ -99,14 +103,14 @@ export function ListFormDialog({
         }
         if (Object.keys(changes).length > 0) {
           await updateList.mutateAsync({ listId: list.id, data: changes });
-          toast.success('Your list has been updated.', 'List saved');
+          toast.success(t('form.savedMessage'), t('form.savedTitle'));
         }
       } else {
         const created = await createList.mutateAsync({
           name: trimmedName,
           ...(trimmedDescription ? { description: trimmedDescription } : {}),
         });
-        toast.success(`"${created.name}" is ready for events.`, 'List created');
+        toast.success(t('form.createdMessage', { name: created.name }), t('form.createdTitle'));
         onCreated?.(created);
       }
       onOpenChange(false);
@@ -115,15 +119,15 @@ export function ListFormDialog({
     }
   };
 
-  const submitLabel = isRename ? 'Save changes' : 'Create list';
-  const pendingLabel = isRename ? 'Saving…' : 'Creating…';
+  const submitLabel = isRename ? tCommon('actions.saveChanges') : t('form.createList');
+  const pendingLabel = isRename ? tCommon('states.saving') : t('form.creating');
 
   const fields = (
     <div className='space-y-5'>
       <div className='space-y-2'>
         <div className='flex items-baseline justify-between'>
           <Label htmlFor={nameId} className='text-gray-900 dark:text-neutral-100'>
-            Name
+            {tCommon('labels.name')}
           </Label>
           <span className='text-xs tabular-nums text-gray-500 dark:text-neutral-500'>
             {name.trim().length}/{LIST_NAME_MAX_LENGTH}
@@ -136,7 +140,7 @@ export function ListFormDialog({
             setName(changeEvent.target.value);
             setServerError(null);
           }}
-          placeholder='e.g. Summer in Lisbon'
+          placeholder={t('form.namePlaceholder')}
           maxLength={LIST_NAME_MAX_LENGTH}
           autoFocus={!isMobile}
           autoComplete='off'
@@ -156,8 +160,10 @@ export function ListFormDialog({
       <div className='space-y-2'>
         <div className='flex items-baseline justify-between'>
           <Label htmlFor={descriptionId} className='text-gray-900 dark:text-neutral-100'>
-            Description{' '}
-            <span className='font-normal text-gray-500 dark:text-neutral-500'>(optional)</span>
+            {t('form.description')}{' '}
+            <span className='font-normal text-gray-500 dark:text-neutral-500'>
+              {t('form.optional')}
+            </span>
           </Label>
           <span className='text-xs tabular-nums text-gray-500 dark:text-neutral-500'>
             {description.length}/{LIST_DESCRIPTION_MAX_LENGTH}
@@ -167,7 +173,7 @@ export function ListFormDialog({
           id={descriptionId}
           value={description}
           onChange={(changeEvent) => setDescription(changeEvent.target.value)}
-          placeholder='What ties these events together?'
+          placeholder={t('form.descriptionPlaceholder')}
           maxLength={LIST_DESCRIPTION_MAX_LENGTH}
           rows={3}
           className='resize-none rounded-xl bg-white dark:bg-neutral-900'
@@ -197,7 +203,7 @@ export function ListFormDialog({
       disabled={isPending}
       className='flex-1 dark:bg-neutral-900 dark:hover:bg-neutral-800 sm:flex-none'
     >
-      Cancel
+      {tCommon('actions.cancel')}
     </Button>
   );
 

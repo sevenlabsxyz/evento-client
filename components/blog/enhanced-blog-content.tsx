@@ -3,6 +3,7 @@
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { ImageSizes, isGif } from '@/lib/utils/image';
 import { sanitizeArticleHtml } from '@/lib/utils/sanitize';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -30,6 +31,7 @@ export default function EnhancedBlogContent({
   className,
   onHeadingsChange,
 }: EnhancedBlogContentProps) {
+  const t = useTranslations('blog');
   const [processedContent, setProcessedContent] = useState<React.ReactNode[]>([]);
   const [selectedImage, setSelectedImage] = useState<{
     src: string;
@@ -135,7 +137,9 @@ export default function EnhancedBlogContent({
               onClick={() => setSelectedImage({ src, alt, width, height })}
               className='relative my-2 block w-full overflow-hidden text-left transition-opacity hover:opacity-95'
             >
-              <span className='sr-only'>{alt ? `Open image: ${alt}` : 'Open image'}</span>
+              <span className='sr-only'>
+                {alt ? t('content.openImageNamed', { alt }) : t('content.openImage')}
+              </span>
               <div className='relative w-full overflow-hidden'>{imageNode}</div>
             </button>
           );
@@ -181,7 +185,7 @@ export default function EnhancedBlogContent({
 
     setProcessedContent(processedNodes);
     onHeadingsChangeRef.current?.(headings.filter((heading) => heading.text.length > 0));
-  }, [html]);
+  }, [html, t]);
 
   /**
    * Generate a blur data URL for images
@@ -228,7 +232,9 @@ export default function EnhancedBlogContent({
             className='max-h-[96vh] max-w-[min(96vw,1400px)] border-none bg-transparent p-0 shadow-none'
           >
             <DialogTitle className='sr-only'>
-              {selectedImage.alt ? `Image preview: ${selectedImage.alt}` : 'Image preview'}
+              {selectedImage.alt
+                ? t('content.imagePreviewNamed', { alt: selectedImage.alt })
+                : t('content.imagePreview')}
             </DialogTitle>
             <div className='flex items-center justify-center bg-black/40 p-2 rounded-[2rem]'>
               <Image

@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils';
 import type { Editor } from '@tiptap/core';
 import type { Level } from '@tiptap/extension-heading';
 import { ChevronDown, Type } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ShortcutKey } from '../shortcut-key';
 import { DropdownMenuItemClass, activeItemClass } from '../tiptap-utils';
@@ -13,6 +14,7 @@ interface SectionOneProps {
 }
 
 export default function SectionOne({ editor, onOpenSheet }: SectionOneProps) {
+  const t = useTranslations('createEvent');
   const [showDropdown, setShowDropdown] = useState(false);
 
   const toggleHeading = (level: Level) => {
@@ -30,7 +32,7 @@ export default function SectionOne({ editor, onOpenSheet }: SectionOneProps) {
     <div className='relative'>
       <ToolbarButton
         isActive={editor.isActive('heading')}
-        tooltip='Text styles'
+        tooltip={t('toolbar.textStyles')}
         className='w-12'
         disabled={editor.isActive('codeBlock')}
         onClick={() => {
@@ -54,9 +56,9 @@ export default function SectionOne({ editor, onOpenSheet }: SectionOneProps) {
               className={cn(DropdownMenuItemClass, {
                 [activeItemClass]: editor.isActive('paragraph'),
               })}
-              aria-label='Normal text'
+              aria-label={t('toolbar.normalTextAria')}
             >
-              <span className='grow'>Normal Text</span>
+              <span className='grow'>{t('toolbar.normalText')}</span>
               <ShortcutKey keys={['mod', 'alt', '0']} />
             </button>
             <button
@@ -64,9 +66,11 @@ export default function SectionOne({ editor, onOpenSheet }: SectionOneProps) {
               className={cn(DropdownMenuItemClass, 'flex items-center', {
                 [activeItemClass]: editor.isActive('heading', { level: 1 }),
               })}
-              aria-label='Heading 1'
+              aria-label={t('toolbar.heading1')}
             >
-              <h1 className='m-0 grow text-3xl font-extrabold dark:text-neutral-100'>Heading 1</h1>
+              <h1 className='m-0 grow text-3xl font-extrabold dark:text-neutral-100'>
+                {t('toolbar.heading1')}
+              </h1>
               <ShortcutKey keys={['mod', 'alt', '1']} />
             </button>
             <button
@@ -74,9 +78,11 @@ export default function SectionOne({ editor, onOpenSheet }: SectionOneProps) {
               className={cn(DropdownMenuItemClass, 'flex items-center', {
                 [activeItemClass]: editor.isActive('heading', { level: 2 }),
               })}
-              aria-label='Heading 2'
+              aria-label={t('toolbar.heading2')}
             >
-              <h2 className='m-0 grow text-xl font-bold dark:text-neutral-100'>Heading 2</h2>
+              <h2 className='m-0 grow text-xl font-bold dark:text-neutral-100'>
+                {t('toolbar.heading2')}
+              </h2>
               <ShortcutKey keys={['mod', 'alt', '2']} />
             </button>
             <button
@@ -84,9 +90,11 @@ export default function SectionOne({ editor, onOpenSheet }: SectionOneProps) {
               className={cn(DropdownMenuItemClass, 'flex items-center', {
                 [activeItemClass]: editor.isActive('heading', { level: 3 }),
               })}
-              aria-label='Heading 3'
+              aria-label={t('toolbar.heading3')}
             >
-              <h3 className='m-0 grow text-lg font-semibold dark:text-neutral-100'>Heading 3</h3>
+              <h3 className='m-0 grow text-lg font-semibold dark:text-neutral-100'>
+                {t('toolbar.heading3')}
+              </h3>
               <ShortcutKey keys={['mod', 'alt', '3']} />
             </button>
           </div>

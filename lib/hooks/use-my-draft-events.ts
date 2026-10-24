@@ -4,6 +4,7 @@ import apiClient from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
 import { EventWithUser } from '@/lib/types/api';
 import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface MyDraftEventsParams {
   search?: string;
@@ -26,6 +27,7 @@ interface MyDraftEventsResponse {
 }
 
 export function useMyDraftEvents(params: MyDraftEventsParams = {}) {
+  const t = useTranslations('hooks');
   const { search = '', type, limit = 10, enabled = true } = params;
 
   return useInfiniteQuery<MyDraftEventsResponse, Error, InfiniteData<MyDraftEventsResponse>>({
@@ -54,7 +56,7 @@ export function useMyDraftEvents(params: MyDraftEventsParams = {}) {
         };
       }
 
-      throw new Error('Failed to fetch draft events');
+      throw new Error(t('events.fetchDraftsFailed'));
     },
     enabled,
     staleTime: 5 * 60 * 1000,

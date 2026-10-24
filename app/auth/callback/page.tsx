@@ -7,10 +7,14 @@ import { createClient } from '@/lib/supabase/client';
 import { getOnboardingRedirectUrl, isUserOnboarded, validateRedirectUrl } from '@/lib/utils/auth';
 import { logger } from '@/lib/utils/logger';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 
+const NO_AUTH_ERROR = 'No authentication found';
+
 function AuthCallbackContent() {
+  const t = useTranslations('auth.callback');
   const router = useRouter();
   const { setUser } = useAuthStore();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -130,7 +134,7 @@ function AuthCallbackContent() {
             return;
           }
 
-          throw new Error('No authentication found');
+          throw new Error(NO_AUTH_ERROR);
         }
 
         setUser(result.user);
@@ -149,7 +153,7 @@ function AuthCallbackContent() {
         logger.error('Auth callback error', {
           error: error instanceof Error ? error.message : String(error),
         });
-        setError(error instanceof Error ? error.message : 'Authentication failed');
+        setError(error instanceof Error ? error.message : null);
         setStatus('error');
 
         // Redirect to login after error, preserving the redirect parameter
@@ -176,9 +180,9 @@ function AuthCallbackContent() {
       <Card className='w-full max-w-md'>
         <CardHeader>
           <CardTitle className='text-center'>
-            {status === 'loading' && 'Completing sign in...'}
-            {status === 'success' && 'Welcome back!'}
-            {status === 'error' && 'Sign in failed'}
+            {status === 'loading' && t('completing')}
+            {status === 'success' && t('welcomeBack')}
+            {status === 'error' && t('failed')}
           </CardTitle>
         </CardHeader>
         <CardContent className='flex flex-col items-center space-y-4'>
@@ -186,7 +190,7 @@ function AuthCallbackContent() {
             <>
               <Loader2 className='h-8 w-8 animate-spin text-blue-600 dark:text-blue-400' />
               <p className='text-center text-gray-600 dark:text-neutral-400'>
-                Please wait while we complete your sign in...
+                {t('pleaseWaitCompleting')}
               </p>
             </>
           )}
@@ -194,9 +198,7 @@ function AuthCallbackContent() {
           {status === 'success' && (
             <>
               <CheckCircle className='h-8 w-8 text-green-600 dark:text-green-400' />
-              <p className='text-center text-gray-600 dark:text-neutral-400'>
-                Sign in successful! Redirecting to home...
-              </p>
+              <p className='text-center text-gray-600 dark:text-neutral-400'>{t('success')}</p>
             </>
           )}
 
@@ -204,10 +206,10 @@ function AuthCallbackContent() {
             <>
               <XCircle className='h-8 w-8 text-red-600 dark:text-red-400' />
               <p className='text-center text-gray-600 dark:text-neutral-400'>
-                {error || 'An error occurred during sign in'}
+                {error === NO_AUTH_ERROR ? t('noAuth') : error || t('errorFallback')}
               </p>
               <p className='text-center text-sm text-gray-500 dark:text-neutral-400'>
-                Redirecting to login page...
+                {t('redirectingToLogin')}
               </p>
             </>
           )}
@@ -217,23 +219,26 @@ function AuthCallbackContent() {
   );
 }
 
+function CallbackFallback() {
+  const t = useTranslations('auth.callback');
+  return (
+    <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-neutral-950'>
+      <Card className='w-full max-w-md'>
+        <CardHeader>
+          <CardTitle className='text-center'>{t('loading')}</CardTitle>
+        </CardHeader>
+        <CardContent className='flex flex-col items-center space-y-4'>
+          <Loader2 className='h-8 w-8 animate-spin text-blue-600 dark:text-blue-400' />
+          <p className='text-center text-gray-600 dark:text-neutral-400'>{t('pleaseWait')}</p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function AuthCallbackPage() {
   return (
-    <Suspense
-      fallback={
-        <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-neutral-950'>
-          <Card className='w-full max-w-md'>
-            <CardHeader>
-              <CardTitle className='text-center'>Loading...</CardTitle>
-            </CardHeader>
-            <CardContent className='flex flex-col items-center space-y-4'>
-              <Loader2 className='h-8 w-8 animate-spin text-blue-600 dark:text-blue-400' />
-              <p className='text-center text-gray-600 dark:text-neutral-400'>Please wait...</p>
-            </CardContent>
-          </Card>
-        </div>
-      }
-    >
+    <Suspense fallback={<CallbackFallback />}>
       <AuthCallbackContent />
     </Suspense>
   );

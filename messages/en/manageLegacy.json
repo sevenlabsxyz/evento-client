@@ -1,1 +1,844 @@
-{}
+{
+  "details": {
+    "topBarTitle": "Event Details",
+    "heading": "Details",
+    "subheading": "Edit your event's cover, title, date, location, description and capacity.",
+    "media": "Media",
+    "basics": "Basics",
+    "eventTitle": "Event Title",
+    "eventTitlePlaceholder": "Enter event name",
+    "dateTime": "Date & time",
+    "starts": "Starts",
+    "ends": "Ends",
+    "address": "Address",
+    "chooseAddress": "Choose address",
+    "descriptionPlaceholder": "Add description about this event...",
+    "capacity": "Capacity",
+    "capacityValue": "Capacity {capacity}",
+    "setCapacity": "Set Capacity",
+    "maxAttendees": "Maximum attendees: {capacity}",
+    "showCapacityCount": "Show capacity count",
+    "showCapacityCountHint": "Display spots remaining to guests",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "toasts": {
+      "updated": "Event updated successfully!",
+      "updateFailed": "Failed to update event"
+    },
+    "notFound": {
+      "title": "Event Not Found",
+      "description": "The event you're trying to edit doesn't exist or you don't have permission."
+    }
+  },
+  "guests": {
+    "topBarTitle": "Guest List",
+    "exportCsv": "Export CSV",
+    "notFound": {
+      "title": "Event Not Found",
+      "description": "The event you're trying to manage doesn't exist."
+    },
+    "heading": "Guest list",
+    "subheading": "See who's coming, track the invites you've sent, and manage RSVPs.",
+    "inviteGuests": "Invite guests",
+    "zapAll": "Zap All",
+    "tabs": {
+      "going": "Going",
+      "maybe": "Maybe",
+      "notGoing": "Not going",
+      "invited": "Invited",
+      "withCount": "{label} ({count})"
+    },
+    "searchPlaceholder": "Search event guests...",
+    "searchLabel": "Search event guests",
+    "hostsNotice": "Creator and co-hosts cannot be removed from this list. Remove co-host access in Hosts to remove them from the guest list.",
+    "footer": {
+      "total": "Total Guests: {count}",
+      "statusCount": "{label}: {count}"
+    },
+    "removeSheet": {
+      "title": "Remove guest?",
+      "description": "Remove <strong>{name}</strong> from the approved guest list? They will lose guest-list access.",
+      "thisUser": "this user",
+      "removing": "Removing...",
+      "confirm": "Remove guest"
+    },
+    "loadingGuests": "Loading guests",
+    "toasts": {
+      "noDataToExport": "No guest data available to export",
+      "exporting": "Exporting guest list...",
+      "exported": "Guest list exported successfully",
+      "exportFailed": "Failed to export guest list. Please try again",
+      "removed": "Guest removed from guest list",
+      "removeFailed": "Failed to remove guest"
+    }
+  },
+  "cancelEvent": {
+    "title": "Cancel Event",
+    "aboutToCancel": "You are about to cancel <strong>{title}</strong>.",
+    "thisEvent": "this event",
+    "warning": "Warning: This can't be undone.",
+    "consequences": {
+      "hidden": "The event will be marked as cancelled and hidden from guests",
+      "noAccess": "Guests will no longer be able to view the event or RSVP",
+      "subEvents": "Linked sub-events will be detached from this event",
+      "noReopen": "You won't be able to reopen it from Evento"
+    },
+    "notifyTitle": "Notify attendees via email",
+    "notifyDescription": "Email guests who RSVP'd yes or maybe about the cancellation",
+    "cancelling": "Cancelling...",
+    "toasts": {
+      "canceledWithEmails": "Event canceled. Notification emails have been sent to attendees.",
+      "canceled": "Event canceled successfully.",
+      "failed": "Failed to cancel event. Please try again."
+    }
+  },
+  "csvImport": {
+    "title": "Importing CSV Files",
+    "subtitle": "How to import contacts to Evento in CSV format.",
+    "emailsOnly": {
+      "title": "Emails Only",
+      "description": "Ensure your CSV file contains only emails in 1 single list."
+    },
+    "header": {
+      "title": "Header Item",
+      "description": "Ensure your CSV file contains a header item."
+    },
+    "template": {
+      "title": "Use Our Template",
+      "description": "In case you face any problems importing CSVs, try using our demo below:"
+    },
+    "found": "{count, plural, one {Found # email} other {Found # emails}}",
+    "moreEmails": "+ {count} more emails",
+    "dropzone": "Drag and drop your CSV file here",
+    "browse": "Browse files",
+    "fileHint": "CSV file with email addresses (max 10MB)",
+    "processing": "Processing file...",
+    "downloadExample": "Download Example CSV",
+    "import": "Import CSV",
+    "errors": {
+      "tooLarge": "File size exceeds 10MB limit. Please use a smaller file.",
+      "noValidEmails": "No valid email addresses found",
+      "parse": "Error parsing CSV",
+      "read": "Error reading file"
+    }
+  },
+  "registrationDetail": {
+    "title": "Registration Details",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "denied": "Denied"
+    },
+    "denyReasonPlaceholder": "Reason for denial (optional)",
+    "confirmDeny": "Confirm Deny",
+    "approve": "Approve",
+    "deny": "Deny",
+    "submitted": "Submitted {date}",
+    "reviewed": "Reviewed {date}",
+    "denialReason": "Denial Reason",
+    "answers": "Registration Answers",
+    "noAnswer": "No answer",
+    "noQuestions": "No registration questions were configured for this event.",
+    "notFound": "Registration not found"
+  },
+  "registration": {
+    "topBarTitle": "Registration",
+    "title": "Registration",
+    "subtitle": "Require guests to register before RSVPing and choose the questions they answer.",
+    "questionTypes": {
+      "text": "Text",
+      "longText": "Long Text",
+      "singleSelect": "Single Select",
+      "multiSelect": "Multi Select",
+      "phone": "Phone Number",
+      "checkbox": "Checkbox",
+      "company": "Company"
+    },
+    "questionDescriptions": {
+      "text": "Collect a short, single-line answer",
+      "longText": "Collect a longer, multi-line answer",
+      "singleSelect": "Let guests choose one option from a list",
+      "multiSelect": "Let guests choose multiple options from a list",
+      "url": "Collect a website or link",
+      "phone": "Collect a phone number",
+      "checkbox": "Get a yes/no or agree/disagree response",
+      "instagram": "Get the guest's Instagram username",
+      "twitter": "Get the guest's X (Twitter) handle",
+      "youtube": "Get the guest's YouTube channel",
+      "linkedin": "Get the guest's LinkedIn profile",
+      "company": "Get the company the guest works for"
+    },
+    "companyAutoNote": "We'll automatically pull this information if they've entered it on Evento before.",
+    "invalidType": {
+      "title": "Invalid Question Type",
+      "goBack": "Go Back"
+    },
+    "form": {
+      "questionLabel": "Question Label",
+      "questionPlaceholder": "Enter your question",
+      "options": "Options",
+      "optionPlaceholder": "Option {number}",
+      "addOption": "+ Add Option",
+      "required": "Required",
+      "requiredDescription": "Guests must answer this question to register"
+    },
+    "row": {
+      "dragToReorder": "Drag to reorder question",
+      "questionActions": "Question actions",
+      "options": "Options: {options}"
+    },
+    "publish": {
+      "action": "Publish",
+      "success": "Event published successfully",
+      "failed": "Failed to publish event",
+      "title": "Publish Event",
+      "publishing": "Publishing...",
+      "confirm": "Yes, Publish",
+      "description": "Are you sure you want to publish this event? It will be visible in feeds and discovery."
+    },
+    "eventNotFound": {
+      "title": "Event Not Found",
+      "description": "The event you're trying to manage doesn't exist."
+    },
+    "toasts": {
+      "enableFailed": "Failed to enable registration requirement",
+      "registrationDisabled": "Registration disabled",
+      "settingsUpdateFailed": "Failed to update registration settings",
+      "questionDisabled": "Question disabled",
+      "questionEnabled": "Question enabled",
+      "reorderFailed": "Failed to reorder questions",
+      "questionDeleted": "Question deleted",
+      "deleteFailed": "Failed to delete question"
+    },
+    "requireRegistration": {
+      "title": "Require Registration",
+      "description": "Guests must register to RSVP"
+    },
+    "customMessage": {
+      "title": "Custom RSVP Message",
+      "description": "Send a custom message to guests when their registration is approved",
+      "messageLabel": "Message",
+      "emptyPreview": "Add a custom message for approved guests...",
+      "placeholder": "Write the message approved guests will receive...",
+      "toasts": {
+        "enabled": "Custom RSVP message enabled",
+        "disabled": "Custom RSVP message disabled",
+        "updateFailed": "Failed to update RSVP message settings",
+        "saved": "Custom RSVP message saved",
+        "saveFailed": "Failed to save custom RSVP message"
+      }
+    },
+    "questions": {
+      "title": "Questions",
+      "description": "Guests will be asked these questions when they register for your event. Drag to reorder.",
+      "addNew": "Add New Question",
+      "emptyTitle": "Registration Questions",
+      "emptyDescription": "Add questions to collect information from guests when they register for your event."
+    },
+    "questionSheet": {
+      "chooseTitle": "Choose New Question",
+      "backToTypes": "Back to question types",
+      "updating": "Updating...",
+      "saveChanges": "Save Changes",
+      "saveQuestion": "Save Question",
+      "socialNote": "We will retrieve this information automatically if guests have added it to their Evento profile.",
+      "requiredDescription": "Guests must answer this question to register."
+    },
+    "deleteSheet": {
+      "title": "Delete Question",
+      "deleting": "Deleting...",
+      "heading": "Delete this question?",
+      "description": "\"{label}\" will be permanently deleted. This action cannot be undone."
+    }
+  },
+  "registrationTypes": {
+    "title": "Choose Question Type",
+    "subtitle": "Pick the kind of question guests answer when they register.",
+    "sections": {
+      "basic": "Basic",
+      "socialProfile": "Social Profile",
+      "other": "Other"
+    },
+    "socialNote": "We will retrieve the information automatically if the guest has set it on their Luma profile."
+  },
+  "registrationAdd": {
+    "title": "Add Question",
+    "invalidTypeDescription": "The question type you're trying to add doesn't exist.",
+    "defaultQuestions": {
+      "phone": "What is your phone number?",
+      "instagram": "What is your Instagram profile?",
+      "twitter": "What is your X (Twitter) handle?",
+      "youtube": "What is your YouTube channel?",
+      "linkedin": "What is your LinkedIn profile?",
+      "company": "What company do you work for?"
+    },
+    "toasts": {
+      "created": "Question created",
+      "createFailed": "Failed to create question"
+    }
+  },
+  "registrationEdit": {
+    "title": "Edit Question",
+    "invalidTypeDescription": "The question type you're trying to edit doesn't exist.",
+    "notFound": {
+      "title": "Question Not Found",
+      "description": "The question you're trying to edit doesn't exist."
+    },
+    "toasts": {
+      "updated": "Question updated",
+      "updateFailed": "Failed to update question"
+    }
+  },
+  "registrationSubmissions": {
+    "topBarTitle": "Registration Submissions",
+    "title": "Submissions",
+    "subtitle": "Review registration submissions and approve or deny guests.",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "denied": "Denied"
+    },
+    "tabWithCount": "{label} ({count})",
+    "toasts": {
+      "approved": "Registration approved",
+      "approveFailed": "Failed to approve registration",
+      "denied": "Registration denied",
+      "denyFailed": "Failed to deny registration"
+    },
+    "eventNotFound": {
+      "title": "Event Not Found",
+      "description": "The event you're trying to manage doesn't exist."
+    },
+    "table": {
+      "guest": "Guest",
+      "submitted": "Submitted",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No Submissions",
+      "pending": "No pending registrations to review.",
+      "approved": "No approved registrations.",
+      "denied": "No denied registrations."
+    },
+    "summary": {
+      "total": "Total: {count}",
+      "showing": "Showing {status, select, pending {pending} approved {approved} other {denied}}: {count}"
+    },
+    "actions": {
+      "deny": "Deny",
+      "approve": "Approve",
+      "view": "View"
+    },
+    "submittedOn": "Submitted {date}"
+  },
+  "emailBlast": {
+    "noSubject": "No subject",
+    "cancelling": "Cancelling...",
+    "sendAsap": "Send as soon as possible",
+    "sheet": {
+      "newTitle": "New Email Blast",
+      "editTitle": "Edit Scheduled Blast"
+    },
+    "cancelDialog": {
+      "title": "Cancel scheduled blast?",
+      "description": "This will cancel the scheduled blast and it will not be sent.",
+      "keep": "Keep Scheduled",
+      "confirm": "Cancel Blast"
+    },
+    "status": {
+      "scheduled": "Scheduled",
+      "sending": "Sending",
+      "completed": "Completed",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "draft": "Draft",
+      "delivered": "Delivered",
+      "pending": "Pending"
+    },
+    "card": {
+      "to": "To: {count, plural, one {# recipient} other {# recipients}}",
+      "scheduledFor": "Scheduled for: {date}",
+      "created": "Created: {date}",
+      "id": "ID: {id}...",
+      "delivered": "{count} delivered",
+      "failed": "{count} failed",
+      "pending": "{count} pending"
+    },
+    "detail": {
+      "title": "Email Blast Details",
+      "sendingInProgress": "Sending in progress",
+      "titleLabel": "Title",
+      "scheduledForSending": "Scheduled For Sending",
+      "created": "Created",
+      "id": "ID",
+      "recipients": "Recipients",
+      "target": "Target:",
+      "allRecipients": "All Recipients",
+      "totalRecipients": "Total Recipients:",
+      "deliveryStatistics": "Delivery Statistics",
+      "deliveryRate": "Delivery Rate",
+      "message": "Message"
+    },
+    "page": {
+      "topBarTitle": "Email Blasts",
+      "heading": "Email blasts",
+      "subtitle": "Send updates to your guests by email, now or on a schedule.",
+      "newBlast": "New blast",
+      "loading": "Loading email blasts...",
+      "loadErrorTitle": "Failed to load email blasts",
+      "loadErrorDescription": "There was an error loading your email blasts. Please try again.",
+      "emptyTitle": "No email blasts yet",
+      "emptyDescription": "Send your first email blast to keep your guests informed",
+      "createBlast": "Create Email Blast",
+      "cancelSuccess": "Email blast cancelled successfully",
+      "cancelFailed": "Failed to cancel email blast"
+    },
+    "compose": {
+      "toasts": {
+        "rsvpStatsFailed": "Failed to fetch RSVP stats",
+        "chooseDateTime": "Please choose a date and time to schedule this email blast",
+        "invalidDateTime": "Invalid date or time format",
+        "mustBeFuture": "Scheduled time must be in the future",
+        "updated": "Email blast updated successfully!",
+        "scheduled": "Email blast scheduled successfully!",
+        "sent": "Email blast sent successfully!",
+        "updateFailed": "Failed to update email blast",
+        "sendFailed": "Failed to send email blast"
+      },
+      "recipients": {
+        "all": {
+          "label": "All RSVPs",
+          "description": "Send to {count, plural, one {# guest who has RSVPd} other {# guests who have RSVPd}}",
+          "descriptionLoading": "Send to guests who have RSVPd"
+        },
+        "yes": {
+          "label": "RSVP: Yes",
+          "description": "Send to {count, plural, one {# guest} other {# guests}} who confirmed attendance",
+          "descriptionLoading": "Send to guests who confirmed attendance"
+        },
+        "no": {
+          "label": "RSVP: No",
+          "description": "Send to {count, plural, one {# guest} other {# guests}} who declined",
+          "descriptionLoading": "Send to guests who declined"
+        },
+        "maybe": {
+          "label": "RSVP: Maybe",
+          "description": "Send to {count, plural, one {# guest} other {# guests}} who might attend",
+          "descriptionLoading": "Send to guests who might attend"
+        },
+        "invited": {
+          "label": "Invited",
+          "description": "Send to invited guests"
+        }
+      },
+      "messagePlaceholder": "Write your email here...",
+      "actions": {
+        "saveChanges": "Save Changes",
+        "schedule": "Schedule Email Blast",
+        "send": "Send Email Blast",
+        "updating": "Updating...",
+        "scheduling": "Scheduling...",
+        "sending": "Sending..."
+      },
+      "summary": {
+        "scheduledFor": "Scheduled for {date}",
+        "scheduledPending": "Scheduled for later (date and time pending)",
+        "asap": "Will send as soon as possible"
+      },
+      "recipientsLabel": "Recipients",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Enter email subject...",
+      "messageLabel": "Message",
+      "enterUrl": "Enter URL:",
+      "deliveryLabel": "Delivery",
+      "rescheduleOnly": "Scheduled blasts can only be rescheduled to another future time.",
+      "now": "Now",
+      "later": "Scheduled for later",
+      "pickDateTime": "Pick date and time",
+      "date": "Date",
+      "time": "Time",
+      "selectDate": "Select date",
+      "selectTime": "Select time",
+      "preview": {
+        "recipients": "Recipients:",
+        "recipientsValue": "{label} ({count, plural, one {# recipient} other {# recipients}})",
+        "delivery": "Delivery:",
+        "inboxPreview": "Inbox Preview",
+        "from": "From: Evento Host",
+        "subject": "Subject: {subject}",
+        "noContent": "No message content yet"
+      },
+      "scheduleDate": "Schedule Date",
+      "scheduleTime": "Schedule Time"
+    }
+  },
+  "reminders": {
+    "topBarTitle": "Reminders",
+    "heading": "Reminders",
+    "subtitle": "Choose when guests get automatic email reminders before the event.",
+    "maxReached": "You can select up to {max} reminders",
+    "maxHint": "You can select up to {max} reminders.",
+    "toasts": {
+      "turnedOff": "Guest reminders turned off",
+      "updated": "Guest reminders updated successfully",
+      "notAvailable": "Guest reminders are not available yet. Please try again later.",
+      "updateFailed": "Failed to update guest reminders"
+    },
+    "error": {
+      "title": "Reminders unavailable",
+      "description": "We couldn't load reminder settings for this event."
+    },
+    "goBack": "Go Back",
+    "unavailable": {
+      "title": "Reminders coming soon",
+      "description": "Guest reminders aren't available for this event yet. Please check back later."
+    },
+    "guestReminders": {
+      "title": "Guest reminders",
+      "description": "Automatically email guests who RSVP'd Yes before the event starts. Choose up to {max} times. Times are relative to the event start."
+    },
+    "selectedCount": "{count} of {max} reminders selected",
+    "empty": {
+      "title": "No reminders scheduled",
+      "description": "Guests who RSVP Yes will not receive automatic reminder emails until you turn one on."
+    },
+    "offsets": {
+      "oneHour": "1 hour before",
+      "twoHours": "2 hours before",
+      "threeHours": "3 hours before",
+      "eightHours": "8 hours before",
+      "oneDay": "1 day before",
+      "threeDays": "3 days before"
+    }
+  },
+  "security": {
+    "title": "Security & Privacy",
+    "toasts": {
+      "updated": "Security settings updated successfully!",
+      "updateFailed": "Failed to update security settings"
+    },
+    "notFound": {
+      "title": "Event Not Found",
+      "description": "The event you're trying to edit doesn't exist or you don't have permission.",
+      "goBack": "Go Back"
+    },
+    "heading": "Security & privacy",
+    "description": "Control who can see your event, password protection and guest list visibility.",
+    "visibility": {
+      "title": "Visibility",
+      "description": "Who can find the event and what unapproved guests see.",
+      "eventVisibility": "Event Visibility"
+    },
+    "registrationVisibility": {
+      "title": "Registration Visibility",
+      "description": "Hide details from unapproved guests",
+      "hideLocation": "Hide location until approved",
+      "hideGuestList": "Hide guest list until approved",
+      "hideDescription": "Hide description until approved"
+    },
+    "password": {
+      "title": "Password",
+      "description": "Require a password before guests can view the event.",
+      "protection": "Password Protection",
+      "protected": "Protected",
+      "notProtected": "Not Protected"
+    },
+    "guestList": {
+      "title": "Guest list",
+      "visibility": "Guest List Visibility",
+      "hiddenFromNonHosts": "Hidden from non-hosts"
+    }
+  },
+  "hosts": {
+    "title": "Hosts",
+    "removeConfirm": "Are you sure you want to remove this cohost?",
+    "toasts": {
+      "removed": "Cohost removed",
+      "removeFailed": "Failed to remove cohost"
+    },
+    "notFound": {
+      "title": "Event Not Found",
+      "description": "The event you're trying to manage doesn't exist.",
+      "goBack": "Go Back"
+    },
+    "heading": "Cohosts",
+    "description": "Manage who can co-host and help run this event.",
+    "inviteCohost": "Invite Cohost",
+    "hostsTitle": "Hosts",
+    "creator": "Creator",
+    "removeAria": "Remove {name}",
+    "empty": {
+      "title": "No Hosts",
+      "description": "Add cohosts to help you manage this event",
+      "addCohost": "Add Cohost"
+    },
+    "pendingInvites": {
+      "title": "Pending Invites",
+      "cancelling": "Cancelling...",
+      "pending": "Pending cohost invite"
+    },
+    "cancelDialog": {
+      "title": "Cancel Invite?",
+      "description": "Are you sure you want to cancel the cohost invitation to <strong>{invitee}</strong>? This action cannot be undone.",
+      "keep": "Keep Invite",
+      "confirm": "Cancel Invite"
+    }
+  },
+  "subEvents": {
+    "title": "Sub Events",
+    "toasts": {
+      "removed": "\"{title}\" removed from sub events",
+      "removeFailed": "Failed to remove sub event"
+    },
+    "heading": "Sub events",
+    "description": "Group related events under this one by creating new ones or linking existing events.",
+    "addButton": "Add sub event",
+    "draft": "Draft",
+    "removeAria": "Remove {title}",
+    "loadFailed": "Failed to load sub events.",
+    "empty": {
+      "title": "No Sub Events",
+      "description": "Create a new event under this one, or link one of your existing events"
+    },
+    "createNew": "Create New Sub Event",
+    "linkExisting": "Link Existing Event",
+    "addSheet": {
+      "title": "Add Sub Event",
+      "createDescription": "Set up a brand new event under this one",
+      "linkDescription": "Choose one of your own events"
+    },
+    "removeSheet": {
+      "title": "Remove sub event",
+      "description": "Remove \"{title}\" from this event's sub events? The event itself won't be deleted.",
+      "descriptionFallback": "Remove \"this event\" from this event's sub events? The event itself won't be deleted.",
+      "confirm": "Remove",
+      "removing": "Removing..."
+    }
+  },
+  "cohosts": {
+    "sheet": {
+      "inviteTitle": "Invite Cohosts",
+      "addNoteTitle": "Add Note"
+    },
+    "step1": {
+      "emailInvitation": "Email invitation",
+      "searchPlaceholder": "Search by @username or email",
+      "pendingInvites": "Pending Invites",
+      "pendingInvite": "Pending cohost invite",
+      "empty": {
+        "title": "Invite Cohosts",
+        "description": "Search by @username or enter an email"
+      },
+      "noResults": {
+        "title": "No users found",
+        "description": "No users matching \"{query}\""
+      },
+      "next": "Next ({count})"
+    },
+    "step2": {
+      "subtitle": "Add a personal note to your invitation",
+      "messagePlaceholder": "Write a note to include with your invite (optional)",
+      "messageHint": "This message is sent along with the cohost invitation.",
+      "inviting": "{count, plural, one {Inviting # cohost:} other {Inviting # cohosts:}}",
+      "noneSelected": "No cohosts selected",
+      "goBackHint": "Go back to add people to invite.",
+      "emailInvitation": "Email invitation",
+      "removeAria": "Remove {name}",
+      "sending": "Sending...",
+      "send": "SEND COHOST INVITES"
+    }
+  },
+  "linkSubEvent": {
+    "title": "Link Existing Event",
+    "draft": "Draft",
+    "linking": "Linking...",
+    "link": "Link",
+    "loading": "Loading...",
+    "loadMore": "Load more",
+    "toasts": {
+      "linked": "\"{title}\" linked as sub event",
+      "linkFailed": "Failed to link sub event"
+    },
+    "searchPlaceholder": "Search your events",
+    "filters": {
+      "hosting": "Hosting",
+      "drafts": "Drafts"
+    },
+    "loadFailed": "Failed to load your events",
+    "empty": {
+      "notLoadedYet": "No linkable events loaded yet",
+      "noMatches": "No events found matching \"{query}\"",
+      "noneAvailable": "No events available to link",
+      "loadMoreHint": "Load more to keep checking your remaining events.",
+      "onlyOwnHint": "Only your own events without a parent event can be linked."
+    }
+  },
+  "inviteUsers": {
+    "sheet": {
+      "csvImported": "{count, plural, one {Imported # email from CSV} other {Imported # emails from CSV}}",
+      "inviteTitle": "Invite Guests",
+      "addNoteTitle": "Add Note"
+    },
+    "step1": {
+      "shareUnavailable": "Sharing is not available on this device",
+      "shareFailed": "Unable to share event link",
+      "shareLink": {
+        "title": "Share event link",
+        "description": "Use your share menu to send this URL."
+      },
+      "searchPlaceholder": "Email or @username",
+      "emailInvitation": "Email invitation",
+      "empty": {
+        "title": "Find Evento Users",
+        "description": "Search by @username or import a CSV"
+      },
+      "noResults": {
+        "title": "No users found",
+        "description": "No users matching \"{query}\""
+      },
+      "next": "Next ({count})"
+    },
+    "step2": {
+      "subtitle": "Make it special for your guests!",
+      "messagePlaceholder": "Write a note to include with your invite (optional)",
+      "messageHint": "This message is sent along with the details of your Event.",
+      "inviting": "{count, plural, one {Inviting # user:} other {Inviting # users:}}",
+      "noneSelected": "No users selected",
+      "goBackHint": "Go back to add users to invite.",
+      "emailInvitation": "Email invitation",
+      "removeAria": "Remove {name}",
+      "sending": "Sending...",
+      "send": "SEND INVITES"
+    }
+  },
+  "music": {
+    "title": "Music",
+    "save": "Save",
+    "subtitle": "Add music tracks to your event that guests can discover and listen to.",
+    "toasts": {
+      "invalidSpotify": "Please enter a valid Spotify URL",
+      "spotifyAdded": "Spotify track added! Click Save to update the event.",
+      "invalidWavlake": "Please enter a valid Wavlake URL",
+      "wavlakeAdded": "Wavlake track added! Click Save to update the event.",
+      "spotifyRemoved": "Spotify track removed! Click Save to update the event.",
+      "wavlakeRemoved": "Wavlake track removed! Click Save to update the event.",
+      "updated": "Music settings updated successfully!",
+      "updateFailed": "Failed to update music settings"
+    },
+    "notFound": {
+      "title": "Event Not Found",
+      "description": "The event you're trying to manage doesn't exist.",
+      "goBack": "Go Back"
+    },
+    "spotify": {
+      "description": "Add a Spotify track or playlist",
+      "add": "Add Spotify Track"
+    },
+    "wavlake": {
+      "description": "Add a Wavlake track",
+      "add": "Add Wavlake Track"
+    },
+    "info": {
+      "title": "About Music Integration",
+      "description": "Music tracks you add here will be displayed on your event page, allowing guests to discover and listen to music related to your event."
+    }
+  },
+  "contributions": {
+    "title": "Contributions",
+    "save": "Save",
+    "subtitle": "Set up payment methods and suggested contribution amounts for your event.",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes",
+    "toasts": {
+      "updated": "Contribution settings updated successfully!",
+      "updateFailed": "Failed to update contribution settings"
+    },
+    "notFound": {
+      "title": "Event Not Found",
+      "description": "The event you're trying to manage doesn't exist.",
+      "goBack": "Go Back"
+    },
+    "suggested": {
+      "title": "Suggested Amount",
+      "description": "Guests can choose their own amount",
+      "hint": "This is a suggested amount. Guests can contribute any amount they choose."
+    },
+    "methods": {
+      "title": "Payment Methods",
+      "description": "Enable the handles guests can use to contribute.",
+      "cashAppHint": "Enter as $username",
+      "venmoHint": "Enter as @username",
+      "paypalPlaceholder": "username or email",
+      "paypalHint": "Username or email address"
+    },
+    "info": {
+      "title": "How Contributions Work",
+      "description": "Payment methods you enable will appear as buttons on your event page. When guests tap them, the respective app will open on their phone to complete the contribution."
+    }
+  },
+  "crowdfunding": {
+    "title": "Crowdfunding",
+    "save": "Save",
+    "saving": "Saving...",
+    "update": "Update Campaign",
+    "create": "Create Campaign",
+    "loadError": "Could not load campaign settings",
+    "subtitleUpdate": "Update your crowdfunding campaign settings below.",
+    "subtitleCreate": "Set up a Lightning crowdfunding campaign for your event.",
+    "toasts": {
+      "walletLoading": "Loading your wallet. Try again in a moment.",
+      "walletLoadingTitle": "Wallet loading",
+      "walletSetup": "Open your wallet to finish setting up your Lightning address.",
+      "walletSetupTitle": "Wallet setup required",
+      "walletSyncing": "Your wallet address is still syncing. Try again in a moment.",
+      "walletSyncingTitle": "Syncing wallet",
+      "updated": "Campaign updated successfully!",
+      "created": "Campaign created successfully!",
+      "updateFailed": "Failed to update campaign",
+      "createFailed": "Failed to create campaign"
+    },
+    "progress": {
+      "title": "Campaign Progress",
+      "raised": "Raised",
+      "goal": "Goal",
+      "sats": "{amount} sats",
+      "goalReached": "{percent}% of goal reached",
+      "pledges": "Pledges"
+    },
+    "details": {
+      "title": "Campaign Details",
+      "description": "Name and describe your campaign",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. Help fund our event",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Tell supporters what this campaign is for..."
+    },
+    "goal": {
+      "label": "Goal (sats)",
+      "placeholder": "Optional",
+      "hint": "Leave empty for an open-ended campaign with no specific target."
+    },
+    "visibility": {
+      "label": "Visibility",
+      "public": "Public",
+      "private": "Private",
+      "publicHint": "Anyone can view and contribute to this campaign.",
+      "privateHint": "Only people with the link can view and contribute."
+    },
+    "status": {
+      "label": "Status",
+      "active": "Active",
+      "paused": "Paused",
+      "activeHint": "Campaign is accepting pledges.",
+      "pausedHint": "Campaign is paused and not accepting new pledges."
+    },
+    "destination": {
+      "title": "Payment Destination",
+      "description": "Funds are sent directly to your Lightning address. The destination is automatically set to your account's Lightning address and cannot be changed.",
+      "current": "Current destination"
+    }
+  }
+}

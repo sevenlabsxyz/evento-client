@@ -1,7 +1,43 @@
 'use client';
 
+import { LOCALE_COOKIE, matchLocale, type AppLocale } from '@/i18n/config';
 import { reportErrorAlert } from '@/lib/observability/error-alert-client';
 import { useEffect, useRef } from 'react';
+
+/**
+ * The global error boundary replaces the root layout, so no NextIntlClientProvider
+ * is available here; this mirrors `misc.error` in messages/{locale}/misc.json.
+ */
+const GLOBAL_ERROR_COPY: Record<
+  AppLocale,
+  { title: string; description: string; tryAgain: string }
+> = {
+  en: {
+    title: 'Something went wrong',
+    description: 'An unexpected error occurred. Please try again.',
+    tryAgain: 'Try again',
+  },
+  'pt-BR': {
+    title: 'Algo deu errado',
+    description: 'Ocorreu um erro inesperado. Tente novamente.',
+    tryAgain: 'Tentar novamente',
+  },
+  es: {
+    title: 'Algo salió mal',
+    description: 'Ocurrió un error inesperado. Inténtalo de nuevo.',
+    tryAgain: 'Intentar de nuevo',
+  },
+};
+
+function detectLocale(): AppLocale {
+  if (typeof document === 'undefined') return 'en';
+  const cookie = document.cookie
+    .split('; ')
+    .find((entry) => entry.startsWith(`${LOCALE_COOKIE}=`))
+    ?.split('=')[1];
+  return matchLocale(cookie ? decodeURIComponent(cookie) : navigator.language) ?? 'en';
+}
+
 export default function GlobalError({
   error,
   reset,
@@ -11,6 +47,8 @@ export default function GlobalError({
 }) {
   // Guard to prevent resending the same error on rerender
   const reportedRef = useRef<Error | null>(null);
+  const locale = detectLocale();
+  const copy = GLOBAL_ERROR_COPY[locale];
 
   useEffect(() => {
     // Only report if this is a new error object
@@ -26,7 +64,7 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html lang='en'>
+    <html lang={locale}>
       <body>
         <style>{`
           :root { color-scheme: light dark; }
@@ -48,11 +86,9 @@ export default function GlobalError({
             fontFamily: 'system-ui, -apple-system, sans-serif',
           }}
         >
-          <h2 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '8px' }}>
-            Something went wrong
-          </h2>
+          <h2 style={{ fontSize: '20px', fontWeight: 600, marginBottom: '8px' }}>{copy.title}</h2>
           <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '16px' }}>
-            An unexpected error occurred. Please try again.
+            {copy.description}
           </p>
           <button
             onClick={() => reset()}
@@ -66,7 +102,7 @@ export default function GlobalError({
               cursor: 'pointer',
             }}
           >
-            Try again
+            {copy.tryAgain}
           </button>
         </div>
       </body>

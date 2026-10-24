@@ -1,3 +1,4 @@
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { EventRSVP } from '@/lib/types/api';
 
 export const MIN_BATCH_ZAP_PER_PERSON_SATS = 5;
@@ -173,7 +174,7 @@ export function validateBatchZap({
   if (!recipientCount) {
     return {
       valid: false,
-      error: 'There are no guests eligible to receive this batch zap.',
+      error: translateHooks('batchZap.noEligibleGuests'),
       distribution: null,
     };
   }
@@ -181,7 +182,7 @@ export function validateBatchZap({
   if (!amountMode) {
     return {
       valid: false,
-      error: 'Choose whether the amount is per person or split across the total.',
+      error: translateHooks('batchZap.chooseAmountMode'),
       distribution: null,
     };
   }
@@ -189,7 +190,7 @@ export function validateBatchZap({
   if (!Number.isInteger(enteredAmountSats) || enteredAmountSats <= 0) {
     return {
       valid: false,
-      error: 'Enter a whole number of sats greater than zero.',
+      error: translateHooks('batchZap.wholeNumber'),
       distribution: null,
     };
   }
@@ -199,7 +200,7 @@ export function validateBatchZap({
   if (!distribution) {
     return {
       valid: false,
-      error: 'Enter a valid amount to continue.',
+      error: translateHooks('batchZap.validAmount'),
       distribution: null,
     };
   }
@@ -207,8 +208,8 @@ export function validateBatchZap({
   if (distribution.perRecipientAmountSats < MIN_BATCH_ZAP_PER_PERSON_SATS) {
     const error =
       amountMode === 'per-person'
-        ? `Each guest must receive at least ${MIN_BATCH_ZAP_PER_PERSON_SATS} sats.`
-        : `This total splits to less than ${MIN_BATCH_ZAP_PER_PERSON_SATS} sats per guest.`;
+        ? translateHooks('batchZap.perPersonMinimum', { min: MIN_BATCH_ZAP_PER_PERSON_SATS })
+        : translateHooks('batchZap.totalSplitMinimum', { min: MIN_BATCH_ZAP_PER_PERSON_SATS });
 
     return {
       valid: false,

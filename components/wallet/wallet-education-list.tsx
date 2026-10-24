@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
 import { logger } from '@/lib/utils/logger';
+import { useTranslations } from 'next-intl';
 import { WalletEducationalSheet } from './wallet-educational-sheet';
 
 export interface BlogPost {
@@ -30,6 +31,7 @@ export interface BlogPost {
 }
 
 export function WalletEducationList() {
+  const t = useTranslations('wallet');
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedArticle, setSelectedArticle] = useState<BlogPost | null>(null);
@@ -74,7 +76,9 @@ export function WalletEducationList() {
   if (isLoading) {
     return (
       <div className='space-y-3'>
-        <h3 className='text-base font-semibold text-muted-foreground'>Bitcoin Basics</h3>
+        <h3 className='text-base font-semibold text-muted-foreground'>
+          {t('education.bitcoinBasics')}
+        </h3>
         {[1, 2, 3].map((i) => (
           <Skeleton key={i} className='h-14 w-full rounded-2xl' />
         ))}
@@ -90,7 +94,7 @@ export function WalletEducationList() {
   return (
     <>
       <div className='space-y-3'>
-        <h3 className='text-sm font-semibold'>Bitcoin Basics</h3>
+        <h3 className='text-sm font-semibold'>{t('education.bitcoinBasics')}</h3>
         {posts.map((post) => (
           <Card
             key={post.id}

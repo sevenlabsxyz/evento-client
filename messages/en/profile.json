@@ -1,1 +1,320 @@
-{}
+{
+  "sheets": {
+    "instagram": {
+      "subtitle": "Instagram profile",
+      "description": "You're about to visit this Instagram profile. This will open in a new tab.",
+      "open": "Open Instagram"
+    },
+    "x": {
+      "subtitle": "X (Twitter) profile",
+      "description": "You're about to visit this X (Twitter) profile. This will open in a new tab.",
+      "open": "Open X Profile"
+    },
+    "website": {
+      "title": "Website",
+      "subtitle": "External website",
+      "description": "You're about to visit an external website. This will open in a new tab.",
+      "open": "Open Website"
+    },
+    "lightning": {
+      "copiedToast": "Lightning address copied!",
+      "copyFailed": "Failed to copy address",
+      "title": "Lightning Address",
+      "subtitle": "Bitcoin Lightning Address",
+      "description": "This is a Bitcoin Lightning Network address. You can use it to send instant, low-fee Bitcoin payments globally.",
+      "openInWallet": "Open in Wallet",
+      "copyAddress": "Copy Address"
+    },
+    "nostr": {
+      "copiedToast": "Nostr identifier copied!",
+      "copyFailed": "Failed to copy identifier",
+      "title": "Nostr Protocol",
+      "subtitle": "Decentralized social network",
+      "description": "This is a Nostr identifier (NIP-05). Nostr is a decentralized protocol for social networking.",
+      "openApp": "Open in Nostr App",
+      "copy": "Copy NIP-05"
+    },
+    "qr": {
+      "downloaded": "QR Code downloaded!",
+      "downloadFailed": "Failed to download QR code",
+      "linkCopied": "Link copied!",
+      "copyFailed": "Failed to copy link",
+      "title": "Profile QR Code",
+      "download": "Download QR Code",
+      "copyLink": "Copy Link"
+    }
+  },
+  "copiedBang": "Copied!",
+  "aboutMe": "About Me",
+  "hidden": "Hidden",
+  "interests": "Interests",
+  "campaign": {
+    "pledge": {
+      "createFailed": "Failed to create pledge. Please try again.",
+      "invoiceCopied": "Invoice copied to clipboard",
+      "copyInvoiceFailed": "Failed to copy invoice",
+      "contributeTo": "Contribute to \"{title}\"",
+      "chooseAmount": "Choose an amount to contribute",
+      "creatingInvoice": "Creating invoice…",
+      "contributeAmount": "Contribute {amount} sats",
+      "selectAmount": "Select an amount",
+      "scanToPay": "Scan or copy the invoice to pay <strong>{amount} sats</strong>",
+      "copyInvoice": "Copy invoice",
+      "waiting": "Waiting for payment…",
+      "thankYou": "Thank you!",
+      "received": "Your contribution of <strong>{amount} sats</strong> has been received.",
+      "expiredHeading": "Invoice expired",
+      "expiredBody": "The payment window has closed. You can try again with a new invoice.",
+      "tryAgain": "Try again",
+      "titles": {
+        "amount": "Contribute",
+        "invoice": "Pay Invoice",
+        "settled": "Payment Received",
+        "expired": "Invoice Expired"
+      }
+    },
+    "card": {
+      "defaultTitle": "Crowdfunding",
+      "active": "Active",
+      "paused": "Paused",
+      "satsRaised": "sats raised",
+      "of": "of",
+      "goal": "{amount} goal",
+      "contributions": "{count, plural, one {# contribution} other {# contributions}}",
+      "campaignPaused": "Campaign paused",
+      "contributeSats": "Contribute sats"
+    }
+  },
+  "badges": {
+    "earnedOn": "Earned on",
+    "title": "Badges",
+    "manage": {
+      "slotsFull": "All display slots are full. Remove a badge first.",
+      "updated": "Badges updated successfully",
+      "updateFailed": "Failed to update badges",
+      "title": "Manage Badges",
+      "slotsUsed": "{used} of {total} slots used",
+      "emptyTitle": "You haven't earned any badges yet.",
+      "emptyBody": "Keep using Evento to earn badges!",
+      "displayOnProfile": "Display on Profile",
+      "displayHint": "Tap a slot to remove a badge. Badges appear on your profile in this order.",
+      "available": "Available Badges",
+      "availableHint": "Tap a badge to add it to your profile display."
+    }
+  },
+  "saving": "Saving...",
+  "followers": {
+    "title": "Followers",
+    "searchPlaceholder": "Search followers",
+    "loadFailed": "Failed to load followers",
+    "noMatches": "No followers found matching \"{query}\"",
+    "empty": "@{username} has no followers yet"
+  },
+  "following": {
+    "title": "Following",
+    "searchPlaceholder": "Search following",
+    "loadFailed": "Failed to load following",
+    "noMatches": "No following found matching \"{query}\"",
+    "empty": "@{username} is not following anyone yet"
+  },
+  "loadingEllipsis": "Loading...",
+  "loadMore": "Load more",
+  "edit": {
+    "name": {
+      "title": "Name",
+      "required": "Name is required",
+      "tooLong": "Name must be less than 50 characters",
+      "invalid": "Invalid name",
+      "updated": "Name updated successfully",
+      "updateFailed": "Failed to update name",
+      "placeholder": "Your name",
+      "info": "Your display name is how you appear to others on Evento. Use your real name or a nickname."
+    },
+    "bio": {
+      "title": "Biography",
+      "invalid": "Invalid bio",
+      "updated": "Bio updated successfully",
+      "updateFailed": "Failed to update bio",
+      "placeholder": "Tell us about yourself...",
+      "info": "Write a short bio to help others get to know you. Share your interests, what brings you to events, or anything else you'd like people to know."
+    },
+    "username": {
+      "title": "Username",
+      "chooseAvailable": "Please choose an available username",
+      "invalid": "Invalid username",
+      "updated": "Username updated successfully",
+      "updateFailed": "Failed to update username",
+      "placeholder": "username",
+      "available": "Username is available!",
+      "unavailable": "Username is not available.",
+      "info": "Your username is unique and helps others find you on Evento. It can only contain letters, numbers, and underscores."
+    },
+    "lightning": {
+      "title": "Bitcoin",
+      "invalidFormat": "Invalid Lightning address format (e.g., user@wallet.com)",
+      "invalid": "Invalid Lightning address",
+      "updated": "Lightning address updated successfully",
+      "updateFailed": "Failed to update Lightning address",
+      "managedSubtitle": "Your Lightning address is managed by your Evento wallet.",
+      "subtitle": "Add your Lightning Network address to receive payments.",
+      "managedInfo": "Evento syncs this address from your built-in wallet so crowdfunding and wallet payments always use the same destination.",
+      "info": "Lightning addresses allow you to receive instant Bitcoin payments from anyone attending your events or visiting your profile.",
+      "openWalletHint": "Open Wallet to unlock, create, or resync your Lightning address.",
+      "popularWallets": "Popular Lightning wallets:",
+      "openWallet": "Open Wallet"
+    },
+    "nostr": {
+      "title": "Nostr",
+      "invalidFormat": "Invalid Nostr identifier format (e.g., user@domain.com)",
+      "invalid": "Invalid Nostr identifier",
+      "updated": "Nostr identifier updated successfully",
+      "updateFailed": "Failed to update Nostr identifier",
+      "subtitle": "Add your Nostr identifier (NIP-05)",
+      "info": "A Nostr identifier (NIP-05) helps people find and verify your Nostr profile. It looks like an email address but is used for the Nostr protocol.",
+      "whatIs": "What is Nostr?",
+      "whatIsBody": "Nostr is a decentralized social network protocol that gives you control over your identity and content. Your NIP-05 identifier makes it easy for others to find you across different Nostr apps."
+    },
+    "image": {
+      "selectImageFile": "Please select an image file",
+      "tooLarge": "Image size should be less than 5MB",
+      "selectImage": "Please select an image",
+      "updated": "Profile image updated",
+      "updateFailed": "Failed to update profile image",
+      "title": "Profile Image",
+      "subtitle": "Choose your photo",
+      "alt": "Profile",
+      "chooseFromLibrary": "Choose from Library",
+      "uploading": "Uploading..."
+    },
+    "interests": {
+      "updated": "Interests updated successfully",
+      "updateFailed": "Failed to update interests",
+      "selectedCount": "{count, plural, one {# interest selected} other {# interests selected}}",
+      "searchPlaceholder": "Search interests...",
+      "noMatches": "No interests found matching \"{query}\"",
+      "noneAvailable": "No interests available"
+    },
+    "social": {
+      "title": "Social Links",
+      "invalidInstagram": "Invalid Instagram username",
+      "invalidX": "Invalid X username",
+      "invalidWebsite": "Invalid website URL",
+      "invalidData": "Invalid social links data",
+      "updated": "Social links updated successfully",
+      "updateFailed": "Failed to update social links",
+      "xLabel": "X (formerly Twitter)",
+      "websitePlaceholder": "yourwebsite.com",
+      "info": "Add your social media profiles to help others connect with you outside of Evento."
+    },
+    "prompts": {
+      "answerTooShort": "Answer must be at least 5 characters",
+      "answerTooLong": "Answer must be less than 500 characters",
+      "updated": "Prompt updated successfully",
+      "answered": "Prompt answered successfully",
+      "limit": "You can only have up to 4 prompts",
+      "saveFailed": "Failed to save prompt",
+      "deleted": "Prompt deleted successfully",
+      "deleteFailed": "Failed to delete prompt",
+      "hiddenToast": "Prompt hidden from profile",
+      "visibleToast": "Prompt visible on profile",
+      "visibilityFailed": "Failed to update visibility",
+      "title": "Prompts",
+      "answerTitle": "Answer Prompt",
+      "editTitle": "Edit Prompt",
+      "subtitle": "{count}/4 prompts • Showcase your personality",
+      "yourPrompts": "Your Prompts",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "hideFromProfile": "Hide from profile",
+      "showOnProfile": "Show on profile",
+      "deletePrompt": "Delete prompt",
+      "editAnswer": "Edit answer",
+      "available": "Available Prompts",
+      "selectCategory": "Select a category",
+      "noneInCategory": "No available prompts in this category",
+      "empty": "No prompts yet",
+      "maxReached": "You've reached the maximum of 4 prompts. Delete a prompt to add a new one.",
+      "yourAnswer": "Your Answer",
+      "answerPlaceholder": "Share your thoughts...",
+      "minChars": "Minimum 5 characters",
+      "visibleHint": "Make this prompt visible to others",
+      "deleteTitle": "Delete Prompt",
+      "deleteConfirm": "Are you sure you want to delete this prompt? This action cannot be undone.",
+      "deleting": "Deleting...",
+      "reordered": "Prompt order updated",
+      "reorderFailed": "Failed to reorder prompts"
+    }
+  },
+  "metadata": {
+    "titleWithName": "{name} (@{username}) on Evento",
+    "title": "@{username} on Evento",
+    "description": "View all events by {name} on Evento.",
+    "ogAlt": "Profile card for {name}",
+    "defaultDescription": "Events made social -- evento.so",
+    "ogTagline": "View events on Evento"
+  },
+  "page": {
+    "unknownUser": "Unknown User",
+    "unableToIdentify": "Unable to identify user",
+    "thisUser": "this user",
+    "followed": "You followed {name}!",
+    "unfollowed": "You unfollowed {name}",
+    "followFailed": "Failed to follow. Please try again.",
+    "unfollowFailed": "Failed to unfollow. Please try again.",
+    "user": "User",
+    "shareTitle": "{name} on Evento",
+    "shareText": "Check out {name}'s profile on Evento",
+    "linkCopied": "Profile link copied to clipboard!",
+    "shareFailed": "Failed to share profile",
+    "shareProfile": "Share Profile",
+    "notFoundTitle": "User not found",
+    "notFoundBody": "The user @{username} doesn't exist or may have been deleted.",
+    "goBack": "Go Back",
+    "eventUnpinned": "Event unpinned from your profile",
+    "eventPinned": "Event pinned to your profile",
+    "unpinFailed": "Failed to unpin event",
+    "pinFailed": "Failed to pin event",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "noUpcoming": "No upcoming events found",
+    "noPast": "No past events found",
+    "bio": "Bio",
+    "noBadgesTitle": "No badges yet",
+    "noBadgesBody": "This user has not been awarded any badges yet.",
+    "events": "Events",
+    "unfollowing": "Unfollowing...",
+    "followingInProgress": "Following...",
+    "follow": "Follow",
+    "tabs": {
+      "about": "About"
+    },
+    "verifiedTitle": "This user is verified",
+    "verifiedBody": "This user is a premium member with a verified account. Verified users have enhanced credibility and access to exclusive features on our platform.",
+    "verifiedContact": "Get in touch about verification"
+  },
+  "own": {
+    "editProfileLabel": "Edit profile",
+    "welcome": "Welcome to Evento",
+    "noEvents": "No events found",
+    "pickBadges": "Pick favorite badges",
+    "noBadgesBody": "You have not been awarded any badges yet.",
+    "editProfile": "Edit Profile",
+    "verifiedTitle": "You are verified",
+    "verifiedBody": "Congratulations! Your account is verified. You have premium member status with enhanced credibility and access to exclusive features on our platform.",
+    "contactSupport": "Contact support"
+  },
+  "editPage": {
+    "picture": "Profile Picture",
+    "changePhoto": "Tap to change photo",
+    "addPhoto": "Add a profile photo",
+    "chooseUsername": "Choose a username",
+    "addName": "Add your name",
+    "bioEmpty": "Tell us about yourself",
+    "addSocial": "Add your social profiles",
+    "addNostr": "Add Nostr identifier",
+    "interestsHint": "Share what you love",
+    "promptsHint": "Showcase your personality",
+    "badgesOnDisplay": "{count, plural, one {# badge on display} other {# badges on display}}",
+    "badgesHint": "Showcase your achievements"
+  }
+}

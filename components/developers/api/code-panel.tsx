@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { Check, Copy } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import {
   type KeyboardEvent,
   type ReactNode,
@@ -81,6 +82,8 @@ export function CodePanel({
   className,
   bodyClassName,
 }: CodePanelProps) {
+  const t = useTranslations('developers.api.codePanel');
+  const tCommon = useTranslations('common');
   const baseId = useId();
   const [activeId, setActiveId] = useState(snippets[0]?.id);
   const [copied, setCopied] = useState(false);
@@ -102,7 +105,7 @@ export function CodePanel({
       window.clearTimeout(resetTimerRef.current);
       resetTimerRef.current = window.setTimeout(() => setCopied(false), COPY_RESET_MS);
     } catch {
-      toast.error('Copy it manually from the code block.', 'Couldn’t copy snippet');
+      toast.error(t('copyFailedDescription'), t('copyFailedTitle'));
     }
   };
 
@@ -137,7 +140,7 @@ export function CodePanel({
         {hasTabs ? (
           <div
             role='tablist'
-            aria-label='Code language'
+            aria-label={t('codeLanguage')}
             className='scrollbar-hide -my-px flex min-w-0 flex-1 gap-1 overflow-x-auto'
           >
             {snippets.map((snippet, index) => {
@@ -180,7 +183,9 @@ export function CodePanel({
           <button
             type='button'
             onClick={handleCopy}
-            aria-label={copied ? 'Copied' : `Copy ${activeSnippet.label} snippet`}
+            aria-label={
+              copied ? tCommon('actions.copied') : t('copySnippet', { label: activeSnippet.label })
+            }
             className='-mr-1.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500'
           >
             {copied ? (
@@ -205,7 +210,7 @@ export function CodePanel({
         <HighlightedCode snippet={activeSnippet} />
       </pre>
       <span className='sr-only' aria-live='polite'>
-        {copied ? 'Snippet copied to clipboard' : ''}
+        {copied ? t('copiedAnnouncement') : ''}
       </span>
     </div>
   );

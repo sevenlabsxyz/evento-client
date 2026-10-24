@@ -16,6 +16,7 @@ import { UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -26,6 +27,7 @@ interface QuickProfileSheetProps {
 }
 
 export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfileSheetProps) {
+  const t = useTranslations('zap.quickProfile');
   const router = useRouter();
   const { user: loggedInUser } = useAuth();
   const [isNavigatingToProfile, setIsNavigatingToProfile] = useState(false);
@@ -42,29 +44,30 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
       { userId: user.id, action },
       {
         onSuccess: () => {
+          const name = user.name || t('thisUser');
           if (action === 'follow') {
-            toast.success(`You followed ${user.name || 'this user'}!`);
+            toast.success(t('followed', { name }));
           } else {
-            toast.success(`You unfollowed ${user.name || 'this user'}`);
+            toast.success(t('unfollowed', { name }));
           }
         },
         onError: () => {
-          toast.error(`Failed to ${action}. Please try again.`);
+          toast.error(action === 'follow' ? t('followFailed') : t('unfollowFailed'));
         },
       }
     );
-  }, [followStatus?.isFollowing, followActionMutation, user.id, user.name]);
+  }, [followStatus?.isFollowing, followActionMutation, user.id, user.name, t]);
 
   const handleViewFullProfile = useCallback(() => {
     // Validate username before navigation to prevent potential exploits
     if (!validateUsername(user.username)) {
-      toast.error('Invalid username format');
+      toast.error(t('invalidUsername'));
       return;
     }
 
     setIsNavigatingToProfile(true);
     router.push(`/${user.username}`);
-  }, [router, user.username]);
+  }, [router, user.username, t]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -85,8 +88,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
               <div className='sticky top-0 z-10 bg-transparent px-4'>
                 <VisuallyHidden.Root asChild>
                   <SheetWithDetentFull.Title className='sr-only'>
-                    Quick profile for {user.name || user.username} (@
-                    {user.username})
+                    {t('sheetTitle', { name: user.name || user.username, username: user.username })}
                   </SheetWithDetentFull.Title>
                 </VisuallyHidden.Root>
               </div>
@@ -140,11 +142,11 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                           {isNavigatingToProfile ? (
                             <>
                               <Loader2 className='h-4 w-4 animate-spin' />
-                              Opening Profile...
+                              {t('openingProfile')}
                             </>
                           ) : (
                             <>
-                              View Full Profile
+                              {t('viewFullProfile')}
                               <ArrowRight className='ml-2 h-4 w-4' />
                             </>
                           )}

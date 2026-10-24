@@ -11,6 +11,7 @@ import {
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import { ResolvingMetadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import EventDetailPageClient from './page-client';
@@ -111,8 +112,11 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
   const previousImages = (await parent).openGraph?.images || [];
   const fallbackOgImage = buildEventSocialImageUrl(eventId);
 
+  const t = await getTranslations('event');
+  const defaultDescription = t('page.metaDescription');
+
   if (!EVENT_ID_PATTERN.test(eventId)) {
-    return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
+    return getDefaultMetadata(defaultDescription, previousImages, eventUrl, fallbackOgImage);
   }
 
   try {
@@ -120,7 +124,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
     if (!event) {
       // Non-public, draft, or nonexistent event: generic noindex metadata only.
-      return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
+      return getDefaultMetadata(defaultDescription, previousImages, eventUrl, fallbackOgImage);
     }
 
     const title = formatEventSeoTitle(event.title);
@@ -173,13 +177,18 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     logger.error('Error fetching event data', {
       error: getErrorMessage(error),
     });
-    return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
+    return getDefaultMetadata(defaultDescription, previousImages, eventUrl, fallbackOgImage);
   }
 }
 
 // Generic, leak-free metadata used for private/draft/nonexistent events.
 // `index: false` keeps non-public event pages out of search indexes.
-function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallbackImage?: string) {
+function getDefaultMetadata(
+  description: string,
+  previousImages: any[],
+  canonicalPath = '/',
+  fallbackImage?: string
+) {
   const openGraphImages = fallbackImage
     ? [
         {
@@ -195,7 +204,7 @@ function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallback
     title: { absolute: 'Evento' },
     keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
     alternates: { canonical: canonicalPath },
-    description: 'Events made social -- evento.so',
+    description,
     openGraph: {
       url: canonicalPath,
       images: openGraphImages,

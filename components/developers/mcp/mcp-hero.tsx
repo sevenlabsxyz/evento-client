@@ -1,15 +1,18 @@
 import { Button } from '@/components/ui/button';
 import { DOCS_MCP_URL } from '@/lib/constants/external-links';
 import { ArrowDown, ArrowUpRight, KeyRound, Laptop, Plug, Wrench } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const HIGHLIGHTS = [
-  { icon: Laptop, label: 'Runs locally over stdio' },
-  { icon: KeyRound, label: 'Your API key on every request' },
-  { icon: Wrench, label: '2 public tools' },
-  { icon: Plug, label: 'Works with any stdio MCP client' },
+  { icon: Laptop, key: 'local' },
+  { icon: KeyRound, key: 'apiKey' },
+  { icon: Wrench, key: 'tools' },
+  { icon: Plug, key: 'anyClient' },
 ] as const;
 
 export function McpHero() {
+  const t = useTranslations('developers.mcp');
+
   return (
     <header className='relative isolate overflow-hidden rounded-3xl border border-gray-200 bg-gray-50 px-5 py-10 dark:border-neutral-800 dark:bg-neutral-950 md:px-12 md:py-16'>
       {/* Dot grid + soft red glow; decorative only. */}
@@ -28,20 +31,18 @@ export function McpHero() {
           MCP
         </p>
         <h1 className='mt-4 text-balance text-4xl font-bold tracking-tight text-gray-900 dark:text-neutral-100 md:text-5xl'>
-          Connect Evento to your favorite agent
+          {t('hero.title')}
         </h1>
         <p className='mt-4 max-w-2xl text-pretty text-base text-gray-600 dark:text-neutral-400 md:text-lg'>
-          The Evento public MCP server lets Claude Desktop, Cursor, and other MCP clients list a
-          user’s events and fetch full event details — through the authenticated Evento public API,
-          using your own API key.
+          {t('hero.description')}
         </p>
 
         <div className='mt-8 flex flex-wrap items-center gap-3'>
           <Button asChild size='lg' className='gap-2 px-6'>
             <a href={DOCS_MCP_URL} target='_blank' rel='noopener noreferrer'>
-              Setup guide
+              {t('setupGuide')}
               <ArrowUpRight className='h-4 w-4' aria-hidden='true' />
-              <span className='sr-only'>(opens in a new tab)</span>
+              <span className='sr-only'>{t('opensInNewTab')}</span>
             </a>
           </Button>
           <Button
@@ -51,7 +52,7 @@ export function McpHero() {
             className='gap-2 bg-white px-6 dark:bg-neutral-900 dark:hover:bg-neutral-800'
           >
             <a href='#tools'>
-              View tools
+              {t('hero.viewTools')}
               <ArrowDown className='h-4 w-4' aria-hidden='true' />
             </a>
           </Button>
@@ -59,15 +60,15 @@ export function McpHero() {
       </div>
 
       <ul className='mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4'>
-        {HIGHLIGHTS.map(({ icon: Icon, label }) => (
+        {HIGHLIGHTS.map(({ icon: Icon, key }) => (
           <li
-            key={label}
+            key={key}
             className='flex items-center gap-3 rounded-2xl border border-gray-200 bg-white/80 px-4 py-3 text-sm font-medium text-gray-700 backdrop-blur-sm dark:border-neutral-800 dark:bg-neutral-900/80 dark:text-neutral-300'
           >
             <span className='flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-700 dark:bg-neutral-800 dark:text-neutral-300'>
               <Icon className='h-4 w-4' aria-hidden='true' />
             </span>
-            {label}
+            {t(`hero.highlights.${key}`)}
           </li>
         ))}
       </ul>

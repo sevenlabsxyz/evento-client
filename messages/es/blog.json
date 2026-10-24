@@ -1,1 +1,65 @@
-{}
+{
+  "meta": {
+    "title": "Blog — Evento",
+    "description": "Novedades del producto, guías para anfitriones e historias de la comunidad de Evento, la plataforma social para eventos.",
+    "postFallbackTitle": "Artículo del blog",
+    "postUnavailable": "No se pudieron cargar los detalles del artículo",
+    "postFallbackDescription": "Lee este artículo en el blog de Evento."
+  },
+  "topBarTitle": "Blog",
+  "index": {
+    "eyebrow": "Blog de Evento",
+    "title": "Historias de la comunidad de Evento",
+    "subtitle": "Novedades del producto, guías para anfitriones e ideas para reunir a la gente.",
+    "storyCount": "{count, plural, one {historia} other {historias}}",
+    "filterLabel": "Filtrar historias por tema",
+    "allTopics": "Todas",
+    "emptyTitle": "Aún no hay historias",
+    "emptyDescription": "Estamos preparando nuestros primeros artículos. Vuelve pronto.",
+    "noStoriesInTag": "No hay historias en {tag}",
+    "noStoriesInTopic": "No hay historias en este tema",
+    "emptyTopicDescription": "Prueba otro tema o explora todo lo que hemos publicado.",
+    "viewAllStories": "Ver todas las historias",
+    "loadErrorTitle": "No se pudo cargar el blog",
+    "loadErrorDescription": "Algo salió mal al cargar las historias. Inténtalo de nuevo más tarde.",
+    "moreInTag": "Más en {tag}",
+    "moreStories": "Más historias"
+  },
+  "card": {
+    "featured": "Destacado",
+    "latest": "Lo más reciente",
+    "readStory": "Leer historia"
+  },
+  "post": {
+    "breadcrumb": "Ruta de navegación",
+    "share": "Compartir",
+    "copyLink": "Copiar enlace",
+    "shareText": "Mira este artículo del blog: {title}",
+    "shareLinkCopied": "¡Enlace del artículo copiado al portapapeles!",
+    "shareFailed": "No se pudo compartir el artículo",
+    "linkCopied": "Enlace copiado al portapapeles",
+    "copyFailed": "No se pudo copiar el enlace",
+    "tags": "Etiquetas",
+    "enjoyingTitle": "¿Te está gustando este artículo?",
+    "enjoyingBody": "Compártelo con alguien a quien le pueda gustar.",
+    "keepReading": "Sigue leyendo",
+    "allPosts": "Todos los artículos",
+    "loadErrorTitle": "No se pudo cargar este artículo",
+    "loadErrorMessage": "No se pudo cargar el artículo. Inténtalo de nuevo más tarde.",
+    "backToBlog": "Volver al blog",
+    "loading": "Cargando artículo"
+  },
+  "author": {
+    "aboutLabel": "Sobre el autor",
+    "writtenBy": "Escrito por"
+  },
+  "toc": {
+    "onThisPage": "En esta página"
+  },
+  "content": {
+    "openImage": "Abrir imagen",
+    "openImageNamed": "Abrir imagen: {alt}",
+    "imagePreview": "Vista previa de la imagen",
+    "imagePreviewNamed": "Vista previa de la imagen: {alt}"
+  }
+}

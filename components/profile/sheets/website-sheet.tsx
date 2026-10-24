@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { safeExternalUrl } from '@/lib/utils/url';
 import { ExternalLink, Globe } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface WebsiteSheetProps {
   isOpen: boolean;
@@ -12,6 +13,8 @@ interface WebsiteSheetProps {
 }
 
 export default function WebsiteSheet({ isOpen, onClose, url }: WebsiteSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const handleOpenWebsite = () => {
     const fullUrl = url.startsWith('http') ? url : `https://${url}`;
     window.open(safeExternalUrl(fullUrl), '_blank', 'noopener,noreferrer');
@@ -43,7 +46,9 @@ export default function WebsiteSheet({ isOpen, onClose, url }: WebsiteSheetProps
               </div>
 
               {/* Title */}
-              <h2 className='mb-6 text-center text-lg font-semibold'>Website</h2>
+              <h2 className='mb-6 text-center text-lg font-semibold'>
+                {t('sheets.website.title')}
+              </h2>
 
               {/* Website Info */}
               <div className='mb-6 flex items-center gap-3'>
@@ -54,14 +59,16 @@ export default function WebsiteSheet({ isOpen, onClose, url }: WebsiteSheetProps
                   <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
                     {getDomainFromUrl(url)}
                   </h3>
-                  <p className='text-sm text-gray-500 dark:text-neutral-400'>External website</p>
+                  <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                    {t('sheets.website.subtitle')}
+                  </p>
                 </div>
               </div>
 
               {/* Description */}
               <div className='mb-6'>
                 <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-                  You&apos;re about to visit an external website. This will open in a new tab.
+                  {t('sheets.website.description')}
                 </p>
                 <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
                   <p className='break-all text-sm text-gray-700 dark:text-neutral-300'>{url}</p>
@@ -75,10 +82,10 @@ export default function WebsiteSheet({ isOpen, onClose, url }: WebsiteSheetProps
                   className='w-full bg-red-600 text-white hover:bg-red-700'
                 >
                   <ExternalLink className='mr-2 h-4 w-4' />
-                  Open Website
+                  {t('sheets.website.open')}
                 </Button>
                 <Button variant='outline' onClick={onClose} className='w-full'>
-                  Cancel
+                  {tCommon('actions.cancel')}
                 </Button>
               </div>
             </div>

@@ -1,6 +1,8 @@
 import { DEFAULT_LIST_NAME } from '@/lib/hooks/use-ensure-default-list';
+import { getActiveLocale } from '@/lib/i18n/active-locale';
 import { EventWithUser, ListEvent, UserList } from '@/lib/types/api';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, Locale } from 'date-fns';
+import { enUS, es, ptBR } from 'date-fns/locale';
 
 export const LIST_NAME_MAX_LENGTH = 50;
 export const LIST_DESCRIPTION_MAX_LENGTH = 200;
@@ -25,25 +27,22 @@ export function orderLists(lists: UserList[]): UserList[] {
   return [defaultList, ...lists.filter((list) => list.id !== defaultList.id)];
 }
 
+/** Translated via `lists.nameErrors.<code>` (with `{ max: LIST_NAME_MAX_LENGTH }`). */
+export type ListNameError = 'required' | 'tooLong' | 'duplicate';
+
 /** Validation shared by create and rename; mirrors the API's rules. */
 export function validateListName(
   rawName: string,
   lists: UserList[],
   excludeListId?: string
-): string | null {
+): ListNameError | null {
   const name = rawName.trim();
-  if (!name) return 'Give your list a name.';
-  if (name.length > LIST_NAME_MAX_LENGTH) {
-    return `Keep it under ${LIST_NAME_MAX_LENGTH} characters.`;
-  }
+  if (!name) return 'required';
+  if (name.length > LIST_NAME_MAX_LENGTH) return 'tooLong';
   if (lists.some((list) => list.id !== excludeListId && list.name === name)) {
-    return 'You already have a list with this name.';
+    return 'duplicate';
   }
   return null;
-}
-
-export function formatEventCount(count: number): string {
-  return `${count} ${count === 1 ? 'event' : 'events'}`;
 }
 
 function toTime(value: string | null | undefined): number {
@@ -75,10 +74,15 @@ export function getListLastActivity(list: UserList, events: ListEvent[] | undefi
   return latest;
 }
 
+const DATE_FNS_LOCALES: Record<string, Locale> = { en: enUS, 'pt-BR': ptBR, es };
+
 export function formatRelativeTime(value: string): string | null {
   const time = toTime(value);
   if (Number.isNaN(time)) return null;
-  return formatDistanceToNow(time, { addSuffix: true });
+  return formatDistanceToNow(time, {
+    addSuffix: true,
+    locale: DATE_FNS_LOCALES[getActiveLocale()] ?? enUS,
+  });
 }
 
 export function filterListEvents(

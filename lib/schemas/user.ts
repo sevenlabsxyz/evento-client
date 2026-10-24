@@ -1,48 +1,50 @@
+import { translateHooks } from '@/lib/i18n/active-translator';
+import { validationMessage } from '@/lib/schemas/validation-message';
 import { z } from 'zod';
 
 // User profile update schema
 export const updateUserProfileSchema = z.object({
   username: z
     .string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(20, 'Username must be less than 20 characters')
-    .regex(/^[a-zA-Z0-9]+$/, 'Username can only contain letters and numbers')
+    .min(3, validationMessage('username.tooShort'))
+    .max(20, validationMessage('username.tooLong'))
+    .regex(/^[a-zA-Z0-9]+$/, validationMessage('validation.usernameAlphanumeric'))
     .optional(),
 
   name: z
     .string()
-    .min(1, 'Name is required')
-    .max(100, 'Name must be less than 100 characters')
+    .min(1, validationMessage('validation.nameRequired'))
+    .max(100, validationMessage('validation.nameTooLong100'))
     .optional(),
 
-  bio: z.string().max(280, 'Bio must be less than 280 characters').optional(),
+  bio: z.string().max(280, validationMessage('validation.bioTooLong')).optional(),
 
   bio_link: z
     .string()
-    .regex(/^https?:\/\/.+/, 'Please enter a valid http(s) URL')
+    .regex(/^https?:\/\/.+/, validationMessage('validation.httpUrlInvalid'))
     .optional()
     .or(z.literal('')),
 
-  x_handle: z.string().max(50, 'X handle must be less than 50 characters').optional(),
+  x_handle: z.string().max(50, validationMessage('validation.xHandleTooLong')).optional(),
 
   instagram_handle: z
     .string()
-    .max(50, 'Instagram handle must be less than 50 characters')
+    .max(50, validationMessage('validation.instagramHandleTooLong'))
     .optional(),
 
-  ln_address: z.email('Please enter a valid Lightning address').optional(),
+  ln_address: z.email(validationMessage('validation.lightningAddressInvalid')).optional(),
 
-  nip05: z.email('Please enter a valid NIP-05 identifier').optional(),
+  nip05: z.email(validationMessage('validation.nip05Invalid')).optional(),
 
-  image: z.url('Please enter a valid image URL').optional().or(z.literal('')),
+  image: z.url(validationMessage('validation.imageUrlInvalid')).optional().or(z.literal('')),
 });
 
 // User search schema
 export const userSearchSchema = z.object({
   q: z
     .string()
-    .min(1, 'Search query is required')
-    .max(100, 'Search query must be less than 100 characters'),
+    .min(1, validationMessage('validation.searchRequired'))
+    .max(100, validationMessage('validation.searchTooLong')),
 });
 
 // Follow user schema
@@ -95,10 +97,10 @@ export function validateUpdateUserProfile(data: Record<string, any>): {
       const firstErrorMessage = firstErrorPath && formattedError.errors[0];
       return {
         valid: false,
-        error: firstErrorMessage || 'Invalid profile data',
+        error: firstErrorMessage || translateHooks('validation.profileInvalid'),
       };
     }
-    return { valid: false, error: 'Invalid profile data' };
+    return { valid: false, error: translateHooks('validation.profileInvalid') };
   }
 }
 export const validateUserSearch = (data: unknown): UserSearchData => {

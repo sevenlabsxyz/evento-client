@@ -7,6 +7,7 @@ import { useAuthStore } from '@/lib/stores/auth-store';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from '@/lib/utils/toast';
 import { CheckCircle, Loader2, Send, Unlink } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
 interface TelegramConnectSheetProps {
@@ -33,6 +34,7 @@ export function TelegramConnectSheet({
   isConnected,
   onConnectionChange,
 }: TelegramConnectSheetProps) {
+  const t = useTranslations('settings');
   const { user, setUser } = useAuthStore();
   const widgetContainerRef = useRef<HTMLDivElement>(null);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
@@ -53,7 +55,7 @@ export function TelegramConnectSheet({
         const token = session?.access_token;
 
         if (!token) {
-          throw new Error('No active session. Please sign in and try again.');
+          throw new Error(t('telegram.noSession'));
         }
 
         const res = await fetch(`${EVENTO_API_BASE}/api/v1/user/telegram/link`, {
@@ -67,15 +69,15 @@ export function TelegramConnectSheet({
 
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
-          throw new Error(body?.error ?? 'Failed to link Telegram');
+          throw new Error(body?.error ?? t('telegram.linkFailed'));
         }
 
-        toast.success('Telegram connected!');
+        toast.success(t('telegram.connectedToast'));
         onConnectionChange?.();
         if (user) setUser({ ...user, telegram_id: Number(telegramUser.id) });
         onOpenChange(false);
       } catch (err) {
-        toast.error(err instanceof Error ? err.message : 'Failed to connect Telegram');
+        toast.error(err instanceof Error ? err.message : t('telegram.connectFailed'));
       }
     };
 
@@ -96,7 +98,7 @@ export function TelegramConnectSheet({
     return () => {
       delete window.onTelegramAuth;
     };
-  }, [open, isConnected, onOpenChange, onConnectionChange, user, setUser]);
+  }, [open, isConnected, onOpenChange, onConnectionChange, user, setUser, t]);
 
   const handleDisconnect = async () => {
     setIsDisconnecting(true);
@@ -107,7 +109,7 @@ export function TelegramConnectSheet({
       const token = session?.access_token;
 
       if (!token) {
-        throw new Error('No active session. Please sign in and try again.');
+        throw new Error(t('telegram.noSession'));
       }
 
       const res = await fetch(`${EVENTO_API_BASE}/api/v1/user/telegram/link`, {
@@ -115,14 +117,14 @@ export function TelegramConnectSheet({
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) throw new Error('Failed to disconnect Telegram');
+      if (!res.ok) throw new Error(t('telegram.disconnectFailed'));
 
-      toast.success('Telegram disconnected');
+      toast.success(t('telegram.disconnectedToast'));
       onConnectionChange?.();
       if (user) setUser({ ...user, telegram_id: null });
       onOpenChange(false);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to disconnect Telegram');
+      toast.error(err instanceof Error ? err.message : t('telegram.disconnectFailed'));
     } finally {
       setIsDisconnecting(false);
     }
@@ -152,9 +154,7 @@ export function TelegramConnectSheet({
                     Telegram
                   </h2>
                   <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                    {isConnected
-                      ? 'Your Telegram account is connected'
-                      : 'Connect your Telegram account'}
+                    {isConnected ? t('telegram.subtitleConnected') : t('telegram.subtitle')}
                   </p>
                 </div>
               </div>
@@ -168,8 +168,7 @@ export function TelegramConnectSheet({
                       <div className='flex items-center gap-3 rounded-2xl bg-green-50 p-4 dark:bg-green-950/40'>
                         <CheckCircle className='h-5 w-5 flex-shrink-0 text-green-600 dark:text-green-400' />
                         <p className='text-sm text-green-800 dark:text-green-400'>
-                          Telegram is connected. You can log in with Telegram and receive
-                          notifications there.
+                          {t('telegram.connectedBody')}
                         </p>
                       </div>
                       <Button
@@ -181,12 +180,12 @@ export function TelegramConnectSheet({
                         {isDisconnecting ? (
                           <>
                             <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                            Disconnecting...
+                            {t('telegram.disconnecting')}
                           </>
                         ) : (
                           <>
                             <Unlink className='mr-2 h-4 w-4' />
-                            Disconnect Telegram
+                            {t('telegram.disconnect')}
                           </>
                         )}
                       </Button>
@@ -194,8 +193,7 @@ export function TelegramConnectSheet({
                   ) : (
                     <div className='space-y-6'>
                       <p className='text-sm text-gray-600 dark:text-neutral-400'>
-                        Connect Telegram to log in with your Telegram account and receive event
-                        notifications via Telegram.
+                        {t('telegram.connectBody')}
                       </p>
                       <div className='flex min-h-[56px] items-center justify-center'>
                         {!widgetLoaded && (
@@ -208,7 +206,9 @@ export function TelegramConnectSheet({
                       </div>
                       {!BOT_USERNAME && (
                         <p className='text-center text-xs text-red-500 dark:text-red-400'>
-                          NEXT_PUBLIC_TELEGRAM_BOT_USERNAME is not configured.
+                          {t('telegram.notConfigured', {
+                            variable: 'NEXT_PUBLIC_TELEGRAM_BOT_USERNAME',
+                          })}
                         </p>
                       )}
                     </div>

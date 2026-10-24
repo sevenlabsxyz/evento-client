@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const OTP_INPUT_IDS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'] as const;
@@ -20,6 +21,7 @@ export function RegistrationOtpInput({
   isLoading,
   error,
 }: RegistrationOtpInputProps) {
+  const t = useTranslations('event');
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [isResending, setIsResending] = useState(false);
@@ -163,10 +165,10 @@ export function RegistrationOtpInput({
         {isLoading ? (
           <>
             <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-            Verifying...
+            {t('otp.verifying')}
           </>
         ) : (
-          'Verify & Register'
+          t('otp.verifyAndRegister')
         )}
       </Button>
 
@@ -179,10 +181,10 @@ export function RegistrationOtpInput({
           className='text-sm text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-400 dark:hover:text-neutral-300'
         >
           {isResending
-            ? 'Sending...'
+            ? t('otp.sending')
             : resendCooldown > 0
-              ? `Resend code in ${resendCooldown}s`
-              : "Didn't receive the code? Resend"}
+              ? t('otp.resendIn', { seconds: resendCooldown })
+              : t('otp.resend')}
         </button>
       </div>
     </div>

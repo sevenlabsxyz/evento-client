@@ -70,6 +70,7 @@ import {
   UserMinus,
   UserPlus,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -78,6 +79,8 @@ interface UserProfilePageClientProps {
 }
 
 export default function UserProfilePageClient({ username }: UserProfilePageClientProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   // Fetch auth state but don’t enforce login – allows public profile view
   const { user, isLoading: isCheckingAuth } = useAuth();
   const router = useRouter();
@@ -143,7 +146,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   // Transform API data to match expected format (moved before useEffect)
   const userProfile = userData
     ? {
-        name: userData.name || 'Unknown User',
+        name: userData.name || t('page.unknownUser'),
         username: `@${userData.username}`,
         image: profileImage,
         verification_status: userData.verification_status,
@@ -168,7 +171,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
 
   const handleFollowToggle = () => {
     if (!userData?.id) {
-      toast.error('Unable to identify user');
+      toast.error(t('page.unableToIdentify'));
       return;
     }
 
@@ -179,26 +182,26 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
       {
         onSuccess: () => {
           if (action === 'follow') {
-            toast.success(`You followed ${userData.name || 'this user'}!`);
+            toast.success(t('page.followed', { name: userData.name || t('page.thisUser') }));
           } else {
-            toast.success(`You unfollowed ${userData.name || 'this user'}`);
+            toast.success(t('page.unfollowed', { name: userData.name || t('page.thisUser') }));
           }
         },
         onError: () => {
-          toast.error(`Failed to ${action}. Please try again.`);
+          toast.error(action === 'follow' ? t('page.followFailed') : t('page.unfollowFailed'));
         },
       }
     );
   };
 
-  const shareName = userProfile?.name || 'User';
+  const shareName = userProfile?.name || t('page.user');
   const topBarTitle = userProfile ? `${userProfile.name} (${userProfile.username})` : '';
 
   // Share functionality
   const handleShare = useCallback(async () => {
     const shareData = {
-      title: `${shareName} on Evento`,
-      text: `Check out ${shareName}'s profile on Evento`,
+      title: t('page.shareTitle', { name: shareName }),
+      text: t('page.shareText', { name: shareName }),
       url: window.location.href,
     };
 
@@ -213,12 +216,12 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
       // Fallback: Copy to clipboard
       try {
         await navigator.clipboard.writeText(window.location.href);
-        toast.success('Profile link copied to clipboard!');
+        toast.success(t('page.linkCopied'));
       } catch (error) {
-        toast.error('Failed to share profile');
+        toast.error(t('page.shareFailed'));
       }
     }
-  }, [shareName]);
+  }, [shareName, t]);
 
   // Set TopBar content
   useEffect(() => {
@@ -232,7 +235,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
             id: 'share',
             icon: Share,
             onClick: handleShare,
-            label: 'Share Profile',
+            label: t('page.shareProfile'),
           },
         ],
       });
@@ -244,7 +247,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
         buttons: [],
       });
     };
-  }, [handleShare, setTopBar, topBarTitle, userData?.id]);
+  }, [handleShare, setTopBar, topBarTitle, userData?.id, t]);
 
   // Fetch pinned event
   const { data: pinnedEvent } = usePinnedEvent(user?.username || '');
@@ -335,10 +338,8 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
             <EmptyMedia variant='icon'>
               <UserMinus className='h-6 w-6' />
             </EmptyMedia>
-            <EmptyTitle>User not found</EmptyTitle>
-            <EmptyDescription>
-              The user @{username} doesn&apos;t exist or may have been deleted.
-            </EmptyDescription>
+            <EmptyTitle>{t('page.notFoundTitle')}</EmptyTitle>
+            <EmptyDescription>{t('page.notFoundBody', { username })}</EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
             <Button
@@ -347,7 +348,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               className='rounded-full bg-gray-50 dark:bg-neutral-950'
             >
               <ArrowLeft className='h-4 w-4' />
-              Go Back
+              {t('page.goBack')}
             </Button>
           </EmptyContent>
         </Empty>
@@ -469,12 +470,10 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
 
       updatePinnedEvent(eventId, {
         onSuccess: () => {
-          toast.success(
-            isPinned ? 'Event unpinned from your profile' : 'Event pinned to your profile'
-          );
+          toast.success(isPinned ? t('page.eventUnpinned') : t('page.eventPinned'));
         },
         onError: () => {
-          toast.error(`Failed to ${isPinned ? 'unpin' : 'pin'} event`);
+          toast.error(isPinned ? t('page.unpinFailed') : t('page.pinFailed'));
         },
       });
     };
@@ -496,7 +495,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                   : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
-              Upcoming
+              {t('page.upcoming')}
             </button>
             <button
               type='button'
@@ -508,7 +507,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                   : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
-              Past
+              {t('page.past')}
             </button>
           </div>
         </div>
@@ -532,7 +531,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                 <MessageCircle className='h-6 w-6 text-gray-400 dark:text-neutral-400' />
               </div>
               <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                {timeframe === 'future' ? 'No upcoming events found' : 'No past events found'}
+                {timeframe === 'future' ? t('page.noUpcoming') : t('page.noPast')}
               </p>
             </div>
           ) : (
@@ -583,7 +582,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
         {/* Bio/Description */}
         {!userProfile?.bio ? null : (
           <div>
-            <RowCard title={'Bio'} subtitle={userProfile?.bio} />
+            <RowCard title={t('page.bio')} subtitle={userProfile?.bio} />
           </div>
         )}
 
@@ -623,8 +622,8 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               <EmptyMedia variant='icon'>
                 <BadgeCheck className='size-5' />
               </EmptyMedia>
-              <EmptyTitle>No badges yet</EmptyTitle>
-              <EmptyDescription>This user has not been awarded any badges yet.</EmptyDescription>
+              <EmptyTitle>{t('page.noBadgesTitle')}</EmptyTitle>
+              <EmptyDescription>{t('page.noBadgesBody')}</EmptyDescription>
             </EmptyHeader>
             <EmptyContent />
           </Empty>
@@ -659,7 +658,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               {/* User Info - Centered */}
               <div className='mb-6 text-center'>
                 <h2 className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-                  {userProfile?.name || 'Unknown User'}
+                  {userProfile?.name || t('page.unknownUser')}
                 </h2>
                 <p className='text-gray-600 dark:text-neutral-400'>{userProfile?.username || ''}</p>
               </div>
@@ -671,7 +670,9 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     <div className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
                       {eventCount}
                     </div>
-                    <div className='text-sm text-gray-500 dark:text-neutral-400'>Events</div>
+                    <div className='text-sm text-gray-500 dark:text-neutral-400'>
+                      {t('page.events')}
+                    </div>
                   </div>
                   <motion.button
                     className='text-center'
@@ -682,7 +683,9 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     <div className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
                       {followingCount}
                     </div>
-                    <div className='text-sm text-gray-500 dark:text-neutral-400'>Following</div>
+                    <div className='text-sm text-gray-500 dark:text-neutral-400'>
+                      {t('following.title')}
+                    </div>
                   </motion.button>
                   <motion.button
                     className='text-center'
@@ -693,7 +696,9 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     <div className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
                       {followersCount}
                     </div>
-                    <div className='text-sm text-gray-500 dark:text-neutral-400'>Followers</div>
+                    <div className='text-sm text-gray-500 dark:text-neutral-400'>
+                      {t('followers.title')}
+                    </div>
                   </motion.button>
                 </div>
               </div>
@@ -713,12 +718,16 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     {followStatus?.isFollowing ? (
                       <>
                         <UserMinus className='mr-2 h-4 w-4' />
-                        {followActionMutation.isPending ? 'Unfollowing...' : 'Following'}
+                        {followActionMutation.isPending
+                          ? t('page.unfollowing')
+                          : t('following.title')}
                       </>
                     ) : (
                       <>
                         <UserPlus className='mr-2 h-4 w-4' />
-                        {followActionMutation.isPending ? 'Following...' : 'Follow'}
+                        {followActionMutation.isPending
+                          ? t('page.followingInProgress')
+                          : t('page.follow')}
                       </>
                     )}
                   </Button>
@@ -730,7 +739,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                 <div className='mb-6'>
                   <ZapSheet
                     recipientLightningAddress={profileZapAddress}
-                    recipientName={userData.name || 'Unknown User'}
+                    recipientName={userData.name || t('page.unknownUser')}
                     recipientUsername={userData.username}
                     recipientAvatar={userData.image}
                     currentUsername={user?.username}
@@ -757,7 +766,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                 className='mx-auto'
                 tabs={[
                   {
-                    title: 'About',
+                    title: t('page.tabs.about'),
                     icon: User,
                     onClick: () => {
                       setHasAutoSelectedInitialTab(true);
@@ -765,7 +774,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     },
                   },
                   {
-                    title: 'Events',
+                    title: t('page.events'),
                     icon: Calendar,
                     onClick: () => {
                       setHasAutoSelectedInitialTab(true);
@@ -773,7 +782,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     },
                   },
                   {
-                    title: 'Badges',
+                    title: t('badges.title'),
                     icon: Award,
                     onClick: () => {
                       setHasAutoSelectedInitialTab(true);
@@ -846,12 +855,9 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
             </div>
             <h3 className='mb-4 text-xl font-bold text-gray-900 dark:text-neutral-100'>
-              This user is verified
+              {t('page.verifiedTitle')}
             </h3>
-            <p className='mb-6 text-gray-600 dark:text-neutral-400'>
-              This user is a premium member with a verified account. Verified users have enhanced
-              credibility and access to exclusive features on our platform.
-            </p>
+            <p className='mb-6 text-gray-600 dark:text-neutral-400'>{t('page.verifiedBody')}</p>
             <div className='flex flex-col gap-3'>
               <Button
                 onClick={() => {
@@ -862,14 +868,14 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                 }}
                 className='w-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
-                Get in touch about verification
+                {t('page.verifiedContact')}
               </Button>
               <Button
                 variant='ghost'
                 onClick={() => setShowVerificationModal(false)}
                 className='w-full'
               >
-                Close
+                {tCommon('actions.close')}
               </Button>
             </div>
           </div>

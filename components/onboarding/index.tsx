@@ -12,6 +12,7 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence } from 'framer-motion';
 import { ArrowRight, Loader2, LogOut } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -36,6 +37,7 @@ export const UserOnboardingFlow = ({
   defaultAvatar,
   defaultUsername,
 }: UserOnboardingFlowProps) => {
+  const t = useTranslations('onboarding.flow');
   const router = useRouter();
   const searchParams = useSearchParams();
   const { logout, isLoggingOut } = useAuth();
@@ -64,27 +66,30 @@ export const UserOnboardingFlow = ({
 
   const handleNameChange = useCallback((e: any) => setName(e.target.value), []);
 
-  const handleUsernameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const alphanumericRegex = /^[a-zA-Z0-9]*$/;
-    const inputValue = e.target.value.trim();
+  const handleUsernameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const alphanumericRegex = /^[a-zA-Z0-9]*$/;
+      const inputValue = e.target.value.trim();
 
-    if (alphanumericRegex.test(inputValue) && inputValue.length <= 20) {
-      setUsername(inputValue);
-    } else {
-      if (!alphanumericRegex.test(inputValue)) {
-        toast.warning('Only letters and numbers are allowed in Usernames.');
-      } else if (inputValue.length > 20) {
-        toast.warning('Username must be 20 characters or less.');
+      if (alphanumericRegex.test(inputValue) && inputValue.length <= 20) {
+        setUsername(inputValue);
+      } else {
+        if (!alphanumericRegex.test(inputValue)) {
+          toast.warning(t('usernameCharsWarning'));
+        } else if (inputValue.length > 20) {
+          toast.warning(t('usernameLengthWarning'));
+        }
       }
-    }
-  }, []);
+    },
+    [t]
+  );
 
   const handleUploadImage = async (event: any) => {
     setIsLoading(true);
     event.preventDefault();
 
     if (!inputFileRef.current?.files || !inputFileRef.current.files.length) {
-      toast.error('No image selected. Please try again.');
+      toast.error(t('noImageSelected'));
       setIsLoading(false);
       return null;
     }
@@ -132,12 +137,12 @@ export const UserOnboardingFlow = ({
       }
 
       setUploadedImg(res.data.image);
-      toast.success('Image uploaded successfully');
+      toast.success(t('imageUploaded'));
     } catch (error) {
       logger.error('Image upload error', {
         error: error instanceof Error ? error.message : String(error),
       });
-      toast.error('Could not upload image. Please try again or skip this step.');
+      toast.error(t('imageUploadFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -147,7 +152,7 @@ export const UserOnboardingFlow = ({
     if (event.target.files) {
       const file = event.target.files[0];
       if (file && file.size > 10 * 1024 * 1024) {
-        toast.error('File is too large, please select a file less than 10MB.');
+        toast.error(t('fileTooLarge'));
         event.target.value = '';
       } else {
         handleUploadImage(event);
@@ -228,7 +233,7 @@ export const UserOnboardingFlow = ({
         }
 
         // Show success message
-        toast.success('Welcome to Evento! Your profile is all set up.');
+        toast.success(t('completeToast'));
 
         // Get redirect URL from search params or use default
         const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
@@ -246,7 +251,7 @@ export const UserOnboardingFlow = ({
         logger.error('Error updating user', {
           error: error instanceof Error ? error.message : String(error),
         });
-        toast.error('There was a problem completing your profile setup.');
+        toast.error(t('completeError'));
       } finally {
         setUpdating(false);
       }
@@ -279,7 +284,7 @@ export const UserOnboardingFlow = ({
             />
           </Link>
           <span className='text-sm text-gray-400 dark:text-neutral-400 md:hidden'>
-            Step {step} of 5
+            {t('stepOf', { step, total: 5 })}
           </span>
         </div>
         <StepIndicator currentStep={step} totalSteps={5} />
@@ -334,7 +339,7 @@ export const UserOnboardingFlow = ({
             ) : (
               <LogOut className='h-4 w-4' />
             )}
-            Exit setup
+            {t('exitSetup')}
           </Button>
           {step > 1 && (
             <Button
@@ -343,7 +348,7 @@ export const UserOnboardingFlow = ({
               disabled={isUpdating || isLoggingOut}
               onClick={() => setStep(step - 1)}
             >
-              Back
+              {t('back')}
             </Button>
           )}
           <Button
@@ -354,19 +359,19 @@ export const UserOnboardingFlow = ({
             {updating ? (
               <>
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Saving...
+                {t('saving')}
               </>
             ) : (
               <>
                 {step < 4
-                  ? 'Continue'
+                  ? t('continue')
                   : step === 4
                     ? selectedInterestIds.length > 0
-                      ? 'Continue'
-                      : 'Skip'
+                      ? t('continue')
+                      : t('skip')
                     : answeredPrompts.filter((p) => p.answer.length >= 5).length > 0
-                      ? 'Complete Setup'
-                      : 'Skip & Finish'}
+                      ? t('completeSetup')
+                      : t('skipAndFinish')}
                 <ArrowRight className='ml-2 h-4 w-4' />
               </>
             )}

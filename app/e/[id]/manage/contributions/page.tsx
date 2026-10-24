@@ -11,6 +11,7 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { Check, DollarSign } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -34,6 +35,7 @@ interface EventContributions {
 
 export default function ContributionsManagementPage() {
   const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
+  const t = useTranslations('manageLegacy');
   const params = useParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -85,17 +87,17 @@ export default function ContributionsManagementPage() {
 
       queryClient.invalidateQueries({ queryKey: ['event', eventId] });
 
-      toast.success('Contribution settings updated successfully!');
+      toast.success(t('contributions.toasts.updated'));
       router.push(`/e/${eventId}/manage`);
     } catch (error) {
       logger.error('Failed to save contribution settings', {
         error: error instanceof Error ? error.message : String(error),
       });
-      toast.error('Failed to update contribution settings');
+      toast.error(t('contributions.toasts.updateFailed'));
     } finally {
       setIsSubmitting(false);
     }
-  }, [existingEvent, contributions, eventId, queryClient, router]);
+  }, [existingEvent, contributions, eventId, queryClient, router, t]);
 
   // Initialize with existing event data
   useEffect(() => {
@@ -132,7 +134,7 @@ export default function ContributionsManagementPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Contributions',
+      title: t('contributions.title'),
       leftMode: 'back',
       centerMode: 'title',
       onBackPress: () => router.push(`/e/${eventId}/manage`),
@@ -142,7 +144,7 @@ export default function ContributionsManagementPage() {
           id: 'save-contributions',
           icon: Check,
           onClick: () => void handleSave(),
-          label: 'Save',
+          label: t('contributions.save'),
           disabled: isSubmitting,
         },
       ],
@@ -160,6 +162,7 @@ export default function ContributionsManagementPage() {
     handleSave,
     router,
     eventId,
+    t,
   ]);
 
   // Conditional returns MUST come after all hooks
@@ -207,16 +210,16 @@ export default function ContributionsManagementPage() {
       <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-            Event Not Found
+            {t('contributions.notFound.title')}
           </h1>
           <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-            The event you&apos;re trying to manage doesn&apos;t exist.
+            {t('contributions.notFound.description')}
           </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
-            Go Back
+            {t('contributions.notFound.goBack')}
           </button>
         </div>
       </div>
@@ -280,7 +283,7 @@ export default function ContributionsManagementPage() {
       iconBg: 'bg-green-100 dark:bg-green-950/60',
       iconColor: '',
       placeholder: '$username',
-      hint: 'Enter as $username',
+      hint: t('contributions.methods.cashAppHint'),
     },
     {
       key: 'venmo' as const,
@@ -289,7 +292,7 @@ export default function ContributionsManagementPage() {
       iconBg: 'bg-blue-100 dark:bg-blue-950/60',
       iconColor: '',
       placeholder: '@username',
-      hint: 'Enter as @username',
+      hint: t('contributions.methods.venmoHint'),
     },
     {
       key: 'paypal' as const,
@@ -297,8 +300,8 @@ export default function ContributionsManagementPage() {
       icon: <PayPalSVGIcon className='h-6 w-6' />,
       iconBg: 'bg-blue-100 dark:bg-blue-950/60',
       iconColor: '',
-      placeholder: 'username or email',
-      hint: 'Username or email address',
+      placeholder: t('contributions.methods.paypalPlaceholder'),
+      hint: t('contributions.methods.paypalHint'),
     },
   ];
 
@@ -311,10 +314,10 @@ export default function ContributionsManagementPage() {
       <div className='max-w-2xl space-y-4'>
         <div>
           <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-            Contributions
+            {t('contributions.title')}
           </h2>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            Set up payment methods and suggested contribution amounts for your event.
+            {t('contributions.subtitle')}
           </p>
         </div>
 
@@ -326,10 +329,10 @@ export default function ContributionsManagementPage() {
             </div>
             <div>
               <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
-                Suggested Amount
+                {t('contributions.suggested.title')}
               </h3>
               <p className='text-sm text-gray-600 dark:text-neutral-400'>
-                Guests can choose their own amount
+                {t('contributions.suggested.description')}
               </p>
             </div>
           </div>
@@ -350,7 +353,7 @@ export default function ContributionsManagementPage() {
               />
             </div>
             <p className='text-xs text-gray-500 dark:text-neutral-400'>
-              This is a suggested amount. Guests can contribute any amount they choose.
+              {t('contributions.suggested.hint')}
             </p>
           </div>
         </div>
@@ -358,10 +361,10 @@ export default function ContributionsManagementPage() {
         {/* Payment Methods Section */}
         <div className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
           <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-            Payment Methods
+            {t('contributions.methods.title')}
           </h3>
           <p className='mb-3 text-sm text-gray-500 dark:text-neutral-400'>
-            Enable the handles guests can use to contribute.
+            {t('contributions.methods.description')}
           </p>
 
           <div className='divide-y divide-gray-100 dark:divide-neutral-800'>
@@ -413,11 +416,10 @@ export default function ContributionsManagementPage() {
         {/* Information Section */}
         <div className='rounded-2xl bg-blue-50 p-4 dark:bg-blue-950/40'>
           <h4 className='mb-2 font-medium text-blue-900 dark:text-blue-400'>
-            How Contributions Work
+            {t('contributions.info.title')}
           </h4>
           <p className='text-sm text-blue-700 dark:text-blue-400'>
-            Payment methods you enable will appear as buttons on your event page. When guests tap
-            them, the respective app will open on their phone to complete the contribution.
+            {t('contributions.info.description')}
           </p>
         </div>
 
@@ -427,7 +429,7 @@ export default function ContributionsManagementPage() {
           disabled={isSubmitting}
           className='w-full rounded-xl bg-red-500 py-4 text-base font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-red-600 dark:hover:bg-red-700'
         >
-          {isSubmitting ? 'Saving...' : 'Save Changes'}
+          {isSubmitting ? t('contributions.saving') : t('contributions.saveChanges')}
         </button>
       </div>
     </div>

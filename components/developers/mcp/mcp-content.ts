@@ -51,95 +51,57 @@ export const MCP_TEST_SNIPPET = `npm test
 npm run verify
 EVENTO_SMOKE_USERNAME=your-username npm run smoke`;
 
-export const MCP_REQUIREMENTS = [
-  'Node.js 18+',
-  'npm',
-  'Evento developer API key',
-  'Any MCP client that supports stdio',
-] as const;
+/** Keys under `developers.mcp.setup.requirements`. */
+export const MCP_REQUIREMENTS = ['node', 'npm', 'apiKey', 'stdioClient'] as const;
 
 export type McpClientId = 'claude-desktop' | 'cursor' | 'other' | 'openclaw';
 
+/** Keys under `developers.mcp.clients`. */
+export type McpClientMessageKey = 'claudeDesktop' | 'cursor' | 'other' | 'openclaw';
+
 export interface McpClientGuide {
   id: McpClientId;
-  label: string;
-  /** Where the snippet goes, shown in the code panel header. */
-  target: string;
+  /** Label, snippet target, copy label, steps and docs label live under `developers.mcp.clients.<messageKey>`. */
+  messageKey: McpClientMessageKey;
   language: 'json' | 'bash';
   snippet: string;
-  /** Names the snippet in the copy button label and toast. */
-  copyLabel: string;
-  steps: string[];
   docsHref: string;
-  docsLabel: string;
 }
 
-export const MCP_CONFIG_BEST_PRACTICES = [
-  'Use an absolute path in args',
-  'Keep PUBLIC_API_KEY in client-local env config',
-  'Restart the client after config changes',
-] as const;
+/** Keys under `developers.mcp.clients.steps`. */
+export const MCP_CLIENT_STEP_KEYS = ['s1', 's2', 's3'] as const;
+
+/** Keys under `developers.mcp.clients.bestPractices`. */
+export const MCP_CONFIG_BEST_PRACTICES = ['absolutePath', 'localEnv', 'restart'] as const;
 
 export const MCP_CLIENT_GUIDES: McpClientGuide[] = [
   {
     id: 'claude-desktop',
-    label: 'Claude Desktop',
-    target: 'claude_desktop_config.json',
+    messageKey: 'claudeDesktop',
     language: 'json',
     snippet: MCP_CLIENT_CONFIG_SNIPPET,
-    copyLabel: 'Claude Desktop config',
-    steps: [
-      'Add the server block to claude_desktop_config.json.',
-      'Point args at the absolute path of dist/index.js and set PUBLIC_API_KEY.',
-      'Save, then restart Claude Desktop.',
-    ],
     docsHref: DOCS_MCP_CLIENT_CONFIG_URL,
-    docsLabel: 'Client configuration docs',
   },
   {
     id: 'cursor',
-    label: 'Cursor',
-    target: 'Cursor MCP settings',
+    messageKey: 'cursor',
     language: 'json',
     snippet: MCP_CLIENT_CONFIG_SNIPPET,
-    copyLabel: 'Cursor config',
-    steps: [
-      'Add the same server block in Cursor’s MCP settings.',
-      'Point args at the absolute path of dist/index.js and set PUBLIC_API_KEY.',
-      'Restart Cursor.',
-    ],
     docsHref: DOCS_MCP_CLIENT_CONFIG_URL,
-    docsLabel: 'Client configuration docs',
   },
   {
     id: 'other',
-    label: 'Other MCP clients',
-    target: 'stdio server config',
+    messageKey: 'other',
     language: 'json',
     snippet: MCP_CLIENT_CONFIG_SNIPPET,
-    copyLabel: 'MCP server config',
-    steps: [
-      'Find where your client configures stdio MCP servers.',
-      'Use the same command, args, and env fields shown here.',
-      'Restart the client after config changes.',
-    ],
     docsHref: DOCS_MCP_CLIENT_CONFIG_URL,
-    docsLabel: 'Client configuration docs',
   },
   {
     id: 'openclaw',
-    label: 'OpenClaw',
-    target: 'Terminal',
+    messageKey: 'openclaw',
     language: 'bash',
     snippet: MCP_OPENCLAW_SKILL_SNIPPET,
-    copyLabel: 'OpenClaw install commands',
-    steps: [
-      'OpenClaw reuses the Evento SKILL.md from its skills workspace.',
-      'Create the skill folder and copy SKILL.md into it.',
-      'If OpenClaw is already running, restart your session or gateway to pick it up.',
-    ],
     docsHref: DOCS_MCP_OPENCLAW_URL,
-    docsLabel: 'Add to OpenClaw guide',
   },
 ];
 
@@ -151,7 +113,8 @@ export interface McpToolInput {
 
 export interface McpTool {
   name: 'list-events' | 'get-event';
-  description: string;
+  /** Description lives under `developers.mcp.tools.descriptions.<messageKey>`. */
+  messageKey: 'listEvents' | 'getEvent';
   route: string;
   inputs: McpToolInput[];
 }
@@ -159,7 +122,7 @@ export interface McpTool {
 export const MCP_TOOLS: McpTool[] = [
   {
     name: 'list-events',
-    description: 'Lists events for a user.',
+    messageKey: 'listEvents',
     route: 'GET /public/v1/users/{username}/events',
     inputs: [
       { name: 'username', type: 'string', required: true },
@@ -169,87 +132,64 @@ export const MCP_TOOLS: McpTool[] = [
   },
   {
     name: 'get-event',
-    description: 'Fetches event details by ID.',
+    messageKey: 'getEvent',
     route: 'GET /public/v1/events/{eventId}',
     inputs: [{ name: 'eventId', type: 'string', required: true }],
   },
 ];
 
 export interface McpExamplePrompt {
-  prompt: string;
+  /** Prompt and illustrative agent reply live under `developers.mcp.examples.prompts.<messageKey>`; the page never invents the returned event data. */
+  messageKey: 'userEvents' | 'myUpcoming' | 'getEvent';
   tool: McpTool['name'];
   args: Record<string, string>;
   route: string;
-  /** Illustrative agent lead-in; the page never invents the returned event data. */
-  reply: string;
 }
 
 /** Prompts are the documented examples; args show how each maps onto the tool's inputs. */
 export const MCP_EXAMPLE_PROMPTS: McpExamplePrompt[] = [
   {
-    prompt: 'Show events for satoshi',
+    messageKey: 'userEvents',
     tool: 'list-events',
     args: { username: 'satoshi' },
     route: 'GET /public/v1/users/satoshi/events',
-    reply: 'Here are the events I found for satoshi:',
   },
   {
-    prompt: 'List my upcoming events',
+    messageKey: 'myUpcoming',
     tool: 'list-events',
     args: { username: 'your-username', type: 'upcoming' },
     route: 'GET /public/v1/users/your-username/events',
-    reply: 'Here’s what’s coming up for you:',
   },
   {
-    prompt: 'Get event evt_abc123',
+    messageKey: 'getEvent',
     tool: 'get-event',
     args: { eventId: 'evt_abc123' },
     route: 'GET /public/v1/events/evt_abc123',
-    reply: 'Here are the details for evt_abc123:',
   },
 ];
 
-export const MCP_EXECUTION_STEPS = [
-  'Your client calls tools/list and the server returns the Evento tools.',
-  'Your client calls tools/call with a tool name and arguments.',
-  'The executor validates the arguments and fills in the route placeholders.',
-  'It sends an authenticated API request with a timeout and retry policy.',
-  'The success or error payload is normalized back into an MCP response.',
-] as const;
+/** Keys under `developers.mcp.flow.steps`. */
+export const MCP_EXECUTION_STEPS = ['list', 'call', 'validate', 'request', 'normalize'] as const;
 
 export interface McpTroubleshootingItem {
   icon: LucideIcon;
-  title: string;
-  fix: string;
+  /** Title and fix live under `developers.mcp.troubleshooting.items.<messageKey>`. */
+  messageKey: 'missingKey' | 'toolsHidden' | 'apiErrors';
 }
 
 export const MCP_TROUBLESHOOTING: McpTroubleshootingItem[] = [
-  {
-    icon: KeyRound,
-    title: 'Missing API key',
-    fix: 'Set PUBLIC_API_KEY in the MCP client’s env block.',
-  },
-  {
-    icon: PlugZap,
-    title: 'Tools not visible',
-    fix: 'Run npm run build, confirm dist/index.js exists, use an absolute path in args, then restart the client.',
-  },
-  {
-    icon: ServerCrash,
-    title: 'API errors',
-    fix: 'Check the key’s scope and EVENTO_API_BASE_URL, then run the smoke check with a known username.',
-  },
+  { icon: KeyRound, messageKey: 'missingKey' },
+  { icon: PlugZap, messageKey: 'toolsHidden' },
+  { icon: ServerCrash, messageKey: 'apiErrors' },
 ];
 
+/** Keys under `developers.mcp.troubleshooting.reliability.items`. */
 export const MCP_RELIABILITY_NOTES = [
-  'Retries 408, 429 and 5xx responses',
-  'Retries timeouts, DNS failures and connection resets',
-  'Failed calls return isError: true with a structured payload',
-  'No database access and no persistence in the MCP layer',
+  'statusRetries',
+  'networkRetries',
+  'isError',
+  'noPersistence',
 ] as const;
 
-export const MCP_SECURITY_NOTES = [
-  'Keep API keys in local env config, never in source control',
-  'Rotate keys periodically',
-  'Monitor usage against rate limits',
-] as const;
+/** Keys under `developers.mcp.troubleshooting.security.items`. */
+export const MCP_SECURITY_NOTES = ['localEnv', 'rotate', 'monitor'] as const;

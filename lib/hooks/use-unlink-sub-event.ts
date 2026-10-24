@@ -4,6 +4,7 @@ import apiClient from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
 import { ApiResponse } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface UnlinkSubEventParams {
   parentEventId: string;
@@ -16,6 +17,7 @@ interface UnlinkSubEventParams {
  */
 export function useUnlinkSubEvent() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async ({ parentEventId, subEventId }: UnlinkSubEventParams) => {
@@ -27,7 +29,7 @@ export function useUnlinkSubEvent() {
         return response.data;
       }
 
-      throw new Error('Failed to remove sub event');
+      throw new Error(t('subEvents.unlinkFailed'));
     },
     onSuccess: (_data, { parentEventId, subEventId }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.eventSubEvents(parentEventId) });

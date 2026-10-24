@@ -22,6 +22,7 @@ import {
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export const Modal = ({
   open,
@@ -59,6 +60,7 @@ export const Modal = ({
   mobileHandleOnly?: boolean;
 }) => {
   const { isMobile } = useMediaQuery();
+  const tCommon = useTranslations('common');
 
   const baseDialogContentClassName = isWideDialog ? 'min-w-[650px]' : 'min-w-[425px]';
 
@@ -79,7 +81,7 @@ export const Modal = ({
           {actionCloseButton && !hideCloseButton && !disableClose && (
             <CircledIconButton
               icon={X}
-              ariaLabel='Close'
+              ariaLabel={tCommon('actions.close')}
               className='absolute right-4 top-4 z-10 dark:bg-neutral-800 dark:hover:bg-neutral-700'
               onClick={() => setOpen(false)}
             />
@@ -117,14 +119,14 @@ export const Modal = ({
                 {actionCloseButton ? (
                   <CircledIconButton
                     icon={X}
-                    ariaLabel='Close'
+                    ariaLabel={tCommon('actions.close')}
                     className='absolute right-4 top-4 z-10 dark:bg-neutral-800 dark:hover:bg-neutral-700'
                     onClick={() => setOpen(false)}
                   />
                 ) : (
                   <button
                     type='button'
-                    aria-label='Close'
+                    aria-label={tCommon('actions.close')}
                     className='absolute right-4 top-4 rounded-full p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100 dark:focus-visible:ring-offset-neutral-900'
                     onClick={() => setOpen(false)}
                   >

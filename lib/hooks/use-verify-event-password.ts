@@ -4,6 +4,7 @@ import { apiClient } from '@/lib/api/client';
 import { ApiResponse } from '@/lib/types/api';
 import { grantEventAccess } from '@/lib/utils/event-access';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface VerifyEventPasswordArgs {
   eventId: string;
@@ -16,6 +17,7 @@ interface VerifyPasswordResponse {
 
 export function useVerifyEventPassword() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation<boolean, Error, VerifyEventPasswordArgs>({
     mutationFn: async ({ eventId, password }) => {
@@ -25,7 +27,7 @@ export function useVerifyEventPassword() {
       );
 
       if (!response?.success) {
-        throw new Error(response?.message || 'Invalid password');
+        throw new Error(response?.message || t('events.invalidPassword'));
       }
 
       return response.data?.valid ?? false;

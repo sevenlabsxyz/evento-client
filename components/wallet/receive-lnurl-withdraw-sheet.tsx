@@ -10,6 +10,7 @@ import { toast } from '@/lib/utils/toast';
 import type { InputType } from '@breeztech/breez-sdk-spark/ssr';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
 type LnurlWithdrawInput = Extract<InputType, { type: 'lnurlWithdraw' }>;
@@ -43,6 +44,8 @@ export function ReceiveLnurlWithdrawSheet({
   devConfig,
   onReceived,
 }: ReceiveLnurlWithdrawSheetProps) {
+  const t = useTranslations('walletFlows');
+  const tCommon = useTranslations('common');
   const [step, setStep] = useState<'details' | 'confirm' | 'success'>('details');
   const [amountSheetOpen, setAmountSheetOpen] = useState(false);
   const [amountSats, setAmountSats] = useState<number | null>(null);
@@ -132,7 +135,7 @@ export function ReceiveLnurlWithdrawSheet({
 
   const handleReceive = async () => {
     if (!withdrawRequest || !amountSats) {
-      toast.error('Missing LNURL withdraw details');
+      toast.error(t('receiveLnurlWithdrawSheet.missingDetails'));
       return;
     }
 
@@ -221,7 +224,9 @@ export function ReceiveLnurlWithdrawSheet({
         const result = await response.json();
 
         if (!response.ok || !result.success) {
-          throw new Error(result.error || result.reason || 'Withdraw failed');
+          throw new Error(
+            result.error || result.reason || t('receiveLnurlWithdrawSheet.withdrawFailed')
+          );
         }
       }
 
@@ -239,7 +244,9 @@ export function ReceiveLnurlWithdrawSheet({
         error: error instanceof Error ? error.message : String(error),
         amountSats,
       });
-      toast.error(error instanceof Error ? error.message : 'Failed to receive funds');
+      toast.error(
+        error instanceof Error ? error.message : t('receiveLnurlWithdrawSheet.receiveFailed')
+      );
     } finally {
       setIsReceiving(false);
     }
@@ -268,11 +275,11 @@ export function ReceiveLnurlWithdrawSheet({
   const footer =
     step === 'success' ? (
       <Button className='h-12 w-full rounded-full' onClick={() => handleOpenChange(false)}>
-        Done
+        {tCommon('actions.done')}
       </Button>
     ) : step === 'details' ? (
       <Button className='h-12 w-full rounded-full' onClick={() => setAmountSheetOpen(true)}>
-        Choose amount
+        {t('receiveLnurlWithdrawSheet.chooseAmount')}
       </Button>
     ) : (
       <Button
@@ -283,10 +290,10 @@ export function ReceiveLnurlWithdrawSheet({
         {isReceiving ? (
           <>
             <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-            Receiving...
+            {t('receiveLnurlWithdrawSheet.receiving')}
           </>
         ) : (
-          'Confirm and receive'
+          t('receiveLnurlWithdrawSheet.confirmAndReceive')
         )}
       </Button>
     );
@@ -296,7 +303,7 @@ export function ReceiveLnurlWithdrawSheet({
       <MasterScrollableSheet
         open={open}
         onOpenChange={handleOpenChange}
-        title='Receive Bitcoin'
+        title={t('receiveLnurlWithdrawSheet.title')}
         footer={footer}
       >
         <div className='space-y-6 p-6'>
@@ -320,10 +327,10 @@ export function ReceiveLnurlWithdrawSheet({
                 transition={{ delay: 0.1 }}
               >
                 <h3 className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>
-                  Bitcoin received
+                  {t('receiveLnurlWithdrawSheet.bitcoinReceived')}
                 </h3>
                 <p className='text-sm text-muted-foreground'>
-                  Your sats arrived in your Evento wallet.
+                  {t('receiveLnurlWithdrawSheet.satsArrived')}
                 </p>
               </motion.div>
 
@@ -339,7 +346,7 @@ export function ReceiveLnurlWithdrawSheet({
                     ${amountUSD.toFixed(2)}
                   </p>
                   <p className='text-center text-sm text-gray-600 dark:text-neutral-400'>
-                    {amountSats?.toLocaleString()} sats
+                    {t('receiveLnurlWithdrawSheet.satsAmount', { amount: amountSats ?? 0 })}
                   </p>
                 </motion.div>
               )}
@@ -349,10 +356,11 @@ export function ReceiveLnurlWithdrawSheet({
               <div className='space-y-3'>
                 <div className='rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                   <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
-                    Description
+                    {t('receiveLnurlWithdrawSheet.description')}
                   </p>
                   <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
-                    {withdrawRequest?.defaultDescription || 'Receive funds'}
+                    {withdrawRequest?.defaultDescription ||
+                      t('receiveLnurlWithdrawSheet.receiveFunds')}
                   </p>
                 </div>
 
@@ -361,28 +369,34 @@ export function ReceiveLnurlWithdrawSheet({
                     {constraints.isFixedAmount ? (
                       <div className='rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                         <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
-                          Amount
+                          {t('receiveLnurlWithdrawSheet.amount')}
                         </p>
                         <p className='text-2xl font-semibold text-gray-900 dark:text-neutral-100'>
-                          {constraints.minSats.toLocaleString()} sats
+                          {t('receiveLnurlWithdrawSheet.satsAmount', {
+                            amount: constraints.minSats,
+                          })}
                         </p>
                       </div>
                     ) : (
                       <div className='grid grid-cols-2 gap-3'>
                         <div className='rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                           <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
-                            Minimum
+                            {t('receiveLnurlWithdrawSheet.minimum')}
                           </p>
                           <p className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-                            {constraints.minSats.toLocaleString()} sats
+                            {t('receiveLnurlWithdrawSheet.satsAmount', {
+                              amount: constraints.minSats,
+                            })}
                           </p>
                         </div>
                         <div className='rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                           <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
-                            Maximum
+                            {t('receiveLnurlWithdrawSheet.maximum')}
                           </p>
                           <p className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
-                            {constraints.maxSats.toLocaleString()} sats
+                            {t('receiveLnurlWithdrawSheet.satsAmount', {
+                              amount: constraints.maxSats,
+                            })}
                           </p>
                         </div>
                       </div>
@@ -396,7 +410,7 @@ export function ReceiveLnurlWithdrawSheet({
                   {/* Amount Card */}
                   <div className='rounded-2xl border border-gray-200 bg-white p-6 text-center dark:border-neutral-700 dark:bg-neutral-800'>
                     <p className='text-3xl font-bold text-gray-900 dark:text-neutral-100'>
-                      {amountSats.toLocaleString()} sats
+                      {t('receiveLnurlWithdrawSheet.satsAmount', { amount: amountSats })}
                     </p>
                     {amountUSD !== null && (
                       <p className='mt-1 text-lg text-muted-foreground'>${amountUSD.toFixed(2)}</p>
@@ -412,7 +426,9 @@ export function ReceiveLnurlWithdrawSheet({
 
                   {/* Provider */}
                   {providerHost && (
-                    <p className='text-center text-sm text-muted-foreground'>from {providerHost}</p>
+                    <p className='text-center text-sm text-muted-foreground'>
+                      {t('receiveLnurlWithdrawSheet.fromProvider', { provider: providerHost })}
+                    </p>
                   )}
                 </div>
               )}

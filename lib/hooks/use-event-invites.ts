@@ -4,6 +4,7 @@ import { EventInvite, InviteTarget } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 export type SendInvitesRequest = {
   id: string; // event id
@@ -41,10 +42,12 @@ export type SendInvitesResponse = {
  * Payload: { id: string, message: string, invites: string[] }
  */
 export function useSendEventInvites() {
+  const t = useTranslations('hooks');
+
   return useMutation({
     mutationFn: async (payload: SendInvitesRequest) => {
       if (!payload?.id) throw new Error('Missing event id');
-      if (!payload?.invites?.length) throw new Error('No invitees selected');
+      if (!payload?.invites?.length) throw new Error(t('eventInvites.noInvitees'));
 
       const res = await apiClient.post<SendInvitesResponse>(
         `/v1/events/${payload.id}/invites`,
@@ -55,10 +58,10 @@ export function useSendEventInvites() {
     },
     onSuccess: (data) => {
       const count = data?.invites?.length ?? 0;
-      toast.success(count ? `Sent ${count} invite${count === 1 ? '' : 's'}` : 'Invites sent');
+      toast.success(count ? t('eventInvites.sent', { count }) : t('eventInvites.invitesSent'));
     },
     onError: (err: any) => {
-      const msg = err?.message || 'Failed to send invites';
+      const msg = err?.message || t('eventInvites.sendFailed');
       toast.error(msg);
     },
   });

@@ -9,6 +9,7 @@ import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletSeedStore } from '@/lib/stores/wallet-seed-store';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, AlertTriangle, KeyRound, Lock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface WalletUnlockProps {
@@ -16,6 +17,8 @@ interface WalletUnlockProps {
 }
 
 export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
+  const t = useTranslations('wallet');
+  const tCommon = useTranslations('common');
   const [pin, setPin] = useState('');
   const [isPasswordMode, setIsPasswordMode] = useState(false);
   const [password, setPassword] = useState('');
@@ -35,7 +38,7 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
   // Separate unlock function that accepts a PIN parameter for auto-submit
   const handleUnlockWithPin = async (pinToUse: string) => {
     if (!pinToUse || pinToUse.length < 4) {
-      toast.error('Please enter your PIN');
+      toast.error(t('pin.enterPin'));
       return;
     }
 
@@ -43,7 +46,7 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
       await unlockWallet(pinToUse);
       onUnlock?.();
     } catch (error: any) {
-      toast.error(error.message || 'Failed to unlock wallet');
+      toast.error(error.message || t('unlock.failed'));
       // Clear PIN on error to allow retry
       setPin('');
     }
@@ -75,7 +78,7 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
     const credential = isPasswordMode ? password : pin;
 
     if (!credential || credential.length < 4) {
-      toast.error(isPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
+      toast.error(isPasswordMode ? t('pin.enterPassword') : t('pin.enterPin'));
       return;
     }
 
@@ -83,7 +86,7 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
       await unlockWallet(credential);
       onUnlock?.();
     } catch (error: any) {
-      toast.error(error.message || 'Failed to unlock wallet');
+      toast.error(error.message || t('unlock.failed'));
       // Clear PIN on error to allow retry
       if (!isPasswordMode) {
         setPin('');
@@ -102,10 +105,12 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
           )}
         </div>
         <h2 className='text-2xl font-bold'>
-          {isPasswordMode ? 'Enter Admin Password' : 'Enter Wallet PIN'}
+          {isPasswordMode ? t('unlock.adminTitle') : t('unlock.pinTitle')}
         </h2>
         {isPasswordMode && (
-          <p className='mt-2 text-sm text-gray-500 dark:text-neutral-400'>Admin mode enabled</p>
+          <p className='mt-2 text-sm text-gray-500 dark:text-neutral-400'>
+            {t('unlock.adminMode')}
+          </p>
         )}
       </div>
 
@@ -117,7 +122,7 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
               type='password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder='Enter admin password'
+              placeholder={t('pin.adminPasswordPlaceholder')}
               className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg dark:border-neutral-800 dark:bg-neutral-900'
               autoFocus
               disabled={isLoading}
@@ -168,7 +173,7 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
           size='lg'
           disabled={(isPasswordMode ? password.length < 4 : pin.length < 4) || isLoading}
         >
-          {isLoading ? 'Unlocking...' : 'Unlock'}
+          {isLoading ? t('unlock.unlocking') : t('unlock.unlock')}
         </Button>
 
         <Button
@@ -176,13 +181,13 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
           onClick={handleOpenRemoveSheet}
           className='w-full text-gray-500 dark:text-neutral-400'
         >
-          Use different wallet
+          {t('unlock.useDifferentWallet')}
         </Button>
       </div>
 
       {/* Remove Wallet Confirmation Sheet */}
       <MasterScrollableSheet
-        title='Start Fresh?'
+        title={t('unlock.startFreshTitle')}
         open={showRemoveSheet}
         onOpenChange={setShowRemoveSheet}
       >
@@ -190,27 +195,21 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
           {confirmStep === 'info' ? (
             <div className='space-y-6'>
               <div className='space-y-4'>
-                <h3 className='text-lg font-semibold'>Before you continue...</h3>
-                <p className='text-gray-600 dark:text-neutral-400'>
-                  This will remove your wallet from this device. Make sure you have your backup
-                  phrase saved somewhere safe before continuing.
-                </p>
-                <p className='text-gray-600 dark:text-neutral-400'>
-                  Without your backup phrase, there&apos;s no way to recover your funds. Evento
-                  doesn&apos;t store your wallet information — only you have access to it.
-                </p>
+                <h3 className='text-lg font-semibold'>{t('unlock.beforeContinue')}</h3>
+                <p className='text-gray-600 dark:text-neutral-400'>{t('unlock.removeInfo')}</p>
+                <p className='text-gray-600 dark:text-neutral-400'>{t('unlock.noRecovery')}</p>
               </div>
 
               <div className='space-y-3'>
                 <Button onClick={() => setConfirmStep('confirm')} className='w-full rounded-full'>
-                  I understand, continue
+                  {t('unlock.understandContinue')}
                 </Button>
                 <Button
                   variant='outline'
                   onClick={() => setShowRemoveSheet(false)}
                   className='w-full rounded-full'
                 >
-                  Cancel
+                  {tCommon('actions.cancel')}
                 </Button>
               </div>
             </div>
@@ -220,11 +219,8 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
                 <div className='flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60'>
                   <AlertTriangle className='h-8 w-8 text-red-600 dark:text-red-400' />
                 </div>
-                <h3 className='text-lg font-semibold'>Are you sure?</h3>
-                <p className='text-gray-600 dark:text-neutral-400'>
-                  This cannot be undone. Once removed, you&apos;ll need your backup phrase to access
-                  this wallet again.
-                </p>
+                <h3 className='text-lg font-semibold'>{t('unlock.areYouSure')}</h3>
+                <p className='text-gray-600 dark:text-neutral-400'>{t('unlock.cannotUndo')}</p>
               </div>
 
               <div className='space-y-3'>
@@ -233,14 +229,14 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
                   onClick={handleRemoveWallet}
                   className='w-full rounded-full'
                 >
-                  Remove Wallet
+                  {t('unlock.removeWallet')}
                 </Button>
                 <Button
                   variant='outline'
                   onClick={() => setConfirmStep('info')}
                   className='w-full rounded-full'
                 >
-                  Go Back
+                  {tCommon('actions.goBack')}
                 </Button>
               </div>
             </div>

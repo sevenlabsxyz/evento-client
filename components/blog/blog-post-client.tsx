@@ -16,6 +16,7 @@ import { getPostExcerpt, getPrimaryVisibleTag, getVisibleTags } from '@/lib/util
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { ArrowLeft, ArrowRight, Link2, Share } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
@@ -68,6 +69,7 @@ function selectRelatedPosts(post: GhostPost, candidates: GhostPost[]): GhostPost
 }
 
 const BlogPostClient = ({ post }: BlogPostClientProps) => {
+  const t = useTranslations('blog');
   const { setTopBar } = useTopBar();
   const [headings, setHeadings] = useState<BlogContentHeading[]>([]);
   const { data: relatedCandidatePosts = [], isLoading: isLoadingRelated } = useGhostPosts({
@@ -91,7 +93,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
     setTopBar({
       leftMode: 'back',
       centerMode: 'title',
-      title: 'Blog',
+      title: t('topBarTitle'),
       subtitle: '',
       showAvatar: false,
       buttons: [],
@@ -101,12 +103,12 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
     return () => {
       setTopBar({ title: '', subtitle: '', buttons: [], desktopHidden: false });
     };
-  }, [post?.title, setTopBar]);
+  }, [post?.title, setTopBar, t]);
 
   const handleShare = async () => {
     const shareData = {
       title: post.title,
-      text: excerpt || `Check out this blog post: ${post.title}`,
+      text: excerpt || t('post.shareText', { title: post.title }),
       url: window.location.href,
     };
 
@@ -120,9 +122,9 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
       // Fallback: Copy to clipboard
       try {
         await navigator.clipboard.writeText(window.location.href);
-        toast.success('Blog post link copied to clipboard!');
+        toast.success(t('post.shareLinkCopied'));
       } catch (error) {
-        toast.error('Failed to share blog post');
+        toast.error(t('post.shareFailed'));
       }
     }
   };
@@ -130,9 +132,9 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
-      toast.success('Link copied to clipboard');
+      toast.success(t('post.linkCopied'));
     } catch (error) {
-      toast.error('Failed to copy link');
+      toast.error(t('post.copyFailed'));
     }
   };
 
@@ -142,13 +144,16 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
         <article>
           <div className='mx-auto w-full max-w-3xl xl:max-w-5xl'>
             {/* Desktop breadcrumb (the top bar is mobile-only on this page) */}
-            <nav aria-label='Breadcrumb' className='hidden items-center gap-2 text-sm md:flex'>
+            <nav
+              aria-label={t('post.breadcrumb')}
+              className='hidden items-center gap-2 text-sm md:flex'
+            >
               <Link
                 href='/e/blog'
                 className='inline-flex items-center gap-1.5 font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-neutral-400 dark:hover:text-neutral-100'
               >
                 <ArrowLeft className='h-4 w-4' />
-                Blog
+                {t('topBarTitle')}
               </Link>
               {primaryTag && (
                 <>
@@ -192,13 +197,13 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                     className={cn(ICON_BUTTON_CLASS, 'px-4')}
                   >
                     <Share className='h-4 w-4' />
-                    Share
+                    {t('post.share')}
                   </button>
                   <button
                     type='button'
                     onClick={handleCopyLink}
-                    aria-label='Copy link'
-                    title='Copy link'
+                    aria-label={t('post.copyLink')}
+                    title={t('post.copyLink')}
                     className={cn(ICON_BUTTON_CLASS, 'w-9')}
                   >
                     <Link2 className='h-4 w-4' />
@@ -247,7 +252,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
               {(visibleTags.length > 0 || post.primary_author) && (
                 <footer className='mt-14 space-y-8 border-t border-gray-200 pt-8 dark:border-neutral-800'>
                   {visibleTags.length > 0 && (
-                    <ul aria-label='Tags' className='flex flex-wrap gap-2'>
+                    <ul aria-label={t('post.tags')} className='flex flex-wrap gap-2'>
                       {visibleTags.map((tag) => (
                         <li key={tag.id}>
                           <Link
@@ -271,10 +276,10 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                   <BlogToc headings={headings} />
                   <div className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
                     <p className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                      Enjoying this article?
+                      {t('post.enjoyingTitle')}
                     </p>
                     <p className='mt-1 text-sm text-gray-600 dark:text-neutral-400'>
-                      Pass it along to someone who&apos;d like it.
+                      {t('post.enjoyingBody')}
                     </p>
                     <div className='mt-3 flex items-center gap-2'>
                       <button
@@ -283,13 +288,13 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                         className={cn(ICON_BUTTON_CLASS, 'flex-1 px-3')}
                       >
                         <Share className='h-4 w-4' />
-                        Share
+                        {t('post.share')}
                       </button>
                       <button
                         type='button'
                         onClick={handleCopyLink}
-                        aria-label='Copy link'
-                        title='Copy link'
+                        aria-label={t('post.copyLink')}
+                        title={t('post.copyLink')}
                         className={cn(ICON_BUTTON_CLASS, 'w-9')}
                       >
                         <Link2 className='h-4 w-4' />
@@ -313,13 +318,13 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                 id='keep-reading-heading'
                 className='text-xl font-bold tracking-tight text-gray-900 dark:text-neutral-100 md:text-2xl'
               >
-                Keep reading
+                {t('post.keepReading')}
               </h2>
               <Link
                 href='/e/blog'
                 className='inline-flex items-center gap-1 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 dark:text-neutral-400 dark:hover:text-neutral-100'
               >
-                All posts
+                {t('post.allPosts')}
                 <ArrowRight className='h-4 w-4' />
               </Link>
             </div>

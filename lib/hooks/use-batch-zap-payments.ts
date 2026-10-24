@@ -9,6 +9,7 @@ import {
   BatchZapResult,
   getBatchZapDistribution,
 } from '@/lib/utils/batch-zap';
+import { useTranslations } from 'next-intl';
 import { useCallback, useState } from 'react';
 
 interface SendBatchZapParams {
@@ -35,6 +36,7 @@ const isWalletDisconnectedError = (message: string) => {
 };
 
 export function useBatchZapPayments() {
+  const t = useTranslations('hooks');
   const { refreshBalance } = useWallet();
   const [progress, setProgress] = useState<BatchZapProgress>(INITIAL_PROGRESS);
 
@@ -86,7 +88,7 @@ export function useBatchZapPayments() {
                 : null;
 
           if (!payRequest) {
-            throw new Error('Invalid Lightning address');
+            throw new Error(t('batchZap.invalidLightningAddress'));
           }
 
           const prepareResponse = await breezSDK.prepareLnurlPay({
@@ -107,7 +109,8 @@ export function useBatchZapPayments() {
           });
         } catch (error) {
           failedCount += 1;
-          const message = error instanceof Error ? error.message : 'Failed to send payment';
+          const message =
+            error instanceof Error ? error.message : t('batchZap.failedToSendPayment');
 
           results.push({
             recipient,
@@ -116,7 +119,9 @@ export function useBatchZapPayments() {
             error: message,
           });
 
-          if (isWalletDisconnectedError(message)) {
+          // Breez errors reach here already localized; also match the
+          // translated "wallet not connected" message in non-English locales.
+          if (isWalletDisconnectedError(message) || message === t('breez.sdkNotConnected')) {
             for (
               let remainingIndex = index + 1;
               remainingIndex < recipients.length;
@@ -126,7 +131,7 @@ export function useBatchZapPayments() {
                 recipient: recipients[remainingIndex],
                 amountSats: distribution.perRecipientAmountSats,
                 status: 'skipped',
-                error: 'Wallet disconnected before this payment could be sent.',
+                error: t('batchZap.walletDisconnectedSkipped'),
               });
             }
 
@@ -166,6 +171,7 @@ export function useBatchZapPayments() {
         results,
       };
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [refreshBalance]
   );
 

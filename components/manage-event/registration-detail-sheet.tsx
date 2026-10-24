@@ -7,7 +7,9 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import { useRegistrationSubmissionDetail } from '@/lib/hooks/use-registration-submission-detail';
 import type { RegistrationStatus } from '@/lib/types/api';
 import { format } from 'date-fns';
+import { enUS, es, ptBR } from 'date-fns/locale';
 import { Check, X } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface RegistrationDetailSheetProps {
@@ -32,6 +34,10 @@ export function RegistrationDetailSheet({
   isDenying,
 }: RegistrationDetailSheetProps) {
   const [showDenyInput, setShowDenyInput] = useState(false);
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
+  const locale = useLocale();
+  const dateLocale = locale === 'pt-BR' ? ptBR : locale === 'es' ? es : enUS;
   const [denyReason, setDenyReason] = useState('');
 
   const { data: submission, isLoading } = useRegistrationSubmissionDetail(eventId, registrationId);
@@ -73,9 +79,9 @@ export function RegistrationDetailSheet({
     };
 
     const labels: Record<RegistrationStatus, string> = {
-      pending: 'Pending',
-      approved: 'Approved',
-      denied: 'Denied',
+      pending: t('registrationDetail.status.pending'),
+      approved: t('registrationDetail.status.approved'),
+      denied: t('registrationDetail.status.denied'),
     };
 
     return (
@@ -93,7 +99,7 @@ export function RegistrationDetailSheet({
         <>
           <input
             type='text'
-            placeholder='Reason for denial (optional)'
+            placeholder={t('registrationDetail.denyReasonPlaceholder')}
             value={denyReason}
             onChange={(e) => setDenyReason(e.target.value)}
             className='w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-gray-400 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-400 dark:focus:border-neutral-600'
@@ -104,7 +110,7 @@ export function RegistrationDetailSheet({
               disabled={isDenying}
               className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
             >
-              Confirm Deny
+              {t('registrationDetail.confirmDeny')}
             </Button>
             <Button
               onClick={handleCancelDeny}
@@ -112,7 +118,7 @@ export function RegistrationDetailSheet({
               variant='outline'
               className='flex-1'
             >
-              Cancel
+              {tCommon('actions.cancel')}
             </Button>
           </div>
         </>
@@ -124,14 +130,14 @@ export function RegistrationDetailSheet({
             className='flex-1 bg-green-500 text-white hover:bg-green-600'
           >
             <Check className='mr-2 h-4 w-4' />
-            Approve
+            {t('registrationDetail.approve')}
           </Button>
           <Button
             onClick={handleStartDeny}
             className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             <X className='mr-2 h-4 w-4' />
-            Deny
+            {t('registrationDetail.deny')}
           </Button>
         </div>
       )}
@@ -140,7 +146,7 @@ export function RegistrationDetailSheet({
 
   return (
     <MasterScrollableSheet
-      title='Registration Details'
+      title={t('registrationDetail.title')}
       open={isOpen}
       onOpenChange={(open) => !open && handleClose()}
       footer={footer}
@@ -201,11 +207,19 @@ export function RegistrationDetailSheet({
                 </div>
                 <div className='mt-2 space-y-1'>
                   <p className='text-xs text-gray-400 dark:text-neutral-500'>
-                    Submitted {format(new Date(submission.created_at), 'MMM d, yyyy h:mm a')}
+                    {t('registrationDetail.submitted', {
+                      date: format(new Date(submission.created_at), 'MMM d, yyyy h:mm a', {
+                        locale: dateLocale,
+                      }),
+                    })}
                   </p>
                   {submission.reviewed_at && (
                     <p className='text-xs text-gray-400 dark:text-neutral-500'>
-                      Reviewed {format(new Date(submission.reviewed_at), 'MMM d, yyyy h:mm a')}
+                      {t('registrationDetail.reviewed', {
+                        date: format(new Date(submission.reviewed_at), 'MMM d, yyyy h:mm a', {
+                          locale: dateLocale,
+                        }),
+                      })}
                     </p>
                   )}
                 </div>
@@ -215,7 +229,9 @@ export function RegistrationDetailSheet({
             {/* Denial Reason (if denied) */}
             {submission.approval_status === 'denied' && submission.denial_reason && (
               <div className='rounded-xl bg-red-50 p-4 dark:bg-red-950/40'>
-                <p className='text-sm font-medium text-red-800 dark:text-red-400'>Denial Reason</p>
+                <p className='text-sm font-medium text-red-800 dark:text-red-400'>
+                  {t('registrationDetail.denialReason')}
+                </p>
                 <p className='mt-1 text-sm text-red-700 dark:text-red-400'>
                   {submission.denial_reason}
                 </p>
@@ -226,7 +242,7 @@ export function RegistrationDetailSheet({
             {submission.answers && submission.answers.length > 0 && (
               <div className='border-t border-gray-100 pt-4 dark:border-neutral-800'>
                 <h4 className='mb-4 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
-                  Registration Answers
+                  {t('registrationDetail.answers')}
                 </h4>
                 <div className='space-y-4'>
                   {submission.answers.map((answer) => (
@@ -240,7 +256,7 @@ export function RegistrationDetailSheet({
                       <p className='mt-1 text-gray-900 dark:text-neutral-100'>
                         {answer.answer || (
                           <span className='italic text-gray-400 dark:text-neutral-500'>
-                            No answer
+                            {t('registrationDetail.noAnswer')}
                           </span>
                         )}
                       </p>
@@ -254,14 +270,16 @@ export function RegistrationDetailSheet({
             {(!submission.answers || submission.answers.length === 0) && (
               <div className='border-t border-gray-100 pt-4 dark:border-neutral-800'>
                 <p className='text-center text-sm text-gray-400 dark:text-neutral-500'>
-                  No registration questions were configured for this event.
+                  {t('registrationDetail.noQuestions')}
                 </p>
               </div>
             )}
           </div>
         ) : (
           <div className='py-8 text-center'>
-            <p className='text-gray-500 dark:text-neutral-400'>Registration not found</p>
+            <p className='text-gray-500 dark:text-neutral-400'>
+              {t('registrationDetail.notFound')}
+            </p>
           </div>
         )}
       </div>

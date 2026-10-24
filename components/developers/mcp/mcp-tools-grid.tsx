@@ -1,5 +1,6 @@
 import { DOCS_MCP_TOOLS_URL } from '@/lib/constants/external-links';
 import { CalendarDays, CalendarSearch, LucideIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { MCP_TOOLS, type McpTool } from './mcp-content';
 import { McpDocsLink, McpSectionHeader } from './mcp-section-header';
@@ -10,6 +11,7 @@ const TOOL_ICONS: Record<McpTool['name'], LucideIcon> = {
 };
 
 function ToolCard({ tool }: { tool: McpTool }) {
+  const t = useTranslations('developers.mcp');
   const Icon = TOOL_ICONS[tool.name];
   const [method, ...pathParts] = tool.route.split(' ');
 
@@ -23,7 +25,9 @@ function ToolCard({ tool }: { tool: McpTool }) {
           <h3 className='font-mono text-lg font-semibold text-gray-900 dark:text-neutral-100'>
             {tool.name}
           </h3>
-          <p className='mt-0.5 text-sm text-gray-600 dark:text-neutral-400'>{tool.description}</p>
+          <p className='mt-0.5 text-sm text-gray-600 dark:text-neutral-400'>
+            {t(`tools.descriptions.${tool.messageKey}`)}
+          </p>
         </div>
       </div>
 
@@ -37,7 +41,7 @@ function ToolCard({ tool }: { tool: McpTool }) {
       </div>
 
       <h4 className='mt-5 text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-neutral-500'>
-        Inputs
+        {t('tools.inputs')}
       </h4>
       <dl className='mt-2 divide-y divide-gray-100 dark:divide-neutral-800'>
         {tool.inputs.map((input) => (
@@ -57,7 +61,7 @@ function ToolCard({ tool }: { tool: McpTool }) {
                   : 'shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'
               }
             >
-              {input.required ? 'Required' : 'Optional'}
+              {input.required ? t('required') : t('optional')}
             </dd>
           </div>
         ))}
@@ -67,14 +71,16 @@ function ToolCard({ tool }: { tool: McpTool }) {
 }
 
 export function McpToolsGrid() {
+  const t = useTranslations('developers.mcp.tools');
+
   return (
     <section id='tools' aria-labelledby='mcp-tools-heading' className='scroll-mt-6'>
       <McpSectionHeader
         id='mcp-tools-heading'
-        eyebrow='Tools'
-        title='What your agent can do'
-        description='Each tool maps to one authenticated route on the Evento public API.'
-        action={<McpDocsLink href={DOCS_MCP_TOOLS_URL}>Tool reference</McpDocsLink>}
+        eyebrow={t('eyebrow')}
+        title={t('title')}
+        description={t('description')}
+        action={<McpDocsLink href={DOCS_MCP_TOOLS_URL}>{t('reference')}</McpDocsLink>}
       />
       <ul className='mt-8 grid gap-5 md:grid-cols-2'>
         {MCP_TOOLS.map((tool) => (

@@ -16,12 +16,14 @@ import { useUserSearch } from '@/lib/hooks/use-search';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { UserDetails, UserSearchResult } from '@/lib/types/api';
 import { Search, Users } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const MIN_SEARCH_LENGTH = 2;
 
 export default function SearchPage() {
+  const t = useTranslations('misc.search');
   const pathname = usePathname();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const [searchText, setSearchText] = useState('');
@@ -35,7 +37,7 @@ export default function SearchPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Search',
+      title: t('topBarTitle'),
       hideMobileBreadcrumb: true,
       leftMode: 'menu',
       centerMode: 'title',
@@ -43,7 +45,7 @@ export default function SearchPage() {
       buttons: [],
     });
     return () => clearRoute(pathname);
-  }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig]);
+  }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig, t]);
 
   useEffect(() => {
     const query = debouncedSearch.trim();
@@ -107,11 +109,9 @@ export default function SearchPage() {
         >
           <div className='mb-8 flex flex-col items-center text-center'>
             <h1 className='mb-2 text-3xl font-semibold text-gray-900 dark:text-neutral-100'>
-              Find Evento Users
+              {t('heading')}
             </h1>
-            <p className='text-sm text-gray-500 dark:text-neutral-400'>
-              Search by username or name
-            </p>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>{t('subheading')}</p>
           </div>
 
           <div className='w-full max-w-md'>
@@ -120,7 +120,7 @@ export default function SearchPage() {
               className='shadow-xl shadow-gray-200/50 dark:shadow-black/40'
             >
               <PromptInputTextarea
-                placeholder='Search for users...'
+                placeholder={t('placeholder')}
                 className='min-h-[56px] text-base'
                 autoFocus
                 value={searchText}
@@ -130,7 +130,7 @@ export default function SearchPage() {
                 <PromptInputTools>
                   <div className='flex items-center gap-2 text-xs text-gray-400 dark:text-neutral-400'>
                     <Search className='h-3.5 w-3.5' />
-                    <span>Search as you type</span>
+                    <span>{t('searchAsYouType')}</span>
                   </div>
                 </PromptInputTools>
                 <PromptInputSubmit />
@@ -151,7 +151,7 @@ export default function SearchPage() {
               <PromptInput onSubmit={handlePromptSubmit}>
                 <PromptInputTextarea
                   ref={topInputRef}
-                  placeholder='Search for users...'
+                  placeholder={t('placeholder')}
                   className='min-h-[48px] text-base'
                   value={searchText}
                   onChange={handleTopInputChange}
@@ -162,10 +162,10 @@ export default function SearchPage() {
                       <Users className='h-3.5 w-3.5' />
                       <span>
                         {isPending
-                          ? 'Searching...'
+                          ? t('searching')
                           : hasResults
-                            ? `${results.length} result${results.length === 1 ? '' : 's'}`
-                            : 'No results'}
+                            ? t('resultCount', { count: results.length })
+                            : t('noResults')}
                       </span>
                     </div>
                   </PromptInputTools>
@@ -198,10 +198,10 @@ export default function SearchPage() {
                     <Search className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
                   </div>
                   <h3 className='mb-2 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-                    No users found
+                    {t('noUsersFound')}
                   </h3>
                   <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                    No users matching &quot;{searchText}&quot;
+                    {t('noUsersMatching', { query: searchText })}
                   </p>
                 </div>
               ) : (

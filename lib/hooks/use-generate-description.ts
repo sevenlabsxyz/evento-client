@@ -1,6 +1,7 @@
 import apiClient from '@/lib/api/client';
 import { logger } from '@/lib/utils/logger';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 export interface GenerateDescriptionParams {
   // Required event data
@@ -33,6 +34,7 @@ interface GenerateDescriptionResponse {
  * Returns a mutation function that can be used to generate descriptions
  */
 export function useGenerateDescription() {
+  const t = useTranslations('hooks');
   return useMutation({
     mutationFn: async (params: GenerateDescriptionParams) => {
       const response: GenerateDescriptionResponse = await apiClient.post(
@@ -46,7 +48,7 @@ export function useGenerateDescription() {
         return response;
       }
 
-      throw new Error('Failed to generate description');
+      throw new Error(t('events.generateDescriptionFailed'));
     },
     onError: (error: any) => {
       logger.error('Generate description error', {

@@ -11,6 +11,7 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { forwardRef, useState } from 'react';
 
 interface ListActionsMenuProps {
@@ -39,17 +40,20 @@ const MenuTrigger = forwardRef<
     listName: string;
     appearance: 'overlay' | 'outline';
   }
->(({ listName, appearance, className, ...props }, ref) => (
-  <button
-    ref={ref}
-    type='button'
-    aria-label={`Actions for ${listName}`}
-    className={cn(TRIGGER_BASE_CLASS, TRIGGER_APPEARANCE_CLASS[appearance], className)}
-    {...props}
-  >
-    <MoreHorizontal className='h-5 w-5' aria-hidden='true' />
-  </button>
-));
+>(({ listName, appearance, className, ...props }, ref) => {
+  const t = useTranslations('lists.actionsMenu');
+  return (
+    <button
+      ref={ref}
+      type='button'
+      aria-label={t('ariaLabel', { name: listName })}
+      className={cn(TRIGGER_BASE_CLASS, TRIGGER_APPEARANCE_CLASS[appearance], className)}
+      {...props}
+    >
+      <MoreHorizontal className='h-5 w-5' aria-hidden='true' />
+    </button>
+  );
+});
 MenuTrigger.displayName = 'ListActionsMenuTrigger';
 
 /** Rename/delete actions: dropdown on desktop, detached bottom sheet on mobile. */
@@ -60,6 +64,7 @@ export function ListActionsMenu({
   appearance = 'overlay',
   className,
 }: ListActionsMenuProps) {
+  const t = useTranslations('lists.actionsMenu');
   const isMobile = useIsMobile();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -67,7 +72,7 @@ export function ListActionsMenu({
     const options: MenuOption[] = [
       {
         id: 'rename',
-        label: 'Rename list',
+        label: t('renameList'),
         icon: Pencil,
         onClick: () => {
           setIsSheetOpen(false);
@@ -78,7 +83,7 @@ export function ListActionsMenu({
     if (onDelete) {
       options.push({
         id: 'delete',
-        label: 'Delete list',
+        label: t('deleteList'),
         icon: Trash2,
         variant: 'destructive',
         onClick: () => {
@@ -115,7 +120,7 @@ export function ListActionsMenu({
       <DropdownMenuContent align='end' className='w-44 rounded-xl p-1'>
         <DropdownMenuItem onSelect={onRename} className='gap-2 rounded-lg px-2.5 py-2'>
           <Pencil className='h-4 w-4' aria-hidden='true' />
-          Rename
+          {t('rename')}
         </DropdownMenuItem>
         {onDelete && (
           <>
@@ -125,7 +130,7 @@ export function ListActionsMenu({
               className='gap-2 rounded-lg px-2.5 py-2 text-red-600 focus:bg-red-50 focus:text-red-700 dark:text-red-400 dark:focus:bg-red-950/40 dark:focus:text-red-300'
             >
               <Trash2 className='h-4 w-4' aria-hidden='true' />
-              Delete list
+              {t('deleteList')}
             </DropdownMenuItem>
           </>
         )}

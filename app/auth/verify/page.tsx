@@ -11,11 +11,13 @@ import { verifyCodeSchema, type VerifyCodeFormData } from '@/lib/schemas/auth';
 import { toast } from '@/lib/utils/toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, ArrowLeft, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 function VerifyContent() {
+  const t = useTranslations('auth.verify');
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect') || '/';
@@ -81,7 +83,7 @@ function VerifyContent() {
       resendCode(undefined, {
         onSuccess: () => {
           setResendTimer(60); // 60 second cooldown
-          toast.success('A new verification code has been sent to your email.');
+          toast.success(t('resentToast'));
         },
       });
     }
@@ -109,7 +111,7 @@ function VerifyContent() {
           disabled={isLoading}
         >
           <ArrowLeft className='h-4 w-4' />
-          Back to login
+          {t('backToLogin')}
         </Button>
       </div>
       <Card className='w-full max-w-sm rounded-3xl'>
@@ -117,9 +119,9 @@ function VerifyContent() {
           <div className='mx-auto flex w-full items-center justify-center'>
             <EventoIcon className='h-14 w-14' />
           </div>
-          <CardTitle className='text-center text-xl font-bold'>Check your email</CardTitle>
+          <CardTitle className='text-center text-xl font-bold'>{t('title')}</CardTitle>
           <CardDescription className='space-y-2 text-center'>
-            <p>We&apos;ve sent a 6-digit verification code to</p>
+            <p>{t('sentTo')}</p>
             <p className='flex items-center justify-center gap-2 font-medium text-gray-900 dark:text-neutral-100'>
               {email}
             </p>
@@ -133,9 +135,7 @@ function VerifyContent() {
               className='dark:border-red-500/40 dark:text-red-400 dark:[&>svg]:text-red-400'
             >
               <AlertCircle className='h-4 w-4' />
-              <AlertDescription>
-                {error.message || 'Invalid code. Please try again.'}
-              </AlertDescription>
+              <AlertDescription>{error.message || t('invalidCode')}</AlertDescription>
             </Alert>
           )}
 
@@ -146,16 +146,14 @@ function VerifyContent() {
               className='dark:border-red-500/40 dark:text-red-400 dark:[&>svg]:text-red-400'
             >
               <AlertCircle className='h-4 w-4' />
-              <AlertDescription>
-                {resendError.message || 'Failed to resend code. Please try again.'}
-              </AlertDescription>
+              <AlertDescription>{resendError.message || t('resendFailed')}</AlertDescription>
             </Alert>
           )}
 
           {/* Code Input Form */}
           <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
             <div className='space-y-2'>
-              <label className='text-sm font-medium'>Verification code</label>
+              <label className='text-sm font-medium'>{t('codeLabel')}</label>
               <div className='flex justify-center'>
                 <InputOTP
                   maxLength={6}
@@ -209,10 +207,10 @@ function VerifyContent() {
               {isLoading ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Verifying...
+                  {t('verifying')}
                 </>
               ) : (
-                'Verify Code'
+                t('verifyCode')
               )}
             </Button>
           </form>
@@ -220,16 +218,18 @@ function VerifyContent() {
       </Card>
       <div className='my-4 space-y-2 text-center'>
         <p className='text-sm text-gray-600 dark:text-neutral-400'>
-          Didn&apos;t receive the code?{' '}
+          {t('didntReceive')}{' '}
           {resendTimer > 0 ? (
-            <span className='text-gray-500 dark:text-neutral-400'>Resend in {resendTimer}s</span>
+            <span className='text-gray-500 dark:text-neutral-400'>
+              {t('resendIn', { seconds: resendTimer })}
+            </span>
           ) : (
             <button
               onClick={handleResend}
               className='font-medium text-red-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50 dark:text-red-400'
               disabled={isLoading || isResending}
             >
-              {isResending ? 'Sending...' : 'Resend code'}
+              {isResending ? t('sending') : t('resendCode')}
             </button>
           )}
         </p>

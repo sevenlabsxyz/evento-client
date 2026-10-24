@@ -1,6 +1,6 @@
 import {
-  FOURTH_REMINDER_ERROR,
-  INVALID_REMINDER_OFFSET_ERROR,
+  getFourthReminderError,
+  getInvalidReminderOffsetError,
   parseEventReminders,
   sanitizeReminderOffsets,
   toggleReminderOffset,
@@ -48,21 +48,21 @@ describe('reminder offset helpers', () => {
   it('rejects unknown offsets on save', () => {
     const result = validateReminderOffsetsForSave(['1h', '2d']);
 
-    expect(result.error).toBe(INVALID_REMINDER_OFFSET_ERROR);
+    expect(result.error).toBe(getInvalidReminderOffsetError());
     expect(result.offsets).toEqual(['1h']);
   });
 
   it('blocks a fourth selected reminder', () => {
     const result = toggleReminderOffset(['1h', '2h', '1d'], '3d');
 
-    expect(result.error).toBe(FOURTH_REMINDER_ERROR);
+    expect(result.error).toBe(getFourthReminderError());
     expect(result.offsets).toEqual(['1h', '2h', '1d']);
   });
 
   it('rejects more than three offsets on save', () => {
     const result = validateReminderOffsetsForSave(['1h', '2h', '3h', '1d']);
 
-    expect(result.error).toBe(FOURTH_REMINDER_ERROR);
+    expect(result.error).toBe(getFourthReminderError());
     expect(result.offsets).toEqual(['1h', '2h', '3h']);
   });
 
@@ -179,7 +179,7 @@ describe('useUpdateEventReminders', () => {
 
     await act(async () => {
       await expect(result.current.mutateAsync(['1h', '2h', '3h', '1d'] as any)).rejects.toThrow(
-        FOURTH_REMINDER_ERROR
+        getFourthReminderError()
       );
     });
 
@@ -193,7 +193,7 @@ describe('useUpdateEventReminders', () => {
 
     await act(async () => {
       await expect(result.current.mutateAsync(['1h', '2d'] as any)).rejects.toThrow(
-        INVALID_REMINDER_OFFSET_ERROR
+        getInvalidReminderOffsetError()
       );
     });
 

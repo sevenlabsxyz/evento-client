@@ -7,38 +7,41 @@ import { getAbsoluteAppUrl } from '@/lib/utils/app-url';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Copy, ExternalLink } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface ShareCardProps {
   dashboard: EventDashboard;
 }
 
 export function ShareCard({ dashboard }: ShareCardProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
   const { event } = dashboard;
   const eventUrl = getAbsoluteAppUrl(`/e/${event.id}`);
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(eventUrl);
-      toast.success('Event link copied');
+      toast.success(t('shareCard.linkCopied'));
     } catch (error) {
       logger.error('Failed to copy event link', { eventId: event.id, error });
-      toast.error('Failed to copy link');
+      toast.error(t('shareCard.copyFailed'));
     }
   };
 
   const visibilityHint =
     event.status === 'draft'
-      ? 'Draft — only hosts can open this link until you publish.'
+      ? t('shareCard.draftHint')
       : event.password_protected
-        ? 'Guests will need the event password to view details.'
+        ? t('shareCard.passwordHint')
         : event.visibility === 'private'
-          ? 'Private — only people with the link can find this event.'
+          ? t('shareCard.privateHint')
           : null;
 
   return (
     <section className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
       <h2 className='mb-3 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-        Share event
+        {t('shareCard.title')}
       </h2>
       <div className='flex items-center gap-4'>
         <EventoQRCode
@@ -58,7 +61,7 @@ export function ShareCard({ dashboard }: ShareCardProps) {
               onClick={handleCopy}
             >
               <Copy className='h-3.5 w-3.5' />
-              Copy
+              {tCommon('actions.copy')}
             </Button>
             <Button
               asChild
@@ -68,7 +71,7 @@ export function ShareCard({ dashboard }: ShareCardProps) {
             >
               <a href={eventUrl} target='_blank' rel='noopener noreferrer'>
                 <ExternalLink className='h-3.5 w-3.5' />
-                Open
+                {tCommon('actions.open')}
               </a>
             </Button>
           </div>

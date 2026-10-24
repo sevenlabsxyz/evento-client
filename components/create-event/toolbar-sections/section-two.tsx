@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import type { Editor } from '@tiptap/core';
 import { Bold, Italic, MoreHorizontal } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ShortcutKey } from '../shortcut-key';
 import { DropdownMenuItemClass, activeItemClass } from '../tiptap-utils';
@@ -12,6 +13,7 @@ interface SectionTwoProps {
 }
 
 export default function SectionTwo({ editor, onOpenSheet }: SectionTwoProps) {
+  const t = useTranslations('createEvent');
   const [showDropdown, setShowDropdown] = useState(false);
 
   const toggleStrike = () => {
@@ -36,8 +38,8 @@ export default function SectionTwo({ editor, onOpenSheet }: SectionTwoProps) {
         onClick={() => editor.chain().focus().toggleBold().run()}
         disabled={!editor.can().chain().focus().toggleBold().run() || editor.isActive('codeBlock')}
         isActive={editor.isActive('bold')}
-        tooltip='Bold'
-        aria-label='Bold'
+        tooltip={t('toolbar.bold')}
+        aria-label={t('toolbar.bold')}
       >
         <Bold className='h-5 w-5' />
       </ToolbarButton>
@@ -49,8 +51,8 @@ export default function SectionTwo({ editor, onOpenSheet }: SectionTwoProps) {
           !editor.can().chain().focus().toggleItalic().run() || editor.isActive('codeBlock')
         }
         isActive={editor.isActive('italic')}
-        tooltip='Italic'
-        aria-label='Italic'
+        tooltip={t('toolbar.italic')}
+        aria-label={t('toolbar.italic')}
       >
         <Italic className='h-5 w-5' />
       </ToolbarButton>
@@ -58,8 +60,8 @@ export default function SectionTwo({ editor, onOpenSheet }: SectionTwoProps) {
       {/* MORE FORMATTING */}
       <ToolbarButton
         isActive={editor.isActive('strike') || editor.isActive('code')}
-        tooltip='More formatting'
-        aria-label='More formatting'
+        tooltip={t('toolbar.moreFormatting')}
+        aria-label={t('toolbar.moreFormatting')}
         onClick={() => {
           if (onOpenSheet && typeof window !== 'undefined' && window.innerWidth < 768) {
             onOpenSheet('moreFormatting');
@@ -87,9 +89,9 @@ export default function SectionTwo({ editor, onOpenSheet }: SectionTwoProps) {
                   [activeItemClass]: editor.isActive('strike'),
                 }
               )}
-              aria-label='Strikethrough'
+              aria-label={t('toolbar.strikethrough')}
             >
-              <span className='grow'>Strikethrough</span>
+              <span className='grow'>{t('toolbar.strikethrough')}</span>
               <ShortcutKey keys={['mod', 'shift', 'S']} />
             </button>
             <button
@@ -104,9 +106,9 @@ export default function SectionTwo({ editor, onOpenSheet }: SectionTwoProps) {
                   [activeItemClass]: editor.isActive('code'),
                 }
               )}
-              aria-label='Code'
+              aria-label={t('toolbar.code')}
             >
-              <span className='grow'>Code</span>
+              <span className='grow'>{t('toolbar.code')}</span>
               <ShortcutKey keys={['mod', 'E']} />
             </button>
             <button
@@ -118,9 +120,9 @@ export default function SectionTwo({ editor, onOpenSheet }: SectionTwoProps) {
                 DropdownMenuItemClass,
                 'dark:disabled:text-neutral-500 dark:disabled:hover:bg-transparent'
               )}
-              aria-label='Clear formatting'
+              aria-label={t('toolbar.clearFormatting')}
             >
-              <span className='grow'>Clear formatting</span>
+              <span className='grow'>{t('toolbar.clearFormatting')}</span>
             </button>
           </div>
         </>

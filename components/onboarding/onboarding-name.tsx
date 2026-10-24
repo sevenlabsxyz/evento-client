@@ -1,5 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { OnboardingHeader } from './onboarding-header';
 
 interface OnboardingNameProps {
@@ -15,6 +16,7 @@ export const OnboardingName = ({
   onNameChange,
   onEnterPress,
 }: OnboardingNameProps) => {
+  const t = useTranslations('onboarding.name');
   return (
     <motion.div
       key='name'
@@ -23,14 +25,14 @@ export const OnboardingName = ({
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <OnboardingHeader title='Enter your name' description='Let everyone know what to call you.' />
+      <OnboardingHeader title={t('title')} description={t('description')} />
       <div className='mt-6'>
         <Input
           required
           autoFocus
           value={name}
           autoCapitalize='true'
-          placeholder={'William Shakespeare'}
+          placeholder={t('placeholder')}
           disabled={updating}
           onChange={onNameChange}
           className={

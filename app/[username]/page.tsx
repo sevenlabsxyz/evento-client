@@ -3,6 +3,7 @@ import { logger } from '@/lib/utils/logger';
 import { shouldBypassUsernameRoute } from '@/lib/utils/public-asset-paths';
 import { createClient } from '@supabase/supabase-js';
 import type { Metadata, ResolvingMetadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import UserProfilePageClient from './page-client';
 
@@ -31,6 +32,7 @@ export async function generateMetadata(
     notFound();
   }
 
+  const t = await getTranslations('profile');
   const profilePath = `/${username}`;
   const profileOgImage = `${profilePath}/opengraph-image`;
 
@@ -45,7 +47,12 @@ export async function generateMetadata(
     const supabase = getProfileMetadataClient();
 
     if (!supabase) {
-      return getDefaultMetadata(previousImages, profilePath, profileOgImage);
+      return getDefaultMetadata(
+        t('metadata.defaultDescription'),
+        previousImages,
+        profilePath,
+        profileOgImage
+      );
     }
 
     const { data: user, error } = await supabase
@@ -58,12 +65,20 @@ export async function generateMetadata(
 
     if (!user) {
       logger.info('No user found for username', { username });
-      return getDefaultMetadata(previousImages, profilePath, profileOgImage);
+      return getDefaultMetadata(
+        t('metadata.defaultDescription'),
+        previousImages,
+        profilePath,
+        profileOgImage
+      );
     }
 
     const title = user.name
-      ? `${user.name} (@${user.username}) on Evento`
-      : `@${user.username} on Evento`;
+      ? t('metadata.titleWithName', { name: user.name, username: user.username })
+      : t('metadata.title', { username: user.username });
+    const description = t('metadata.description', {
+      name: user.name || `@${user.username}`,
+    });
 
     return {
       title: { absolute: title },
@@ -71,7 +86,7 @@ export async function generateMetadata(
       alternates: {
         canonical: profilePath,
       },
-      description: `View all events by ${user.name || `@${user.username}`} on Evento.`,
+      description,
       openGraph: {
         url: profilePath,
         locale: 'en_US',
@@ -82,7 +97,7 @@ export async function generateMetadata(
             url: profileOgImage,
             width: 1200,
             height: 630,
-            alt: `Profile card for ${user.name || user.username}`,
+            alt: t('metadata.ogAlt', { name: user.name || user.username }),
           },
         ],
       },
@@ -94,7 +109,7 @@ export async function generateMetadata(
       twitter: {
         card: 'summary_large_image',
         title,
-        description: `View all events by ${user.name || `@${user.username}`} on Evento.`,
+        description,
         creator: '@evento_so',
         images: [profileOgImage],
       },
@@ -103,13 +118,23 @@ export async function generateMetadata(
     logger.error('Error fetching user data', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return getDefaultMetadata(previousImages, profilePath, profileOgImage);
+    return getDefaultMetadata(
+      t('metadata.defaultDescription'),
+      previousImages,
+      profilePath,
+      profileOgImage
+    );
   }
 }
 
 // Generic metadata for missing profiles (noindex so nonexistent usernames
 // don't index placeholder pages; real profiles index via generateMetadata).
-function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallbackImage?: string) {
+function getDefaultMetadata(
+  description: string,
+  previousImages: any[],
+  canonicalPath = '/',
+  fallbackImage?: string
+) {
   const openGraphImages = fallbackImage
     ? [
         {
@@ -125,7 +150,7 @@ function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallback
     title: { absolute: 'Evento' },
     keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
     alternates: { canonical: canonicalPath },
-    description: 'Events made social -- evento.so',
+    description,
     openGraph: {
       url: canonicalPath,
       images: openGraphImages,

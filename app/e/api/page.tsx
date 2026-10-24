@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import ApiPageClient from './page-client';
 
-export const metadata: Metadata = {
-  title: 'Evento API — Build on top of your events',
-  description:
-    'Fetch public events, organizer feeds, and RSVP guest lists with the Evento Public API, or embed events anywhere with the no-auth, CORS-enabled Embed API.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('developers.api.meta');
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
+}
 
 export default function ApiPage() {
   return <ApiPageClient />;

@@ -1,21 +1,8 @@
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { GhostPost, GhostTag } from '@/lib/types/ghost';
 
 /** Tags used to route posts into Evento surfaces; never shown to readers. */
 export const INTERNAL_BLOG_TAG_SLUGS = ['blog', 'hub'];
-
-const LONG_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
-  month: 'long',
-  day: 'numeric',
-  year: 'numeric',
-  timeZone: 'UTC',
-});
-
-const SHORT_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
-  month: 'short',
-  day: 'numeric',
-  year: 'numeric',
-  timeZone: 'UTC',
-});
 
 export function getPostExcerpt(post: GhostPost): string {
   return (post.custom_excerpt ?? post.excerpt ?? '').trim();
@@ -40,16 +27,30 @@ export function getPrimaryVisibleTag(post: GhostPost): GhostTag | null {
 
 /**
  * Formats a Ghost ISO timestamp in UTC so server and client renders agree.
+ * `locale` is an app locale (`en`, `pt-BR`, `es`); defaults to the active one.
  * Returns '' for missing or unparsable input.
  */
-export function formatPostDate(iso: string | null, style: 'long' | 'short' = 'long'): string {
+export function formatPostDate(
+  iso: string | null,
+  style: 'long' | 'short' = 'long',
+  locale?: string
+): string {
   if (!iso) return '';
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return '';
-  return (style === 'short' ? SHORT_DATE_FORMATTER : LONG_DATE_FORMATTER).format(date);
+  return new Intl.DateTimeFormat(getIntlLocale(locale), {
+    month: style,
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(date);
 }
 
-export function formatReadingTime(minutes: number): string {
-  if (!Number.isFinite(minutes) || minutes <= 0) return '';
-  return `${Math.round(minutes)} min read`;
+/**
+ * Whole reading minutes to display, or null when Ghost reports none. Render
+ * with the `common.counts.minRead` message so the label is localized.
+ */
+export function getReadingMinutes(minutes: number): number | null {
+  if (!Number.isFinite(minutes) || minutes <= 0) return null;
+  return Math.round(minutes);
 }

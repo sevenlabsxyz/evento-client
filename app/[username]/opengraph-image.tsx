@@ -2,6 +2,7 @@ import { Env } from '@/lib/constants/env';
 import { logger } from '@/lib/utils/logger';
 import { shouldBypassUsernameRoute } from '@/lib/utils/public-asset-paths';
 import { createClient } from '@supabase/supabase-js';
+import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { ImageResponse } from 'next/og';
 
@@ -118,6 +119,7 @@ export default async function Image({ params }: { params: { username: string } }
   };
 
   const profileImageUrl = getProperURL(user.image);
+  const t = await getTranslations('profile');
 
   return new ImageResponse(
     <div
@@ -212,7 +214,7 @@ export default async function Image({ params }: { params: { username: string } }
             color: '#333',
           }}
         >
-          View events on Evento
+          {t('metadata.ogTagline')}
         </div>
       </div>
     </div>,

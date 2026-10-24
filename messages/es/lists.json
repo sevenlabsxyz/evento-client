@@ -1,1 +1,119 @@
-{}
+{
+  "eventCount": "{count, plural, one {# evento} other {# eventos}}",
+  "updated": "Actualizada {time}",
+  "exploreDiscover": "Explorar Descubrir",
+  "searchEvents": "Buscar eventos",
+  "index": {
+    "topBarTitle": "Listas",
+    "eyebrow": "Listas",
+    "title": "Tus eventos guardados",
+    "description": "Guarda los eventos que no te quieres perder y organízalos en listas.",
+    "meta": "{saved, plural, one {# evento guardado} other {# eventos guardados}} en {lists, plural, one {# lista} other {# listas}}",
+    "loadError": "No se pudieron cargar tus listas",
+    "yourLists": "Tus listas",
+    "newList": "Nueva lista"
+  },
+  "detail": {
+    "topBarFallback": "Lista",
+    "loadError": "No se pudo cargar esta lista",
+    "loadEventsError": "No se pudieron cargar los eventos guardados",
+    "notFoundTitle": "Lista no encontrada",
+    "notFoundDescription": "Es posible que esta lista se haya eliminado o que el enlace no sea correcto.",
+    "backToLists": "Volver a tus listas",
+    "allLists": "Todas las listas",
+    "eyebrowDefault": "Lista predeterminada",
+    "eyebrow": "Lista",
+    "upcomingCount": "{count, plural, one {# próximo} other {# próximos}}",
+    "findEvents": "Encontrar eventos",
+    "filters": {
+      "upcoming": "Próximos",
+      "past": "Pasados",
+      "all": "Todos"
+    },
+    "sort": {
+      "added": "Fecha en que se guardó",
+      "eventDate": "Fecha del evento"
+    },
+    "sortAria": {
+      "added": "Ordenar por fecha en que se guardó",
+      "eventDate": "Ordenar por fecha del evento"
+    },
+    "sortBy": "Ordenar por",
+    "emptyTitle": "Aún no hay eventos en esta lista",
+    "emptyDescription": "Abre cualquier evento y toca el marcador en la parte superior para guardarlo aquí.",
+    "noUpcomingTitle": "No hay próximos eventos",
+    "noUpcomingDescription": "Todo lo guardado en esta lista ya ocurrió.",
+    "noPastTitle": "No hay eventos pasados",
+    "noPastDescription": "Los eventos aparecen aquí cuando terminan.",
+    "showPast": "Mostrar eventos pasados",
+    "showUpcoming": "Mostrar próximos eventos",
+    "eventsInList": "Eventos en {name}",
+    "removedTitle": "Eliminado de la lista",
+    "removedMessage": "“{title}” se eliminó de {list}.",
+    "undo": "Deshacer",
+    "removeFailed": "No se pudo eliminar el evento",
+    "restoreFailed": "No se pudo restaurar el evento"
+  },
+  "card": {
+    "default": "Predeterminada"
+  },
+  "actionsMenu": {
+    "ariaLabel": "Acciones para {name}",
+    "renameList": "Renombrar lista",
+    "rename": "Renombrar",
+    "deleteList": "Eliminar lista"
+  },
+  "deleteDialog": {
+    "title": "¿Eliminar “{name}”?",
+    "descriptionWithCount": "Esto elimina la lista junto con {count, plural, one {el # evento guardado} other {los # eventos guardados}} en ella. Los eventos en sí no se ven afectados. Esta acción no se puede deshacer.",
+    "description": "Esto elimina la lista. Los eventos en sí no se ven afectados. Esta acción no se puede deshacer.",
+    "confirm": "Eliminar lista",
+    "toastTitle": "Lista eliminada",
+    "toastMessage": "\"{name}\" se eliminó.",
+    "failed": "No se pudo eliminar la lista"
+  },
+  "form": {
+    "renameTitle": "Renombrar lista",
+    "newTitle": "Nueva lista",
+    "renameSubtitle": "Actualiza el nombre o la descripción de esta lista.",
+    "newSubtitle": "Agrupa los eventos guardados como quieras: un viaje, una escena, un fin de semana.",
+    "savedTitle": "Lista guardada",
+    "savedMessage": "Tu lista se actualizó.",
+    "createdTitle": "Lista creada",
+    "createdMessage": "\"{name}\" está lista para recibir eventos.",
+    "createList": "Crear lista",
+    "creating": "Creando…",
+    "description": "Descripción",
+    "optional": "(opcional)",
+    "namePlaceholder": "p. ej., Verano en Lisboa",
+    "descriptionPlaceholder": "¿Qué tienen en común estos eventos?"
+  },
+  "nameErrors": {
+    "required": "Ponle un nombre a tu lista.",
+    "tooLong": "Usa menos de {max} caracteres.",
+    "duplicate": "Ya tienes una lista con este nombre."
+  },
+  "eventCard": {
+    "removeAria": "Eliminar {title} de {list}",
+    "removeTitle": "Eliminar de la lista"
+  },
+  "emptyState": {
+    "title": "Aún no has guardado nada",
+    "description": "Lleva el control de los eventos que no te quieres perder. Todo lo que guardes aparece aquí, organizado en listas.",
+    "stepLabel": "Paso {number}: ",
+    "steps": {
+      "find": {
+        "title": "Encuentra un evento",
+        "description": "Explora Descubrir en tu inicio o busca eventos y anfitriones."
+      },
+      "bookmark": {
+        "title": "Toca el marcador",
+        "description": "En cualquier página de evento, toca el marcador en la parte superior para guardarlo."
+      },
+      "pick": {
+        "title": "Elige tus listas",
+        "description": "Guárdalo en tu lista predeterminada o en cualquier lista que crees."
+      }
+    }
+  }
+}

@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Check, Loader2, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { RecipientInfo } from '../zap-types';
 
 interface ZapNoWalletStepProps {
@@ -21,9 +22,9 @@ export function ZapNoWalletStep({
   notifySuccess = false,
   alreadyNotified = false,
 }: ZapNoWalletStepProps) {
-  const heading = recipient?.name
-    ? `${recipient.name} hasn\u2019t set up their wallet`
-    : 'Wallet Not Set Up';
+  const t = useTranslations('zap.noWallet');
+  const tCommon = useTranslations('common');
+  const heading = recipient?.name ? t('headingNamed', { name: recipient.name }) : t('heading');
 
   const isNotifyDisabled = isNotifying || notifySuccess || alreadyNotified || !onNotify;
 
@@ -32,7 +33,7 @@ export function ZapNoWalletStep({
       return (
         <>
           <Loader2 className='h-4 w-4 animate-spin' />
-          Sending...
+          {t('sending')}
         </>
       );
     }
@@ -40,14 +41,14 @@ export function ZapNoWalletStep({
       return (
         <>
           <Check className='h-4 w-4' />
-          Notified
+          {t('notified')}
         </>
       );
     }
     if (alreadyNotified) {
-      return 'Already Notified';
+      return t('alreadyNotified');
     }
-    return 'Let them know';
+    return t('letThemKnow');
   };
 
   return (
@@ -56,10 +57,7 @@ export function ZapNoWalletStep({
         <Zap className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
       </div>
       <h3 className='mb-2 text-xl font-semibold text-gray-900 dark:text-neutral-100'>{heading}</h3>
-      <p className='mb-8 text-gray-600 dark:text-neutral-400'>
-        This user hasn&apos;t set up their Evento Wallet yet. Let them know so they can start
-        receiving Lightning payments!
-      </p>
+      <p className='mb-8 text-gray-600 dark:text-neutral-400'>{t('description')}</p>
       <div className='flex w-full max-w-xs flex-col gap-3'>
         <Button
           onClick={onNotify}
@@ -77,7 +75,7 @@ export function ZapNoWalletStep({
           onClick={onClose}
           className='h-12 w-full rounded-full font-semibold text-gray-600 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-neutral-100'
         >
-          Close
+          {tCommon('actions.close')}
         </Button>
       </div>
     </div>

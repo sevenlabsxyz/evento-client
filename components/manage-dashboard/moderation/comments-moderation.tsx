@@ -15,15 +15,20 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useDeleteComment } from '@/lib/hooks/use-delete-comment';
 import { useEventComments, type EventComment } from '@/lib/hooks/use-event-comments';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import { queryKeys } from '@/lib/query-client';
 import { cn } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { format, formatDistance } from 'date-fns';
+import { formatDistance, type Locale } from 'date-fns';
+import { enUS, es, ptBR } from 'date-fns/locale';
 import { Loader2, MessageCircle, Search, Trash2, X } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
+
+const DATE_FNS_LOCALES: Record<string, Locale> = { en: enUS, 'pt-BR': ptBR, es };
 
 interface CommentsModerationProps {
   eventId: string;
@@ -71,8 +76,13 @@ interface CommentRowProps {
 }
 
 function CommentRow({ comment, depth, onDelete }: CommentRowProps) {
+  const t = useTranslations('manage');
+  const locale = useLocale();
   const createdDate = new Date(comment.created_at);
-  const displayName = comment.user_details?.name || comment.user_details?.username || 'Unknown';
+  const displayName =
+    comment.user_details?.name ||
+    comment.user_details?.username ||
+    t('commentsModeration.unknownUser');
   const username = comment.user_details?.username;
   const replies = sortRepliesOldestFirst(comment.replies ?? []);
 
@@ -95,16 +105,22 @@ function CommentRow({ comment, depth, onDelete }: CommentRowProps) {
               )}
               <span
                 className='text-xs text-gray-500 dark:text-neutral-400'
-                title={format(createdDate, "MMM d, yyyy 'at' h:mm a")}
+                title={createdDate.toLocaleString(getIntlLocale(locale), {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                })}
               >
-                {formatDistance(createdDate, new Date(), { addSuffix: true })}
+                {formatDistance(createdDate, new Date(), {
+                  addSuffix: true,
+                  locale: DATE_FNS_LOCALES[locale] ?? enUS,
+                })}
               </span>
             </div>
             <Button
               type='button'
               variant='ghost'
               size='icon'
-              aria-label='Delete comment'
+              aria-label={t('commentsModeration.deleteComment')}
               className='h-8 w-8 flex-shrink-0 rounded-full text-gray-400 hover:bg-red-50 hover:text-red-600 dark:text-neutral-500 dark:hover:bg-red-950/40 dark:hover:text-red-400'
               onClick={() => onDelete(comment)}
             >
@@ -128,6 +144,8 @@ function CommentRow({ comment, depth, onDelete }: CommentRowProps) {
 }
 
 export function CommentsModeration({ eventId }: CommentsModerationProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
   const queryClient = useQueryClient();
   const { data: comments = [], isLoading, error, refetch } = useEventComments(eventId);
   const deleteComment = useDeleteComment();
@@ -149,10 +167,10 @@ export function CommentsModeration({ eventId }: CommentsModerationProps) {
     try {
       await deleteComment.mutateAsync({ commentId: pendingDelete.id, eventId });
       await queryClient.invalidateQueries({ queryKey: queryKeys.eventDashboard(eventId) });
-      toast.success('Comment deleted');
+      toast.success(t('commentsModeration.deleted'));
       setPendingDelete(null);
     } catch (deleteError) {
-      const message = getErrorMessage(deleteError) || 'Failed to delete comment';
+      const message = getErrorMessage(deleteError) || t('commentsModeration.deleteFailed');
       toast.error(message);
       logger.error('Failed to delete comment', { error: message, eventId });
     }
@@ -182,13 +200,13 @@ export function CommentsModeration({ eventId }: CommentsModerationProps) {
     return (
       <div className='rounded-2xl border border-gray-200 bg-white p-8 text-center dark:border-neutral-800 dark:bg-neutral-900'>
         <p className='mb-1 font-medium text-gray-900 dark:text-neutral-100'>
-          Couldn&apos;t load comments
+          {t('commentsModeration.loadError')}
         </p>
         <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>
-          {getErrorMessage(error) || 'Something went wrong. Please try again.'}
+          {getErrorMessage(error) || tCommon('states.errorTryAgain')}
         </p>
         <Button variant='outline' size='sm' onClick={() => refetch()}>
-          Try again
+          {tCommon('actions.tryAgain')}
         </Button>
       </div>
     );
@@ -201,10 +219,10 @@ export function CommentsModeration({ eventId }: CommentsModerationProps) {
           <MessageCircle className='h-6 w-6 text-gray-400 dark:text-neutral-500' />
         </div>
         <h3 className='mb-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-          No comments yet
+          {t('commentsModeration.emptyTitle')}
         </h3>
         <p className='text-sm text-gray-500 dark:text-neutral-400'>
-          Comments guests leave on your event page will show up here.
+          {t('commentsModeration.emptyDescription')}
         </p>
       </div>
     );
@@ -216,7 +234,7 @@ export function CommentsModeration({ eventId }: CommentsModerationProps) {
         <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
         <input
           type='text'
-          placeholder='Search comments or people...'
+          placeholder={t('commentsModeration.searchPlaceholder')}
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
           className='w-full rounded-xl border-none bg-gray-100 py-3 pl-10 pr-10 text-sm text-gray-900 placeholder-gray-500 outline-none dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-400'
@@ -224,7 +242,7 @@ export function CommentsModeration({ eventId }: CommentsModerationProps) {
         {searchQuery && (
           <button
             type='button'
-            aria-label='Clear search'
+            aria-label={t('commentsModeration.clearSearch')}
             onClick={() => setSearchQuery('')}
             className='absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-neutral-300'
           >
@@ -236,7 +254,7 @@ export function CommentsModeration({ eventId }: CommentsModerationProps) {
       {visibleComments.length === 0 ? (
         <div className='rounded-2xl border border-gray-200 bg-white px-6 py-12 text-center dark:border-neutral-800 dark:bg-neutral-900'>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            No comments match &ldquo;{searchQuery.trim()}&rdquo;
+            {t('commentsModeration.noMatches', { query: searchQuery.trim() })}
           </p>
         </div>
       ) : (
@@ -257,11 +275,11 @@ export function CommentsModeration({ eventId }: CommentsModerationProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete comment</AlertDialogTitle>
+            <AlertDialogTitle>{t('commentsModeration.deleteComment')}</AlertDialogTitle>
             <AlertDialogDescription>
               {pendingReplyCount > 0
-                ? `This comment has ${pendingReplyCount} ${pendingReplyCount === 1 ? 'reply' : 'replies'}. Deleting it cannot be undone.`
-                : 'This comment will be permanently removed from your event. This cannot be undone.'}
+                ? t('commentsModeration.deleteWithReplies', { count: pendingReplyCount })
+                : t('commentsModeration.deleteDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           {pendingDelete && (
@@ -270,7 +288,9 @@ export function CommentsModeration({ eventId }: CommentsModerationProps) {
             </p>
           )}
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteComment.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleteComment.isPending}>
+              {tCommon('actions.cancel')}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={(event) => {
                 event.preventDefault();
@@ -282,10 +302,10 @@ export function CommentsModeration({ eventId }: CommentsModerationProps) {
               {deleteComment.isPending ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Deleting...
+                  {t('commentsModeration.deleting')}
                 </>
               ) : (
-                'Delete'
+                tCommon('actions.delete')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

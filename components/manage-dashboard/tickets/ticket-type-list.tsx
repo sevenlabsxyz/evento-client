@@ -12,20 +12,27 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { useDeleteTicketType } from '@/lib/hooks/use-ticket-types';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import type { TicketCurrency, TicketType } from '@/lib/types/manage';
 import { cn } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils/error-message';
 import { toast } from '@/lib/utils/toast';
 import { Lock, Pencil, Ticket, Trash2 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-export function formatTicketPrice(amount: number, currency: TicketCurrency): string {
+export function formatTicketPrice(
+  amount: number,
+  currency: TicketCurrency,
+  freeLabel: string,
+  locale: string
+): string {
   const value = Number(amount);
   if (value === 0) {
-    return 'Free';
+    return freeLabel;
   }
 
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat(getIntlLocale(locale), {
     style: 'currency',
     currency,
     minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
@@ -40,6 +47,7 @@ interface TicketTypeListProps {
 }
 
 export function TicketTypeList({ eventId, ticketTypes, onEdit }: TicketTypeListProps) {
+  const t = useTranslations('manage');
   const deleteTicketType = useDeleteTicketType(eventId);
   const [pendingDeactivation, setPendingDeactivation] = useState<TicketType | null>(null);
 
@@ -50,10 +58,10 @@ export function TicketTypeList({ eventId, ticketTypes, onEdit }: TicketTypeListP
 
     try {
       await deleteTicketType.mutateAsync(pendingDeactivation.id);
-      toast.success(`${pendingDeactivation.name} deactivated`);
+      toast.success(t('ticketTypeList.deactivatedToast', { name: pendingDeactivation.name }));
       setPendingDeactivation(null);
     } catch (error) {
-      toast.error(getErrorMessage(error) || 'Failed to deactivate ticket type');
+      toast.error(getErrorMessage(error) || t('ticketTypeList.deactivateError'));
     }
   };
 
@@ -80,14 +88,17 @@ export function TicketTypeList({ eventId, ticketTypes, onEdit }: TicketTypeListP
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Deactivate {pendingDeactivation?.name}?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t('ticketTypeList.deactivateDialogTitle', { name: pendingDeactivation?.name ?? '' })}
+            </AlertDialogTitle>
             <AlertDialogDescription className='dark:text-neutral-400'>
-              Buyers will no longer see or purchase this ticket type, and it will be removed from
-              this list. This can&apos;t be undone.
+              {t('ticketTypeList.deactivateDialogDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteTicketType.isPending}>Keep</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleteTicketType.isPending}>
+              {t('ticketTypeList.keep')}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={(event) => {
                 event.preventDefault();
@@ -96,7 +107,9 @@ export function TicketTypeList({ eventId, ticketTypes, onEdit }: TicketTypeListP
               disabled={deleteTicketType.isPending}
               className='bg-red-600 hover:bg-red-700 focus:ring-red-600 dark:text-white'
             >
-              {deleteTicketType.isPending ? 'Deactivating...' : 'Deactivate'}
+              {deleteTicketType.isPending
+                ? t('ticketTypeList.deactivating')
+                : t('ticketTypeList.deactivate')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -112,6 +125,9 @@ interface TicketTypeRowProps {
 }
 
 function TicketTypeRow({ ticketType, onEdit, onDeactivate }: TicketTypeRowProps) {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
+  const locale = useLocale();
   const sold = ticketType.quantity_sold;
   const total = ticketType.quantity_total;
   const available = ticketType.quantity_available ?? Math.max(total - sold, 0);
@@ -138,11 +154,11 @@ function TicketTypeRow({ ticketType, onEdit, onDeactivate }: TicketTypeRowProps)
                   : 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'
               )}
             >
-              {ticketType.is_active ? 'Active' : 'Inactive'}
+              {ticketType.is_active ? t('ticketTypeList.active') : t('ticketTypeList.inactive')}
             </span>
             {isSoldOut ? (
               <span className='rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-950/60 dark:text-red-400'>
-                Sold out
+                {t('ticketTypeList.soldOut')}
               </span>
             ) : null}
           </div>
@@ -154,7 +170,12 @@ function TicketTypeRow({ ticketType, onEdit, onDeactivate }: TicketTypeRowProps)
         </div>
         <div className='shrink-0 text-right'>
           <p className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
-            {formatTicketPrice(ticketType.price_amount, ticketType.price_currency)}
+            {formatTicketPrice(
+              ticketType.price_amount,
+              ticketType.price_currency,
+              tCommon('labels.free'),
+              locale
+            )}
           </p>
           {Number(ticketType.price_amount) > 0 ? (
             <p className='text-xs text-gray-500 dark:text-neutral-400'>
@@ -167,14 +188,23 @@ function TicketTypeRow({ ticketType, onEdit, onDeactivate }: TicketTypeRowProps)
       <div className='space-y-1.5'>
         <div className='flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400'>
           <span>
-            <span className='font-medium text-gray-900 dark:text-neutral-100'>{sold}</span> /{' '}
-            {total} sold
+            {t.rich('ticketTypeList.soldCount', {
+              sold,
+              total,
+              strong: (chunks) => (
+                <span className='font-medium text-gray-900 dark:text-neutral-100'>{chunks}</span>
+              ),
+            })}
           </span>
-          <span>{isSoldOut ? 'None left' : `${available} available`}</span>
+          <span>
+            {isSoldOut
+              ? t('ticketTypeList.noneLeft')
+              : t('ticketTypeList.available', { count: available })}
+          </span>
         </div>
         <div
           role='progressbar'
-          aria-label={`${ticketType.name} tickets sold`}
+          aria-label={t('ticketTypeList.progressAria', { name: ticketType.name })}
           aria-valuemin={0}
           aria-valuemax={total}
           aria-valuenow={sold}
@@ -200,7 +230,7 @@ function TicketTypeRow({ ticketType, onEdit, onDeactivate }: TicketTypeRowProps)
           className='dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800'
         >
           <Pencil />
-          Edit
+          {tCommon('actions.edit')}
         </Button>
         <Button
           type='button'
@@ -211,12 +241,12 @@ function TicketTypeRow({ ticketType, onEdit, onDeactivate }: TicketTypeRowProps)
           className='text-red-600 hover:text-red-700 dark:bg-neutral-900 dark:text-red-400 dark:hover:bg-neutral-800 dark:hover:text-red-300'
         >
           <Trash2 />
-          Deactivate
+          {t('ticketTypeList.deactivate')}
         </Button>
         {hasSales ? (
           <span className='flex items-center gap-1 text-xs text-gray-500 dark:text-neutral-400'>
             <Lock className='h-3 w-3' />
-            Locked after first sale — create a new ticket type instead.
+            {t('ticketTypeList.lockedNotice')}
           </span>
         ) : null}
       </div>

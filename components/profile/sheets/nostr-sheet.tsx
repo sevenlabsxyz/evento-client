@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { toast } from '@/lib/utils/toast';
 import { Copy, ExternalLink } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface NostrSheetProps {
@@ -13,16 +14,18 @@ interface NostrSheetProps {
 }
 
 export default function NostrSheet({ isOpen, onClose, nip05 }: NostrSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const [copied, setCopied] = useState(false);
 
   const handleCopyNip05 = async () => {
     try {
       await navigator.clipboard.writeText(nip05);
       setCopied(true);
-      toast.success('Nostr identifier copied!');
+      toast.success(t('sheets.nostr.copiedToast'));
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      toast.error('Failed to copy identifier');
+      toast.error(t('sheets.nostr.copyFailed'));
     }
   };
 
@@ -59,10 +62,10 @@ export default function NostrSheet({ isOpen, onClose, nip05 }: NostrSheetProps) 
                 </div>
                 <div>
                   <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
-                    Nostr Protocol
+                    {t('sheets.nostr.title')}
                   </h3>
                   <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                    Decentralized social network
+                    {t('sheets.nostr.subtitle')}
                   </p>
                 </div>
               </div>
@@ -70,8 +73,7 @@ export default function NostrSheet({ isOpen, onClose, nip05 }: NostrSheetProps) 
               {/* Description */}
               <div className='mb-6'>
                 <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-                  This is a Nostr identifier (NIP-05). Nostr is a decentralized protocol for social
-                  networking.
+                  {t('sheets.nostr.description')}
                 </p>
                 <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
                   <p className='break-all font-mono text-sm text-gray-700 dark:text-neutral-300'>
@@ -87,16 +89,16 @@ export default function NostrSheet({ isOpen, onClose, nip05 }: NostrSheetProps) 
                   className='w-full bg-red-600 text-white hover:bg-red-700'
                 >
                   <ExternalLink className='mr-2 h-4 w-4' />
-                  Open in Nostr App
+                  {t('sheets.nostr.openApp')}
                 </Button>
                 <Button onClick={handleCopyNip05} className='w-full' variant='outline'>
                   <Copy className='mr-2 h-4 w-4' />
-                  {copied ? 'Copied!' : 'Copy NIP-05'}
+                  {copied ? t('copiedBang') : t('sheets.nostr.copy')}
                 </Button>
               </div>
 
               <Button variant='outline' onClick={onClose} className='mt-3 w-full'>
-                Close
+                {tCommon('actions.close')}
               </Button>
             </div>
           </DetachedSheet.Content>

@@ -1,1 +1,844 @@
-{}
+{
+  "details": {
+    "topBarTitle": "Detalles del evento",
+    "heading": "Detalles",
+    "subheading": "Edita la portada, el título, la fecha, la ubicación, la descripción y la capacidad de tu evento.",
+    "media": "Multimedia",
+    "basics": "Información básica",
+    "eventTitle": "Título del evento",
+    "eventTitlePlaceholder": "Escribe el nombre del evento",
+    "dateTime": "Fecha y hora",
+    "starts": "Inicio",
+    "ends": "Fin",
+    "address": "Dirección",
+    "chooseAddress": "Elegir dirección",
+    "descriptionPlaceholder": "Agrega una descripción de este evento...",
+    "capacity": "Capacidad",
+    "capacityValue": "Capacidad {capacity}",
+    "setCapacity": "Definir capacidad",
+    "maxAttendees": "Máximo de asistentes: {capacity}",
+    "showCapacityCount": "Mostrar cupos disponibles",
+    "showCapacityCountHint": "Muestra a los invitados los lugares restantes",
+    "startDate": "Fecha de inicio",
+    "endDate": "Fecha de fin",
+    "startTime": "Hora de inicio",
+    "endTime": "Hora de fin",
+    "toasts": {
+      "updated": "¡Evento actualizado correctamente!",
+      "updateFailed": "No se pudo actualizar el evento"
+    },
+    "notFound": {
+      "title": "Evento no encontrado",
+      "description": "El evento que intentas editar no existe o no tienes permiso."
+    }
+  },
+  "guests": {
+    "topBarTitle": "Lista de invitados",
+    "exportCsv": "Exportar CSV",
+    "notFound": {
+      "title": "Evento no encontrado",
+      "description": "El evento que intentas administrar no existe."
+    },
+    "heading": "Lista de invitados",
+    "subheading": "Ve quién asistirá, sigue las invitaciones que enviaste y administra las confirmaciones de asistencia.",
+    "inviteGuests": "Invitar personas",
+    "zapAll": "Zap a todos",
+    "tabs": {
+      "going": "Asistiré",
+      "maybe": "Quizás",
+      "notGoing": "No asistiré",
+      "invited": "Invitados",
+      "withCount": "{label} ({count})"
+    },
+    "searchPlaceholder": "Buscar invitados del evento...",
+    "searchLabel": "Buscar invitados del evento",
+    "hostsNotice": "El creador y los coanfitriones no pueden eliminarse de esta lista. Quita el acceso de coanfitrión en Anfitriones para eliminarlos de la lista de invitados.",
+    "footer": {
+      "total": "Total de invitados: {count}",
+      "statusCount": "{label}: {count}"
+    },
+    "removeSheet": {
+      "title": "¿Eliminar invitado?",
+      "description": "¿Eliminar a <strong>{name}</strong> de la lista de invitados aprobados? Perderá el acceso a la lista de invitados.",
+      "thisUser": "este usuario",
+      "removing": "Eliminando...",
+      "confirm": "Eliminar invitado"
+    },
+    "loadingGuests": "Cargando invitados",
+    "toasts": {
+      "noDataToExport": "No hay datos de invitados para exportar",
+      "exporting": "Exportando lista de invitados...",
+      "exported": "Lista de invitados exportada correctamente",
+      "exportFailed": "No se pudo exportar la lista de invitados. Inténtalo de nuevo",
+      "removed": "Invitado eliminado de la lista",
+      "removeFailed": "No se pudo eliminar al invitado"
+    }
+  },
+  "cancelEvent": {
+    "title": "Cancelar evento",
+    "aboutToCancel": "Estás a punto de cancelar <strong>{title}</strong>.",
+    "thisEvent": "este evento",
+    "warning": "Atención: esto no se puede deshacer.",
+    "consequences": {
+      "hidden": "El evento se marcará como cancelado y se ocultará a los invitados",
+      "noAccess": "Los invitados ya no podrán ver el evento ni confirmar asistencia",
+      "subEvents": "Los subeventos vinculados se desvincularán de este evento",
+      "noReopen": "No podrás reabrirlo desde Evento"
+    },
+    "notifyTitle": "Notificar a los asistentes por correo",
+    "notifyDescription": "Enviar un correo sobre la cancelación a quienes respondieron Asistiré o Quizás",
+    "cancelling": "Cancelando...",
+    "toasts": {
+      "canceledWithEmails": "Evento cancelado. Se enviaron correos de notificación a los asistentes.",
+      "canceled": "Evento cancelado correctamente.",
+      "failed": "No se pudo cancelar el evento. Inténtalo de nuevo."
+    }
+  },
+  "csvImport": {
+    "title": "Importar archivos CSV",
+    "subtitle": "Cómo importar contactos a Evento en formato CSV.",
+    "emailsOnly": {
+      "title": "Solo correos",
+      "description": "Asegúrate de que tu archivo CSV contenga solo correos en una única lista."
+    },
+    "header": {
+      "title": "Encabezado",
+      "description": "Asegúrate de que tu archivo CSV tenga un encabezado."
+    },
+    "template": {
+      "title": "Usa nuestra plantilla",
+      "description": "Si tienes problemas al importar CSV, prueba con nuestro ejemplo:"
+    },
+    "found": "{count, plural, one {Se encontró # correo} other {Se encontraron # correos}}",
+    "moreEmails": "+ {count} correos más",
+    "dropzone": "Arrastra y suelta tu archivo CSV aquí",
+    "browse": "Buscar archivos",
+    "fileHint": "Archivo CSV con direcciones de correo (máx. 10 MB)",
+    "processing": "Procesando archivo...",
+    "downloadExample": "Descargar CSV de ejemplo",
+    "import": "Importar CSV",
+    "errors": {
+      "tooLarge": "El archivo supera el límite de 10 MB. Usa un archivo más pequeño.",
+      "noValidEmails": "No se encontraron direcciones de correo válidas",
+      "parse": "Error al procesar el CSV",
+      "read": "Error al leer el archivo"
+    }
+  },
+  "registrationDetail": {
+    "title": "Detalles del registro",
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobado",
+      "denied": "Rechazado"
+    },
+    "denyReasonPlaceholder": "Motivo del rechazo (opcional)",
+    "confirmDeny": "Confirmar rechazo",
+    "approve": "Aprobar",
+    "deny": "Rechazar",
+    "submitted": "Enviado el {date}",
+    "reviewed": "Revisado el {date}",
+    "denialReason": "Motivo del rechazo",
+    "answers": "Respuestas del registro",
+    "noAnswer": "Sin respuesta",
+    "noQuestions": "No se configuraron preguntas de registro para este evento.",
+    "notFound": "Registro no encontrado"
+  },
+  "registration": {
+    "topBarTitle": "Registro",
+    "title": "Registro",
+    "subtitle": "Pide a los invitados que se registren antes de confirmar asistencia y elige las preguntas que responderán.",
+    "questionTypes": {
+      "text": "Texto",
+      "longText": "Texto largo",
+      "singleSelect": "Selección única",
+      "multiSelect": "Selección múltiple",
+      "phone": "Número de teléfono",
+      "checkbox": "Casilla de verificación",
+      "company": "Empresa"
+    },
+    "questionDescriptions": {
+      "text": "Recopila una respuesta corta de una sola línea",
+      "longText": "Recopila una respuesta más larga, de varias líneas",
+      "singleSelect": "Permite que los invitados elijan una opción de una lista",
+      "multiSelect": "Permite que los invitados elijan varias opciones de una lista",
+      "url": "Recopila un sitio web o enlace",
+      "phone": "Recopila un número de teléfono",
+      "checkbox": "Obtén una respuesta de sí/no o de acuerdo/en desacuerdo",
+      "instagram": "Obtén el usuario de Instagram del invitado",
+      "twitter": "Obtén el usuario de X (Twitter) del invitado",
+      "youtube": "Obtén el canal de YouTube del invitado",
+      "linkedin": "Obtén el perfil de LinkedIn del invitado",
+      "company": "Obtén la empresa donde trabaja el invitado"
+    },
+    "companyAutoNote": "Obtendremos esta información automáticamente si ya la ingresaron antes en Evento.",
+    "invalidType": {
+      "title": "Tipo de pregunta no válido",
+      "goBack": "Volver"
+    },
+    "form": {
+      "questionLabel": "Texto de la pregunta",
+      "questionPlaceholder": "Escribe tu pregunta",
+      "options": "Opciones",
+      "optionPlaceholder": "Opción {number}",
+      "addOption": "+ Agregar opción",
+      "required": "Obligatoria",
+      "requiredDescription": "Los invitados deben responder esta pregunta para registrarse"
+    },
+    "row": {
+      "dragToReorder": "Arrastra para reordenar la pregunta",
+      "questionActions": "Acciones de la pregunta",
+      "options": "Opciones: {options}"
+    },
+    "publish": {
+      "action": "Publicar",
+      "success": "Evento publicado correctamente",
+      "failed": "No se pudo publicar el evento",
+      "title": "Publicar evento",
+      "publishing": "Publicando...",
+      "confirm": "Sí, publicar",
+      "description": "¿Seguro que quieres publicar este evento? Será visible en los feeds y en Descubrir."
+    },
+    "eventNotFound": {
+      "title": "Evento no encontrado",
+      "description": "El evento que intentas administrar no existe."
+    },
+    "toasts": {
+      "enableFailed": "No se pudo activar el requisito de registro",
+      "registrationDisabled": "Registro desactivado",
+      "settingsUpdateFailed": "No se pudo actualizar la configuración de registro",
+      "questionDisabled": "Pregunta desactivada",
+      "questionEnabled": "Pregunta activada",
+      "reorderFailed": "No se pudieron reordenar las preguntas",
+      "questionDeleted": "Pregunta eliminada",
+      "deleteFailed": "No se pudo eliminar la pregunta"
+    },
+    "requireRegistration": {
+      "title": "Requerir registro",
+      "description": "Los invitados deben registrarse para confirmar asistencia"
+    },
+    "customMessage": {
+      "title": "Mensaje de confirmación personalizado",
+      "description": "Envía un mensaje personalizado a los invitados cuando se apruebe su registro",
+      "messageLabel": "Mensaje",
+      "emptyPreview": "Agrega un mensaje personalizado para los invitados aprobados...",
+      "placeholder": "Escribe el mensaje que recibirán los invitados aprobados...",
+      "toasts": {
+        "enabled": "Mensaje de confirmación personalizado activado",
+        "disabled": "Mensaje de confirmación personalizado desactivado",
+        "updateFailed": "No se pudo actualizar la configuración del mensaje de confirmación",
+        "saved": "Mensaje de confirmación personalizado guardado",
+        "saveFailed": "No se pudo guardar el mensaje de confirmación personalizado"
+      }
+    },
+    "questions": {
+      "title": "Preguntas",
+      "description": "Los invitados responderán estas preguntas al registrarse en tu evento. Arrastra para reordenar.",
+      "addNew": "Agregar nueva pregunta",
+      "emptyTitle": "Preguntas de registro",
+      "emptyDescription": "Agrega preguntas para recopilar información de los invitados cuando se registren en tu evento."
+    },
+    "questionSheet": {
+      "chooseTitle": "Elige una nueva pregunta",
+      "backToTypes": "Volver a los tipos de pregunta",
+      "updating": "Actualizando...",
+      "saveChanges": "Guardar cambios",
+      "saveQuestion": "Guardar pregunta",
+      "socialNote": "Obtendremos esta información automáticamente si los invitados la agregaron a su perfil de Evento.",
+      "requiredDescription": "Los invitados deben responder esta pregunta para registrarse."
+    },
+    "deleteSheet": {
+      "title": "Eliminar pregunta",
+      "deleting": "Eliminando...",
+      "heading": "¿Eliminar esta pregunta?",
+      "description": "\"{label}\" se eliminará permanentemente. Esta acción no se puede deshacer."
+    }
+  },
+  "registrationTypes": {
+    "title": "Elige el tipo de pregunta",
+    "subtitle": "Elige el tipo de pregunta que los invitados responden al registrarse.",
+    "sections": {
+      "basic": "Básico",
+      "socialProfile": "Perfil social",
+      "other": "Otros"
+    },
+    "socialNote": "Obtendremos la información automáticamente si el invitado la configuró en su perfil de Luma."
+  },
+  "registrationAdd": {
+    "title": "Agregar pregunta",
+    "invalidTypeDescription": "El tipo de pregunta que intentas agregar no existe.",
+    "defaultQuestions": {
+      "phone": "¿Cuál es tu número de teléfono?",
+      "instagram": "¿Cuál es tu perfil de Instagram?",
+      "twitter": "¿Cuál es tu usuario de X (Twitter)?",
+      "youtube": "¿Cuál es tu canal de YouTube?",
+      "linkedin": "¿Cuál es tu perfil de LinkedIn?",
+      "company": "¿En qué empresa trabajas?"
+    },
+    "toasts": {
+      "created": "Pregunta creada",
+      "createFailed": "No se pudo crear la pregunta"
+    }
+  },
+  "registrationEdit": {
+    "title": "Editar pregunta",
+    "invalidTypeDescription": "El tipo de pregunta que intentas editar no existe.",
+    "notFound": {
+      "title": "Pregunta no encontrada",
+      "description": "La pregunta que intentas editar no existe."
+    },
+    "toasts": {
+      "updated": "Pregunta actualizada",
+      "updateFailed": "No se pudo actualizar la pregunta"
+    }
+  },
+  "registrationSubmissions": {
+    "topBarTitle": "Registros recibidos",
+    "title": "Registros",
+    "subtitle": "Revisa los registros y aprueba o rechaza invitados.",
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobado",
+      "denied": "Rechazado"
+    },
+    "tabWithCount": "{label} ({count})",
+    "toasts": {
+      "approved": "Registro aprobado",
+      "approveFailed": "No se pudo aprobar el registro",
+      "denied": "Registro rechazado",
+      "denyFailed": "No se pudo rechazar el registro"
+    },
+    "eventNotFound": {
+      "title": "Evento no encontrado",
+      "description": "El evento que intentas administrar no existe."
+    },
+    "table": {
+      "guest": "Invitado",
+      "submitted": "Enviado",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "empty": {
+      "title": "Sin registros",
+      "pending": "No hay registros pendientes por revisar.",
+      "approved": "No hay registros aprobados.",
+      "denied": "No hay registros rechazados."
+    },
+    "summary": {
+      "total": "Total: {count}",
+      "showing": "Mostrando {status, select, pending {pendientes} approved {aprobados} other {rechazados}}: {count}"
+    },
+    "actions": {
+      "deny": "Rechazar",
+      "approve": "Aprobar",
+      "view": "Ver"
+    },
+    "submittedOn": "Enviado el {date}"
+  },
+  "emailBlast": {
+    "noSubject": "Sin asunto",
+    "cancelling": "Cancelando...",
+    "sendAsap": "Enviar lo antes posible",
+    "sheet": {
+      "newTitle": "Nuevo envío masivo de correo",
+      "editTitle": "Editar envío programado"
+    },
+    "cancelDialog": {
+      "title": "¿Cancelar envío programado?",
+      "description": "Esto cancelará el envío programado y no se enviará.",
+      "keep": "Mantener programado",
+      "confirm": "Cancelar envío"
+    },
+    "status": {
+      "scheduled": "Programado",
+      "sending": "Enviando",
+      "completed": "Completado",
+      "failed": "Fallido",
+      "cancelled": "Cancelado",
+      "draft": "Borrador",
+      "delivered": "Entregados",
+      "pending": "Pendientes"
+    },
+    "card": {
+      "to": "Para: {count, plural, one {# destinatario} other {# destinatarios}}",
+      "scheduledFor": "Programado para: {date}",
+      "created": "Creado: {date}",
+      "id": "ID: {id}...",
+      "delivered": "{count, plural, one {# entregado} other {# entregados}}",
+      "failed": "{count, plural, one {# fallido} other {# fallidos}}",
+      "pending": "{count, plural, one {# pendiente} other {# pendientes}}"
+    },
+    "detail": {
+      "title": "Detalles del envío masivo",
+      "sendingInProgress": "Envío en curso",
+      "titleLabel": "Título",
+      "scheduledForSending": "Programado para enviar",
+      "created": "Creado",
+      "id": "ID",
+      "recipients": "Destinatarios",
+      "target": "Público:",
+      "allRecipients": "Todos los destinatarios",
+      "totalRecipients": "Total de destinatarios:",
+      "deliveryStatistics": "Estadísticas de entrega",
+      "deliveryRate": "Tasa de entrega",
+      "message": "Mensaje"
+    },
+    "page": {
+      "topBarTitle": "Envíos masivos de correo",
+      "heading": "Envíos masivos de correo",
+      "subtitle": "Envía novedades a tus invitados por correo, ahora o de forma programada.",
+      "newBlast": "Nuevo envío",
+      "loading": "Cargando envíos masivos...",
+      "loadErrorTitle": "No se pudieron cargar los envíos masivos",
+      "loadErrorDescription": "Ocurrió un error al cargar tus envíos masivos. Inténtalo de nuevo.",
+      "emptyTitle": "Aún no hay envíos masivos",
+      "emptyDescription": "Envía tu primer correo masivo para mantener informados a tus invitados",
+      "createBlast": "Crear envío masivo",
+      "cancelSuccess": "Envío masivo cancelado correctamente",
+      "cancelFailed": "No se pudo cancelar el envío masivo"
+    },
+    "compose": {
+      "toasts": {
+        "rsvpStatsFailed": "No se pudieron obtener las estadísticas de asistencia",
+        "chooseDateTime": "Elige una fecha y hora para programar este envío masivo",
+        "invalidDateTime": "Formato de fecha u hora no válido",
+        "mustBeFuture": "La hora programada debe ser en el futuro",
+        "updated": "¡Envío masivo actualizado correctamente!",
+        "scheduled": "¡Envío masivo programado correctamente!",
+        "sent": "¡Envío masivo enviado correctamente!",
+        "updateFailed": "No se pudo actualizar el envío masivo",
+        "sendFailed": "No se pudo enviar el envío masivo"
+      },
+      "recipients": {
+        "all": {
+          "label": "Todas las respuestas",
+          "description": "Enviar a {count, plural, one {# invitado que respondió} other {# invitados que respondieron}}",
+          "descriptionLoading": "Enviar a invitados que respondieron"
+        },
+        "yes": {
+          "label": "Respuesta: Asistiré",
+          "description": "Enviar a {count, plural, one {# invitado que confirmó} other {# invitados que confirmaron}} asistencia",
+          "descriptionLoading": "Enviar a invitados que confirmaron asistencia"
+        },
+        "no": {
+          "label": "Respuesta: No asistiré",
+          "description": "Enviar a {count, plural, one {# invitado que rechazó} other {# invitados que rechazaron}}",
+          "descriptionLoading": "Enviar a invitados que rechazaron"
+        },
+        "maybe": {
+          "label": "Respuesta: Quizás",
+          "description": "Enviar a {count, plural, one {# invitado que quizás asista} other {# invitados que quizás asistan}}",
+          "descriptionLoading": "Enviar a invitados que quizás asistan"
+        },
+        "invited": {
+          "label": "Invitados",
+          "description": "Enviar a los invitados"
+        }
+      },
+      "messagePlaceholder": "Escribe tu correo aquí...",
+      "actions": {
+        "saveChanges": "Guardar cambios",
+        "schedule": "Programar envío masivo",
+        "send": "Enviar correo masivo",
+        "updating": "Actualizando...",
+        "scheduling": "Programando...",
+        "sending": "Enviando..."
+      },
+      "summary": {
+        "scheduledFor": "Programado para {date}",
+        "scheduledPending": "Programado para más tarde (fecha y hora pendientes)",
+        "asap": "Se enviará lo antes posible"
+      },
+      "recipientsLabel": "Destinatarios",
+      "subjectLabel": "Asunto",
+      "subjectPlaceholder": "Escribe el asunto del correo...",
+      "messageLabel": "Mensaje",
+      "enterUrl": "Ingresa la URL:",
+      "deliveryLabel": "Entrega",
+      "rescheduleOnly": "Los envíos programados solo pueden reprogramarse para otra hora futura.",
+      "now": "Ahora",
+      "later": "Programar para más tarde",
+      "pickDateTime": "Elige fecha y hora",
+      "date": "Fecha",
+      "time": "Hora",
+      "selectDate": "Seleccionar fecha",
+      "selectTime": "Seleccionar hora",
+      "preview": {
+        "recipients": "Destinatarios:",
+        "recipientsValue": "{label} ({count, plural, one {# destinatario} other {# destinatarios}})",
+        "delivery": "Entrega:",
+        "inboxPreview": "Vista previa en la bandeja",
+        "from": "De: Anfitrión de Evento",
+        "subject": "Asunto: {subject}",
+        "noContent": "Aún no hay contenido en el mensaje"
+      },
+      "scheduleDate": "Fecha de programación",
+      "scheduleTime": "Hora de programación"
+    }
+  },
+  "reminders": {
+    "topBarTitle": "Recordatorios",
+    "heading": "Recordatorios",
+    "subtitle": "Elige cuándo reciben los invitados recordatorios automáticos por correo antes del evento.",
+    "maxReached": "Puedes seleccionar hasta {max} recordatorios",
+    "maxHint": "Puedes seleccionar hasta {max} recordatorios.",
+    "toasts": {
+      "turnedOff": "Recordatorios para invitados desactivados",
+      "updated": "Recordatorios para invitados actualizados correctamente",
+      "notAvailable": "Los recordatorios para invitados aún no están disponibles. Inténtalo de nuevo más tarde.",
+      "updateFailed": "No se pudieron actualizar los recordatorios para invitados"
+    },
+    "error": {
+      "title": "Recordatorios no disponibles",
+      "description": "No pudimos cargar la configuración de recordatorios de este evento."
+    },
+    "goBack": "Volver",
+    "unavailable": {
+      "title": "Recordatorios próximamente",
+      "description": "Los recordatorios para invitados aún no están disponibles para este evento. Vuelve más tarde."
+    },
+    "guestReminders": {
+      "title": "Recordatorios para invitados",
+      "description": "Envía correos automáticos a los invitados que confirmaron asistencia antes de que empiece el evento. Elige hasta {max} horarios. Los horarios son relativos al inicio del evento."
+    },
+    "selectedCount": "{count} de {max} recordatorios seleccionados",
+    "empty": {
+      "title": "No hay recordatorios programados",
+      "description": "Los invitados que confirmen asistencia no recibirán recordatorios automáticos por correo hasta que actives alguno."
+    },
+    "offsets": {
+      "oneHour": "1 hora antes",
+      "twoHours": "2 horas antes",
+      "threeHours": "3 horas antes",
+      "eightHours": "8 horas antes",
+      "oneDay": "1 día antes",
+      "threeDays": "3 días antes"
+    }
+  },
+  "security": {
+    "title": "Seguridad y privacidad",
+    "toasts": {
+      "updated": "¡Configuración de seguridad actualizada correctamente!",
+      "updateFailed": "No se pudo actualizar la configuración de seguridad"
+    },
+    "notFound": {
+      "title": "Evento no encontrado",
+      "description": "El evento que intentas editar no existe o no tienes permiso.",
+      "goBack": "Volver"
+    },
+    "heading": "Seguridad y privacidad",
+    "description": "Controla quién puede ver tu evento, la protección con contraseña y la visibilidad de la lista de invitados.",
+    "visibility": {
+      "title": "Visibilidad",
+      "description": "Quién puede encontrar el evento y qué ven los invitados no aprobados.",
+      "eventVisibility": "Visibilidad del evento"
+    },
+    "registrationVisibility": {
+      "title": "Visibilidad del registro",
+      "description": "Ocultar detalles a invitados no aprobados",
+      "hideLocation": "Ocultar ubicación hasta la aprobación",
+      "hideGuestList": "Ocultar lista de invitados hasta la aprobación",
+      "hideDescription": "Ocultar descripción hasta la aprobación"
+    },
+    "password": {
+      "title": "Contraseña",
+      "description": "Exigir una contraseña antes de que los invitados puedan ver el evento.",
+      "protection": "Protección con contraseña",
+      "protected": "Protegido",
+      "notProtected": "Sin protección"
+    },
+    "guestList": {
+      "title": "Lista de invitados",
+      "visibility": "Visibilidad de la lista de invitados",
+      "hiddenFromNonHosts": "Oculta para quienes no son anfitriones"
+    }
+  },
+  "hosts": {
+    "title": "Anfitriones",
+    "removeConfirm": "¿Seguro que quieres eliminar a este coanfitrión?",
+    "toasts": {
+      "removed": "Coanfitrión eliminado",
+      "removeFailed": "No se pudo eliminar al coanfitrión"
+    },
+    "notFound": {
+      "title": "Evento no encontrado",
+      "description": "El evento que intentas gestionar no existe.",
+      "goBack": "Volver"
+    },
+    "heading": "Coanfitriones",
+    "description": "Gestiona quién puede ser coanfitrión y ayudar a organizar este evento.",
+    "inviteCohost": "Invitar coanfitrión",
+    "hostsTitle": "Anfitriones",
+    "creator": "Creador",
+    "removeAria": "Eliminar a {name}",
+    "empty": {
+      "title": "Sin anfitriones",
+      "description": "Agrega coanfitriones para que te ayuden a gestionar este evento",
+      "addCohost": "Agregar coanfitrión"
+    },
+    "pendingInvites": {
+      "title": "Invitaciones pendientes",
+      "cancelling": "Cancelando...",
+      "pending": "Invitación de coanfitrión pendiente"
+    },
+    "cancelDialog": {
+      "title": "¿Cancelar invitación?",
+      "description": "¿Seguro que quieres cancelar la invitación de coanfitrión para <strong>{invitee}</strong>? Esta acción no se puede deshacer.",
+      "keep": "Conservar invitación",
+      "confirm": "Cancelar invitación"
+    }
+  },
+  "subEvents": {
+    "title": "Subeventos",
+    "toasts": {
+      "removed": "\"{title}\" se quitó de los subeventos",
+      "removeFailed": "No se pudo quitar el subevento"
+    },
+    "heading": "Subeventos",
+    "description": "Agrupa eventos relacionados bajo este creando nuevos o vinculando eventos existentes.",
+    "addButton": "Agregar subevento",
+    "draft": "Borrador",
+    "removeAria": "Quitar {title}",
+    "loadFailed": "No se pudieron cargar los subeventos.",
+    "empty": {
+      "title": "Sin subeventos",
+      "description": "Crea un nuevo evento bajo este o vincula uno de tus eventos existentes"
+    },
+    "createNew": "Crear nuevo subevento",
+    "linkExisting": "Vincular evento existente",
+    "addSheet": {
+      "title": "Agregar subevento",
+      "createDescription": "Crea un evento completamente nuevo bajo este",
+      "linkDescription": "Elige uno de tus propios eventos"
+    },
+    "removeSheet": {
+      "title": "Quitar subevento",
+      "description": "¿Quitar \"{title}\" de los subeventos de este evento? El evento en sí no se eliminará.",
+      "descriptionFallback": "¿Quitar este evento de los subeventos? El evento en sí no se eliminará.",
+      "confirm": "Quitar",
+      "removing": "Quitando..."
+    }
+  },
+  "cohosts": {
+    "sheet": {
+      "inviteTitle": "Invitar coanfitriones",
+      "addNoteTitle": "Agregar nota"
+    },
+    "step1": {
+      "emailInvitation": "Invitación por correo",
+      "searchPlaceholder": "Busca por @usuario o correo",
+      "pendingInvites": "Invitaciones pendientes",
+      "pendingInvite": "Invitación de coanfitrión pendiente",
+      "empty": {
+        "title": "Invitar coanfitriones",
+        "description": "Busca por @usuario o escribe un correo"
+      },
+      "noResults": {
+        "title": "No se encontraron usuarios",
+        "description": "Ningún usuario coincide con \"{query}\""
+      },
+      "next": "Siguiente ({count})"
+    },
+    "step2": {
+      "subtitle": "Agrega una nota personal a tu invitación",
+      "messagePlaceholder": "Escribe una nota para incluir en tu invitación (opcional)",
+      "messageHint": "Este mensaje se envía junto con la invitación de coanfitrión.",
+      "inviting": "{count, plural, one {Invitando a # coanfitrión:} other {Invitando a # coanfitriones:}}",
+      "noneSelected": "Ningún coanfitrión seleccionado",
+      "goBackHint": "Vuelve para agregar personas a invitar.",
+      "emailInvitation": "Invitación por correo",
+      "removeAria": "Quitar {name}",
+      "sending": "Enviando...",
+      "send": "ENVIAR INVITACIONES DE COANFITRIÓN"
+    }
+  },
+  "linkSubEvent": {
+    "title": "Vincular evento existente",
+    "draft": "Borrador",
+    "linking": "Vinculando...",
+    "link": "Vincular",
+    "loading": "Cargando...",
+    "loadMore": "Cargar más",
+    "toasts": {
+      "linked": "\"{title}\" vinculado como subevento",
+      "linkFailed": "No se pudo vincular el subevento"
+    },
+    "searchPlaceholder": "Busca tus eventos",
+    "filters": {
+      "hosting": "Organizando",
+      "drafts": "Borradores"
+    },
+    "loadFailed": "No se pudieron cargar tus eventos",
+    "empty": {
+      "notLoadedYet": "Aún no se cargaron eventos vinculables",
+      "noMatches": "No se encontraron eventos que coincidan con \"{query}\"",
+      "noneAvailable": "No hay eventos disponibles para vincular",
+      "loadMoreHint": "Carga más para seguir revisando tus otros eventos.",
+      "onlyOwnHint": "Solo se pueden vincular tus propios eventos que no tengan un evento principal."
+    }
+  },
+  "inviteUsers": {
+    "sheet": {
+      "csvImported": "{count, plural, one {Se importó # correo del CSV} other {Se importaron # correos del CSV}}",
+      "inviteTitle": "Invitar personas",
+      "addNoteTitle": "Agregar nota"
+    },
+    "step1": {
+      "shareUnavailable": "Compartir no está disponible en este dispositivo",
+      "shareFailed": "No se pudo compartir el enlace del evento",
+      "shareLink": {
+        "title": "Compartir enlace del evento",
+        "description": "Usa tu menú de compartir para enviar esta URL."
+      },
+      "searchPlaceholder": "Correo o @usuario",
+      "emailInvitation": "Invitación por correo",
+      "empty": {
+        "title": "Encuentra usuarios de Evento",
+        "description": "Busca por @usuario o importa un CSV"
+      },
+      "noResults": {
+        "title": "No se encontraron usuarios",
+        "description": "Ningún usuario coincide con \"{query}\""
+      },
+      "next": "Siguiente ({count})"
+    },
+    "step2": {
+      "subtitle": "¡Hazlo especial para tus invitados!",
+      "messagePlaceholder": "Escribe una nota para incluir en tu invitación (opcional)",
+      "messageHint": "Este mensaje se envía junto con los detalles de tu evento.",
+      "inviting": "{count, plural, one {Invitando a # usuario:} other {Invitando a # usuarios:}}",
+      "noneSelected": "Ningún usuario seleccionado",
+      "goBackHint": "Vuelve para agregar usuarios a invitar.",
+      "emailInvitation": "Invitación por correo",
+      "removeAria": "Quitar {name}",
+      "sending": "Enviando...",
+      "send": "ENVIAR INVITACIONES"
+    }
+  },
+  "music": {
+    "title": "Música",
+    "save": "Guardar",
+    "subtitle": "Agrega música a tu evento para que los invitados puedan descubrirla y escucharla.",
+    "toasts": {
+      "invalidSpotify": "Ingresa una URL válida de Spotify",
+      "spotifyAdded": "¡Pista de Spotify agregada! Haz clic en Guardar para actualizar el evento.",
+      "invalidWavlake": "Ingresa una URL válida de Wavlake",
+      "wavlakeAdded": "¡Pista de Wavlake agregada! Haz clic en Guardar para actualizar el evento.",
+      "spotifyRemoved": "¡Pista de Spotify eliminada! Haz clic en Guardar para actualizar el evento.",
+      "wavlakeRemoved": "¡Pista de Wavlake eliminada! Haz clic en Guardar para actualizar el evento.",
+      "updated": "¡Configuración de música actualizada correctamente!",
+      "updateFailed": "No se pudo actualizar la configuración de música"
+    },
+    "notFound": {
+      "title": "Evento no encontrado",
+      "description": "El evento que intentas administrar no existe.",
+      "goBack": "Volver"
+    },
+    "spotify": {
+      "description": "Agrega una pista o playlist de Spotify",
+      "add": "Agregar pista de Spotify"
+    },
+    "wavlake": {
+      "description": "Agrega una pista de Wavlake",
+      "add": "Agregar pista de Wavlake"
+    },
+    "info": {
+      "title": "Acerca de la integración de música",
+      "description": "La música que agregues aquí se mostrará en la página de tu evento, para que los invitados descubran y escuchen música relacionada con tu evento."
+    }
+  },
+  "contributions": {
+    "title": "Contribuciones",
+    "save": "Guardar",
+    "subtitle": "Configura métodos de pago y montos de contribución sugeridos para tu evento.",
+    "saving": "Guardando...",
+    "saveChanges": "Guardar cambios",
+    "toasts": {
+      "updated": "¡Configuración de contribuciones actualizada correctamente!",
+      "updateFailed": "No se pudo actualizar la configuración de contribuciones"
+    },
+    "notFound": {
+      "title": "Evento no encontrado",
+      "description": "El evento que intentas administrar no existe.",
+      "goBack": "Volver"
+    },
+    "suggested": {
+      "title": "Monto sugerido",
+      "description": "Los invitados pueden elegir su propio monto",
+      "hint": "Este es un monto sugerido. Los invitados pueden contribuir con el monto que quieran."
+    },
+    "methods": {
+      "title": "Métodos de pago",
+      "description": "Activa los usuarios que los invitados pueden usar para contribuir.",
+      "cashAppHint": "Ingresa como $usuario",
+      "venmoHint": "Ingresa como @usuario",
+      "paypalPlaceholder": "usuario o correo",
+      "paypalHint": "Usuario o correo electrónico"
+    },
+    "info": {
+      "title": "Cómo funcionan las contribuciones",
+      "description": "Los métodos de pago que actives aparecerán como botones en la página de tu evento. Cuando los invitados los toquen, se abrirá la app correspondiente en su teléfono para completar la contribución."
+    }
+  },
+  "crowdfunding": {
+    "title": "Financiamiento colectivo",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "update": "Actualizar campaña",
+    "create": "Crear campaña",
+    "loadError": "No se pudo cargar la configuración de la campaña",
+    "subtitleUpdate": "Actualiza la configuración de tu campaña de financiamiento colectivo a continuación.",
+    "subtitleCreate": "Configura una campaña de financiamiento colectivo con Lightning para tu evento.",
+    "toasts": {
+      "walletLoading": "Cargando tu billetera. Inténtalo de nuevo en un momento.",
+      "walletLoadingTitle": "Cargando billetera",
+      "walletSetup": "Abre tu billetera para terminar de configurar tu dirección Lightning.",
+      "walletSetupTitle": "Configuración de billetera requerida",
+      "walletSyncing": "La dirección de tu billetera aún se está sincronizando. Inténtalo de nuevo en un momento.",
+      "walletSyncingTitle": "Sincronizando billetera",
+      "updated": "¡Campaña actualizada correctamente!",
+      "created": "¡Campaña creada correctamente!",
+      "updateFailed": "No se pudo actualizar la campaña",
+      "createFailed": "No se pudo crear la campaña"
+    },
+    "progress": {
+      "title": "Progreso de la campaña",
+      "raised": "Recaudado",
+      "goal": "Meta",
+      "sats": "{amount} sats",
+      "goalReached": "{percent} % de la meta alcanzado",
+      "pledges": "Aportes"
+    },
+    "details": {
+      "title": "Detalles de la campaña",
+      "description": "Ponle nombre y describe tu campaña",
+      "titleLabel": "Título",
+      "titlePlaceholder": "p. ej., Ayuda a financiar nuestro evento",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Cuéntales a tus colaboradores para qué es esta campaña..."
+    },
+    "goal": {
+      "label": "Meta (sats)",
+      "placeholder": "Opcional",
+      "hint": "Déjalo vacío para una campaña abierta sin una meta específica."
+    },
+    "visibility": {
+      "label": "Visibilidad",
+      "public": "Pública",
+      "private": "Privada",
+      "publicHint": "Cualquiera puede ver y contribuir a esta campaña.",
+      "privateHint": "Solo las personas con el enlace pueden ver y contribuir."
+    },
+    "status": {
+      "label": "Estado",
+      "active": "Activa",
+      "paused": "Pausada",
+      "activeHint": "La campaña está aceptando aportes.",
+      "pausedHint": "La campaña está pausada y no acepta nuevos aportes."
+    },
+    "destination": {
+      "title": "Destino del pago",
+      "description": "Los fondos se envían directamente a tu dirección Lightning. El destino se establece automáticamente con la dirección Lightning de tu cuenta y no se puede cambiar.",
+      "current": "Destino actual"
+    }
+  }
+}

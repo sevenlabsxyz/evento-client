@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion, MotionConfig, type Transition } from 'framer-motion';
 import { Bot, CheckCircle2, User, Wrench } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { MCP_EXAMPLE_PROMPTS, type McpExamplePrompt } from './mcp-content';
@@ -31,6 +32,7 @@ function ResultPlaceholder({ rows }: { rows: number }) {
 }
 
 function ChatTranscript({ example }: { example: McpExamplePrompt }) {
+  const t = useTranslations('developers.mcp.examples');
   const rowCount = example.tool === 'get-event' ? 1 : 3;
 
   return (
@@ -42,11 +44,11 @@ function ChatTranscript({ example }: { example: McpExamplePrompt }) {
         className='flex justify-end gap-2'
       >
         <p className='max-w-[85%] rounded-2xl rounded-br-md bg-gray-900 px-4 py-2.5 text-sm text-white dark:bg-neutral-100 dark:text-neutral-900'>
-          {example.prompt}
+          {t(`prompts.${example.messageKey}.prompt`)}
         </p>
         <span className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-200 text-gray-600 dark:bg-neutral-700 dark:text-neutral-300'>
           <User className='h-4 w-4' aria-hidden='true' />
-          <span className='sr-only'>You</span>
+          <span className='sr-only'>{t('you')}</span>
         </span>
       </motion.div>
 
@@ -58,7 +60,7 @@ function ChatTranscript({ example }: { example: McpExamplePrompt }) {
       >
         <span className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-400'>
           <Bot className='h-4 w-4' aria-hidden='true' />
-          <span className='sr-only'>Agent</span>
+          <span className='sr-only'>{t('agent')}</span>
         </span>
         <div className='min-w-0 flex-1 space-y-3'>
           <div className='overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-neutral-700 dark:bg-neutral-900'>
@@ -66,7 +68,10 @@ function ChatTranscript({ example }: { example: McpExamplePrompt }) {
               <span className='flex min-w-0 items-center gap-2 text-xs font-medium text-gray-700 dark:text-neutral-300'>
                 <Wrench className='h-3.5 w-3.5 shrink-0' aria-hidden='true' />
                 <span className='truncate'>
-                  Called <code className='font-mono'>{example.tool}</code>
+                  {t.rich('called', {
+                    tool: example.tool,
+                    code: (chunks) => <code className='font-mono'>{chunks}</code>,
+                  })}
                 </span>
               </span>
               <span className='flex shrink-0 items-center gap-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400'>
@@ -83,7 +88,7 @@ function ChatTranscript({ example }: { example: McpExamplePrompt }) {
           </div>
 
           <div className='rounded-2xl rounded-tl-md bg-gray-100 px-4 py-3 text-sm text-gray-800 dark:bg-neutral-800 dark:text-neutral-200'>
-            {example.reply}
+            {t(`prompts.${example.messageKey}.reply`)}
             <ResultPlaceholder rows={rowCount} />
           </div>
         </div>
@@ -93,6 +98,7 @@ function ChatTranscript({ example }: { example: McpExamplePrompt }) {
 }
 
 export function McpExampleChat() {
+  const t = useTranslations('developers.mcp.examples');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const example = MCP_EXAMPLE_PROMPTS[selectedIndex];
 
@@ -100,9 +106,9 @@ export function McpExampleChat() {
     <section aria-labelledby='mcp-examples-heading'>
       <McpSectionHeader
         id='mcp-examples-heading'
-        eyebrow='In practice'
-        title='Ask in plain language'
-        description='Your agent picks the right tool and fills in its inputs from what you ask.'
+        eyebrow={t('eyebrow')}
+        title={t('title')}
+        description={t('description')}
       />
 
       <div className='mt-8 grid gap-6 lg:grid-cols-5 lg:items-start'>
@@ -111,7 +117,7 @@ export function McpExampleChat() {
             id='mcp-example-prompts-label'
             className='text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-neutral-500'
           >
-            Try a prompt
+            {t('tryPrompt')}
           </p>
           <div
             role='group'
@@ -122,7 +128,7 @@ export function McpExampleChat() {
               const isSelected = index === selectedIndex;
               return (
                 <button
-                  key={item.prompt}
+                  key={item.messageKey}
                   type='button'
                   aria-pressed={isSelected}
                   onClick={() => setSelectedIndex(index)}
@@ -133,7 +139,7 @@ export function McpExampleChat() {
                       : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:border-neutral-700 dark:hover:bg-neutral-800'
                   )}
                 >
-                  <span>“{item.prompt}”</span>
+                  <span>{t('quoted', { prompt: t(`prompts.${item.messageKey}.prompt`) })}</span>
                   <code
                     className={cn(
                       'shrink-0 rounded-md px-1.5 py-0.5 font-mono text-[11px]',
@@ -154,17 +160,17 @@ export function McpExampleChat() {
           <div className='flex items-center justify-between gap-3 border-b border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900'>
             <span className='flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
               <span className='h-2 w-2 rounded-full bg-emerald-500' aria-hidden='true' />
-              Your agent
+              {t('yourAgent')}
             </span>
             <span className='rounded-full bg-gray-100 px-2.5 py-0.5 text-[11px] font-medium text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'>
-              Illustrative
+              {t('illustrative')}
             </span>
           </div>
           <div className='min-h-[340px] p-4 md:p-6' aria-live='polite'>
             <MotionConfig reducedMotion='user'>
               <AnimatePresence mode='wait' initial={false}>
                 <motion.div
-                  key={example.prompt}
+                  key={example.messageKey}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.12 }}
                 >
@@ -174,7 +180,7 @@ export function McpExampleChat() {
             </MotionConfig>
           </div>
           <figcaption className='border-t border-gray-200 px-4 py-3 text-xs text-gray-500 dark:border-neutral-800 dark:text-neutral-500'>
-            Example conversation. Real answers are built from the event data the Evento API returns.
+            {t('caption')}
           </figcaption>
         </figure>
       </div>

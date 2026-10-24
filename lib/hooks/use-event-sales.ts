@@ -1,9 +1,11 @@
 import apiClient from '@/lib/api/client';
 import { Env } from '@/lib/constants/env';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { queryKeys } from '@/lib/query-client';
 import type { ApiResponse } from '@/lib/types/api';
 import type { EventSales } from '@/lib/types/manage';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 // The sales endpoint omits `ticketTypes` / `discountCodes` when their lookups return no rows
 type EventSalesPayload = Omit<EventSales, 'ticketTypes' | 'discountCodes' | 'salesOverTime'> &
@@ -13,6 +15,7 @@ type EventSalesPayload = Omit<EventSales, 'ticketTypes' | 'discountCodes' | 'sal
  * Sales summary for the host dashboard (ticketed events)
  */
 export function useEventSales(eventId: string) {
+  const t = useTranslations('hooks');
   return useQuery({
     queryKey: queryKeys.eventSales(eventId),
     queryFn: async (): Promise<EventSales> => {
@@ -22,7 +25,7 @@ export function useEventSales(eventId: string) {
       const data = response?.data;
 
       if (!data) {
-        throw new Error('Failed to load sales data');
+        throw new Error(t('sales.loadFailed'));
       }
 
       return {
@@ -37,7 +40,7 @@ export function useEventSales(eventId: string) {
 }
 
 async function readExportErrorMessage(response: Response): Promise<string> {
-  const fallback = `Failed to export attendees (status ${response.status})`;
+  const fallback = translateHooks('sales.exportFailed', { status: response.status });
 
   try {
     const body: unknown = await response.json();

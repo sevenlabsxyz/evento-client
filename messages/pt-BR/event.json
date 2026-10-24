@@ -1,1 +1,248 @@
-{}
+{
+  "page": {
+    "twoHosts": "{first} e {second}",
+    "manyHosts": "{first} e {count, plural, one {mais # pessoa} other {mais # pessoas}}",
+    "rsvpGoing": "Você vai!",
+    "rsvpMaybe": "Marcado como talvez",
+    "rsvpNotGoing": "Você não vai",
+    "rsvpFailed": "Não foi possível atualizar sua confirmação. Tente novamente.",
+    "saveEvent": "Salvar evento",
+    "notFoundTitle": "Evento não encontrado",
+    "notFoundDescription": "O evento que você procura não existe ou não está mais disponível.",
+    "goBack": "Voltar",
+    "exploreEvents": "Explorar eventos",
+    "hiddenUntilApproved": "Alguns detalhes do evento ficam ocultos até sua inscrição ser aprovada.",
+    "hiddenUntilRsvp": "Alguns detalhes do evento ficam ocultos até você confirmar presença.",
+    "music": "Música",
+    "hostedBy": "Organizado por",
+    "goingCount": "<strong>{count}</strong> {count, plural, one {vai} other {vão}}",
+    "sectionsNav": "Seções do evento",
+    "tabs": {
+      "details": "Detalhes",
+      "comments": "Comentários",
+      "gallery": "Galeria"
+    },
+    "photos": "Fotos",
+    "metaDescription": "Eventos com um toque social -- evento.so"
+  },
+  "info": {
+    "types": {
+      "rsvp": "Confirmação de presença",
+      "registration": "Inscrição",
+      "ticketed": "Com ingresso"
+    },
+    "rsvpButton": {
+      "going": "Você vai",
+      "noSpots": "SEM VAGAS",
+      "maybe": "Talvez",
+      "notGoing": "Não vou",
+      "rsvp": "Confirmar presença"
+    },
+    "pendingToast": "Sua inscrição aguarda aprovação do anfitrião",
+    "deniedToast": "Sua inscrição não foi aprovada. Fale com o anfitrião para mais detalhes.",
+    "icsLocationHidden": "Local oculto até a aprovação da inscrição",
+    "icsDescriptionHidden": "Descrição oculta até a aprovação da inscrição",
+    "dateTimeCopied": "Data e horário copiados",
+    "dateTimeCopyFailed": "Não foi possível copiar a data e o horário",
+    "chips": {
+      "hosting": "Anfitrião",
+      "pendingApproval": "Aguardando aprovação",
+      "going": "Vou",
+      "cancelled": "Cancelado"
+    },
+    "status": {
+      "hosting": "Você é anfitrião deste evento",
+      "waitingApproval": "Aguardando aprovação do anfitrião",
+      "notApproved": "Inscrição não aprovada",
+      "registrationRequired": "Inscrição obrigatória",
+      "ticketed": "Evento com ingresso"
+    },
+    "noMoreSpots": "Não há mais vagas",
+    "spotsLeft": "{count, plural, one {# vaga restante} other {# vagas restantes}}",
+    "pending": "Pendente",
+    "denied": "Recusada"
+  },
+  "rsvpSheet": {
+    "capacityReached": "Este evento atingiu a capacidade máxima.",
+    "signInToRsvp": "Entre para confirmar presença.",
+    "yes": "Sim",
+    "maybe": "Talvez",
+    "no": "Não",
+    "markedMaybe": "Marcado como talvez",
+    "notGoing": "Não vou",
+    "registrationApproved": "Sua inscrição foi aprovada. Atualize sua presença abaixo.",
+    "checkingSession": "Verificando sessão...",
+    "requiresRegistration": "Este evento exige inscrição. Ao clicar em \"Sim\", o formulário de inscrição será aberto.",
+    "updating": "Atualizando confirmação...",
+    "verifyEmail": "Verifique seu e-mail",
+    "registerTitle": "Inscrever-se no evento",
+    "title": "Confirmar presença",
+    "codeSentTo": "Código enviado para <strong>{email}</strong>"
+  },
+  "registrationForm": {
+    "errors": {
+      "nameRequired": "O nome é obrigatório",
+      "emailRequired": "O e-mail é obrigatório",
+      "emailInvalid": "Informe um e-mail válido",
+      "emailMismatch": "O e-mail deve ser o mesmo da sua conta",
+      "fieldRequired": "Este campo é obrigatório"
+    },
+    "toasts": {
+      "registered": "Inscrição feita! Você vai ao evento.",
+      "submitted": "Inscrição enviada. Aguardando aprovação do anfitrião.",
+      "submitFailed": "Não foi possível enviar a inscrição. Tente novamente.",
+      "sendCodeFailed": "Não foi possível enviar o código de verificação. Tente novamente.",
+      "invalidCode": "Código de verificação inválido. Tente novamente.",
+      "codeSent": "Código de verificação enviado!",
+      "resendFailed": "Não foi possível reenviar o código. Tente novamente."
+    },
+    "placeholders": {
+      "enterField": "Informe {field}",
+      "agree": "Eu concordo",
+      "username": "nome de usuário",
+      "youtube": "URL do canal ou nome de usuário",
+      "linkedin": "URL do perfil ou nome de usuário",
+      "company": "Nome da empresa",
+      "fullName": "Seu nome completo",
+      "email": "seu@email.com"
+    },
+    "completingTitle": "Concluindo sua inscrição...",
+    "completingDescription": "Aguarde enquanto finalizamos sua conta e sua confirmação de presença.",
+    "usingAccountEmail": "Usando o e-mail da sua conta",
+    "verificationHint": "Enviaremos um código de verificação para este e-mail",
+    "sendingCode": "Enviando código...",
+    "submitting": "Enviando...",
+    "register": "Inscrever-se"
+  },
+  "registrationStatus": {
+    "pendingTitle": "Inscrição pendente",
+    "pendingDescription": "Você está na lista! Estamos aguardando o anfitrião aprovar sua inscrição.",
+    "approvedTitle": "Inscrição confirmada!",
+    "approvedDescription": "Sua inscrição foi aprovada.",
+    "deniedTitle": "Inscrição não aprovada",
+    "deniedReason": "Motivo: {reason}",
+    "deniedDescription": "Infelizmente, sua inscrição não foi aprovada.",
+    "registeredAgo": "Inscrição feita {time}",
+    "approvedAgo": "Aprovada {time}",
+    "updateRsvp": "Atualizar presença",
+    "contactHost": "Se você acha que isso foi um engano, fale com o anfitrião do evento."
+  },
+  "otp": {
+    "verifying": "Verificando...",
+    "verifyAndRegister": "Verificar e inscrever-se",
+    "sending": "Enviando...",
+    "resendIn": "Reenviar código em {seconds}s",
+    "resend": "Não recebeu o código? Reenviar"
+  },
+  "passwordGate": {
+    "enterPassword": "Informe a senha do evento",
+    "accessGranted": "Acesso liberado!",
+    "incorrect": "Senha incorreta. Tente novamente.",
+    "verifyFailed": "Não foi possível verificar a senha. Tente novamente.",
+    "hostAndMore": "{host} + {count} {count, plural, one {pessoa} other {pessoas}}",
+    "privateEvent": "Evento privado",
+    "hostedBy": "Organizado por <strong>{host}</strong>",
+    "protectedDescription": "Este evento é protegido por senha. Digite a senha para ver os detalhes.",
+    "passwordLabel": "Senha do evento",
+    "passwordPlaceholder": "Digite a senha",
+    "hidePassword": "Ocultar senha",
+    "showPassword": "Mostrar senha",
+    "verifying": "Verificando...",
+    "enterEvent": "Entrar no evento",
+    "invitedFooter": "Você foi convidado para um evento. Digite a senha para acessar os detalhes."
+  },
+  "saveSheet": {
+    "removedFrom": "Removido de {list}.",
+    "removedTitle": "Removido",
+    "savedTo": "Salvo em {list}.",
+    "updateFailedTitle": "Não foi possível atualizar a lista",
+    "createdAndSaved": "Lista {list} criada e evento salvo nela.",
+    "createdNotAdded": "A lista {list} foi criada, mas o evento não foi adicionado: {error}",
+    "saveFailedTitle": "Não foi possível salvar o evento",
+    "loadFailed": "Não foi possível carregar suas listas",
+    "newList": "Nova lista",
+    "namePlaceholder": "ex.: Verão em Lisboa",
+    "creating": "Criando…",
+    "createAndSave": "Criar e salvar",
+    "yourLists": "Suas listas",
+    "default": "Padrão",
+    "title": "Salvar evento",
+    "description": "Escolha as listas onde salvar este evento."
+  },
+  "ownerButtons": {
+    "eventLinkToast": "Link do evento: {url}",
+    "linkCopied": "Link do evento copiado!",
+    "blasts": "Disparos",
+    "eventLink": "Link do evento",
+    "copyEventLink": "Copiar link do evento"
+  },
+  "header": {
+    "imageAlt": "{title} - Imagem {index}",
+    "showImage": "Mostrar imagem {index}"
+  },
+  "dateTimeSheet": {
+    "title": "Data e horário",
+    "addToCalendar": "Adicionar à agenda",
+    "copyDateTime": "Copiar data/horário"
+  },
+  "locationSheet": {
+    "addressCopied": "Endereço copiado",
+    "copyFailed": "Não foi possível copiar o endereço",
+    "title": "Abrir no mapa",
+    "appleMaps": "Abrir no Apple Maps",
+    "googleMaps": "Abrir no Google Maps",
+    "copyAddress": "Copiar endereço"
+  },
+  "subEventCalendar": {
+    "continuesBefore": "Continua do dia anterior.",
+    "continuesAfter": "Continua no dia seguinte.",
+    "blockLabel": "{title}, {date}, {time}. {continuation}",
+    "title": "Calendário de subeventos",
+    "allTimesIn": "Todos os horários em {timezone}",
+    "timeTbd": "Horário a definir",
+    "tbdLabel": "{title}, horário a definir"
+  },
+  "guests": {
+    "loadFailed": "Não foi possível carregar os convidados.",
+    "viewDetails": "Ver detalhes de {name}",
+    "guest": "convidado",
+    "guestTitle": "Convidado",
+    "openFullList": "Abrir lista completa de convidados"
+  },
+  "guestsSheet": {
+    "title": "Lista de convidados",
+    "searchPlaceholder": "Buscar convidados",
+    "zapAll": "Zap para todos",
+    "noMatches": "Nenhum convidado encontrado",
+    "noneGoing": "Nenhum convidado marcou Vou",
+    "noneMaybe": "Nenhum convidado marcou Talvez",
+    "noneNotGoing": "Nenhum convidado marcou Não vou",
+    "noMatchesHint": "Tente outro nome ou nome de usuário, ou limpe a busca.",
+    "emptyHint": "Quando os convidados responderem, eles aparecerão aqui.",
+    "clearSearch": "Limpar busca",
+    "openProfile": "Abrir perfil de @{username}"
+  },
+  "description": {
+    "title": "Sobre"
+  },
+  "location": {
+    "mapTitle": "Mapa de {name}",
+    "mapAria": "Mapa mostrando {name}",
+    "directionsAria": "Abrir rota para {name} no Google Maps"
+  },
+  "weather": {
+    "title": "Clima atual",
+    "fahrenheit": "Fahrenheit",
+    "celsius": "Celsius",
+    "feelsLike": "Sensação térmica",
+    "humidity": "Umidade",
+    "wind": "Vento",
+    "disclaimer": "<strong>Observação:</strong> Isto mostra as condições climáticas atuais no local do evento, não a previsão para a data do evento."
+  },
+  "subEvents": {
+    "title": "Subeventos",
+    "viewCalendar": "Ver calendário",
+    "manage": "Gerenciar subeventos",
+    "empty": "Nenhum subevento ainda."
+  }
+}

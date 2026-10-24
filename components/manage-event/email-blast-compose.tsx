@@ -6,6 +6,7 @@ import {
   useUpdateEmailBlast,
 } from '@/lib/hooks/use-email-blasts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
 import {
   CreateEmailBlastForm,
   EmailBlast,
@@ -31,6 +32,7 @@ import {
   Send,
   Users,
 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 import DatePickerSheet from '../create-event/date-picker-sheet';
 import TimePickerSheet from '../create-event/time-picker-sheet';
@@ -55,6 +57,10 @@ export default function EmailBlastCompose({
   onStaleScheduledMutationAttempt,
   onCancel,
 }: EmailBlastComposeProps) {
+  const t = useTranslations('manageLegacy');
+  const tCommon = useTranslations('common');
+  const locale = useLocale();
+  const intlLocale = getIntlLocale(locale);
   const [step, setStep] = useState<ComposeStep>('details');
   const [recipients, setRecipients] = useState<EmailBlastRecipientFilter>('all');
   const [subject, setSubject] = useState('');
@@ -70,7 +76,7 @@ export default function EmailBlastCompose({
 
   // Format the scheduled date for display
   const formattedDate = scheduledDate
-    ? new Date(scheduledDate).toLocaleDateString('en-US', {
+    ? new Date(scheduledDate).toLocaleDateString(intlLocale, {
         weekday: 'short',
         month: 'short',
         day: '2-digit',
@@ -123,9 +129,9 @@ export default function EmailBlastCompose({
 
   useEffect(() => {
     if (rsvpsError) {
-      toast.error('Failed to fetch RSVP stats');
+      toast.error(t('emailBlast.compose.toasts.rsvpStatsFailed'));
     }
-  }, [rsvpsError]);
+  }, [rsvpsError, t]);
 
   // Compute counts locally from RSVPs
   const counts = useMemo(() => {
@@ -140,40 +146,44 @@ export default function EmailBlastCompose({
   const recipientOptions = [
     {
       value: 'all' as const,
-      label: 'All RSVPs',
+      label: t('emailBlast.compose.recipients.all.label'),
       description: (count: number) =>
-        `Send to ${!isLoadingRSVPs ? count : ''} guest${
-          count === 1 ? '' : 's'
-        } who ha${!isLoadingRSVPs && count !== 1 ? 've' : 's'} RSVPd`,
+        isLoadingRSVPs
+          ? t('emailBlast.compose.recipients.all.descriptionLoading')
+          : t('emailBlast.compose.recipients.all.description', { count }),
       count: counts.all,
     },
     {
       value: 'rsvp-yes' as const,
-      label: 'RSVP: Yes',
+      label: t('emailBlast.compose.recipients.yes.label'),
       description: (count: number) =>
-        `Send to ${!isLoadingRSVPs ? count : ''} guest${
-          count === 1 ? '' : 's'
-        } who confirmed attendance`,
+        isLoadingRSVPs
+          ? t('emailBlast.compose.recipients.yes.descriptionLoading')
+          : t('emailBlast.compose.recipients.yes.description', { count }),
       count: counts.yes_only,
     },
     {
       value: 'rsvp-no' as const,
-      label: 'RSVP: No',
+      label: t('emailBlast.compose.recipients.no.label'),
       description: (count: number) =>
-        `Send to ${!isLoadingRSVPs ? count : ''} guest${count === 1 ? '' : 's'} who declined`,
+        isLoadingRSVPs
+          ? t('emailBlast.compose.recipients.no.descriptionLoading')
+          : t('emailBlast.compose.recipients.no.description', { count }),
       count: counts.no_only,
     },
     {
       value: 'rsvp-maybe' as const,
-      label: 'RSVP: Maybe',
+      label: t('emailBlast.compose.recipients.maybe.label'),
       description: (count: number) =>
-        `Send to ${!isLoadingRSVPs ? count : ''} guest${count === 1 ? '' : 's'} who might attend`,
+        isLoadingRSVPs
+          ? t('emailBlast.compose.recipients.maybe.descriptionLoading')
+          : t('emailBlast.compose.recipients.maybe.description', { count }),
       count: counts.maybe,
     },
     {
       value: 'invited' as const,
-      label: 'Invited',
-      description: () => 'Send to invited guests',
+      label: t('emailBlast.compose.recipients.invited.label'),
+      description: () => t('emailBlast.compose.recipients.invited.description'),
       count: counts.all,
     },
   ];
@@ -196,7 +206,7 @@ export default function EmailBlastCompose({
         },
       }),
       Placeholder.configure({
-        placeholder: 'Write your email here...',
+        placeholder: t('emailBlast.compose.messagePlaceholder'),
         emptyEditorClass: 'is-editor-empty',
       }),
     ],
@@ -303,7 +313,7 @@ export default function EmailBlastCompose({
       (!isEditMode && scheduled && (!scheduledDate || !scheduledTime)) ||
       (isEditMode && (!scheduledDate || !scheduledTime))
     ) {
-      toast.error('Please choose a date and time to schedule this email blast');
+      toast.error(t('emailBlast.compose.toasts.chooseDateTime'));
       return;
     }
 
@@ -317,18 +327,18 @@ export default function EmailBlastCompose({
         try {
           const scheduledDateTime = new Date(`${scheduledDate}T${scheduledTime}`);
           if (Number.isNaN(scheduledDateTime.getTime())) {
-            toast.error('Invalid date or time format');
+            toast.error(t('emailBlast.compose.toasts.invalidDateTime'));
             return;
           }
 
           if (scheduledDateTime.getTime() <= Date.now()) {
-            toast.error('Scheduled time must be in the future');
+            toast.error(t('emailBlast.compose.toasts.mustBeFuture'));
             return;
           }
 
           scheduledFor = scheduledDateTime.toISOString();
         } catch (e) {
-          toast.error('Invalid date or time format');
+          toast.error(t('emailBlast.compose.toasts.invalidDateTime'));
           return;
         }
       }
@@ -341,7 +351,7 @@ export default function EmailBlastCompose({
         };
 
         await updateEmailBlastMutation.mutateAsync(updateEmailBlastData);
-        toast.success('Email blast updated successfully!');
+        toast.success(t('emailBlast.compose.toasts.updated'));
       } else {
         const emailBlastData: CreateEmailBlastForm = {
           message,
@@ -352,9 +362,9 @@ export default function EmailBlastCompose({
         await createEmailBlastMutation.mutateAsync(emailBlastData);
 
         if (scheduled) {
-          toast.success('Email blast scheduled successfully!');
+          toast.success(t('emailBlast.compose.toasts.scheduled'));
         } else {
-          toast.success('Email blast sent successfully!');
+          toast.success(t('emailBlast.compose.toasts.sent'));
         }
       }
 
@@ -371,8 +381,8 @@ export default function EmailBlastCompose({
         error && typeof error === 'object' && 'message' in error
           ? String((error as { message?: unknown }).message || '')
           : isEditMode
-            ? 'Failed to update email blast'
-            : 'Failed to send email blast';
+            ? t('emailBlast.compose.toasts.updateFailed')
+            : t('emailBlast.compose.toasts.sendFailed');
       toast.error(errorMessage);
 
       if (isEmailBlastScheduledMutationRaceError(error)) {
@@ -388,19 +398,21 @@ export default function EmailBlastCompose({
     : !scheduled || (!!scheduledDate && !!scheduledTime);
   const plainTextMessage = editor?.getText().trim() || '';
   const finalActionLabel = isEditMode
-    ? 'Save Changes'
+    ? t('emailBlast.compose.actions.saveChanges')
     : scheduled
-      ? 'Schedule Email Blast'
-      : 'Send Email Blast';
+      ? t('emailBlast.compose.actions.schedule')
+      : t('emailBlast.compose.actions.send');
   const scheduleSummary =
     scheduled || isEditMode
       ? scheduledDate && scheduledTime
-        ? `Scheduled for ${new Date(`${scheduledDate}T${scheduledTime}`).toLocaleString()}`
-        : 'Scheduled for later (date and time pending)'
-      : 'Will send as soon as possible';
+        ? t('emailBlast.compose.summary.scheduledFor', {
+            date: new Date(`${scheduledDate}T${scheduledTime}`).toLocaleString(intlLocale),
+          })
+        : t('emailBlast.compose.summary.scheduledPending')
+      : t('emailBlast.compose.summary.asap');
 
   const isPreviewStep = step === 'preview';
-  const primaryActionLabel = isPreviewStep ? finalActionLabel : 'Next';
+  const primaryActionLabel = isPreviewStep ? finalActionLabel : tCommon('actions.next');
   const primaryActionDisabled =
     step === 'details'
       ? !isValid
@@ -436,7 +448,8 @@ export default function EmailBlastCompose({
     setStep('timing');
   };
 
-  const secondaryActionLabel = step === 'details' ? 'Cancel' : 'Back';
+  const secondaryActionLabel =
+    step === 'details' ? tCommon('actions.cancel') : tCommon('actions.back');
 
   return (
     <div className='EmailBlastCompose-form'>
@@ -446,7 +459,7 @@ export default function EmailBlastCompose({
             <div className='EmailBlastCompose-field'>
               <label className='EmailBlastCompose-label'>
                 <Users className='mr-2 inline h-4 w-4' />
-                Recipients
+                {t('emailBlast.compose.recipientsLabel')}
               </label>
               <select
                 value={recipients}
@@ -473,20 +486,20 @@ export default function EmailBlastCompose({
             <div className='EmailBlastCompose-field'>
               <label className='EmailBlastCompose-label'>
                 <Mail className='mr-2 inline h-4 w-4' />
-                Subject
+                {t('emailBlast.compose.subjectLabel')}
               </label>
               <input
                 type='text'
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                placeholder='Enter email subject...'
+                placeholder={t('emailBlast.compose.subjectPlaceholder')}
                 className='EmailBlastCompose-input dark:placeholder:text-neutral-500'
               />
             </div>
 
             <div className='EmailBlastCompose-field'>
               <label className='EmailBlastCompose-label' htmlFor='message'>
-                Message
+                {t('emailBlast.compose.messageLabel')}
               </label>
 
               {editor && (
@@ -512,7 +525,7 @@ export default function EmailBlastCompose({
                   <div className='mx-1 h-6 w-px bg-gray-300 dark:bg-neutral-600' />
                   <button
                     onClick={() => {
-                      const url = window.prompt('Enter URL:');
+                      const url = window.prompt(t('emailBlast.compose.enterUrl'));
                       if (url) {
                         editor.chain().focus().setLink({ href: url }).run();
                       }
@@ -537,10 +550,12 @@ export default function EmailBlastCompose({
         {step === 'timing' && (
           <div key='timing' className='EmailBlastCompose-step'>
             <div className='EmailBlastCompose-field'>
-              <label className='EmailBlastCompose-label'>Delivery</label>
+              <label className='EmailBlastCompose-label'>
+                {t('emailBlast.compose.deliveryLabel')}
+              </label>
               {isEditMode ? (
                 <div className='rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400'>
-                  Scheduled blasts can only be rescheduled to another future time.
+                  {t('emailBlast.compose.rescheduleOnly')}
                 </div>
               ) : (
                 <div className='flex flex-col gap-3'>
@@ -557,9 +572,9 @@ export default function EmailBlastCompose({
                         : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-950'
                     }`}
                   >
-                    <div className='font-medium'>Now</div>
+                    <div className='font-medium'>{t('emailBlast.compose.now')}</div>
                     <div className='text-xs text-gray-500 dark:text-neutral-400'>
-                      Send as soon as possible
+                      {t('emailBlast.sendAsap')}
                     </div>
                   </button>
                   <button
@@ -571,9 +586,9 @@ export default function EmailBlastCompose({
                         : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-950'
                     }`}
                   >
-                    <div className='font-medium'>Scheduled for later</div>
+                    <div className='font-medium'>{t('emailBlast.compose.later')}</div>
                     <div className='text-xs text-gray-500 dark:text-neutral-400'>
-                      Pick date and time
+                      {t('emailBlast.compose.pickDateTime')}
                     </div>
                   </button>
                 </div>
@@ -586,21 +601,21 @@ export default function EmailBlastCompose({
                   <div>
                     <label className='mb-1 block text-sm font-medium' htmlFor='schedule-date'>
                       <Clock className='mr-2 inline h-4 w-4' />
-                      Date
+                      {t('emailBlast.compose.date')}
                     </label>
                     <button
                       type='button'
                       onClick={() => setIsDatePickerOpen(true)}
                       className='EmailBlastCompose-input flex w-full items-center justify-between text-left'
                     >
-                      {scheduledDate ? formattedDate : 'Select date'}
+                      {scheduledDate ? formattedDate : t('emailBlast.compose.selectDate')}
                       <CalendarClock className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
                     </button>
                   </div>
                   <div>
                     <label className='mb-1 block text-sm font-medium' htmlFor='schedule-time'>
                       <Clock className='mr-2 inline h-4 w-4' />
-                      Time
+                      {t('emailBlast.compose.time')}
                     </label>
                     <button
                       type='button'
@@ -611,7 +626,7 @@ export default function EmailBlastCompose({
                         ? `${getTimeComponents().hour}:${getTimeComponents()
                             .minute.toString()
                             .padStart(2, '0')} ${getTimeComponents().period}`
-                        : 'Select time'}
+                        : t('emailBlast.compose.selectTime')}
                       <Clock className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
                     </button>
                   </div>
@@ -626,28 +641,33 @@ export default function EmailBlastCompose({
             <div className='rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950/40'>
               <div className='space-y-1 text-sm text-blue-800 dark:text-blue-400'>
                 <p>
-                  <strong>Recipients:</strong> {selectedOption?.label} ({selectedOption?.count}{' '}
-                  recipients)
+                  <strong>{t('emailBlast.compose.preview.recipients')}</strong>{' '}
+                  {t('emailBlast.compose.preview.recipientsValue', {
+                    label: selectedOption?.label ?? '',
+                    count: selectedOption?.count ?? 0,
+                  })}
                 </p>
                 <p className='pt-1 text-blue-700 dark:text-blue-400'>
-                  <strong>Delivery:</strong> {scheduleSummary}
+                  <strong>{t('emailBlast.compose.preview.delivery')}</strong> {scheduleSummary}
                 </p>
               </div>
             </div>
 
             <div className='rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'>
               <div className='mb-3 flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400'>
-                <span>Inbox Preview</span>
+                <span>{t('emailBlast.compose.preview.inboxPreview')}</span>
                 <CheckCircle2 className='h-4 w-4 text-green-600 dark:text-green-400' />
               </div>
               <div className='mb-2 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
-                From: Evento Host
+                {t('emailBlast.compose.preview.from')}
               </div>
               <div className='mb-1 text-sm text-gray-900 dark:text-neutral-100'>
-                Subject: {subject || 'No subject'}
+                {t('emailBlast.compose.preview.subject', {
+                  subject: subject || t('emailBlast.noSubject'),
+                })}
               </div>
               <div className='text-sm text-gray-600 dark:text-neutral-400'>
-                {plainTextMessage || 'No message content yet'}
+                {plainTextMessage || t('emailBlast.compose.preview.noContent')}
               </div>
             </div>
           </div>
@@ -665,7 +685,11 @@ export default function EmailBlastCompose({
             {isPreviewStep && isLoading ? (
               <>
                 <Loader2 className='mr-2 h-5 w-5 animate-spin' />
-                {isEditMode ? 'Updating...' : scheduled ? 'Scheduling...' : 'Sending...'}
+                {isEditMode
+                  ? t('emailBlast.compose.actions.updating')
+                  : scheduled
+                    ? t('emailBlast.compose.actions.scheduling')
+                    : t('emailBlast.compose.actions.sending')}
               </>
             ) : (
               <>
@@ -695,7 +719,7 @@ export default function EmailBlastCompose({
         onClose={() => setIsDatePickerOpen(false)}
         onDateSelect={handleDateSelect}
         selectedDate={scheduledDate ? new Date(scheduledDate) : undefined}
-        title='Schedule Date'
+        title={t('emailBlast.compose.scheduleDate')}
       />
 
       {/* Time Picker Modal */}
@@ -704,7 +728,7 @@ export default function EmailBlastCompose({
         onClose={() => setIsTimePickerOpen(false)}
         onTimeSelect={handleTimeSelect}
         selectedTime={getTimeComponents()}
-        title='Schedule Time'
+        title={t('emailBlast.compose.scheduleTime')}
         onTimezoneSelect={function (timezone: string): void {
           setTimezone(timezone);
         }}

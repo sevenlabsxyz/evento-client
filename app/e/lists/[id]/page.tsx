@@ -16,7 +16,6 @@ import {
   ListEventFilter,
   ListEventSort,
   filterListEvents,
-  formatEventCount,
   formatRelativeTime,
   getListLastActivity,
   isDefaultList,
@@ -54,20 +53,21 @@ import {
   LucideIcon,
   SearchX,
 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-const FILTERS: { id: ListEventFilter; title: string; icon: LucideIcon }[] = [
-  { id: 'upcoming', title: 'Upcoming', icon: CalendarClock },
-  { id: 'past', title: 'Past', icon: History },
-  { id: 'all', title: 'All', icon: LayoutGrid },
+const FILTERS: { id: ListEventFilter; icon: LucideIcon }[] = [
+  { id: 'upcoming', icon: CalendarClock },
+  { id: 'past', icon: History },
+  { id: 'all', icon: LayoutGrid },
 ];
 
-const SORT_LABELS: Record<ListEventSort, string> = {
-  added: 'Date added',
-  'event-date': 'Event date',
-};
+const SORT_KEYS = {
+  added: 'added',
+  'event-date': 'eventDate',
+} as const satisfies Record<ListEventSort, string>;
 
 const SORT_OPTIONS: ListEventSort[] = ['added', 'event-date'];
 
@@ -79,6 +79,7 @@ function isNotFoundError(error: unknown): boolean {
 }
 
 export default function SavedListDetailPage() {
+  const t = useTranslations('lists');
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const listId = params.id;
@@ -120,7 +121,7 @@ export default function SavedListDetailPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: listName || 'List',
+      title: listName || t('detail.topBarFallback'),
       subtitle: '',
       leftMode: 'back',
       onBackPress: () => router.push('/e/lists'),
@@ -136,7 +137,7 @@ export default function SavedListDetailPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, listName, router, applyRouteConfig, setTopBarForRoute, clearRoute]);
+  }, [pathname, listName, router, applyRouteConfig, setTopBarForRoute, clearRoute, t]);
 
   const entries = useMemo(() => listEvents ?? [], [listEvents]);
   const upcomingCount = useMemo(
@@ -157,12 +158,12 @@ export default function SavedListDetailPage() {
     pendingRemovals.current.set(entry.event_id, removal);
 
     const toastId = toast.success(
-      `“${entry.event.title}” was removed from ${listName}.`,
-      'Removed from list',
+      t('detail.removedMessage', { title: entry.event.title, list: listName }),
+      t('detail.removedTitle'),
       UNDO_TOAST_DURATION_MS,
       {
         action: {
-          label: 'Undo',
+          label: t('detail.undo'),
           onClick: () => void handleUndo(entry),
         },
       }
@@ -171,7 +172,7 @@ export default function SavedListDetailPage() {
     removal
       .catch((error: unknown) => {
         toast.dismiss(toastId);
-        toast.error(getErrorMessage(error), 'Couldn’t remove event');
+        toast.error(getErrorMessage(error), t('detail.removeFailed'));
       })
       .finally(() => {
         if (pendingRemovals.current.get(entry.event_id) === removal) {
@@ -192,7 +193,7 @@ export default function SavedListDetailPage() {
     try {
       await addEvent.mutateAsync({ listId, eventId: entry.event_id, restore: entry });
     } catch (error) {
-      toast.error(getErrorMessage(error), 'Couldn’t restore event');
+      toast.error(getErrorMessage(error), t('detail.restoreFailed'));
     }
   };
 
@@ -203,7 +204,7 @@ export default function SavedListDetailPage() {
     if (eventsError) {
       return (
         <ListLoadError
-          title='Couldn’t load saved events'
+          title={t('detail.loadEventsError')}
           message={getErrorMessage(eventsError)}
           onRetry={() => void refetchEvents()}
         />
@@ -214,13 +215,13 @@ export default function SavedListDetailPage() {
       return (
         <ListEmptyPanel
           icon={Bookmark}
-          title='No events in this list yet'
-          description='Open any event and tap the bookmark at the top to save it here.'
+          title={t('detail.emptyTitle')}
+          description={t('detail.emptyDescription')}
         >
           <Button asChild>
             <Link href='/e/hub#discover'>
               <Compass aria-hidden='true' />
-              Explore Discover
+              {t('exploreDiscover')}
             </Link>
           </Button>
           <Button
@@ -228,7 +229,7 @@ export default function SavedListDetailPage() {
             variant='outline'
             className='dark:bg-neutral-900 dark:hover:bg-neutral-800'
           >
-            <Link href='/e/search'>Search events</Link>
+            <Link href='/e/search'>{t('searchEvents')}</Link>
           </Button>
         </ListEmptyPanel>
       );
@@ -239,11 +240,9 @@ export default function SavedListDetailPage() {
       return (
         <ListEmptyPanel
           icon={isUpcoming ? CalendarClock : History}
-          title={isUpcoming ? 'No upcoming events' : 'No past events'}
+          title={isUpcoming ? t('detail.noUpcomingTitle') : t('detail.noPastTitle')}
           description={
-            isUpcoming
-              ? 'Everything saved in this list has already happened.'
-              : 'Events move here once they’ve ended.'
+            isUpcoming ? t('detail.noUpcomingDescription') : t('detail.noPastDescription')
           }
         >
           <Button
@@ -252,14 +251,17 @@ export default function SavedListDetailPage() {
             onClick={() => setFilter(isUpcoming ? 'past' : 'upcoming')}
             className='dark:bg-neutral-900 dark:hover:bg-neutral-800'
           >
-            {isUpcoming ? 'Show past events' : 'Show upcoming events'}
+            {isUpcoming ? t('detail.showPast') : t('detail.showUpcoming')}
           </Button>
         </ListEmptyPanel>
       );
     }
 
     return (
-      <ul className={LIST_EVENT_GRID_CLASS} aria-label={`Events in ${list.name}`}>
+      <ul
+        className={LIST_EVENT_GRID_CLASS}
+        aria-label={t('detail.eventsInList', { name: list.name })}
+      >
         {visibleEntries.map((entry) => (
           <li key={entry.list_event_id}>
             <ListEventCard entry={entry} listName={list.name} onRemove={handleRemove} />
@@ -282,18 +284,18 @@ export default function SavedListDetailPage() {
           <div className={LIST_PAGE_CONTAINER_CLASS}>
             {listsError ? (
               <ListLoadError
-                title='Couldn’t load this list'
+                title={t('detail.loadError')}
                 message={getErrorMessage(listsError)}
                 onRetry={() => void refetchLists()}
               />
             ) : (
               <ListEmptyPanel
                 icon={SearchX}
-                title='List not found'
-                description='This list may have been deleted, or the link isn’t quite right.'
+                title={t('detail.notFoundTitle')}
+                description={t('detail.notFoundDescription')}
               >
                 <Button asChild>
-                  <Link href='/e/lists'>Back to your lists</Link>
+                  <Link href='/e/lists'>{t('detail.backToLists')}</Link>
                 </Button>
               </ListEmptyPanel>
             )}
@@ -308,21 +310,21 @@ export default function SavedListDetailPage() {
       <div className={LIST_PAGE_BACKGROUND_CLASS}>
         <div className={LIST_PAGE_CONTAINER_CLASS}>
           <ListPageHeader
-            backLink={{ href: '/e/lists', label: 'All lists' }}
-            eyebrow={isDefault ? 'Default list' : 'List'}
+            backLink={{ href: '/e/lists', label: t('detail.allLists') }}
+            eyebrow={isDefault ? t('detail.eyebrowDefault') : t('detail.eyebrow')}
             title={currentList.name}
             description={currentList.description ?? undefined}
             meta={
               <span className='flex flex-wrap items-center gap-x-1.5'>
                 <span className='font-medium text-gray-700 dark:text-neutral-300'>
-                  {formatEventCount(entries.length)}
+                  {t('eventCount', { count: entries.length })}
                 </span>
                 {entries.length > 0 && (
                   <>
                     <span aria-hidden='true' className='text-gray-300 dark:text-neutral-600'>
                       ·
                     </span>
-                    <span>{upcomingCount} upcoming</span>
+                    <span>{t('detail.upcomingCount', { count: upcomingCount })}</span>
                   </>
                 )}
                 {updatedLabel && (
@@ -330,7 +332,7 @@ export default function SavedListDetailPage() {
                     <span aria-hidden='true' className='text-gray-300 dark:text-neutral-600'>
                       ·
                     </span>
-                    <span>Updated {updatedLabel}</span>
+                    <span>{t('updated', { time: updatedLabel })}</span>
                   </>
                 )}
               </span>
@@ -344,7 +346,7 @@ export default function SavedListDetailPage() {
                 >
                   <Link href='/e/hub#discover'>
                     <Compass aria-hidden='true' />
-                    Find events
+                    {t('detail.findEvents')}
                   </Link>
                 </Button>
                 <ListActionsMenu
@@ -363,7 +365,7 @@ export default function SavedListDetailPage() {
                 <AnimatedTabs
                   expanded={!isMobile}
                   tabs={FILTERS.map((option) => ({
-                    title: option.title,
+                    title: t(`detail.filters.${option.id}`),
                     icon: option.icon,
                     onClick: () => setFilter(option.id),
                   }))}
@@ -376,15 +378,15 @@ export default function SavedListDetailPage() {
                     type='button'
                     variant='outline'
                     className='shrink-0 dark:bg-neutral-900 dark:hover:bg-neutral-800'
-                    aria-label={`Sort by ${SORT_LABELS[sort].toLowerCase()}`}
+                    aria-label={t(`detail.sortAria.${SORT_KEYS[sort]}`)}
                   >
                     <ArrowUpDown aria-hidden='true' />
-                    <span className='hidden sm:inline'>{SORT_LABELS[sort]}</span>
+                    <span className='hidden sm:inline'>{t(`detail.sort.${SORT_KEYS[sort]}`)}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end' className='w-44 rounded-xl p-1'>
                   <DropdownMenuLabel className='px-2.5 text-xs font-medium text-gray-500 dark:text-neutral-500'>
-                    Sort by
+                    {t('detail.sortBy')}
                   </DropdownMenuLabel>
                   <DropdownMenuRadioGroup
                     value={sort}
@@ -398,7 +400,7 @@ export default function SavedListDetailPage() {
                         value={option}
                         className='rounded-lg py-2'
                       >
-                        {SORT_LABELS[option]}
+                        {t(`detail.sort.${SORT_KEYS[option]}`)}
                       </DropdownMenuRadioItem>
                     ))}
                   </DropdownMenuRadioGroup>

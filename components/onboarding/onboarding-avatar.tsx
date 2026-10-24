@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
 import { motion } from 'framer-motion';
 import { Camera, Loader2, UploadCloud } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { RefObject } from 'react';
 import { OnboardingHeader } from './onboarding-header';
 
@@ -18,6 +19,7 @@ export const OnboardingAvatar = ({
   inputFileRef,
   onFileChange,
 }: OnboardingAvatarProps) => {
+  const t = useTranslations('onboarding.avatar');
   return (
     <motion.div
       key='profile'
@@ -26,10 +28,7 @@ export const OnboardingAvatar = ({
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <OnboardingHeader
-        title='Upload a profile picture'
-        description='Help others recognize you at Events.'
-      />
+      <OnboardingHeader title={t('title')} description={t('description')} />
 
       <div className='mt-8 flex flex-col items-center justify-center'>
         <input
@@ -42,7 +41,7 @@ export const OnboardingAvatar = ({
         />
         <button
           type='button'
-          aria-label='Upload profile picture'
+          aria-label={t('uploadAria')}
           onClick={() => inputFileRef.current?.click()}
           className='group relative cursor-pointer rounded-full border-0 bg-transparent p-0 text-inherit'
         >
@@ -57,7 +56,7 @@ export const OnboardingAvatar = ({
           )}
           <Avatar className='h-40 w-40 border-4 border-gray-100 shadow-lg dark:border-neutral-800 md:h-48 md:w-48'>
             <AvatarImage src={uploadedImg.trim() || DEFAULT_AVATAR_IMAGE} />
-            <AvatarFallback className='text-xs'>Loading...</AvatarFallback>
+            <AvatarFallback className='text-xs'>{t('loading')}</AvatarFallback>
           </Avatar>
           {!isLoading && (
             <div className='absolute -bottom-1 -right-1 z-30 rounded-full border-2 border-white bg-red-600 p-2 shadow-md'>
@@ -66,7 +65,7 @@ export const OnboardingAvatar = ({
           )}
         </button>
         <p className='mt-4 text-center text-sm text-gray-500 dark:text-neutral-400'>
-          Tap to upload
+          {t('tapToUpload')}
         </p>
       </div>
     </motion.div>

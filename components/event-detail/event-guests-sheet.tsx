@@ -14,6 +14,7 @@ import { EventRSVP, UserDetails } from '@/lib/types/api';
 import { buildBatchZapRecipients } from '@/lib/utils/batch-zap';
 import { redirectToWalletUnlock, showWalletUnlockToast } from '@/lib/utils/wallet-unlock-toast';
 import { ArrowRight, Check, CircleHelp, Search, X, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
@@ -35,6 +36,7 @@ export default function GuestsSheet({
   hostUserIds,
   currentUserId,
 }: GuestsSheetProps) {
+  const t = useTranslations('event');
   const router = useRouter();
   const { user: loggedInUser } = useAuth();
   const { walletState, isLoading: isWalletLoading } = useWallet();
@@ -107,7 +109,7 @@ export default function GuestsSheet({
   return (
     <>
       <MasterScrollableSheet
-        title='Guest List'
+        title={t('guestsSheet.title')}
         open={open}
         onOpenChange={onOpenChange}
         headerSecondary={
@@ -116,9 +118,13 @@ export default function GuestsSheet({
               expanded
               className='w-full [&>button]:flex-1 [&>button]:justify-center'
               tabs={[
-                { title: 'Yes', icon: Check, onClick: () => setActiveTab('yes') },
-                { title: 'Maybe', icon: CircleHelp, onClick: () => setActiveTab('maybe') },
-                { title: 'No', icon: X, onClick: () => setActiveTab('no') },
+                { title: t('rsvpSheet.yes'), icon: Check, onClick: () => setActiveTab('yes') },
+                {
+                  title: t('rsvpSheet.maybe'),
+                  icon: CircleHelp,
+                  onClick: () => setActiveTab('maybe'),
+                },
+                { title: t('rsvpSheet.no'), icon: X, onClick: () => setActiveTab('no') },
               ]}
               selected={['yes', 'maybe', 'no'].indexOf(activeTab)}
             />
@@ -128,7 +134,7 @@ export default function GuestsSheet({
                 <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400 dark:text-neutral-500' />
                 <input
                   className='w-full rounded-full border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-400'
-                  placeholder='Search guests'
+                  placeholder={t('guestsSheet.searchPlaceholder')}
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                 />
@@ -141,7 +147,7 @@ export default function GuestsSheet({
                 onClick={handleOpenBatchZap}
               >
                 <Zap className='h-4 w-4' />
-                Zap All
+                {t('guestsSheet.zapAll')}
               </Button>
             </div>
           </div>
@@ -155,21 +161,19 @@ export default function GuestsSheet({
             </div>
             <h3 className='mb-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
               {searchText.trim()
-                ? 'No matching guests'
+                ? t('guestsSheet.noMatches')
                 : activeTab === 'yes'
-                  ? 'No guests marked as Going'
+                  ? t('guestsSheet.noneGoing')
                   : activeTab === 'maybe'
-                    ? 'No guests marked as Maybe'
-                    : 'No guests marked as Not Going'}
+                    ? t('guestsSheet.noneMaybe')
+                    : t('guestsSheet.noneNotGoing')}
             </h3>
             <p className='mb-4 max-w-xs text-sm text-gray-500 dark:text-neutral-400'>
-              {searchText.trim()
-                ? 'Try a different name or username, or clear your search.'
-                : 'Once guests respond, they will appear here.'}
+              {searchText.trim() ? t('guestsSheet.noMatchesHint') : t('guestsSheet.emptyHint')}
             </p>
             {searchText.trim() && (
               <Button variant='outline' size='sm' onClick={() => setSearchText('')}>
-                Clear search
+                {t('guestsSheet.clearSearch')}
               </Button>
             )}
           </div>
@@ -184,9 +188,10 @@ export default function GuestsSheet({
                   type='button'
                   onClick={() => handleViewProfile(rsvp.user_details, rsvp.user_id)}
                   className='flex min-w-0 flex-1 items-center gap-3 text-left'
-                  aria-label={`Open profile for @${
-                    rsvp.user_details?.username || rsvp.user_details?.name || 'guest'
-                  }`}
+                  aria-label={t('guestsSheet.openProfile', {
+                    username:
+                      rsvp.user_details?.username || rsvp.user_details?.name || t('guests.guest'),
+                  })}
                 >
                   <UserAvatar
                     user={{
@@ -199,10 +204,10 @@ export default function GuestsSheet({
                   />
                   <div className='min-w-0 flex-1'>
                     <div className='truncate font-medium text-gray-900 dark:text-neutral-100'>
-                      @{rsvp.user_details?.username || 'guest'}
+                      @{rsvp.user_details?.username || t('guests.guest')}
                     </div>
                     <div className='truncate text-sm text-gray-500 dark:text-neutral-400'>
-                      {rsvp.user_details?.name || 'Guest'}
+                      {rsvp.user_details?.name || t('guests.guestTitle')}
                     </div>
                   </div>
                 </button>
@@ -211,7 +216,9 @@ export default function GuestsSheet({
                     <ZapSheet
                       recipientLightningAddress={rsvp.user_details?.ln_address || ''}
                       recipientName={
-                        rsvp.user_details?.name || rsvp.user_details?.username || 'Guest'
+                        rsvp.user_details?.name ||
+                        rsvp.user_details?.username ||
+                        t('guests.guestTitle')
                       }
                       recipientUsername={rsvp.user_details?.username || undefined}
                       recipientAvatar={rsvp.user_details?.image || undefined}

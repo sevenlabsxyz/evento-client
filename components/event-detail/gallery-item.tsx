@@ -12,6 +12,7 @@ import { useGalleryItemLikes } from '@/lib/hooks/use-gallery-item-likes';
 import { getOptimizedImageUrlPreservingGif, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import { Heart, MoreHorizontal, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -30,6 +31,7 @@ export default function GalleryItem({
   eventId,
   isEventHost = false,
 }: GalleryItemProps) {
+  const t = useTranslations('eventSocial');
   const [isLoaded, setIsLoaded] = useState(false);
   const [showControls, setShowControls] = useState(false);
   const {
@@ -43,19 +45,18 @@ export default function GalleryItem({
 
   const isOwner = item.user_details?.id === currentUserId;
   const canDelete = isOwner || isEventHost;
+  const uploaderName = item.user_details?.username || t('galleryItem.unknownUser');
 
   const handleDelete = () => {
-    if (
-      window.confirm('Are you sure you want to delete this photo? This action cannot be undone.')
-    ) {
+    if (window.confirm(t('galleryItem.deleteConfirm'))) {
       deleteGalleryItem.mutate(
         { galleryItemId: item.id, eventId },
         {
           onSuccess: () => {
-            toast.success('Photo deleted successfully');
+            toast.success(t('galleryItem.deleteSuccess'));
           },
           onError: (error: Error) => {
-            toast.error(error.message || 'Failed to delete photo');
+            toast.error(error.message || t('galleryItem.deleteFailed'));
           },
         }
       );
@@ -85,15 +86,13 @@ export default function GalleryItem({
       onMouseLeave={() => setShowControls(false)}
       role={onImageClick ? 'button' : undefined}
       tabIndex={onImageClick ? 0 : undefined}
-      aria-label={
-        onImageClick ? `Open gallery image by ${item.user_details?.username || 'user'}` : undefined
-      }
+      aria-label={onImageClick ? t('galleryItem.openAria', { username: uploaderName }) : undefined}
     >
       {/* Image */}
       {isGif(item.url) ? (
         <img
           src={displayUrl}
-          alt={`Gallery image by ${item.user_details?.username || 'user'}`}
+          alt={t('galleryItem.imageAlt', { username: uploaderName })}
           className={`h-full w-full object-cover transition-[opacity,transform] duration-300 motion-safe:group-hover:scale-[1.03] ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
@@ -102,7 +101,7 @@ export default function GalleryItem({
       ) : (
         <Image
           src={displayUrl}
-          alt={`Gallery image by ${item.user_details?.username || 'user'}`}
+          alt={t('galleryItem.imageAlt', { username: uploaderName })}
           fill
           sizes='(max-width: 1024px) 50vw, 25vw'
           className={`object-cover transition-[opacity,transform] duration-300 motion-safe:group-hover:scale-[1.03] ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
@@ -130,7 +129,7 @@ export default function GalleryItem({
           type='button'
           onClick={handleLikeToggle}
           disabled={likesLoading}
-          aria-label={`${hasLiked ? 'Unlike' : 'Like'} photo`}
+          aria-label={hasLiked ? t('galleryItem.unlikeAria') : t('galleryItem.likeAria')}
           className={`absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1.5 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 ${
             showControls || hasLiked ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
           }`}
@@ -152,7 +151,7 @@ export default function GalleryItem({
               <DropdownMenuTrigger asChild>
                 <button
                   type='button'
-                  aria-label='Photo actions'
+                  aria-label={t('galleryItem.actionsAria')}
                   className='rounded-full bg-black/50 p-1.5 text-white backdrop-blur-sm hover:bg-black/70'
                   onClick={(event) => event.stopPropagation()}
                 >
@@ -168,7 +167,7 @@ export default function GalleryItem({
                   className='cursor-pointer text-red-600 focus:text-red-700 dark:text-red-400 dark:focus:text-red-400'
                 >
                   <Trash2 className='mr-2 h-4 w-4' />
-                  Delete Photo
+                  {t('galleryItem.deletePhoto')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

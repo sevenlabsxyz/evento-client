@@ -4,6 +4,7 @@ import { CircledIconButton } from '@/components/circled-icon-button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { UserDetails } from '@/lib/types/api';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import InviteCohostsStep1 from './invite-cohosts-step1';
 import InviteCohostsStep2 from './invite-cohosts-step2';
@@ -15,6 +16,7 @@ interface ManageCohostsSheetProps {
 }
 
 export default function ManageCohostsSheet({ eventId, isOpen, onClose }: ManageCohostsSheetProps) {
+  const t = useTranslations('manageLegacy');
   const [step, setStep] = useState<1 | 2>(1);
   const [searchText, setSearchText] = useState('');
   const [message, setMessage] = useState('');
@@ -71,7 +73,7 @@ export default function ManageCohostsSheet({ eventId, isOpen, onClose }: ManageC
     }
   }, [isOpen]);
 
-  const title = step === 1 ? 'Invite Cohosts' : 'Add Note';
+  const title = step === 1 ? t('cohosts.sheet.inviteTitle') : t('cohosts.sheet.addNoteTitle');
   const headerLeft =
     step === 2 ? (
       <CircledIconButton

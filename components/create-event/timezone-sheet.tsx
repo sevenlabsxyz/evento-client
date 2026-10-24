@@ -5,6 +5,7 @@ import {
   getTimezoneAbbreviationSync,
 } from '@/lib/utils/timezone';
 import { VisuallyHidden } from '@silk-hq/components';
+import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import './timezone-sheet.css';
 
@@ -1410,6 +1411,7 @@ export default function TimezoneSheet({
   onTimezoneSelect,
   selectedTimezone,
 }: TimezoneSheetProps) {
+  const t = useTranslations('createEvent');
   const [activeDetent, setActiveDetent] = useState(0);
   const [searchText, setSearchText] = useState('');
 
@@ -1480,13 +1482,13 @@ export default function TimezoneSheet({
               <SheetWithDetent.Handle className='TimezoneSheet-handle' />
               <VisuallyHidden.Root asChild>
                 <SheetWithDetent.Title className='TimezoneSheet-title'>
-                  Select Timezone
+                  {t('timezone.title')}
                 </SheetWithDetent.Title>
               </VisuallyHidden.Root>
               <input
                 className='TimezoneSheet-input'
                 type='text'
-                placeholder='Search for a timezone'
+                placeholder={t('timezone.searchPlaceholder')}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onFocus={() => setActiveDetent(2)}
@@ -1498,7 +1500,7 @@ export default function TimezoneSheet({
                   {/* Common Timezones Section */}
                   {commonTimezonesList.length > 0 && (
                     <>
-                      <div className='TimezoneSheet-sectionHeader'>Common</div>
+                      <div className='TimezoneSheet-sectionHeader'>{t('timezone.common')}</div>
                       {commonTimezonesList.map((timezone) => (
                         <button
                           key={`common-${timezone.city}-${timezone.country}`}
@@ -1522,7 +1524,7 @@ export default function TimezoneSheet({
                   {regularTimezonesList.length > 0 && (
                     <>
                       {commonTimezonesList.length > 0 && (
-                        <div className='TimezoneSheet-sectionHeader'>All Timezones</div>
+                        <div className='TimezoneSheet-sectionHeader'>{t('timezone.all')}</div>
                       )}
                       {regularTimezonesList.map((timezone) => (
                         <button
@@ -1545,7 +1547,7 @@ export default function TimezoneSheet({
 
                   {/* No Results */}
                   {commonTimezonesList.length === 0 && regularTimezonesList.length === 0 && (
-                    <div className='TimezoneSheet-noResults'>No timezones found</div>
+                    <div className='TimezoneSheet-noResults'>{t('timezone.noResults')}</div>
                   )}
                 </SheetWithDetent.ScrollContent>
               </SheetWithDetent.ScrollView>

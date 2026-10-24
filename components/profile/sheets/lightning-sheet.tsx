@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { toast } from '@/lib/utils/toast';
 import { Copy, ExternalLink, Zap } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 interface LightningSheetProps {
@@ -13,16 +14,18 @@ interface LightningSheetProps {
 }
 
 export default function LightningSheet({ isOpen, onClose, address }: LightningSheetProps) {
+  const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const [copied, setCopied] = useState(false);
 
   const handleCopyAddress = async () => {
     try {
       await navigator.clipboard.writeText(address);
       setCopied(true);
-      toast.success('Lightning address copied!');
+      toast.success(t('sheets.lightning.copiedToast'));
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      toast.error('Failed to copy address');
+      toast.error(t('sheets.lightning.copyFailed'));
     }
   };
 
@@ -48,7 +51,9 @@ export default function LightningSheet({ isOpen, onClose, address }: LightningSh
               </div>
 
               {/* Title */}
-              <h2 className='mb-6 text-center text-lg font-semibold'>Lightning Address</h2>
+              <h2 className='mb-6 text-center text-lg font-semibold'>
+                {t('sheets.lightning.title')}
+              </h2>
 
               {/* Lightning Info */}
               <div className='mb-6 flex items-center gap-3'>
@@ -58,7 +63,7 @@ export default function LightningSheet({ isOpen, onClose, address }: LightningSh
                 <div>
                   <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>{address}</h3>
                   <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                    Bitcoin Lightning Address
+                    {t('sheets.lightning.subtitle')}
                   </p>
                 </div>
               </div>
@@ -66,8 +71,7 @@ export default function LightningSheet({ isOpen, onClose, address }: LightningSh
               {/* Description */}
               <div className='mb-6'>
                 <p className='mb-4 text-gray-600 dark:text-neutral-400'>
-                  This is a Bitcoin Lightning Network address. You can use it to send instant,
-                  low-fee Bitcoin payments globally.
+                  {t('sheets.lightning.description')}
                 </p>
                 <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
                   <p className='break-all font-mono text-sm text-gray-700 dark:text-neutral-300'>
@@ -83,16 +87,16 @@ export default function LightningSheet({ isOpen, onClose, address }: LightningSh
                   className='w-full bg-red-600 text-white hover:bg-red-700'
                 >
                   <ExternalLink className='mr-2 h-4 w-4' />
-                  Open in Wallet
+                  {t('sheets.lightning.openInWallet')}
                 </Button>
                 <Button onClick={handleCopyAddress} className='w-full' variant='outline'>
                   <Copy className='mr-2 h-4 w-4' />
-                  {copied ? 'Copied!' : 'Copy Address'}
+                  {copied ? t('copiedBang') : t('sheets.lightning.copyAddress')}
                 </Button>
               </div>
 
               <Button variant='outline' onClick={onClose} className='mt-3 w-full'>
-                Close
+                {tCommon('actions.close')}
               </Button>
             </div>
           </DetachedSheet.Content>

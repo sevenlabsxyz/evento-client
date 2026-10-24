@@ -1,6 +1,8 @@
 'use client';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { getIntlLocale } from '@/lib/i18n/active-locale';
+import type { Translator } from '@/lib/i18n/types';
 import type { EventDashboard } from '@/lib/types/manage';
 import { cn } from '@/lib/utils';
 import {
@@ -15,6 +17,7 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 interface StatCardsProps {
@@ -34,32 +37,33 @@ interface StatItem {
   progress?: number;
 }
 
-const numberFormatter = new Intl.NumberFormat();
-
-function formatNumber(value: number) {
-  return numberFormatter.format(value);
-}
-
 function toPercent(value: number, total: number) {
   if (total <= 0) return 0;
   return Math.min(100, Math.round((value / total) * 100));
 }
 
-function buildStats(dashboard: EventDashboard): StatItem[] {
+type ManageT = Translator<'manage'>;
+
+function buildStats(dashboard: EventDashboard, t: ManageT, intlLocale: string): StatItem[] {
+  const numberFormatter = new Intl.NumberFormat(intlLocale);
+  const formatNumber = (value: number) => numberFormatter.format(value);
   const base = `/e/${dashboard.event.id}/manage`;
   const { rsvps, capacity, registration, tickets, invites, campaign, engagement } = dashboard;
   const stats: StatItem[] = [];
 
   stats.push({
     id: 'going',
-    label: 'Going',
+    label: t('statCards.going'),
     value: capacity.max
       ? `${formatNumber(rsvps.yes)} / ${formatNumber(capacity.max)}`
       : formatNumber(rsvps.yes),
     sublabel: capacity.max
       ? capacity.isFull
-        ? 'At capacity'
-        : `${formatNumber(capacity.remaining ?? 0)} spots left`
+        ? t('statCards.atCapacity')
+        : t('statCards.spotsLeft', {
+            count: capacity.remaining ?? 0,
+            formatted: formatNumber(capacity.remaining ?? 0),
+          })
       : undefined,
     href: `${base}/guests`,
     icon: CircleCheck,
@@ -69,7 +73,7 @@ function buildStats(dashboard: EventDashboard): StatItem[] {
 
   stats.push({
     id: 'maybe',
-    label: 'Maybe',
+    label: t('statCards.maybe'),
     value: formatNumber(rsvps.maybe),
     href: `${base}/guests`,
     icon: CircleHelp,
@@ -78,7 +82,7 @@ function buildStats(dashboard: EventDashboard): StatItem[] {
 
   stats.push({
     id: 'not-going',
-    label: 'Not going',
+    label: t('statCards.notGoing'),
     value: formatNumber(rsvps.no),
     href: `${base}/guests`,
     icon: CircleX,
@@ -88,12 +92,13 @@ function buildStats(dashboard: EventDashboard): StatItem[] {
   if (registration && (registration.required || dashboard.event.type === 'registration')) {
     stats.push({
       id: 'pending-approvals',
-      label: 'Pending',
-      fullLabel: 'Pending approvals',
+      label: t('statCards.pending'),
+      fullLabel: t('statCards.pendingFull'),
       value: formatNumber(registration.pending),
-      sublabel: `${formatNumber(registration.approved)} approved · ${formatNumber(
-        registration.denied
-      )} denied`,
+      sublabel: t('statCards.registrationSummary', {
+        approved: formatNumber(registration.approved),
+        denied: formatNumber(registration.denied),
+      }),
       href: `${base}/registration/submissions`,
       icon: ClipboardList,
       iconClassName: 'bg-blue-100 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400',
@@ -103,9 +108,9 @@ function buildStats(dashboard: EventDashboard): StatItem[] {
   if (tickets) {
     stats.push({
       id: 'tickets-sold',
-      label: 'Tickets sold',
+      label: t('statCards.ticketsSold'),
       value: `${formatNumber(tickets.sold)} / ${formatNumber(tickets.capacity)}`,
-      sublabel: `${formatNumber(tickets.revenueSats)} sats revenue`,
+      sublabel: t('statCards.revenue', { sats: formatNumber(tickets.revenueSats) }),
       href: `${base}/sales`,
       icon: Ticket,
       iconClassName: 'bg-purple-100 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400',
@@ -114,7 +119,7 @@ function buildStats(dashboard: EventDashboard): StatItem[] {
 
     stats.push({
       id: 'checked-in',
-      label: 'Checked in',
+      label: t('statCards.checkedIn'),
       value: `${formatNumber(tickets.checkedIn)} / ${formatNumber(tickets.issued)}`,
       href: `${base}/check-in`,
       icon: ScanLine,
@@ -125,10 +130,10 @@ function buildStats(dashboard: EventDashboard): StatItem[] {
 
   stats.push({
     id: 'invites',
-    label: 'Invites',
-    fullLabel: 'Invites going',
+    label: t('statCards.invites'),
+    fullLabel: t('statCards.invitesFull'),
     value: `${formatNumber(invites.going)} / ${formatNumber(invites.total)}`,
-    sublabel: `${formatNumber(invites.pending)} awaiting response`,
+    sublabel: t('statCards.awaitingResponse', { count: formatNumber(invites.pending) }),
     href: `${base}/guests?tab=invited`,
     icon: Mail,
     iconClassName: 'bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400',
@@ -137,13 +142,14 @@ function buildStats(dashboard: EventDashboard): StatItem[] {
   if (campaign) {
     stats.push({
       id: 'campaign',
-      label: 'Raised',
+      label: t('statCards.raised'),
       value: campaign.goalSats
         ? `${formatNumber(campaign.raisedSats)} / ${formatNumber(campaign.goalSats)}`
         : formatNumber(campaign.raisedSats),
-      sublabel: `sats · ${formatNumber(campaign.pledgeCount)} ${
-        campaign.pledgeCount === 1 ? 'pledge' : 'pledges'
-      }`,
+      sublabel: t('statCards.pledges', {
+        count: campaign.pledgeCount,
+        formatted: formatNumber(campaign.pledgeCount),
+      }),
       href: `${base}/crowdfunding`,
       icon: Zap,
       iconClassName: 'bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400',
@@ -153,11 +159,12 @@ function buildStats(dashboard: EventDashboard): StatItem[] {
 
   stats.push({
     id: 'engagement',
-    label: 'Engagement',
+    label: t('statCards.engagement'),
     value: formatNumber(engagement.comments + engagement.photos),
-    sublabel: `${formatNumber(engagement.comments)} comments · ${formatNumber(
-      engagement.photos
-    )} photos`,
+    sublabel: t('statCards.engagementSummary', {
+      comments: formatNumber(engagement.comments),
+      photos: formatNumber(engagement.photos),
+    }),
     href: `${base}/moderation`,
     icon: MessageSquare,
     iconClassName: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400',
@@ -167,7 +174,9 @@ function buildStats(dashboard: EventDashboard): StatItem[] {
 }
 
 export function StatCards({ dashboard }: StatCardsProps) {
-  const stats = buildStats(dashboard);
+  const t = useTranslations('manage');
+  const locale = useLocale();
+  const stats = buildStats(dashboard, t, getIntlLocale(locale));
 
   return (
     <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4'>

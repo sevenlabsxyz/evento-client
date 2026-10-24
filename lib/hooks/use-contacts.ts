@@ -8,6 +8,7 @@ import {
   logBreezError,
 } from '@/lib/utils/breez-error-handler';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 /**
@@ -15,7 +16,11 @@ import { toast } from 'sonner';
  * Uses React Query for data fetching and mutations
  */
 export function useContacts() {
+  const t = useTranslations('hooks');
   const queryClient = useQueryClient();
+  // Thrown and compared by identity of the translated text so the
+  // "already exists" check works in every locale.
+  const duplicateContactMessage = t('contacts.alreadyExists');
 
   // Query for listing contacts
   const {
@@ -51,7 +56,7 @@ export function useContacts() {
         (c) => c.paymentIdentifier.toLowerCase() === request.paymentIdentifier.toLowerCase()
       );
       if (existing) {
-        throw new Error('Contact already exists with this Lightning address');
+        throw new Error(duplicateContactMessage);
       }
 
       if (!breezSDK.isConnected()) {
@@ -62,12 +67,12 @@ export function useContacts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      toast.success('Contact added');
+      toast.success(t('contacts.added'));
     },
     onError: (error: Error) => {
       logBreezError(error, BREEZ_ERROR_CONTEXT.ADDING_CONTACT);
       // Don't show toast for "already exists" errors - the form already shows it
-      if (error.message !== 'Contact already exists with this Lightning address') {
+      if (error.message !== duplicateContactMessage) {
         const userMessage = getBreezErrorMessage(error, 'add contact');
         toast.error(userMessage);
       }
@@ -83,7 +88,7 @@ export function useContacts() {
           c.paymentIdentifier.toLowerCase() === request.paymentIdentifier.toLowerCase()
       );
       if (existing) {
-        throw new Error('Contact already exists with this Lightning address');
+        throw new Error(duplicateContactMessage);
       }
 
       if (!breezSDK.isConnected()) {
@@ -94,11 +99,11 @@ export function useContacts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      toast.success('Contact updated');
+      toast.success(t('contacts.updated'));
     },
     onError: (error: Error) => {
       logBreezError(error, BREEZ_ERROR_CONTEXT.UPDATING_CONTACT);
-      if (error.message !== 'Contact already exists with this Lightning address') {
+      if (error.message !== duplicateContactMessage) {
         const userMessage = getBreezErrorMessage(error, 'update contact');
         toast.error(userMessage);
       }
@@ -116,7 +121,7 @@ export function useContacts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] });
-      toast.success('Contact deleted');
+      toast.success(t('contacts.deleted'));
     },
     onError: (error: Error) => {
       logBreezError(error, BREEZ_ERROR_CONTEXT.DELETING_CONTACT);

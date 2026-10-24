@@ -3,6 +3,7 @@
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { EmailBlast } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
+import { useTranslations } from 'next-intl';
 import EmailBlastCompose from './email-blast-compose';
 import './email-blast-sheet.css';
 
@@ -21,6 +22,7 @@ export default function EmailBlastSheet({
   blastToEdit,
   onStaleScheduledMutationAttempt,
 }: EmailBlastSheetProps) {
+  const t = useTranslations('manageLegacy');
   const handleClose = () => {
     onClose();
   };
@@ -32,7 +34,7 @@ export default function EmailBlastSheet({
 
   return (
     <MasterScrollableSheet
-      title={blastToEdit ? 'Edit Scheduled Blast' : 'New Email Blast'}
+      title={blastToEdit ? t('emailBlast.sheet.editTitle') : t('emailBlast.sheet.newTitle')}
       open={isOpen}
       onOpenChange={(open) => !open && handleClose()}
       contentClassName='p-4'

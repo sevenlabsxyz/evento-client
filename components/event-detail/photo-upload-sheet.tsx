@@ -6,6 +6,7 @@ import { useMultiFileUpload } from '@/lib/hooks/use-multi-file-upload';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { Camera, Trash2, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useRef } from 'react';
 
@@ -20,6 +21,8 @@ const MAX_FILE_SIZE = 10; // MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
 export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUploadSheetProps) {
+  const t = useTranslations('eventSocial');
+  const tCommon = useTranslations('common');
   const queryClient = useQueryClient();
   const inputFileRef = useRef<HTMLInputElement>(null);
 
@@ -93,10 +96,10 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
 
     if (successCount > 0 && failCount === 0) {
       // All successful - close will be handled by onSuccess callback
-      toast.success(`${successCount} photo${successCount === 1 ? '' : 's'} uploaded successfully!`);
+      toast.success(t('photoUpload.uploadSuccess', { count: successCount }));
     } else if (successCount > 0 && failCount > 0) {
       // Partial success
-      toast.info(`${successCount} photos uploaded, ${failCount} failed.`);
+      toast.info(t('photoUpload.uploadPartial', { successCount, failCount }));
     }
   };
 
@@ -127,7 +130,7 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                 {/* Header with close button */}
                 <div className='mb-4 flex items-center justify-between'>
                   <h2 className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
-                    Upload Photos
+                    {t('photoUpload.title')}
                   </h2>
                   <button
                     onClick={handleClose}
@@ -147,11 +150,11 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                     <div className='flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center dark:border-neutral-700 dark:bg-neutral-950'>
                       <Camera className='mb-3 h-12 w-12 text-gray-400 dark:text-neutral-500' />
                       <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>
-                        Select up to {MAX_PHOTOS} photos to upload to this event&apos;s gallery
+                        {t('photoUpload.selectPrompt', { max: MAX_PHOTOS })}
                       </p>
                       <label htmlFor='photo-upload' className='cursor-pointer'>
                         <div className='rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'>
-                          Select Photos
+                          {t('photoUpload.selectPhotos')}
                         </div>
                         <input
                           ref={inputFileRef}
@@ -171,14 +174,13 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                     {/* Selected photos preview */}
                     <div className='mb-4 flex items-center justify-between'>
                       <h3 className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-                        {selectedFilesData.length} photo
-                        {selectedFilesData.length !== 1 && 's'} selected
+                        {t('photoUpload.selectedCount', { count: selectedFilesData.length })}
                       </h3>
                       <label
                         htmlFor='photo-upload-more'
                         className='cursor-pointer text-sm text-red-600 dark:text-red-400'
                       >
-                        Add More
+                        {t('photoUpload.addMore')}
                         <input
                           id='photo-upload-more'
                           type='file'
@@ -198,7 +200,7 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                           <div className='absolute inset-0 overflow-hidden rounded-lg'>
                             <Image
                               src={fileData.previewUrl}
-                              alt='Photo preview'
+                              alt={t('photoUpload.previewAlt')}
                               fill
                               className='object-cover'
                             />
@@ -237,10 +239,10 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                     {isUploading ? (
                       <span className='flex items-center'>
                         <span className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white dark:border-neutral-400 dark:border-t-neutral-900'></span>
-                        Uploading...
+                        {t('photoUpload.uploading')}
                       </span>
                     ) : (
-                      'Upload Photos'
+                      t('photoUpload.title')
                     )}
                   </Button>
                 )}
@@ -251,7 +253,9 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                   disabled={isUploading}
                   className='w-full'
                 >
-                  {selectedFilesData.length > 0 ? 'Cancel' : 'Close'}
+                  {selectedFilesData.length > 0
+                    ? tCommon('actions.cancel')
+                    : tCommon('actions.close')}
                 </Button>
               </div>
             </div>

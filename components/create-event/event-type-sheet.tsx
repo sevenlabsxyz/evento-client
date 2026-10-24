@@ -2,6 +2,7 @@
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { Check, Ticket, UserCheck } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 type EventType = 'rsvp' | 'registration' | 'ticketed';
 
@@ -18,6 +19,7 @@ export default function EventTypeSheet({
   onTypeSelect,
   currentType,
 }: EventTypeSheetProps) {
+  const t = useTranslations('createEvent');
   const handleTypeSelect = (type: EventType) => {
     onTypeSelect(type);
     onClose();
@@ -38,7 +40,7 @@ export default function EventTypeSheet({
               </div>
 
               <div className='mb-6'>
-                <h2 className='text-center text-xl font-semibold'>Event Type</h2>
+                <h2 className='text-center text-xl font-semibold'>{t('eventType.title')}</h2>
               </div>
 
               <div className='space-y-3'>
@@ -68,7 +70,7 @@ export default function EventTypeSheet({
                             : 'text-gray-900 dark:text-neutral-100'
                         }`}
                       >
-                        RSVP
+                        {t('eventType.rsvp')}
                       </h3>
                       <p
                         className={`text-sm ${
@@ -77,7 +79,7 @@ export default function EventTypeSheet({
                             : 'text-gray-600 dark:text-neutral-400'
                         }`}
                       >
-                        Guests RSVP directly.
+                        {t('eventType.rsvpDescription')}
                       </p>
                     </div>
                     {currentType === 'rsvp' && (
@@ -112,7 +114,7 @@ export default function EventTypeSheet({
                             : 'text-gray-900 dark:text-neutral-100'
                         }`}
                       >
-                        Registration
+                        {t('eventType.registration')}
                       </h3>
                       <p
                         className={`text-sm ${
@@ -121,7 +123,7 @@ export default function EventTypeSheet({
                             : 'text-gray-600 dark:text-neutral-400'
                         }`}
                       >
-                        Guests submit registration before attending.
+                        {t('eventType.registrationDescription')}
                       </p>
                     </div>
                     {currentType === 'registration' && (

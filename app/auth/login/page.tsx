@@ -12,12 +12,14 @@ import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
 import { validateRedirectUrl } from '@/lib/utils/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Loader2, Mail } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 function LoginContent() {
+  const t = useTranslations('auth.login');
   const searchParams = useSearchParams();
   const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
   const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
@@ -61,8 +63,8 @@ function LoginContent() {
           <div className='mx-auto flex w-full items-center justify-center'>
             <EventoIcon className='h-14 w-14' />
           </div>
-          <CardTitle className='text-center text-xl font-bold'>Welcome to Evento</CardTitle>
-          <CardDescription className='text-center'>Log in or sign up below.</CardDescription>
+          <CardTitle className='text-center text-xl font-bold'>{t('title')}</CardTitle>
+          <CardDescription className='text-center'>{t('description')}</CardDescription>
         </CardHeader>
         <CardContent className='space-y-4'>
           {error && (
@@ -71,16 +73,14 @@ function LoginContent() {
               className='dark:border-red-500/40 dark:text-red-400 dark:[&>svg]:text-red-400'
             >
               <AlertCircle className='h-4 w-4' />
-              <AlertDescription>
-                {error.message || 'An error occurred. Please try again.'}
-              </AlertDescription>
+              <AlertDescription>{error.message || t('errorFallback')}</AlertDescription>
             </Alert>
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
             <div className='space-y-2'>
               <label htmlFor='email' className='text-sm font-medium'>
-                Email
+                {t('emailLabel')}
               </label>
               <div className='relative'>
                 <Mail className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
@@ -88,7 +88,7 @@ function LoginContent() {
                   {...register('email')}
                   id='email'
                   type='email'
-                  placeholder='you@example.com'
+                  placeholder={t('emailPlaceholder')}
                   className='bg-gray-50 pl-10 dark:bg-neutral-950'
                   disabled={isLoading || isGoogleLoading}
                 />
@@ -106,10 +106,10 @@ function LoginContent() {
               {isLoading ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                  Sending code...
+                  {t('sendingCode')}
                 </>
               ) : (
-                'Continue with Email'
+                t('continueWithEmail')
               )}
             </Button>
           </form>
@@ -119,7 +119,9 @@ function LoginContent() {
               <span className='w-full border-t dark:border-neutral-700' />
             </div>
             <div className='relative flex justify-center text-xs uppercase'>
-              <span className='bg-white px-2 text-muted-foreground dark:bg-neutral-900'>or</span>
+              <span className='bg-white px-2 text-muted-foreground dark:bg-neutral-900'>
+                {t('or')}
+              </span>
             </div>
           </div>
 
@@ -132,12 +134,12 @@ function LoginContent() {
             {isGoogleLoading ? (
               <>
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Redirecting to Google...
+                {t('redirectingToGoogle')}
               </>
             ) : (
               <>
                 <Google className='mr-1 h-5 w-5' />
-                Continue with Google
+                {t('continueWithGoogle')}
               </>
             )}
           </Button>
@@ -150,15 +152,21 @@ function LoginContent() {
       </Card>
       <div className='mx-auto my-4 w-full max-w-xs text-center text-xs tracking-wide text-muted-foreground opacity-75'>
         <p>
-          By continuing to use this app, you agree to Evento&apos;s{' '}
-          <Link href='/terms' className='underline hover:text-red-600 dark:hover:text-red-400'>
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link href='/privacy' className='underline hover:text-red-600 dark:hover:text-red-400'>
-            Privacy Policy
-          </Link>
-          .
+          {t.rich('legal', {
+            terms: (chunks) => (
+              <Link href='/terms' className='underline hover:text-red-600 dark:hover:text-red-400'>
+                {chunks}
+              </Link>
+            ),
+            privacy: (chunks) => (
+              <Link
+                href='/privacy'
+                className='underline hover:text-red-600 dark:hover:text-red-400'
+              >
+                {chunks}
+              </Link>
+            ),
+          })}
         </p>
       </div>
     </div>

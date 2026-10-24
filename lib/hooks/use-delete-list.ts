@@ -5,6 +5,7 @@ import { invalidateAllEventSavedStatuses } from '@/lib/hooks/use-event-saved-sta
 import { queryKeys } from '@/lib/query-client';
 import { ApiResponse, UserList } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface DeleteListResponse {
   deleted_list_id: string;
@@ -15,6 +16,7 @@ interface DeleteListResponse {
  */
 export function useDeleteList() {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (listId: string) => {
@@ -26,7 +28,7 @@ export function useDeleteList() {
         return response.data;
       }
 
-      throw new Error('Failed to delete list');
+      throw new Error(t('lists.deleteFailed'));
     },
     onSuccess: ({ deleted_list_id }) => {
       queryClient.setQueryData<UserList[]>(queryKeys.userLists(), (lists) =>

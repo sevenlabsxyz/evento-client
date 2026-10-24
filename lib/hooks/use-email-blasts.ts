@@ -1,4 +1,5 @@
 import apiClient from '@/lib/api/client';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { queryKeys } from '@/lib/query-client';
 import {
   ApiResponse,
@@ -8,6 +9,7 @@ import {
 } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 interface ApiError {
   message?: string;
@@ -49,6 +51,7 @@ export function useEmailBlasts(eventId: string) {
  */
 export function useCreateEmailBlast(eventId: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (data: CreateEmailBlastForm) => {
@@ -59,14 +62,14 @@ export function useCreateEmailBlast(eventId: string) {
       if (response && response.data) {
         return response.data;
       }
-      throw new Error('Failed to create email blast');
+      throw new Error(t('emailBlasts.createFailed'));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.eventEmailBlasts(eventId) });
     },
     onError: (error: unknown) => {
       logger.error('Create email blast error', {
-        error: getErrorMessage(error, 'Failed to create email blast'),
+        error: getErrorMessage(error, t('emailBlasts.createFailed')),
       });
     },
   });
@@ -78,6 +81,7 @@ export function useCreateEmailBlast(eventId: string) {
  */
 export function useCreateEmailBlastWithCallbacks(eventId: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (data: CreateEmailBlastForm) => {
@@ -88,7 +92,7 @@ export function useCreateEmailBlastWithCallbacks(eventId: string) {
       if (response && response.data) {
         return response.data;
       }
-      throw new Error('Failed to create email blast');
+      throw new Error(t('emailBlasts.createFailed'));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.eventEmailBlasts(eventId) });
@@ -98,6 +102,7 @@ export function useCreateEmailBlastWithCallbacks(eventId: string) {
 
 export function useUpdateEmailBlast(eventId: string, blastId: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async (data: UpdateEmailBlastForm) => {
@@ -110,7 +115,7 @@ export function useUpdateEmailBlast(eventId: string, blastId: string) {
         return response.data;
       }
 
-      throw new Error('Failed to update email blast');
+      throw new Error(t('emailBlasts.updateFailed'));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.eventEmailBlasts(eventId) });
@@ -118,7 +123,7 @@ export function useUpdateEmailBlast(eventId: string, blastId: string) {
     },
     onError: (error: unknown) => {
       logger.error('Update email blast error', {
-        error: getErrorMessage(error, 'Failed to update email blast'),
+        error: getErrorMessage(error, t('emailBlasts.updateFailed')),
       });
     },
   });
@@ -126,6 +131,7 @@ export function useUpdateEmailBlast(eventId: string, blastId: string) {
 
 export function useCancelEmailBlast(eventId: string, blastId: string) {
   const queryClient = useQueryClient();
+  const t = useTranslations('hooks');
 
   return useMutation({
     mutationFn: async () => {
@@ -137,7 +143,7 @@ export function useCancelEmailBlast(eventId: string, blastId: string) {
         return response.data;
       }
 
-      throw new Error('Failed to cancel email blast');
+      throw new Error(t('emailBlasts.cancelFailed'));
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.eventEmailBlasts(eventId) });
@@ -145,7 +151,7 @@ export function useCancelEmailBlast(eventId: string, blastId: string) {
     },
     onError: (error: unknown) => {
       logger.error('Cancel email blast error', {
-        error: getErrorMessage(error, 'Failed to cancel email blast'),
+        error: getErrorMessage(error, t('emailBlasts.cancelFailed')),
       });
     },
   });
@@ -181,17 +187,17 @@ export function transformEmailBlastForUI(blast: EmailBlast): EmailBlast & {
       .replace(/<[^>]*>/g, '') // Remove HTML tags
       .split('\n')[0] // Get first line
       .slice(0, 50) // Limit to 50 chars
-      .trim() || 'No subject';
+      .trim() || translateHooks('emailBlasts.noSubject');
 
   // Map recipient filter to display text
   const recipientMap = {
-    all: 'All RSVPs',
-    yes_only: 'RSVP: Yes',
-    yes_and_maybe: 'RSVP: Yes & Maybe',
-    'rsvp-yes': 'RSVP: Yes',
-    'rsvp-no': 'RSVP: No',
-    'rsvp-maybe': 'RSVP: Maybe',
-    invited: 'Invited',
+    all: translateHooks('emailBlasts.recipients.all'),
+    yes_only: translateHooks('emailBlasts.recipients.yes'),
+    yes_and_maybe: translateHooks('emailBlasts.recipients.yesAndMaybe'),
+    'rsvp-yes': translateHooks('emailBlasts.recipients.yes'),
+    'rsvp-no': translateHooks('emailBlasts.recipients.no'),
+    'rsvp-maybe': translateHooks('emailBlasts.recipients.maybe'),
+    invited: translateHooks('emailBlasts.recipients.invited'),
   };
 
   // Map the API response to our UI structure
@@ -200,7 +206,8 @@ export function transformEmailBlastForUI(blast: EmailBlast): EmailBlast & {
     ...blast,
     subject,
     recipients:
-      recipientMap[blast.recipient_filter as keyof typeof recipientMap] || 'All Recipients',
+      recipientMap[blast.recipient_filter as keyof typeof recipientMap] ||
+      translateHooks('emailBlasts.recipients.allRecipients'),
     recipientCount: blast.recipientCount || 0, // Use API value or default
     delivered: blast.delivered || 0, // Use API value or default
     failed: blast.failed || 0, // Use API value or default

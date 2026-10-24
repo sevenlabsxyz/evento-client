@@ -29,10 +29,13 @@ import { queryKeys } from '@/lib/query-client';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ManageEventPage() {
+  const t = useTranslations('manage');
+  const tCommon = useTranslations('common');
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const params = useParams();
   const pathname = usePathname();
@@ -47,7 +50,7 @@ export default function ManageEventPage() {
     applyRouteConfig(pathname);
 
     setTopBarForRoute(pathname, {
-      title: 'Manage',
+      title: tCommon('actions.manage'),
       leftMode: 'back',
       onBackPress: () => router.push(`/e/${eventId}?from=manage`),
       showAvatar: false,
@@ -59,7 +62,7 @@ export default function ManageEventPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, applyRouteConfig, clearRoute, pathname, router, eventId]);
+  }, [setTopBarForRoute, applyRouteConfig, clearRoute, pathname, router, eventId, tCommon]);
 
   if (isLoading) {
     return (
@@ -91,10 +94,10 @@ export default function ManageEventPage() {
         <div className='flex flex-col items-center rounded-2xl border border-gray-200 bg-white px-4 py-10 text-center dark:border-neutral-800 dark:bg-neutral-900'>
           <AlertTriangle className='mb-3 h-8 w-8 text-red-500 dark:text-red-400' />
           <p className='font-medium text-gray-900 dark:text-neutral-100'>
-            Couldn&apos;t load the dashboard
+            {t('overviewPage.loadError')}
           </p>
           <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
-            {error?.message || 'Something went wrong. Please try again.'}
+            {error?.message || tCommon('states.errorTryAgain')}
           </p>
           <Button
             variant='outline'
@@ -102,7 +105,7 @@ export default function ManageEventPage() {
             onClick={() => refetch()}
             disabled={isRefetching}
           >
-            {isRefetching ? 'Retrying…' : 'Try again'}
+            {isRefetching ? t('overviewPage.retrying') : tCommon('actions.tryAgain')}
           </Button>
         </div>
       </div>
@@ -134,11 +137,12 @@ export default function ManageEventPage() {
 
       {dashboard.event.status !== 'archived' && (
         <section className='rounded-2xl border border-red-200 bg-white p-4 dark:border-red-900/60 dark:bg-neutral-900'>
-          <h2 className='text-base font-semibold text-red-600 dark:text-red-400'>Danger zone</h2>
+          <h2 className='text-base font-semibold text-red-600 dark:text-red-400'>
+            {t('overviewPage.dangerZone')}
+          </h2>
           <div className='mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
             <p className='text-sm text-gray-600 dark:text-neutral-400'>
-              Cancel this event and optionally notify everyone who RSVP&apos;d. This can&apos;t be
-              undone.
+              {t('overviewPage.cancelDescription')}
             </p>
             <Button
               variant='outline'
@@ -146,7 +150,7 @@ export default function ManageEventPage() {
               onClick={() => setShowCancelModal(true)}
             >
               <X className='h-4 w-4' />
-              Cancel event
+              {t('overviewPage.cancelEvent')}
             </Button>
           </div>
         </section>

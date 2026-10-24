@@ -6,6 +6,7 @@ import {
   SECURITY_FACTS,
   SECURITY_SECTIONS,
 } from '@/components/security/security-content';
+import securityMessages from '@/messages/en/security.json';
 
 const mockSetTopBarForRoute = jest.fn();
 
@@ -46,8 +47,9 @@ describe('SecurityPageClient', () => {
 
     const nav = screen.getByRole('navigation', { name: 'On this page' });
     for (const section of SECURITY_SECTIONS) {
-      expect(screen.getByRole('heading', { level: 2, name: section.title })).toBeInTheDocument();
-      expect(within(nav).getByRole('link', { name: section.navLabel })).toHaveAttribute(
+      const copy = securityMessages.sections[section.key];
+      expect(screen.getByRole('heading', { level: 2, name: copy.title })).toBeInTheDocument();
+      expect(within(nav).getByRole('link', { name: copy.navLabel })).toHaveAttribute(
         'href',
         `#${section.id}`
       );

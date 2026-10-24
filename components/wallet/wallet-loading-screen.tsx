@@ -1,21 +1,22 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 const LOADING_MESSAGES = [
-  'Getting things ready for you...',
-  'Preparing your wallet...',
-  'Almost there...',
-  'Making magic happen...',
-  'Setting up your financial superpowers...',
-  'Connecting to the future of money...',
-  'Your wallet is waking up...',
-  'Brewing up something good...',
-  'Just a moment...',
-  'Loading your digital vault...',
-];
+  'gettingReady',
+  'preparingWallet',
+  'almostThere',
+  'makingMagic',
+  'superpowers',
+  'futureOfMoney',
+  'wakingUp',
+  'brewing',
+  'justAMoment',
+  'digitalVault',
+] as const;
 
 const MESSAGE_DURATION = 3500; // 3.5 seconds per message
 
@@ -24,6 +25,7 @@ interface WalletLoadingScreenProps {
 }
 
 export function WalletLoadingScreen({ className }: WalletLoadingScreenProps) {
+  const t = useTranslations('wallet');
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
   useEffect(() => {
@@ -61,7 +63,7 @@ export function WalletLoadingScreen({ className }: WalletLoadingScreenProps) {
       >
         <Image
           src='/assets/img/evento-sublogo.svg'
-          alt='Evento Logo'
+          alt={t('loading.logoAlt')}
           width={96}
           height={96}
           className='dark:invert'
@@ -79,7 +81,7 @@ export function WalletLoadingScreen({ className }: WalletLoadingScreenProps) {
             transition={{ duration: 0.3 }}
             className='absolute inset-0 text-center text-xl font-medium text-gray-900 dark:text-neutral-100'
           >
-            {LOADING_MESSAGES[currentMessageIndex]}
+            {t(`loading.messages.${LOADING_MESSAGES[currentMessageIndex]}`)}
           </motion.p>
         </AnimatePresence>
       </div>
@@ -91,9 +93,9 @@ export function WalletLoadingScreen({ className }: WalletLoadingScreenProps) {
         transition={{ delay: 20 }}
         className='mt-4 text-center text-sm text-gray-500 dark:text-neutral-400'
       >
-        This may take longer on slower connections.
+        {t('loading.slowConnection')}
         <br />
-        Do not refresh the page.
+        {t('loading.doNotRefresh')}
       </motion.p>
     </div>
   );

@@ -16,6 +16,7 @@ import { toast } from '@/lib/utils/toast';
 import { generateAvailableUsername } from '@/lib/utils/username';
 import { useQueryClient } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { RegistrationOtpInput } from './registration-otp-input';
 
@@ -44,6 +45,8 @@ export function RegistrationForm({
   onSuccess,
   onCancel,
 }: RegistrationFormProps) {
+  const t = useTranslations('event');
+  const tCommon = useTranslations('common');
   const { user, isAuthenticated } = useAuth();
   const { setUser } = useAuthStore();
   const queryClient = useQueryClient();
@@ -103,18 +106,18 @@ export function RegistrationForm({
     const newErrors: Record<string, string> = {};
 
     if (!name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = t('registrationForm.errors.nameRequired');
     }
 
     if (!email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('registrationForm.errors.emailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = t('registrationForm.errors.emailInvalid');
     }
 
     // Check if authenticated user email matches (only for authenticated users)
     if (isAuthenticated && user?.email && email.toLowerCase() !== user.email.toLowerCase()) {
-      newErrors.email = 'Email must match your account email';
+      newErrors.email = t('registrationForm.errors.emailMismatch');
     }
 
     // Validate required questions
@@ -122,9 +125,9 @@ export function RegistrationForm({
       if (question.is_required) {
         const answer = answers[question.id];
         if (!answer || (Array.isArray(answer) && answer.length === 0)) {
-          newErrors[question.id] = 'This field is required';
+          newErrors[question.id] = t('registrationForm.errors.fieldRequired');
         } else if (typeof answer === 'string' && !answer.trim()) {
-          newErrors[question.id] = 'This field is required';
+          newErrors[question.id] = t('registrationForm.errors.fieldRequired');
         }
       }
     }
@@ -154,9 +157,9 @@ export function RegistrationForm({
       });
 
       if (result.auto_approved) {
-        toast.success("You're registered! You're going to the event.");
+        toast.success(t('registrationForm.toasts.registered'));
       } else {
-        toast.success('Registration submitted. Awaiting host approval.');
+        toast.success(t('registrationForm.toasts.submitted'));
       }
 
       // Pass the registration data to parent so it can display status immediately
@@ -171,7 +174,7 @@ export function RegistrationForm({
       });
     } catch (error: unknown) {
       const message =
-        error instanceof Error ? error.message : 'Failed to submit registration. Please try again.';
+        error instanceof Error ? error.message : t('registrationForm.toasts.submitFailed');
       toast.error(message);
       throw error; // Re-throw so outer catch can handle it
     }
@@ -196,9 +199,7 @@ export function RegistrationForm({
       onStepChange('otp');
     } catch (error: unknown) {
       const message =
-        error instanceof Error
-          ? error.message
-          : 'Failed to send verification code. Please try again.';
+        error instanceof Error ? error.message : t('registrationForm.toasts.sendCodeFailed');
       toast.error(message);
     } finally {
       setIsSendingOtp(false);
@@ -273,7 +274,7 @@ export function RegistrationForm({
       }
     } catch (error: unknown) {
       const message =
-        error instanceof Error ? error.message : 'Invalid verification code. Please try again.';
+        error instanceof Error ? error.message : t('registrationForm.toasts.invalidCode');
       setOtpError(message);
     } finally {
       setIsVerifying(false);
@@ -285,10 +286,10 @@ export function RegistrationForm({
   const handleOtpResend = async () => {
     try {
       await authService.sendLoginCode(email.trim());
-      toast.success('Verification code sent!');
+      toast.success(t('registrationForm.toasts.codeSent'));
     } catch (error: unknown) {
       const message =
-        error instanceof Error ? error.message : 'Failed to resend code. Please try again.';
+        error instanceof Error ? error.message : t('registrationForm.toasts.resendFailed');
       toast.error(message);
       throw error; // Re-throw to let OTP component handle cooldown
     }
@@ -307,7 +308,12 @@ export function RegistrationForm({
             type={question.type === 'url' ? 'url' : question.type === 'phone' ? 'tel' : 'text'}
             value={value as string}
             onChange={(e) => updateAnswer(question.id, e.target.value)}
-            placeholder={question.placeholder || `Enter ${question.label.toLowerCase()}`}
+            placeholder={
+              question.placeholder ||
+              t('registrationForm.placeholders.enterField', {
+                field: question.label.toLowerCase(),
+              })
+            }
             className={error ? 'border-red-500' : ''}
           />
         );
@@ -317,7 +323,12 @@ export function RegistrationForm({
           <Textarea
             value={value as string}
             onChange={(e) => updateAnswer(question.id, e.target.value)}
-            placeholder={question.placeholder || `Enter ${question.label.toLowerCase()}`}
+            placeholder={
+              question.placeholder ||
+              t('registrationForm.placeholders.enterField', {
+                field: question.label.toLowerCase(),
+              })
+            }
             className={error ? 'border-red-500 dark:border-red-500' : ''}
             rows={4}
           />
@@ -383,7 +394,7 @@ export function RegistrationForm({
               onCheckedChange={(checked) => updateAnswer(question.id, checked ? 'true' : '')}
             />
             <span className='text-sm text-gray-600 dark:text-neutral-400'>
-              {question.placeholder || 'I agree'}
+              {question.placeholder || t('registrationForm.placeholders.agree')}
             </span>
           </label>
         );
@@ -399,10 +410,10 @@ export function RegistrationForm({
           linkedin: '',
         };
         const placeholders: Record<string, string> = {
-          instagram: 'username',
-          twitter: 'username',
-          youtube: 'channel URL or username',
-          linkedin: 'profile URL or username',
+          instagram: t('registrationForm.placeholders.username'),
+          twitter: t('registrationForm.placeholders.username'),
+          youtube: t('registrationForm.placeholders.youtube'),
+          linkedin: t('registrationForm.placeholders.linkedin'),
         };
         return (
           <div className='flex items-center'>
@@ -426,7 +437,7 @@ export function RegistrationForm({
           <Input
             value={value as string}
             onChange={(e) => updateAnswer(question.id, e.target.value)}
-            placeholder={question.placeholder || 'Company name'}
+            placeholder={question.placeholder || t('registrationForm.placeholders.company')}
             className={error ? 'border-red-500' : ''}
           />
         );
@@ -449,10 +460,10 @@ export function RegistrationForm({
       <div className='flex min-h-[280px] flex-col items-center justify-center gap-3 py-8 text-center'>
         <Loader2 className='h-8 w-8 animate-spin text-gray-500 dark:text-neutral-400' />
         <p className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
-          Completing your registration...
+          {t('registrationForm.completingTitle')}
         </p>
         <p className='text-xs text-gray-500 dark:text-neutral-400'>
-          Please wait while we finalize your account and RSVP.
+          {t('registrationForm.completingDescription')}
         </p>
       </div>
     );
@@ -481,7 +492,7 @@ export function RegistrationForm({
             htmlFor='registration-name'
             className='mb-2 block text-sm font-medium text-gray-900 dark:text-neutral-100'
           >
-            Name <span className='text-red-500 dark:text-red-400'>*</span>
+            {tCommon('labels.name')} <span className='text-red-500 dark:text-red-400'>*</span>
           </label>
           <Input
             id='registration-name'
@@ -496,7 +507,7 @@ export function RegistrationForm({
                 });
               }
             }}
-            placeholder='Your full name'
+            placeholder={t('registrationForm.placeholders.fullName')}
             className={errors.name ? 'border-red-500' : ''}
           />
           {errors.name && (
@@ -510,7 +521,7 @@ export function RegistrationForm({
             htmlFor='registration-email'
             className='mb-2 block text-sm font-medium text-gray-900 dark:text-neutral-100'
           >
-            Email <span className='text-red-500 dark:text-red-400'>*</span>
+            {tCommon('labels.email')} <span className='text-red-500 dark:text-red-400'>*</span>
           </label>
           <Input
             id='registration-email'
@@ -526,7 +537,7 @@ export function RegistrationForm({
                 });
               }
             }}
-            placeholder='your@email.com'
+            placeholder={t('registrationForm.placeholders.email')}
             className={errors.email ? 'border-red-500' : ''}
             disabled={!!user?.email}
           />
@@ -535,12 +546,12 @@ export function RegistrationForm({
           )}
           {user?.email && (
             <p className='mt-1 text-xs text-gray-500 dark:text-neutral-500'>
-              Using your account email
+              {t('registrationForm.usingAccountEmail')}
             </p>
           )}
           {!isAuthenticated && (
             <p className='mt-1 text-xs text-gray-500 dark:text-neutral-500'>
-              We&apos;ll send a verification code to this email
+              {t('registrationForm.verificationHint')}
             </p>
           )}
         </div>
@@ -568,7 +579,7 @@ export function RegistrationForm({
           className='h-11 flex-1 rounded-xl border-gray-200 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800'
           disabled={isSubmitting}
         >
-          Cancel
+          {tCommon('actions.cancel')}
         </Button>
         <Button
           onClick={handleSubmit}
@@ -578,12 +589,12 @@ export function RegistrationForm({
           {isSubmitting ? (
             <>
               <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-              {isSendingOtp ? 'Sending code...' : 'Submitting...'}
+              {isSendingOtp ? t('registrationForm.sendingCode') : t('registrationForm.submitting')}
             </>
           ) : isAuthenticated ? (
-            'Register'
+            t('registrationForm.register')
           ) : (
-            'Next'
+            tCommon('actions.next')
           )}
         </Button>
       </div>

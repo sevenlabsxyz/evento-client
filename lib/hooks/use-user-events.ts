@@ -2,6 +2,7 @@
 
 import apiClient from '@/lib/api/client';
 import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { EventWithUser } from '../types/api';
 
 export type EventFilterType = 'upcoming' | 'hosting' | 'attending';
@@ -35,6 +36,7 @@ export interface UserEventsResponse {
  * Uses infinite query to support "load more" functionality
  */
 export function useUserEvents(params: UserEventsParams) {
+  const t = useTranslations('hooks');
   const {
     search = '',
     filter = 'upcoming',
@@ -84,7 +86,7 @@ export function useUserEvents(params: UserEventsParams) {
         };
       }
 
-      throw new Error('Failed to fetch user events');
+      throw new Error(t('events.fetchUserEventsFailed'));
     },
     enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes cache

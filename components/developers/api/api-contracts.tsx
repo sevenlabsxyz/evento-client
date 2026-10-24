@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Braces, Gauge, ShieldCheck } from 'lucide-react';
+import { useFormatter, useTranslations } from 'next-intl';
 import { API_DOCS } from './api-links';
 import { ApiSectionHeader, DocsTextLink, InlineCode } from './api-primitives';
 import { CodePanel, type CodeSnippet } from './code-panel';
@@ -13,7 +14,7 @@ X-RateLimit-Remaining: 847
 X-RateLimit-Reset: 1640995200`,
 };
 
-const ENVELOPE_SNIPPETS: CodeSnippet[] = [
+const ENVELOPE_SNIPPETS: (CodeSnippet & { id: 'success' | 'error' | 'list' })[] = [
   {
     id: 'success',
     label: 'Success',
@@ -77,13 +78,17 @@ const CARD_ICON_CLASS =
   'flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-700 dark:bg-neutral-800 dark:text-neutral-300';
 
 export function ApiContracts() {
+  const t = useTranslations('developers.api.contracts');
+  const tApi = useTranslations('developers.api');
+  const format = useFormatter();
+
   return (
     <section aria-labelledby='api-contracts-title' className='space-y-8'>
       <ApiSectionHeader
         id='api-contracts-title'
-        eyebrow='Shared contracts'
-        title='Predictable by design'
-        description='Both surfaces share the same success and error envelope and status-code conventions. Public API keys report their quota in response headers.'
+        eyebrow={t('eyebrow')}
+        title={t('title')}
+        description={t('description')}
       />
 
       <div className='grid gap-4 lg:grid-cols-3 lg:gap-6'>
@@ -95,28 +100,29 @@ export function ApiContracts() {
             id='api-rate-limits-title'
             className='mt-4 font-semibold text-gray-900 dark:text-neutral-100'
           >
-            Rate limits
+            {t('rateLimits.title')}
           </h3>
           <p className='mt-3 flex items-baseline gap-2'>
             <span className='text-4xl font-bold tabular-nums tracking-tight text-gray-900 dark:text-neutral-100'>
-              1,000
+              {format.number(1000)}
             </span>
             <span className='text-sm text-gray-500 dark:text-neutral-500'>
-              requests / day per key
+              {tApi('hero.facts.requestsPerDay')}
             </span>
           </p>
           <p className='mt-2 text-sm leading-6 text-gray-600 dark:text-neutral-400'>
-            Over the limit you get a <InlineCode>429</InlineCode> — retry with exponential backoff
-            and queue requests as you approach the daily quota.
+            {t.rich('rateLimits.description', {
+              code: (chunks) => <InlineCode>{chunks}</InlineCode>,
+            })}
           </p>
           <CodePanel
-            snippets={[RATE_LIMIT_HEADERS]}
-            caption='Response headers'
+            snippets={[{ ...RATE_LIMIT_HEADERS, label: t('rateLimits.snippetLabel') }]}
+            caption={t('rateLimits.snippetCaption')}
             className='mt-5 shadow-none dark:shadow-none'
             bodyClassName='py-3'
           />
           <div className='mt-auto pt-5'>
-            <DocsTextLink href={API_DOCS.overview}>Rate limiting</DocsTextLink>
+            <DocsTextLink href={API_DOCS.overview}>{t('rateLimits.docsLink')}</DocsTextLink>
           </div>
         </article>
 
@@ -128,20 +134,23 @@ export function ApiContracts() {
             id='api-envelope-title'
             className='mt-4 font-semibold text-gray-900 dark:text-neutral-100'
           >
-            Response envelope
+            {t('envelope.title')}
           </h3>
           <p className='mt-2 text-sm leading-6 text-gray-600 dark:text-neutral-400'>
-            Check <InlineCode>success</InlineCode>, log the human-readable{' '}
-            <InlineCode>message</InlineCode>, and read your payload from{' '}
-            <InlineCode>data</InlineCode>. Lists add <InlineCode>pagination</InlineCode>.
+            {t.rich('envelope.description', {
+              code: (chunks) => <InlineCode>{chunks}</InlineCode>,
+            })}
           </p>
           <CodePanel
-            snippets={ENVELOPE_SNIPPETS}
+            snippets={ENVELOPE_SNIPPETS.map((snippet) => ({
+              ...snippet,
+              label: t(`envelope.tabs.${snippet.id}`),
+            }))}
             className='mt-5 shadow-none dark:shadow-none'
             bodyClassName='min-h-[12.5rem]'
           />
           <div className='mt-auto pt-5'>
-            <DocsTextLink href={API_DOCS.responseFormat}>Response format</DocsTextLink>
+            <DocsTextLink href={API_DOCS.responseFormat}>{t('envelope.docsLink')}</DocsTextLink>
           </div>
         </article>
 
@@ -153,12 +162,12 @@ export function ApiContracts() {
             id='api-status-title'
             className='mt-4 font-semibold text-gray-900 dark:text-neutral-100'
           >
-            Status codes
+            {t('statusCodes.title')}
           </h3>
           <p className='mt-2 text-sm leading-6 text-gray-600 dark:text-neutral-400'>
-            Standard HTTP semantics. Private or unpublished resources return{' '}
-            <InlineCode>404</InlineCode>, and a missing or revoked key returns{' '}
-            <InlineCode>401</InlineCode>.
+            {t.rich('statusCodes.description', {
+              code: (chunks) => <InlineCode>{chunks}</InlineCode>,
+            })}
           </p>
           <ul className='mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2'>
             {STATUS_CODES.map((status) => (
@@ -181,7 +190,7 @@ export function ApiContracts() {
             ))}
           </ul>
           <div className='mt-auto pt-5'>
-            <DocsTextLink href={API_DOCS.errorHandling}>Error handling</DocsTextLink>
+            <DocsTextLink href={API_DOCS.errorHandling}>{t('statusCodes.docsLink')}</DocsTextLink>
           </div>
         </article>
       </div>

@@ -1,5 +1,6 @@
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { AlertTriangle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface CapacityConfirmationSheetProps {
   isOpen: boolean;
@@ -14,6 +15,8 @@ export default function CapacityConfirmationSheet({
   onConfirm,
   currentCapacity,
 }: CapacityConfirmationSheetProps) {
+  const t = useTranslations('createEvent');
+  const tCommon = useTranslations('common');
   const handleConfirm = () => {
     onConfirm();
   };
@@ -37,14 +40,14 @@ export default function CapacityConfirmationSheet({
               <div className='mb-6'>
                 <div className='mb-6 flex items-center justify-between'>
                   <button onClick={onClose} className='font-medium text-red-500 dark:text-red-400'>
-                    Cancel
+                    {tCommon('actions.cancel')}
                   </button>
-                  <h2 className='text-lg font-semibold'>Turn Off Capacity?</h2>
+                  <h2 className='text-lg font-semibold'>{t('capacityConfirm.title')}</h2>
                   <button
                     onClick={handleConfirm}
                     className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white dark:bg-red-600'
                   >
-                    Turn Off
+                    {t('capacityConfirm.turnOff')}
                   </button>
                 </div>
               </div>
@@ -57,17 +60,16 @@ export default function CapacityConfirmationSheet({
 
                 <div className='space-y-3 text-left'>
                   <p className='text-sm leading-relaxed text-gray-700 dark:text-neutral-300'>
-                    Are you sure you want to turn off capacity limits for this event?
+                    {t('capacityConfirm.question')}
                     {currentCapacity && (
                       <span className='font-semibold text-gray-900 dark:text-neutral-100'>
                         {' '}
-                        Your current capacity is set to {currentCapacity} attendees.
+                        {t('capacityConfirm.current', { capacity: currentCapacity })}
                       </span>
                     )}
                   </p>
                   <p className='text-sm leading-relaxed text-gray-500 dark:text-neutral-400'>
-                    This action will remove all capacity restrictions. You can always set a new
-                    capacity later.
+                    {t('capacityConfirm.description')}
                   </p>
                 </div>
               </div>

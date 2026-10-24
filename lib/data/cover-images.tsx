@@ -1,4 +1,5 @@
 import { DEFAULT_COVERS } from '@/components/event-covers';
+import { translateHooks } from '@/lib/i18n/active-translator';
 import { Clapperboard, Cpu, Crown, Image, MessagesSquare, PartyPopper } from 'lucide-react';
 import React from 'react';
 
@@ -17,53 +18,75 @@ export interface CoverImageCategory {
   images: CoverImage[];
 }
 
+type CoverCategoryId = 'featured' | 'party' | 'social' | 'classic' | 'tech';
+
 // Helper function to convert legacy cover format to new format
-function convertLegacyCovers(legacyCovers: { url: string }[], categoryName: string): CoverImage[] {
+function convertLegacyCovers(
+  legacyCovers: { url: string }[],
+  categoryId: CoverCategoryId
+): CoverImage[] {
   return legacyCovers.map((cover, index) => ({
-    id: `${categoryName.toLowerCase()}-${index + 1}`,
+    id: `${categoryId}-${index + 1}`,
     url: cover.url,
-    title: `${categoryName} Cover ${index + 1}`,
-    category: categoryName.toLowerCase(),
+    get title() {
+      return translateHooks('covers.coverTitle', {
+        category: translateHooks(`covers.categories.${categoryId}`),
+        number: index + 1,
+      });
+    },
+    category: categoryId,
   }));
 }
 
 export const coverImageCategories: CoverImageCategory[] = [
   {
     id: 'featured',
-    name: 'Featured',
+    get name() {
+      return translateHooks('covers.categories.featured');
+    },
     icon: Crown,
     featured: true,
-    images: convertLegacyCovers(DEFAULT_COVERS.FEATURED, 'Featured'),
+    images: convertLegacyCovers(DEFAULT_COVERS.FEATURED, 'featured'),
   },
   {
     id: 'giphy',
-    name: 'GIFs',
+    get name() {
+      return translateHooks('covers.categories.gifs');
+    },
     icon: Clapperboard,
     images: [], // No static images, will be loaded dynamically
   },
   {
     id: 'party',
-    name: 'Party',
+    get name() {
+      return translateHooks('covers.categories.party');
+    },
     icon: PartyPopper,
-    images: convertLegacyCovers(DEFAULT_COVERS.PARTY, 'Party'),
+    images: convertLegacyCovers(DEFAULT_COVERS.PARTY, 'party'),
   },
   {
     id: 'social',
-    name: 'Social',
+    get name() {
+      return translateHooks('covers.categories.social');
+    },
     icon: MessagesSquare,
-    images: convertLegacyCovers(DEFAULT_COVERS.SOCIAL, 'Social'),
+    images: convertLegacyCovers(DEFAULT_COVERS.SOCIAL, 'social'),
   },
   {
     id: 'classic',
-    name: 'Classic',
+    get name() {
+      return translateHooks('covers.categories.classic');
+    },
     icon: Image,
-    images: convertLegacyCovers(DEFAULT_COVERS.CLASSIC, 'Classic'),
+    images: convertLegacyCovers(DEFAULT_COVERS.CLASSIC, 'classic'),
   },
   {
     id: 'tech',
-    name: 'Tech',
+    get name() {
+      return translateHooks('covers.categories.tech');
+    },
     icon: Cpu,
-    images: convertLegacyCovers(DEFAULT_COVERS.TECH, 'Tech'),
+    images: convertLegacyCovers(DEFAULT_COVERS.TECH, 'tech'),
   },
 ];
 

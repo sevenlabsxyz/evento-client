@@ -11,6 +11,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { CalendarPlus, Link2, Plus, Unlink } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -20,6 +21,7 @@ export default function SubEventsManagementPage() {
   const pathname = usePathname();
   const eventId = params.id as string;
   const router = useRouter();
+  const t = useTranslations('manageLegacy');
 
   const { data: subEvents = [], isLoading, error } = useSubEvents(eventId, { includeDrafts: true });
   const unlinkSubEvent = useUnlinkSubEvent();
@@ -34,7 +36,7 @@ export default function SubEventsManagementPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Sub Events',
+      title: t('subEvents.title'),
       leftMode: 'back',
       showAvatar: false,
       centerMode: 'title',
@@ -45,7 +47,7 @@ export default function SubEventsManagementPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [eventId, pathname, router, setTopBarForRoute, applyRouteConfig, clearRoute]);
+  }, [eventId, pathname, router, setTopBarForRoute, applyRouteConfig, clearRoute, t]);
 
   const handleCreateNew = () => {
     setShowAddOptions(false);
@@ -63,9 +65,9 @@ export default function SubEventsManagementPage() {
         parentEventId: eventId,
         subEventId: subEvent.id,
       });
-      toast.success(`"${subEvent.title}" removed from sub events`);
+      toast.success(t('subEvents.toasts.removed', { title: subEvent.title }));
     } catch (error: any) {
-      toast.error(error?.message || 'Failed to remove sub event');
+      toast.error(error?.message || t('subEvents.toasts.removeFailed'));
     }
   };
 
@@ -73,9 +75,11 @@ export default function SubEventsManagementPage() {
     <div className='space-y-4 py-4 md:py-6'>
       <div className='flex items-start justify-between gap-4'>
         <div>
-          <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Sub events</h2>
+          <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+            {t('subEvents.heading')}
+          </h2>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            Group related events under this one by creating new ones or linking existing events.
+            {t('subEvents.description')}
           </p>
         </div>
         <button
@@ -84,7 +88,7 @@ export default function SubEventsManagementPage() {
           className='flex shrink-0 items-center gap-1.5 rounded-full bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
         >
           <Plus className='h-4 w-4' />
-          Add sub event
+          {t('subEvents.addButton')}
         </button>
       </div>
 
@@ -120,7 +124,7 @@ export default function SubEventsManagementPage() {
                 </div>
                 {se.status === 'draft' && (
                   <span className='shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950/60 dark:text-amber-400'>
-                    Draft
+                    {t('subEvents.draft')}
                   </span>
                 )}
                 <button
@@ -130,7 +134,7 @@ export default function SubEventsManagementPage() {
                     setPendingRemove(se);
                     setConfirmOpen(true);
                   }}
-                  aria-label={`Remove ${se.title}`}
+                  aria-label={t('subEvents.removeAria', { title: se.title })}
                 >
                   <Unlink className='h-5 w-5' />
                 </button>
@@ -140,7 +144,7 @@ export default function SubEventsManagementPage() {
         ) : error ? (
           <div className='rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center dark:border-neutral-700 dark:bg-neutral-950'>
             <p className='text-sm text-gray-500 dark:text-neutral-400'>
-              Failed to load sub events.
+              {t('subEvents.loadFailed')}
             </p>
           </div>
         ) : (
@@ -149,23 +153,23 @@ export default function SubEventsManagementPage() {
               <Plus className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
             </div>
             <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
-              No Sub Events
+              {t('subEvents.empty.title')}
             </h3>
             <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
-              Create a new event under this one, or link one of your existing events
+              {t('subEvents.empty.description')}
             </p>
             <div className='flex flex-col items-center gap-2'>
               <button
                 onClick={handleCreateNew}
                 className='w-full max-w-xs rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
-                Create New Sub Event
+                {t('subEvents.createNew')}
               </button>
               <button
                 onClick={handleLinkExisting}
                 className='w-full max-w-xs rounded-lg border border-gray-200 px-6 py-2 text-gray-900 transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-950'
               >
-                Link Existing Event
+                {t('subEvents.linkExisting')}
               </button>
             </div>
           </div>
@@ -186,7 +190,9 @@ export default function SubEventsManagementPage() {
                   <DetachedSheet.Handle />
                 </div>
 
-                <h2 className='mb-6 text-xl font-semibold dark:text-neutral-100'>Add Sub Event</h2>
+                <h2 className='mb-6 text-xl font-semibold dark:text-neutral-100'>
+                  {t('subEvents.addSheet.title')}
+                </h2>
 
                 <div className='flex flex-col gap-2 pb-2'>
                   <button
@@ -198,10 +204,10 @@ export default function SubEventsManagementPage() {
                     </div>
                     <div className='flex-1 text-left'>
                       <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
-                        Create New Sub Event
+                        {t('subEvents.createNew')}
                       </h3>
                       <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                        Set up a brand new event under this one
+                        {t('subEvents.addSheet.createDescription')}
                       </p>
                     </div>
                   </button>
@@ -214,10 +220,10 @@ export default function SubEventsManagementPage() {
                     </div>
                     <div className='flex-1 text-left'>
                       <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
-                        Link Existing Event
+                        {t('subEvents.linkExisting')}
                       </h3>
                       <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                        Choose one of your own events
+                        {t('subEvents.addSheet.linkDescription')}
                       </p>
                     </div>
                   </button>
@@ -250,10 +256,14 @@ export default function SubEventsManagementPage() {
           setPendingRemove(null);
         }}
         itemType='sub event'
-        title='Remove sub event'
-        description={`Remove "${pendingRemove?.title ?? 'this event'}" from this event's sub events? The event itself won't be deleted.`}
-        confirmLabel='Remove'
-        loadingLabel='Removing...'
+        title={t('subEvents.removeSheet.title')}
+        description={
+          pendingRemove
+            ? t('subEvents.removeSheet.description', { title: pendingRemove.title })
+            : t('subEvents.removeSheet.descriptionFallback')
+        }
+        confirmLabel={t('subEvents.removeSheet.confirm')}
+        loadingLabel={t('subEvents.removeSheet.removing')}
         isLoading={unlinkSubEvent.isPending}
       />
     </div>

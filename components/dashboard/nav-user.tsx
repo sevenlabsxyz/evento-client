@@ -1,6 +1,7 @@
 'use client';
 
 import { BookOpen, LogOut, MoreVertical, Settings } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import Link from 'next/link';
 import { useState } from 'react';
@@ -26,6 +27,8 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 
 export function NavUser() {
+  const t = useTranslations('nav');
+  const tCommon = useTranslations('common');
   const { isMobile } = useSidebar();
   const { user } = useUserProfile();
   const { logout, isLoggingOut } = useAuth();
@@ -55,15 +58,17 @@ export function NavUser() {
                 className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
               >
                 <Avatar className='h-8 w-8 rounded-full'>
-                  <AvatarImage src={user?.image} alt={user?.name || 'User'} />
+                  <AvatarImage src={user?.image} alt={user?.name || t('user.avatarAlt')} />
                   <AvatarFallback className='rounded-full bg-gray-100 dark:bg-neutral-800'>
                     {user?.name?.charAt(0)?.toUpperCase() || 'E'}
                   </AvatarFallback>
                 </Avatar>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-medium'>{user?.name || 'Evento User'}</span>
+                  <span className='truncate font-medium'>
+                    {user?.name || t('user.fallbackName')}
+                  </span>
                   <span className='truncate text-xs text-muted-foreground'>
-                    {user?.username ? `@${user.username}` : 'Welcome to Evento'}
+                    {user?.username ? `@${user.username}` : t('user.welcome')}
                   </span>
                 </div>
                 <MoreVertical className='ml-auto size-4' />
@@ -79,15 +84,17 @@ export function NavUser() {
                 <DropdownMenuItem asChild>
                   <Link href='/e/profile' className='flex items-center gap-2 px-1 py-1.5'>
                     <Avatar className='h-8 w-8 rounded-full'>
-                      <AvatarImage src={user?.image} alt={user?.name || 'User'} />
+                      <AvatarImage src={user?.image} alt={user?.name || t('user.avatarAlt')} />
                       <AvatarFallback className='rounded-full bg-gray-100 dark:bg-neutral-800'>
                         {user?.name?.charAt(0)?.toUpperCase() || 'E'}
                       </AvatarFallback>
                     </Avatar>
                     <div className='grid flex-1 text-left text-sm leading-tight'>
-                      <span className='truncate font-medium'>{user?.name || 'Evento User'}</span>
+                      <span className='truncate font-medium'>
+                        {user?.name || t('user.fallbackName')}
+                      </span>
                       <span className='truncate text-xs text-muted-foreground'>
-                        {user?.username ? `@${user.username}` : 'Welcome to Evento'}
+                        {user?.username ? `@${user.username}` : t('user.welcome')}
                       </span>
                     </div>
                   </Link>
@@ -98,7 +105,7 @@ export function NavUser() {
                 <DropdownMenuItem asChild>
                   <Link href='/e/settings'>
                     <Settings className='mr-2 h-4 w-4' />
-                    Settings
+                    {tCommon('labels.settings')}
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
@@ -107,7 +114,7 @@ export function NavUser() {
                 <DropdownMenuItem asChild>
                   <Link href='/e/blog'>
                     <BookOpen className='mr-2 h-4 w-4' />
-                    Blog
+                    {t('sidebar.items.blog')}
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
@@ -117,7 +124,7 @@ export function NavUser() {
                 className='text-destructive dark:text-red-400 dark:focus:text-red-300'
               >
                 <LogOut className='mr-2 h-4 w-4' />
-                Log out
+                {t('user.logOut')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

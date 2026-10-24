@@ -1,1 +1,156 @@
-{}
+{
+  "galleryPage": {
+    "notFoundTitle": "Evento não encontrado",
+    "notFoundDescription": "O evento que você está tentando ver não existe.",
+    "goBack": "Voltar",
+    "goBackAria": "Voltar",
+    "shareTitle": "{title} - Galeria",
+    "shareText": "Confira as fotos de {title}",
+    "linkCopied": "Link da galeria copiado para a área de transferência!",
+    "title": "Galeria",
+    "shareAria": "Compartilhar galeria",
+    "shareButtonTitle": "Compartilhar galeria",
+    "addPhotosAria": "Adicionar fotos",
+    "addPhotosTitle": "Adicionar fotos",
+    "emptyTitle": "Nenhuma foto ainda",
+    "emptyDescription": "As fotos deste evento aparecerão aqui quando forem adicionadas.",
+    "photoCount": "{count, plural, one {# foto} other {# fotos}}"
+  },
+  "comments": {
+    "addFailed": "Seu comentário não foi salvo. Tente novamente.",
+    "loadErrorTitle": "Não foi possível carregar os comentários",
+    "loadErrorDescription": "Houve um problema ao carregar os comentários. Tente novamente mais tarde.",
+    "placeholder": "Adicione um comentário",
+    "postAria": "Publicar comentário",
+    "signInPrompt": "Entre para deixar um comentário.",
+    "emptyTitle": "Nenhum comentário ainda.",
+    "emptyDescription": "Seja o primeiro a comentar sobre este evento."
+  },
+  "comment": {
+    "dateAtTime": "{date} às {time}",
+    "deleteFailed": "Falha ao excluir o comentário",
+    "editFailed": "Falha ao editar o comentário",
+    "replyFailed": "Falha ao adicionar resposta",
+    "reply": "Responder",
+    "replyPlaceholder": "Responder a @{username}",
+    "postReplyAria": "Publicar resposta",
+    "hideReplies": "{count, plural, one {Ocultar # resposta} other {Ocultar # respostas}}",
+    "showReplies": "{count, plural, one {Mostrar # resposta} other {Mostrar # respostas}}"
+  },
+  "deleteSheet": {
+    "title": "{itemType, select, comment {Excluir comentário} reply {Excluir resposta} other {Excluir {itemType}}}",
+    "description": "{itemType, select, comment {Tem certeza de que deseja excluir este comentário? Esta ação não pode ser desfeita.} reply {Tem certeza de que deseja excluir esta resposta? Esta ação não pode ser desfeita.} other {Tem certeza de que deseja excluir este item ({itemType})? Esta ação não pode ser desfeita.}}",
+    "deleting": "Excluindo..."
+  },
+  "gallery": {
+    "shareTitle": "{title} - Galeria de fotos",
+    "shareText": "Confira as fotos de {title}",
+    "sharedByGuests": "Compartilhadas pelos convidados",
+    "shareAlbum": "Compartilhar álbum",
+    "addPhotos": "Adicionar fotos",
+    "emptyTitle": "Nenhuma foto ainda",
+    "emptyDescription": "Seja o primeiro a adicionar fotos — elas ficam visíveis para todos os convidados."
+  },
+  "galleryItem": {
+    "unknownUser": "usuário",
+    "deleteConfirm": "Tem certeza de que deseja excluir esta foto? Esta ação não pode ser desfeita.",
+    "deleteSuccess": "Foto excluída com sucesso",
+    "deleteFailed": "Falha ao excluir a foto",
+    "openAria": "Abrir imagem da galeria de {username}",
+    "imageAlt": "Imagem da galeria de {username}",
+    "likeAria": "Curtir foto",
+    "unlikeAria": "Descurtir foto",
+    "actionsAria": "Ações da foto",
+    "deletePhoto": "Excluir foto"
+  },
+  "photoUpload": {
+    "uploadSuccess": "{count, plural, one {# foto enviada com sucesso!} other {# fotos enviadas com sucesso!}}",
+    "uploadPartial": "{successCount} fotos enviadas, {failCount} falharam.",
+    "title": "Enviar fotos",
+    "selectPrompt": "Selecione até {max} fotos para enviar à galeria deste evento",
+    "selectPhotos": "Selecionar fotos",
+    "selectedCount": "{count, plural, one {# foto selecionada} other {# fotos selecionadas}}",
+    "addMore": "Adicionar mais",
+    "previewAlt": "Pré-visualização da foto",
+    "uploading": "Enviando..."
+  },
+  "contributions": {
+    "title": "Contribuições",
+    "suggested": "Sugerido: {amount}",
+    "welcome": "Contribuições são bem-vindas",
+    "methodsAvailable": "{count, plural, one {# forma de pagamento disponível} other {# formas de pagamento disponíveis}}"
+  },
+  "contributionSheet": {
+    "title": "Contribuição",
+    "subtitle": "Apoie o anfitrião com uma contribuição",
+    "changeAmount": "Alterar valor",
+    "anyAmount": "Qualquer valor é bem-vindo",
+    "chooseMethod": "Escolha como você quer contribuir:"
+  },
+  "campaign": {
+    "defaultTitle": "Financiamento coletivo"
+  },
+  "campaignCard": {
+    "title": "Apoie este evento",
+    "raised": "{amount} arrecadados"
+  },
+  "campaignDetail": {
+    "organizerFallback": "Organizador da campanha",
+    "tabs": {
+      "details": "Detalhes",
+      "contributors": "Contribuidores"
+    },
+    "contribute": "Contribuir",
+    "satsRaised": "sats arrecadados",
+    "of": "de",
+    "goal": "meta de {amount}",
+    "contributionCount": "{count, plural, one {# contribuição} other {# contribuições}}",
+    "created": "Criada em {date}",
+    "emptyTitle": "Nenhuma contribuição ainda",
+    "emptyDescription": "Seja o primeiro a contribuir com esta campanha.",
+    "anonymous": "Anônimo",
+    "timeAgo": {
+      "justNow": "agora mesmo",
+      "minutesAgo": "há {count} min",
+      "hoursAgo": "há {count} h",
+      "daysAgo": "há {count} d"
+    }
+  },
+  "pledge": {
+    "createFailed": "Falha ao criar a contribuição. Tente novamente.",
+    "invoiceCopied": "Fatura copiada para a área de transferência",
+    "copyFailed": "Falha ao copiar a fatura",
+    "contributeTo": "Contribuir para \"{title}\"",
+    "chooseAmount": "Escolha um valor para contribuir",
+    "sats": "sats",
+    "creatingInvoice": "Criando fatura…",
+    "contributeAmount": "Contribuir com {amount} sats",
+    "selectAmount": "Selecione um valor",
+    "walletPaymentFailed": "O pagamento falhou. Tente copiar a fatura.",
+    "payAmount": "Pagar <strong>{amount} sats</strong>",
+    "paying": "Pagando…",
+    "payWithWallet": "Pagar com a carteira Evento",
+    "walletInstant": "Pagamento instantâneo com seu saldo",
+    "walletNotConnected": "Carteira não conectada",
+    "viewQr": "Ver QR code",
+    "viewQrDescription": "Escaneie ou copie para qualquer carteira Lightning",
+    "waitingForPayment": "Aguardando pagamento…",
+    "scanToPay": "Escaneie ou copie a fatura para pagar <strong>{amount} sats</strong>",
+    "copied": "Copiado!",
+    "copyInvoice": "Copiar fatura",
+    "thankYou": "Obrigado!",
+    "received": "Sua contribuição de <strong>{amount} sats</strong> foi recebida.",
+    "expiredTitle": "Fatura expirada",
+    "expiredDescription": "O prazo de pagamento terminou. Você pode tentar novamente com uma nova fatura.",
+    "tryAgain": "Tentar novamente",
+    "failedTitle": "Falha no pagamento",
+    "failedDescription": "Não foi possível confirmar este pagamento. Você pode tentar novamente com uma nova fatura.",
+    "steps": {
+      "amount": "Contribuir",
+      "invoice": "Pagar fatura",
+      "settled": "Pagamento recebido",
+      "expired": "Fatura expirada",
+      "failed": "Falha no pagamento"
+    }
+  }
+}

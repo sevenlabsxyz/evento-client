@@ -1,1 +1,169 @@
-{}
+{
+  "page": {
+    "title": "Configurações",
+    "eyebrow": "Configurações",
+    "heading": "Deixe o Evento do seu jeito",
+    "description": "Gerencie sua conta, suas preferências e como o Evento funciona para você.",
+    "opensInNewTab": "(abre em uma nova aba)"
+  },
+  "sections": {
+    "account": "Conta",
+    "preferences": "Preferências",
+    "developer": "Desenvolvedor",
+    "support": "Suporte",
+    "about": "Sobre",
+    "dangerZone": "Zona de perigo"
+  },
+  "rows": {
+    "telegram": {
+      "label": "Telegram",
+      "description": "Entre com o Telegram e receba notificações de eventos por lá.",
+      "connected": "Conectado"
+    },
+    "darkMode": {
+      "label": "Modo escuro",
+      "description": "Use uma paleta mais escura em todo o Evento."
+    },
+    "language": {
+      "label": "Idioma",
+      "description": "Escolha o idioma usado no Evento.",
+      "selectTitle": "Escolha o idioma",
+      "changing": "Mudando o idioma…"
+    },
+    "currency": {
+      "label": "Moeda",
+      "description": "Usada para exibir preços e valores.",
+      "value": "Dólar americano"
+    },
+    "developerMode": {
+      "label": "Modo desenvolvedor",
+      "description": "Libere chaves de API e configurações técnicas."
+    },
+    "apiKeys": {
+      "label": "Chaves de API",
+      "description": "Crie e revogue chaves para integrações com o Evento."
+    },
+    "talkToUs": {
+      "label": "Fale com a gente",
+      "description": "Dúvidas, sugestões ou algum problema? Envie uma mensagem."
+    },
+    "share": {
+      "label": "Indicar para um amigo",
+      "description": "Convide amigos para descobrir eventos no Evento."
+    },
+    "about": {
+      "label": "Sobre o Evento",
+      "description": "Saiba mais sobre o Evento em evento.so."
+    },
+    "security": {
+      "label": "Segurança",
+      "description": "Como o Evento protege sua conta, sua carteira e seus dados."
+    },
+    "terms": {
+      "label": "Termos de Serviço",
+      "description": "As regras para usar o Evento."
+    },
+    "privacy": {
+      "label": "Política de Privacidade",
+      "description": "Como coletamos e usamos seus dados."
+    },
+    "logOut": {
+      "label": "Sair",
+      "description": "Saia do Evento neste dispositivo."
+    }
+  },
+  "share": {
+    "title": "Evento - App de eventos de viagem",
+    "text": "Conheça o Evento, o melhor jeito de planejar e organizar seus eventos de viagem!",
+    "failed": "Não foi possível compartilhar. Copie o link manualmente: evento.so"
+  },
+  "toasts": {
+    "developerModeEnabled": "Modo desenvolvedor ativado",
+    "developerModeDisabled": "Modo desenvolvedor desativado"
+  },
+  "developerModeDialog": {
+    "title": "Ativar o modo desenvolvedor?",
+    "intro": "O modo desenvolvedor é voltado para usuários avançados que criam integrações com o Evento.",
+    "warning": "Ao ativá-lo, você terá acesso a chaves de API e configurações técnicas. Entenda bem as implicações de segurança de gerenciar credenciais de API.",
+    "confirm": "Ativar modo desenvolvedor"
+  },
+  "contact": {
+    "title": "Fale conosco",
+    "subtitle": "Envie uma mensagem e retornaremos em breve",
+    "subjectLabel": "Assunto *",
+    "subjectPlaceholder": "Sobre o que é?",
+    "messageLabel": "Mensagem *",
+    "messagePlaceholder": "Conte mais sobre seu problema ou dúvida...",
+    "attachmentLabel": "Anexo (opcional)",
+    "fileSize": "{size} KB",
+    "removeAttachment": "Remover anexo",
+    "uploadPrompt": "Clique para enviar um arquivo ou captura de tela",
+    "uploadHint": "PNG, JPG, PDF, DOC de até 10 MB",
+    "sending": "Enviando...",
+    "submit": "Enviar mensagem",
+    "requiredFields": "Preencha todos os campos obrigatórios",
+    "success": "Mensagem enviada! Retornaremos em breve.",
+    "failed": "Não foi possível enviar a mensagem. Tente novamente."
+  },
+  "telegram": {
+    "subtitle": "Conecte sua conta do Telegram",
+    "subtitleConnected": "Sua conta do Telegram está conectada",
+    "connectedBody": "O Telegram está conectado. Você pode entrar com o Telegram e receber notificações por lá.",
+    "connectBody": "Conecte o Telegram para entrar com sua conta do Telegram e receber notificações de eventos pelo Telegram.",
+    "disconnect": "Desconectar Telegram",
+    "disconnecting": "Desconectando...",
+    "notConfigured": "{variable} não está configurado.",
+    "noSession": "Nenhuma sessão ativa. Entre e tente novamente.",
+    "linkFailed": "Não foi possível vincular o Telegram",
+    "connectFailed": "Não foi possível conectar o Telegram",
+    "disconnectFailed": "Não foi possível desconectar o Telegram",
+    "connectedToast": "Telegram conectado!",
+    "disconnectedToast": "Telegram desconectado"
+  },
+  "apiKeys": {
+    "title": "Chaves de API",
+    "description": "Gerencie suas chaves de API para integrações com o Evento",
+    "activeCount": "Chaves ativas: <strong>{count}</strong> / {max}",
+    "createKey": "Criar chave",
+    "limitReached": "Você atingiu o limite de {max} chaves de API. Revogue uma chave existente para criar uma nova.",
+    "emptyTitle": "Nenhuma chave de API",
+    "emptyDescription": "Crie sua primeira chave de API para começar a integrar com o Evento",
+    "createFirstKey": "Criar sua primeira chave",
+    "statusActive": "Ativa",
+    "statusRevoked": "Revogada",
+    "created": "Criada:",
+    "lastUsed": "Último uso:",
+    "never": "Nunca",
+    "invalidDate": "Data inválida",
+    "revokeKey": "Revogar chave"
+  },
+  "createApiKey": {
+    "title": "Criar chave de API",
+    "description": "Dê um nome descritivo à sua chave de API para identificá-la depois.",
+    "nameLabel": "Nome *",
+    "namePlaceholder": "ex.: Chave de API de produção",
+    "nameHint": "Máximo de {max} caracteres",
+    "nameRequired": "Digite um nome para sua chave de API",
+    "creating": "Criando...",
+    "submit": "Criar chave",
+    "success": "Chave de API criada",
+    "failed": "Não foi possível criar a chave de API",
+    "createdTitle": "Chave de API criada",
+    "createdDescription": "Sua chave de API foi criada.",
+    "copyNow": "Copie agora. Você não poderá vê-la novamente!",
+    "keyLabel": "Chave de API",
+    "copyKey": "Copiar chave de API",
+    "copied": "Chave de API copiada",
+    "copyFailed": "Não foi possível copiar a chave de API",
+    "storeSecurely": "<strong>Importante:</strong> guarde esta chave de API em um lugar seguro. Ela não será exibida novamente depois que você fechar esta janela.",
+    "savedKey": "Já salvei minha chave"
+  },
+  "revokeApiKey": {
+    "title": "Revogar chave de API",
+    "description": "Tem certeza de que quer revogar \"{name}\"? Essa ação não pode ser desfeita, e todos os aplicativos que usam esta chave perderão o acesso imediatamente.",
+    "revoking": "Revogando...",
+    "confirm": "Revogar chave",
+    "success": "Chave de API revogada",
+    "failed": "Não foi possível revogar a chave de API"
+  }
+}
