@@ -91,13 +91,13 @@ export default function CancelEventModal({
                 {/* Warning Text */}
                 <div className='rounded-xl bg-red-50 p-4 text-left dark:bg-red-950/40'>
                   <p className='mb-2 font-medium text-red-600 dark:text-red-400'>
-                    Warning: This action is permanent and cannot be undone.
+                    Warning: This can&apos;t be undone.
                   </p>
                   <ul className='list-disc space-y-1 pl-5 text-sm text-gray-700 dark:text-neutral-300'>
-                    <li>All event data will be permanently deleted</li>
-                    <li>All RSVPs, comments, and photos will be removed</li>
-                    <li>Links to this event will no longer work</li>
-                    <li>This action cannot be reversed</li>
+                    <li>The event will be marked as cancelled and hidden from guests</li>
+                    <li>Guests will no longer be able to view the event or RSVP</li>
+                    <li>Linked sub-events will be detached from this event</li>
+                    <li>You won&apos;t be able to reopen it from Evento</li>
                   </ul>
                 </div>
               </div>
@@ -110,7 +110,7 @@ export default function CancelEventModal({
                       Notify attendees via email
                     </h3>
                     <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                      Send cancellation notification to all registered guests
+                      Email guests who RSVP&apos;d yes or maybe about the cancellation
                     </p>
                   </div>
                   <button
