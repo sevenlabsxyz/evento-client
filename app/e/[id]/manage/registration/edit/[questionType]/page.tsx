@@ -210,7 +210,7 @@ export default function EditQuestionPage() {
   // Loading state
   if (isLoadingSettings) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-white dark:bg-neutral-900'>
+      <div className='flex items-center justify-center py-16'>
         <Loader2 className='h-8 w-8 animate-spin text-gray-400 dark:text-neutral-500' />
       </div>
     );
@@ -219,7 +219,7 @@ export default function EditQuestionPage() {
   // Question not found
   if (!questionId || (!isLoadingSettings && !existingQuestion)) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
+      <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
             Question Not Found
@@ -241,7 +241,7 @@ export default function EditQuestionPage() {
   // Invalid question type
   if (!config) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
+      <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
             Invalid Question Type
@@ -261,17 +261,19 @@ export default function EditQuestionPage() {
   }
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
+    <div className='space-y-4 py-4 md:py-6'>
       {/* Header */}
-      <div className='flex items-center justify-between border-b border-gray-100 p-4 dark:border-neutral-800'>
-        <div className='flex items-center gap-4'>
+      <div className='flex max-w-2xl items-center justify-between gap-4'>
+        <div className='flex items-center gap-3'>
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push(`/e/${eventId}/manage/registration`)}
             className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <ArrowLeft className='h-5 w-5' />
           </button>
-          <h1 className='text-xl font-semibold'>Edit Question</h1>
+          <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+            Edit Question
+          </h2>
         </div>
         <Button
           onClick={handleSave}
@@ -294,16 +296,16 @@ export default function EditQuestionPage() {
       </div>
 
       {/* Content */}
-      <div className='space-y-6 p-4'>
+      <div className='max-w-2xl space-y-6 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900 md:p-6'>
         {/* Question Type Header */}
         <div className='flex items-center gap-4'>
           <div className={`h-12 w-12 ${config.iconBg} flex items-center justify-center rounded-xl`}>
             <div className={config.iconColor}>{config.icon}</div>
           </div>
           <div>
-            <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+            <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
               {config.label}
-            </h2>
+            </h3>
             <p className='text-sm text-gray-500 dark:text-neutral-400'>{config.description}</p>
           </div>
         </div>
@@ -364,7 +366,7 @@ export default function EditQuestionPage() {
         )}
 
         {/* Required Toggle */}
-        <div className='flex items-center justify-between rounded-xl bg-gray-50 p-4 dark:bg-neutral-950'>
+        <div className='flex items-center justify-between rounded-xl bg-gray-50 p-4 dark:bg-neutral-800'>
           <div>
             <h3 className='font-medium text-gray-900 dark:text-neutral-100'>Required</h3>
             <p className='text-sm text-gray-500 dark:text-neutral-400'>

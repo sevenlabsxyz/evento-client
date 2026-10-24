@@ -135,6 +135,7 @@ export default function ContributionsManagementPage() {
       title: 'Contributions',
       leftMode: 'back',
       centerMode: 'title',
+      onBackPress: () => router.push(`/e/${eventId}/manage`),
       showAvatar: false,
       buttons: [
         {
@@ -150,17 +151,26 @@ export default function ContributionsManagementPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, clearRoute, isSubmitting, applyRouteConfig, pathname, handleSave]);
+  }, [
+    setTopBarForRoute,
+    clearRoute,
+    isSubmitting,
+    applyRouteConfig,
+    pathname,
+    handleSave,
+    router,
+    eventId,
+  ]);
 
   // Conditional returns MUST come after all hooks
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-        <div className='space-y-6 p-4'>
+      <div className='space-y-4 py-4 md:py-6'>
+        <div className='max-w-2xl space-y-4'>
           <Skeleton className='h-4 w-3/4' />
 
           {/* Contribution Settings Skeleton */}
-          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+          <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='mb-4 flex items-center gap-3'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='space-y-2'>
@@ -194,7 +204,7 @@ export default function ContributionsManagementPage() {
 
   if (error || !existingEvent) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
+      <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
             Event Not Found
@@ -297,16 +307,19 @@ export default function ContributionsManagementPage() {
   );
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-      {/* TopBar handles header */}
-      {/* Content */}
-      <div className='space-y-6 p-4'>
-        <div className='text-sm text-gray-500 dark:text-neutral-400'>
-          Set up payment methods and suggested contribution amounts for your event.
+    <div className='space-y-4 py-4 md:py-6'>
+      <div className='max-w-2xl space-y-4'>
+        <div>
+          <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+            Contributions
+          </h2>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>
+            Set up payment methods and suggested contribution amounts for your event.
+          </p>
         </div>
 
         {/* Suggested Amount Section */}
-        <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+        <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
           <div className='mb-4 flex items-center gap-3'>
             <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 dark:bg-green-950/60'>
               <DollarSign className='h-5 w-5 text-green-600 dark:text-green-400' />
@@ -343,56 +356,58 @@ export default function ContributionsManagementPage() {
         </div>
 
         {/* Payment Methods Section */}
-        <div className='space-y-4'>
-          <h3 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+        <div className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
+          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
             Payment Methods
           </h3>
+          <p className='mb-3 text-sm text-gray-500 dark:text-neutral-400'>
+            Enable the handles guests can use to contribute.
+          </p>
 
-          {paymentMethods.map((method) => {
-            const paymentData = contributions.paymentMethods[method.key];
-            return (
-              <div
-                key={method.key}
-                className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'
-              >
-                <div className='mb-3 flex items-center gap-3'>
-                  <div
-                    className={`h-10 w-10 ${method.iconBg} flex items-center justify-center rounded-xl`}
-                  >
-                    {method.icon}
-                  </div>
-                  <div className='flex-1'>
-                    <h4 className='font-medium text-gray-900 dark:text-neutral-100'>
-                      {method.name}
-                    </h4>
-                    <p className='text-xs text-gray-500 dark:text-neutral-400'>{method.hint}</p>
-                  </div>
-                  <button
-                    onClick={() => handlePaymentMethodToggle(method.key)}
-                    className={`h-6 w-10 rounded-full transition-colors ${
-                      paymentData?.enabled ? 'bg-green-500' : 'bg-gray-300 dark:bg-neutral-600'
-                    }`}
-                  >
+          <div className='divide-y divide-gray-100 dark:divide-neutral-800'>
+            {paymentMethods.map((method) => {
+              const paymentData = contributions.paymentMethods[method.key];
+              return (
+                <div key={method.key} className='py-3 first:pt-0 last:pb-0'>
+                  <div className='mb-3 flex items-center gap-3'>
                     <div
-                      className={`h-4 w-4 rounded-full bg-white transition-transform dark:bg-neutral-100 ${
-                        paymentData?.enabled ? 'translate-x-5' : 'translate-x-1'
+                      className={`h-10 w-10 ${method.iconBg} flex items-center justify-center rounded-xl`}
+                    >
+                      {method.icon}
+                    </div>
+                    <div className='flex-1'>
+                      <h4 className='font-medium text-gray-900 dark:text-neutral-100'>
+                        {method.name}
+                      </h4>
+                      <p className='text-xs text-gray-500 dark:text-neutral-400'>{method.hint}</p>
+                    </div>
+                    <button
+                      onClick={() => handlePaymentMethodToggle(method.key)}
+                      className={`h-6 w-10 rounded-full transition-colors ${
+                        paymentData?.enabled ? 'bg-green-500' : 'bg-gray-300 dark:bg-neutral-600'
                       }`}
-                    />
-                  </button>
-                </div>
+                    >
+                      <div
+                        className={`h-4 w-4 rounded-full bg-white transition-transform dark:bg-neutral-100 ${
+                          paymentData?.enabled ? 'translate-x-5' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
 
-                {paymentData?.enabled && (
-                  <input
-                    type='text'
-                    value={paymentData.value}
-                    onChange={(e) => handlePaymentMethodValue(method.key, e.target.value)}
-                    placeholder={method.placeholder}
-                    className='w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
-                  />
-                )}
-              </div>
-            );
-          })}
+                  {paymentData?.enabled && (
+                    <input
+                      type='text'
+                      value={paymentData.value}
+                      onChange={(e) => handlePaymentMethodValue(method.key, e.target.value)}
+                      placeholder={method.placeholder}
+                      className='w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Information Section */}

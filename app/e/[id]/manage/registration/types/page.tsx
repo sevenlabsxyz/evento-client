@@ -142,14 +142,16 @@ export default function ChooseQuestionTypePage() {
   };
 
   const renderQuestionSection = (title: string, questions: QuestionTypeOption[]) => (
-    <div className='mb-6'>
-      <h3 className='mb-3 px-4 text-sm font-medium text-gray-500 dark:text-neutral-400'>{title}</h3>
+    <section className='overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'>
+      <h3 className='px-4 pb-1 pt-4 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+        {title}
+      </h3>
       <div className='space-y-1'>
         {questions.map((question) => (
           <button
             key={question.key}
             onClick={() => handleQuestionTypeSelect(question.key)}
-            className='flex w-full items-center gap-4 p-4 transition-colors hover:bg-gray-50 dark:hover:bg-neutral-950'
+            className='flex w-full items-center gap-4 p-4 transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800'
           >
             <div
               className={`h-12 w-12 ${question.iconBg} flex items-center justify-center rounded-xl`}
@@ -172,34 +174,39 @@ export default function ChooseQuestionTypePage() {
           </button>
         ))}
       </div>
-    </div>
+    </section>
   );
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
+    <div className='space-y-4 py-4 md:py-6'>
       {/* Header */}
-      <div className='flex items-center gap-4 border-b border-gray-100 p-4 dark:border-neutral-800'>
+      <div className='flex max-w-2xl items-center gap-3'>
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push(`/e/${eventId}/manage/registration`)}
           className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
         >
           <ArrowLeft className='h-5 w-5' />
         </button>
-        <h1 className='text-xl font-semibold'>Choose Question Type</h1>
+        <div>
+          <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+            Choose Question Type
+          </h2>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>
+            Pick the kind of question guests answer when they register.
+          </p>
+        </div>
       </div>
 
       {/* Content */}
-      <div className='py-4'>
+      <div className='max-w-2xl space-y-4'>
         {renderQuestionSection('Basic', basicQuestions)}
         {renderQuestionSection('Social Profile', socialProfileQuestions)}
 
         {/* Social Profile Note */}
-        <div className='mb-6 px-4'>
-          <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            We will retrieve the information automatically if the guest has set it on their Luma
-            profile.
-          </p>
-        </div>
+        <p className='px-1 text-sm text-gray-500 dark:text-neutral-400'>
+          We will retrieve the information automatically if the guest has set it on their Luma
+          profile.
+        </p>
 
         {renderQuestionSection('Other', otherQuestions)}
       </div>

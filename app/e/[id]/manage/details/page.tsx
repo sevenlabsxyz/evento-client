@@ -94,6 +94,7 @@ export default function EditEventDetailsPage() {
     setTopBarForRoute(pathname, {
       title: 'Event Details',
       leftMode: 'back',
+      onBackPress: () => router.push(`/e/${eventId}/manage`),
       centerMode: 'title',
       hideMobileBreadcrumb: true,
       showAvatar: false,
@@ -102,7 +103,7 @@ export default function EditEventDetailsPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute]);
+  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute, router, eventId]);
 
   // Populate form when event data is loaded
   useEffect(() => {
@@ -151,15 +152,15 @@ export default function EditEventDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-md'>
-        <div className='space-y-4 p-4'>
+      <div className='max-w-2xl py-4 md:py-6'>
+        <div className='space-y-4'>
           {/* Cover image skeleton */}
           <Skeleton className='aspect-video w-full rounded-2xl' />
 
           {/* Form sections skeleton */}
-          <div className='space-y-4 rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'>
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-900'>
             {/* Title section */}
-            <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+            <div className='rounded-2xl bg-white p-4 dark:bg-neutral-800'>
               <Skeleton className='mb-2 h-4 w-20' />
               <div className='flex items-center gap-3'>
                 <Skeleton className='h-8 w-8 rounded-lg' />
@@ -189,7 +190,7 @@ export default function EditEventDetailsPage() {
 
             {/* Other sections */}
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+              <div key={i} className='rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                 <div className='flex items-center gap-4'>
                   <Skeleton className='h-8 w-8 rounded-lg' />
                   <div className='flex-1'>
@@ -208,7 +209,7 @@ export default function EditEventDetailsPage() {
 
   if (error || !eventData) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
+      <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
             Event Not Found
@@ -260,19 +261,29 @@ export default function EditEventDetailsPage() {
   };
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-md'>
-      {/* Cover Image Selector */}
-      <div className='mb-4 px-4'>
-        <CoverImageSelector
-          selectedImage={coverImage}
-          onImageClick={() => setShowImageModal(true)}
-        />
+    <div className='space-y-4 py-4 md:py-6'>
+      <div>
+        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Details</h2>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>
+          Edit your event&apos;s cover, title, date, location, description and capacity.
+        </p>
       </div>
 
-      {/* Form Content */}
-      <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4 dark:bg-neutral-950'>
+      <div className='max-w-2xl space-y-4'>
+        {/* Media */}
+        <section className='space-y-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
+          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Media</h3>
+          <div className='max-w-sm'>
+            <CoverImageSelector
+              selectedImage={coverImage}
+              onImageClick={() => setShowImageModal(true)}
+            />
+          </div>
+        </section>
+
         {/* Event Title Module */}
-        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+        <div className='space-y-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
+          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Basics</h3>
           <div className='space-y-2'>
             <label className='text-sm font-medium text-gray-500 dark:text-neutral-400'>
               Event Title
@@ -291,7 +302,10 @@ export default function EditEventDetailsPage() {
         </div>
 
         {/* Date & Time Module */}
-        <div className='space-y-4 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+        <div className='space-y-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
+          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+            Date &amp; time
+          </h3>
           <div className='flex items-center gap-4'>
             <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
               <Calendar className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
@@ -336,7 +350,8 @@ export default function EditEventDetailsPage() {
         </div>
 
         {/* Address Module */}
-        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+        <div className='space-y-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
+          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Location</h3>
           <button
             onClick={() => setShowLocationModal(true)}
             className='flex w-full items-center gap-4 text-left'
@@ -361,7 +376,8 @@ export default function EditEventDetailsPage() {
         </div>
 
         {/* Description Module */}
-        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+        <div className='space-y-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
+          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Description</h3>
           <button
             onClick={() => setShowDescriptionModal(true)}
             className='flex w-full items-start gap-4 text-left'
@@ -387,7 +403,8 @@ export default function EditEventDetailsPage() {
           </button>
         </div>
 
-        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+        <div className='space-y-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
+          <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>Capacity</h3>
           <div className='space-y-3'>
             <div className='flex items-center gap-4'>
               <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 dark:bg-neutral-800'>
@@ -555,9 +572,9 @@ export default function EditEventDetailsPage() {
         currentCapacity={capacity}
       />
 
-      {/* Fixed Bottom Button */}
-      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900 md:mx-auto md:max-w-3xl md:border-l md:border-r md:border-t'>
-        <div className='mx-auto max-w-full md:max-w-md'>
+      {/* Sticky Save Bar (stays within the content column) */}
+      <div className='sticky bottom-0 z-30 -mx-4 border-t border-gray-200 bg-white px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4 dark:border-neutral-800 dark:bg-neutral-950 md:mx-0 md:px-0'>
+        <div className='max-w-2xl'>
           <SubmitButton
             onClick={handleSaveChanges}
             disabled={!isFormValid || updateEventMutation.isPending}

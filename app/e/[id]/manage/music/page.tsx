@@ -209,6 +209,7 @@ export default function MusicManagementPage() {
       title: 'Music',
       leftMode: 'back',
       centerMode: 'title',
+      onBackPress: () => router.push(`/e/${eventId}/manage`),
       showAvatar: false,
       buttons: [
         {
@@ -224,16 +225,25 @@ export default function MusicManagementPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute, isSubmitting, handleSave]);
+  }, [
+    pathname,
+    setTopBarForRoute,
+    applyRouteConfig,
+    clearRoute,
+    isSubmitting,
+    handleSave,
+    router,
+    eventId,
+  ]);
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-        <div className='space-y-6 p-4'>
+      <div className='space-y-4 py-4 md:py-6'>
+        <div className='max-w-2xl space-y-4'>
           <Skeleton className='h-4 w-3/4' />
 
           {/* Spotify Section Skeleton */}
-          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+          <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='mb-4 flex items-center gap-3'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='space-y-2'>
@@ -248,7 +258,7 @@ export default function MusicManagementPage() {
           </div>
 
           {/* Wavlake Section Skeleton */}
-          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+          <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='mb-4 flex items-center gap-3'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='space-y-2'>
@@ -275,11 +285,11 @@ export default function MusicManagementPage() {
 
   if (error || !existingEvent) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
+      <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+          <h2 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
             Event Not Found
-          </h1>
+          </h2>
           <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             The event you&apos;re trying to manage doesn&apos;t exist.
           </p>
@@ -295,15 +305,17 @@ export default function MusicManagementPage() {
   }
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-      {/* Content */}
-      <div className='space-y-6 p-4'>
-        <div className='text-sm text-gray-500 dark:text-neutral-400'>
+    <div className='space-y-4 py-4 md:py-6'>
+      <div>
+        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Music</h2>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>
           Add music tracks to your event that guests can discover and listen to.
-        </div>
+        </p>
+      </div>
 
+      <div className='max-w-2xl space-y-4'>
         {/* Spotify Section */}
-        <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+        <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
           <div className='mb-4 flex items-center gap-3'>
             <div className='flex h-12 w-12 items-center justify-center rounded-xl'>
               <SpotifySVGImage className='h-8 w-8' />
@@ -354,7 +366,7 @@ export default function MusicManagementPage() {
         </div>
 
         {/* Wavlake Section */}
-        <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+        <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
           <div className='mb-4 flex items-center gap-3'>
             <div className='flex h-12 w-12 items-center justify-center rounded-xl'>
               <WavlakeSVGImage className='h-7 w-10 dark:fill-white' />

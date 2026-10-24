@@ -102,18 +102,19 @@ export default function HostsManagementPage() {
       showAvatar: false,
       subtitle: '',
       centerMode: 'title',
+      onBackPress: () => router.push(`/e/${eventId}/manage`),
     });
 
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig]);
+  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig, router, eventId]);
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-        <div className='space-y-4 p-4'>
-          <div className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'>
+      <div className='space-y-4 py-4 md:py-6'>
+        <div className='max-w-2xl space-y-4'>
+          <div className='flex items-center gap-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
             <Skeleton className='h-12 w-12 rounded-full' />
             <div className='flex-1 space-y-2'>
               <Skeleton className='h-5 w-24' />
@@ -127,7 +128,7 @@ export default function HostsManagementPage() {
 
   if (error || !existingEvent) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
+      <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
             Event Not Found
@@ -150,111 +151,117 @@ export default function HostsManagementPage() {
 
   return (
     <>
-      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-        <div className='space-y-4 p-4'>
-          {/* Invite Cohost Button */}
-          <div className='flex justify-center'>
-            <Button
-              onClick={handleAddCoHost}
-              variant='secondary'
-              className='w-full gap-2 rounded-xl sm:w-auto'
-            >
+      <div className='space-y-4 py-4 md:py-6'>
+        <div className='max-w-2xl space-y-4'>
+          <div className='flex flex-wrap items-start justify-between gap-3'>
+            <div className='min-w-0'>
+              <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Cohosts</h2>
+              <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                Manage who can co-host and help run this event.
+              </p>
+            </div>
+            <Button onClick={handleAddCoHost} variant='secondary' className='gap-2 rounded-xl'>
               <UserPlus className='h-4 w-4' />
               Invite Cohost
             </Button>
           </div>
 
-          {hosts.length > 0 ? (
-            <div className='space-y-3'>
-              {hosts.map((host) => {
-                const isCreator = host.id === creatorId;
-                const isIdentityLoading = !host.name && !host.username;
-                const hostDisplayName = host.name || (host.username ? `@${host.username}` : '');
-                const hostHandle = host.username ? `@${host.username}` : '';
+          <div className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
+            <h3 className='mb-3 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+              Hosts
+            </h3>
+            {hosts.length > 0 ? (
+              <div className='space-y-3'>
+                {hosts.map((host) => {
+                  const isCreator = host.id === creatorId;
+                  const isIdentityLoading = !host.name && !host.username;
+                  const hostDisplayName = host.name || (host.username ? `@${host.username}` : '');
+                  const hostHandle = host.username ? `@${host.username}` : '';
 
-                return (
-                  <div
-                    key={host.id}
-                    className={`flex items-center gap-4 rounded-2xl p-4 ${
-                      isCreator
-                        ? 'border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/40'
-                        : 'bg-gray-50 dark:bg-neutral-950'
-                    }`}
-                  >
-                    <UserAvatar
-                      user={{
-                        name: host.name ?? undefined,
-                        username: host.username,
-                        image: host.image,
-                        verification_status: host.verification_status as VerificationStatus,
-                      }}
-                      size='md'
-                    />
-                    <div className='min-w-0 flex-1'>
-                      {isIdentityLoading ? (
-                        <div className='space-y-2 py-1'>
-                          <Skeleton className='h-5 w-32' />
-                          <Skeleton className='h-4 w-24' />
-                        </div>
-                      ) : (
-                        <>
-                          <div className='flex items-center gap-2'>
-                            <h3 className='truncate font-semibold text-gray-900 dark:text-neutral-100'>
-                              {hostDisplayName}
-                            </h3>
-                            {isCreator && (
-                              <span className='flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-950/60 dark:text-amber-400'>
-                                <Crown className='h-3 w-3' />
-                                Creator
-                              </span>
-                            )}
+                  return (
+                    <div
+                      key={host.id}
+                      className={`flex items-center gap-4 rounded-2xl p-4 ${
+                        isCreator
+                          ? 'border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/40'
+                          : 'bg-gray-50 dark:bg-neutral-800'
+                      }`}
+                    >
+                      <UserAvatar
+                        user={{
+                          name: host.name ?? undefined,
+                          username: host.username,
+                          image: host.image,
+                          verification_status: host.verification_status as VerificationStatus,
+                        }}
+                        size='md'
+                      />
+                      <div className='min-w-0 flex-1'>
+                        {isIdentityLoading ? (
+                          <div className='space-y-2 py-1'>
+                            <Skeleton className='h-5 w-32' />
+                            <Skeleton className='h-4 w-24' />
                           </div>
-                          <p className='text-sm text-gray-500 dark:text-neutral-400'>
-                            {hostHandle}
-                          </p>
-                        </>
+                        ) : (
+                          <>
+                            <div className='flex items-center gap-2'>
+                              <h3 className='truncate font-semibold text-gray-900 dark:text-neutral-100'>
+                                {hostDisplayName}
+                              </h3>
+                              {isCreator && (
+                                <span className='flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-950/60 dark:text-amber-400'>
+                                  <Crown className='h-3 w-3' />
+                                  Creator
+                                </span>
+                              )}
+                            </div>
+                            <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                              {hostHandle}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                      {!isCreator && !isIdentityLoading && (
+                        <button
+                          onClick={() => handleRemoveHost(host.id)}
+                          disabled={removingHostId === host.id}
+                          className='flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-200 hover:text-red-500 disabled:opacity-50 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-red-400'
+                          aria-label={`Remove ${host.name || host.username}`}
+                        >
+                          <Trash2 className='h-4 w-4' />
+                        </button>
+                      )}
+                      {!isCreator && isIdentityLoading && (
+                        <Skeleton className='h-8 w-8 rounded-full' />
                       )}
                     </div>
-                    {!isCreator && !isIdentityLoading && (
-                      <button
-                        onClick={() => handleRemoveHost(host.id)}
-                        disabled={removingHostId === host.id}
-                        className='flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-200 hover:text-red-500 disabled:opacity-50 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-red-400'
-                        aria-label={`Remove ${host.name || host.username}`}
-                      >
-                        <Trash2 className='h-4 w-4' />
-                      </button>
-                    )}
-                    {!isCreator && isIdentityLoading && (
-                      <Skeleton className='h-8 w-8 rounded-full' />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className='py-12 text-center'>
-              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
-                <Plus className='h-8 w-8 text-gray-400 dark:text-neutral-400' />
+                  );
+                })}
               </div>
-              <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
-                No Hosts
-              </h3>
-              <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
-                Add cohosts to help you manage this event
-              </p>
-              <button
-                onClick={handleAddCoHost}
-                className='rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
-              >
-                Add Cohost
-              </button>
-            </div>
-          )}
+            ) : (
+              <div className='py-12 text-center'>
+                <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
+                  <Plus className='h-8 w-8 text-gray-400 dark:text-neutral-400' />
+                </div>
+                <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
+                  No Hosts
+                </h3>
+                <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
+                  Add cohosts to help you manage this event
+                </p>
+                <button
+                  onClick={handleAddCoHost}
+                  className='rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
+                >
+                  Add Cohost
+                </button>
+              </div>
+            )}
+          </div>
 
           {pendingInvites.length > 0 && (
-            <div className='mt-6'>
-              <h3 className='mb-3 text-sm font-medium text-gray-500 dark:text-neutral-400'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
+              <h3 className='mb-3 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
                 Pending Invites
               </h3>
               <div className='space-y-2'>

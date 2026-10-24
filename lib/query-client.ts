@@ -140,6 +140,14 @@ export const queryKeys = {
   emailBlast: (eventId: string, blastId: string) =>
     [...queryKeys.emailBlasts, eventId, blastId] as const,
   eventReminders: (eventId: string) => [...queryKeys.events, eventId, 'reminders'] as const,
+  eventDashboard: (eventId: string) => [...queryKeys.events, eventId, 'dashboard'] as const,
+  eventTicketTypes: (eventId: string) => [...queryKeys.events, eventId, 'ticket-types'] as const,
+  eventDiscountCodes: (eventId: string) =>
+    [...queryKeys.events, eventId, 'discount-codes'] as const,
+  eventSales: (eventId: string) => [...queryKeys.events, eventId, 'sales'] as const,
+  eventAttendees: (eventId: string) => [...queryKeys.events, eventId, 'attendees'] as const,
+  eventInvitesList: (eventId: string, status: string = 'all') =>
+    [...queryKeys.events, eventId, 'invites', status] as const,
 
   // Blog (Ghost CMS)
   blog: ['blog'] as const,

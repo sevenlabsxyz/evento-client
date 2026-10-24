@@ -14,13 +14,14 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { EmailBlast } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { Loader2, Mail, Plus } from 'lucide-react';
-import { useParams, usePathname } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EmailBlastPage() {
   const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const params = useParams();
   const pathname = usePathname();
+  const router = useRouter();
   const eventId = params.id as string;
   const [showEmailBlastSheet, setShowEmailBlastSheet] = useState(false);
   const [selectedBlastId, setSelectedBlastId] = useState<string | null>(null);
@@ -40,22 +41,16 @@ export default function EmailBlastPage() {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
       title: 'Email Blasts',
-      buttons: [
-        {
-          icon: Plus,
-          onClick: handleCreateBlast,
-          label: 'Create Blast',
-          id: 'create-blast',
-        },
-      ],
+      buttons: [],
       leftMode: 'back',
+      onBackPress: () => router.push(`/e/${eventId}/manage`),
       showAvatar: false,
     });
 
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig]);
+  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig, router, eventId]);
 
   const handleCreateBlast = () => {
     setBlastToEdit(null);
@@ -116,10 +111,28 @@ export default function EmailBlastPage() {
   };
 
   return (
-    <div className='mx-auto mt-2 min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-      {/* Content */}
-      <div className='p-4'>
-        {/* Email Blast History */}
+    <div className='space-y-4 py-4 md:py-6'>
+      <div className='flex items-start justify-between gap-4'>
+        <div>
+          <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+            Email blasts
+          </h2>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>
+            Send updates to your guests by email, now or on a schedule.
+          </p>
+        </div>
+        <button
+          type='button'
+          onClick={handleCreateBlast}
+          className='flex shrink-0 items-center gap-1.5 rounded-full bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
+        >
+          <Plus className='h-4 w-4' />
+          New blast
+        </button>
+      </div>
+
+      {/* Email Blast History */}
+      <div>
         <div className='space-y-3'>
           {isLoading ? (
             <div className='py-12 text-center'>
@@ -145,7 +158,7 @@ export default function EmailBlastPage() {
               </button>
             </div>
           ) : transformedBlasts.length === 0 ? (
-            <div className='py-12 text-center'>
+            <div className='rounded-2xl border border-gray-200 bg-white px-4 py-12 text-center dark:border-neutral-800 dark:bg-neutral-900'>
               <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
                 <Mail className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
               </div>
@@ -157,7 +170,7 @@ export default function EmailBlastPage() {
               </p>
               <button
                 onClick={handleCreateBlast}
-                className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-red-500 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
+                className='mx-auto flex h-12 w-full max-w-xs items-center justify-center gap-2 rounded-full bg-red-500 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 <Plus className='h-5 w-5' />
                 Create Email Blast
