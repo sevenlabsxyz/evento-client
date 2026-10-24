@@ -70,3 +70,36 @@ export function sanitizeRichText(html: string): string {
   registerHooks();
   return DOMPurify.sanitize(html, { ALLOWED_TAGS, ALLOWED_ATTR });
 }
+
+/**
+ * Ghost CMS articles additionally use structural elements (captioned figures,
+ * dividers, tables). Still no scripts, styles, iframes, forms, or event
+ * handler attributes.
+ */
+const ARTICLE_ALLOWED_TAGS = [
+  ...ALLOWED_TAGS,
+  'h5',
+  'h6',
+  'figure',
+  'figcaption',
+  'hr',
+  'mark',
+  'sup',
+  'sub',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'th',
+  'td',
+];
+
+/** Sanitize first-party Ghost article HTML. Same fail-closed contract as sanitizeRichText. */
+export function sanitizeArticleHtml(html: string): string {
+  if (typeof window === 'undefined' || !html) {
+    return '';
+  }
+
+  registerHooks();
+  return DOMPurify.sanitize(html, { ALLOWED_TAGS: ARTICLE_ALLOWED_TAGS, ALLOWED_ATTR });
+}
