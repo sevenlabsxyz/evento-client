@@ -53,7 +53,16 @@ export default function EventModerationPage() {
 
   return (
     <div className='space-y-4 py-4 md:py-6'>
-      <div className='flex justify-center'>
+      <div>
+        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+          Comments &amp; photos
+        </h2>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>
+          Review what guests post on your event page and remove anything that doesn&apos;t belong.
+        </p>
+      </div>
+
+      <div className='flex'>
         <AnimatedTabs
           expanded
           tabs={[

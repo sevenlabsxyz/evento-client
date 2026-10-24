@@ -53,14 +53,7 @@ export default function ManageEventPage() {
       showAvatar: false,
       subtitle: undefined,
       centerMode: 'title',
-      textButtons: [
-        {
-          id: 'view-event',
-          label: 'View event',
-          variant: 'outline',
-          onClick: () => router.push(`/e/${eventId}?from=manage`),
-        },
-      ],
+      textButtons: [],
     });
 
     return () => {

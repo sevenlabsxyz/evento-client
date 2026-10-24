@@ -38,14 +38,8 @@ export default function SubEventsManagementPage() {
       leftMode: 'back',
       showAvatar: false,
       centerMode: 'title',
-      buttons: [
-        {
-          id: 'add-sub-event',
-          icon: Plus,
-          onClick: () => setShowAddOptions(true),
-          label: 'Add Sub Event',
-        },
-      ],
+      onBackPress: () => router.push(`/e/${eventId}/manage`),
+      buttons: [],
     });
 
     return () => {
@@ -76,8 +70,25 @@ export default function SubEventsManagementPage() {
   };
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-      <div className='p-4'>
+    <div className='space-y-4 py-4 md:py-6'>
+      <div className='flex items-start justify-between gap-4'>
+        <div>
+          <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Sub events</h2>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>
+            Group related events under this one by creating new ones or linking existing events.
+          </p>
+        </div>
+        <button
+          type='button'
+          onClick={() => setShowAddOptions(true)}
+          className='flex shrink-0 items-center gap-1.5 rounded-full bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
+        >
+          <Plus className='h-4 w-4' />
+          Add sub event
+        </button>
+      </div>
+
+      <div className='rounded-2xl border border-gray-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900'>
         {/* List / states */}
         {isLoading ? (
           <div className='space-y-2'>
@@ -102,7 +113,7 @@ export default function SubEventsManagementPage() {
             {subEvents.map((se) => (
               <div
                 key={se.id}
-                className='flex items-center justify-between rounded-xl border border-gray-100 dark:border-neutral-800'
+                className='flex items-center justify-between rounded-xl border border-gray-100 dark:border-neutral-800 dark:bg-neutral-800'
               >
                 <div className='min-w-0 flex-1'>
                   <EventCompactItem event={se} />
@@ -127,7 +138,7 @@ export default function SubEventsManagementPage() {
             ))}
           </div>
         ) : error ? (
-          <div className='rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center dark:border-neutral-700 dark:bg-neutral-950'>
+          <div className='rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-center dark:border-neutral-700 dark:bg-neutral-950'>
             <p className='text-sm text-gray-500 dark:text-neutral-400'>
               Failed to load sub events.
             </p>

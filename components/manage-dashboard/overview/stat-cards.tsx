@@ -24,6 +24,8 @@ interface StatCardsProps {
 interface StatItem {
   id: string;
   label: string;
+  /** Full label for tooltips/assistive tech when `label` is abbreviated. */
+  fullLabel?: string;
   value: string;
   sublabel?: string;
   href: string;
@@ -83,10 +85,11 @@ function buildStats(dashboard: EventDashboard): StatItem[] {
     iconClassName: 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400',
   });
 
-  if (registration) {
+  if (registration && (registration.required || dashboard.event.type === 'registration')) {
     stats.push({
       id: 'pending-approvals',
-      label: 'Pending approvals',
+      label: 'Pending',
+      fullLabel: 'Pending approvals',
       value: formatNumber(registration.pending),
       sublabel: `${formatNumber(registration.approved)} approved · ${formatNumber(
         registration.denied
@@ -122,7 +125,8 @@ function buildStats(dashboard: EventDashboard): StatItem[] {
 
   stats.push({
     id: 'invites',
-    label: 'Invites going',
+    label: 'Invites',
+    fullLabel: 'Invites going',
     value: `${formatNumber(invites.going)} / ${formatNumber(invites.total)}`,
     sublabel: `${formatNumber(invites.pending)} awaiting response`,
     href: `${base}/guests?tab=invited`,
@@ -184,8 +188,18 @@ export function StatCards({ dashboard }: StatCardsProps) {
               >
                 <Icon className='h-4 w-4' />
               </div>
-              <span className='truncate text-sm font-medium text-gray-600 dark:text-neutral-400'>
-                {stat.label}
+              <span
+                title={stat.fullLabel ?? stat.label}
+                className='truncate text-sm font-medium text-gray-600 dark:text-neutral-400'
+              >
+                {stat.fullLabel ? (
+                  <>
+                    <span aria-hidden='true'>{stat.label}</span>
+                    <span className='sr-only'>{stat.fullLabel}</span>
+                  </>
+                ) : (
+                  stat.label
+                )}
               </span>
             </div>
             <div className='min-w-0'>

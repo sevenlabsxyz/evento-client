@@ -176,7 +176,7 @@ export default function ManageLayout({ children, params }: ManageLayoutProps) {
               sections={sections}
               activeItemId={activeItemId}
               variant='sidebar'
-              className='sticky top-6 max-h-[calc(100svh-8rem)] overflow-y-auto pb-4'
+              className='sticky top-6 max-h-[calc(100dvh-7rem)] overflow-y-auto overscroll-contain pb-4 pr-1 [scrollbar-width:thin]'
             />
           </aside>
           <div className='min-w-0 flex-1'>{children}</div>

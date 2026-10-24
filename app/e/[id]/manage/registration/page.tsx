@@ -321,7 +321,11 @@ function SortableQuestionRow({
   const config = questionConfigs[question.type];
 
   return (
-    <div ref={setNodeRef} style={style} className='rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-800'
+    >
       <div className='flex items-start gap-4'>
         <button
           type='button'
@@ -594,12 +598,12 @@ export default function RegistrationQuestionsPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-        <div className='space-y-6 p-4'>
+      <div className='space-y-4 py-4 md:py-6'>
+        <div className='max-w-2xl space-y-6'>
           <Skeleton className='h-4 w-3/4' />
 
           {/* Registration Settings Skeleton */}
-          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
+          <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='mb-4 flex items-center gap-3'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='space-y-2'>
@@ -636,7 +640,7 @@ export default function RegistrationQuestionsPage() {
 
   if (error || !existingEvent) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
+      <div className='flex items-center justify-center py-16'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
             Event Not Found
@@ -939,11 +943,17 @@ export default function RegistrationQuestionsPage() {
   );
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
-      {/* Content */}
-      <div className='space-y-6 p-4'>
+    <div className='space-y-4 py-4 md:py-6'>
+      <div className='max-w-2xl space-y-1'>
+        <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>Registration</h2>
+        <p className='text-sm text-gray-500 dark:text-neutral-400'>
+          Require guests to register before RSVPing and choose the questions they answer.
+        </p>
+      </div>
+
+      <div className='max-w-2xl space-y-4'>
         {/* Registration Toggle */}
-        <div className='rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'>
+        <div className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-3'>
               <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-950/60'>
@@ -973,7 +983,7 @@ export default function RegistrationQuestionsPage() {
         </div>
 
         {registrationRequired && (
-          <div className='rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'>
+          <div className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-3'>
                 <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-950/60'>
@@ -1004,7 +1014,7 @@ export default function RegistrationQuestionsPage() {
             {customApprovalMessageEnabled && (
               <button
                 onClick={() => setShowCustomMessageSheet(true)}
-                className='mt-4 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-950'
+                className='mt-4 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-800 dark:hover:bg-neutral-700'
               >
                 <p className='text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-neutral-400'>
                   Message
@@ -1026,14 +1036,19 @@ export default function RegistrationQuestionsPage() {
         )}
 
         {registrationRequired && (
-          <>
+          <section className='space-y-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
+            <div>
+              <h3 className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+                Questions
+              </h3>
+              <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                Guests will be asked these questions when they register for your event. Drag to
+                reorder.
+              </p>
+            </div>
             {/* Questions List */}
             {questionList.length > 0 ? (
               <div className='space-y-3'>
-                <div className='text-sm text-gray-500 dark:text-neutral-400'>
-                  Guests will be asked these questions when they register for your event.
-                </div>
-
                 <DndContext
                   sensors={sensors}
                   collisionDetection={closestCenter}
@@ -1067,7 +1082,7 @@ export default function RegistrationQuestionsPage() {
                 </button>
               </div>
             ) : (
-              <div className='py-16 text-center'>
+              <div className='py-10 text-center'>
                 <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
                   <Settings className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
                 </div>
@@ -1087,7 +1102,7 @@ export default function RegistrationQuestionsPage() {
                 </button>
               </div>
             )}
-          </>
+          </section>
         )}
       </div>
 
