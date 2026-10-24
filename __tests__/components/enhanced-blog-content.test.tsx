@@ -60,4 +60,30 @@ describe('EnhancedBlogContent', () => {
       expect(screen.getAllByAltText('Stage lights')).toHaveLength(2);
     });
   });
+
+  it('assigns stable unique ids to h2/h3 headings and reports the outline', async () => {
+    const onHeadingsChange = jest.fn();
+
+    render(
+      <EnhancedBlogContent
+        html='<h2>Getting Started!</h2><p>Copy</p><h3>Set up <em>your</em> wallet</h3><h2>Getting started</h2><h4>Fine print</h4>'
+        className='typeset typeset-evento-article'
+        onHeadingsChange={onHeadingsChange}
+      />
+    );
+
+    const headings = await screen.findAllByRole('heading');
+    const [firstH2, h3, secondH2, h4] = headings;
+
+    expect(firstH2).toHaveAttribute('id', 'getting-started');
+    expect(h3).toHaveAttribute('id', 'set-up-your-wallet');
+    expect(secondH2).toHaveAttribute('id', 'getting-started-2');
+    expect(h4).not.toHaveAttribute('id');
+
+    expect(onHeadingsChange).toHaveBeenLastCalledWith([
+      { id: 'getting-started', text: 'Getting Started!', level: 2 },
+      { id: 'set-up-your-wallet', text: 'Set up your wallet', level: 3 },
+      { id: 'getting-started-2', text: 'Getting started', level: 2 },
+    ]);
+  });
 });

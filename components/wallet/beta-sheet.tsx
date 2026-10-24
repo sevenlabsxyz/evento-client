@@ -20,7 +20,7 @@ export function BetaSheet({ open, onOpenChange }: BetaSheetProps) {
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className='grid grid-rows-[min-content_1fr]'>
+          <SheetWithDetentFull.Content className='grid grid-rows-[min-content_1fr] md:!max-w-lg'>
             <div className='border-b border-gray-100 p-4 dark:border-neutral-800'>
               <div className='mb-4 flex justify-center'>
                 <SheetWithDetentFull.Handle />

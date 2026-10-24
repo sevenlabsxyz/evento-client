@@ -2,20 +2,34 @@
 
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { ImageSizes, isGif } from '@/lib/utils/image';
-import { sanitizeRichText } from '@/lib/utils/sanitize';
+import { sanitizeArticleHtml } from '@/lib/utils/sanitize';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
+const TABLE_STRUCTURE_TAGS = new Set(['table', 'thead', 'tbody', 'tfoot', 'tr']);
+
+export interface BlogContentHeading {
+  id: string;
+  text: string;
+  level: 2 | 3;
+}
 
 interface EnhancedBlogContentProps {
   html: string;
   className?: string;
+  /** Receives the h2/h3 outline (with generated anchor ids) whenever the content is processed. */
+  onHeadingsChange?: (headings: BlogContentHeading[]) => void;
 }
 
 /**
  * Component that enhances blog content by replacing standard img tags
- * with optimized Next.js Image components
+ * with optimized Next.js Image components and giving h2/h3 headings stable ids.
  */
-export default function EnhancedBlogContent({ html, className }: EnhancedBlogContentProps) {
+export default function EnhancedBlogContent({
+  html,
+  className,
+  onHeadingsChange,
+}: EnhancedBlogContentProps) {
   const [processedContent, setProcessedContent] = useState<React.ReactNode[]>([]);
   const [selectedImage, setSelectedImage] = useState<{
     src: string;
@@ -23,19 +37,26 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
     width: number;
     height: number;
   } | null>(null);
+  const onHeadingsChangeRef = useRef(onHeadingsChange);
+
+  useEffect(() => {
+    onHeadingsChangeRef.current = onHeadingsChange;
+  }, [onHeadingsChange]);
 
   useEffect(() => {
     if (!html) {
       setProcessedContent([]);
+      onHeadingsChangeRef.current?.([]);
       return;
     }
 
     // Sanitize untrusted Ghost CMS HTML (blog + wallet education articles)
     // BEFORE parsing it into a live element, so nothing unvetted (script,
     // on* handlers, javascript: URLs) ever reaches innerHTML.
-    const cleanHtml = sanitizeRichText(html);
+    const cleanHtml = sanitizeArticleHtml(html);
     if (!cleanHtml) {
       setProcessedContent([]);
+      onHeadingsChangeRef.current?.([]);
       return;
     }
 
@@ -45,11 +66,18 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
 
     // Process all nodes and replace img tags
     const processedNodes: React.ReactNode[] = [];
+    const headings: BlogContentHeading[] = [];
+    const usedHeadingIds = new Set<string>();
     let keyCounter = 0;
 
     const processNode = (node: Node): React.ReactNode => {
       // If this is a text node, just return its content
       if (node.nodeType === Node.TEXT_NODE) {
+        // Whitespace between table rows/cells is not valid React DOM children.
+        const parentTag = node.parentElement?.tagName.toLowerCase();
+        if (parentTag && TABLE_STRUCTURE_TAGS.has(parentTag) && !(node.textContent ?? '').trim()) {
+          return null;
+        }
         return node.textContent;
       }
 
@@ -121,8 +149,18 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
           );
         });
 
-        const elementProps =
-          tagName === 'a' ? getAnchorProps(element as HTMLAnchorElement) : undefined;
+        let elementProps:
+          | React.AnchorHTMLAttributes<HTMLAnchorElement>
+          | React.HTMLAttributes<HTMLHeadingElement>
+          | undefined;
+        if (tagName === 'a') {
+          elementProps = getAnchorProps(element as HTMLAnchorElement);
+        } else if (tagName === 'h2' || tagName === 'h3') {
+          const text = (element.textContent ?? '').replace(/\s+/g, ' ').trim();
+          const id = createHeadingId(text, headings.length + 1, usedHeadingIds);
+          headings.push({ id, text, level: tagName === 'h2' ? 2 : 3 });
+          elementProps = { id };
+        }
 
         // Create a new element with the same tag and processed children
         return React.createElement(
@@ -142,6 +180,7 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
     });
 
     setProcessedContent(processedNodes);
+    onHeadingsChangeRef.current?.(headings.filter((heading) => heading.text.length > 0));
   }, [html]);
 
   /**
@@ -208,6 +247,26 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
       </Dialog>
     </>
   );
+}
+
+function createHeadingId(text: string, position: number, usedIds: Set<string>): string {
+  const base =
+    text
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 64)
+      .replace(/-+$/g, '') || `section-${position}`;
+
+  let id = base;
+  let suffix = 2;
+  while (usedIds.has(id)) {
+    id = `${base}-${suffix++}`;
+  }
+  usedIds.add(id);
+  return id;
 }
 
 function getAnchorProps(element: HTMLAnchorElement): React.AnchorHTMLAttributes<HTMLAnchorElement> {

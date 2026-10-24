@@ -6,7 +6,7 @@
  * wallet-storage tests use for Node webcrypto), so the client-side
  * sanitizeRichText path is exercised here for real.
  */
-import { sanitizeRichText } from '@/lib/utils/sanitize';
+import { sanitizeArticleHtml, sanitizeRichText } from '@/lib/utils/sanitize';
 import { safeExternalUrl } from '@/lib/utils/url';
 
 describe('safeExternalUrl (URL-sink hardening)', () => {
@@ -60,5 +60,24 @@ describe('sanitizeRichText (XSS allowlist sanitization)', () => {
   it('returns empty string for empty/null input', () => {
     expect(sanitizeRichText('')).toBe('');
     expect(sanitizeRichText(null as unknown as string)).toBe('');
+  });
+});
+
+describe('sanitizeArticleHtml (Ghost article allowlist)', () => {
+  it('keeps captioned figures, dividers and tables', () => {
+    const html =
+      '<figure><img src="a.png" alt="a"><figcaption>Caption</figcaption></figure><hr><table><tbody><tr><td>1</td></tr></tbody></table>';
+    expect(sanitizeArticleHtml(html)).toBe(html);
+  });
+
+  it('still strips scripts, iframes and handlers', () => {
+    const clean = sanitizeArticleHtml(
+      '<figure onclick="alert(1)"><iframe src="https://x"></iframe><script>alert(1)</script></figure>'
+    );
+    expect(clean).toBe('<figure></figure>');
+  });
+
+  it('does not widen the user rich-text allowlist', () => {
+    expect(sanitizeRichText('<figure><figcaption>c</figcaption></figure><hr>')).toBe('c');
   });
 });

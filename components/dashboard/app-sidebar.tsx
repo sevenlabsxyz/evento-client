@@ -2,11 +2,15 @@
 
 import {
   BookOpen,
+  Bot,
   Calendar1,
+  Code2,
+  KeyRound,
   PanelRightClose,
   PanelRightOpen,
   Plus,
   Search,
+  Shield,
   Shirt,
   Star,
   Zap,
@@ -16,7 +20,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import { NavMain } from '@/components/dashboard/nav-main';
+import { NavMain, NavMainItem } from '@/components/dashboard/nav-main';
+import { NavTheme } from '@/components/dashboard/nav-theme';
 import { NavUser } from '@/components/dashboard/nav-user';
 import { Button } from '@/components/ui/button';
 import {
@@ -30,18 +35,14 @@ import {
   SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { useDeveloperSettingsStore } from '@/lib/stores/developer-settings-store';
 // import { useRightSidebar } from '@/lib/stores/right-sidebar-store';
 
-const navMain = [
+const navMain: NavMainItem[] = [
   {
     title: 'Events',
     url: '/e/hub',
     icon: Calendar1,
-  },
-  {
-    title: 'Wallet',
-    url: '/e/wallet',
-    icon: Zap,
   },
   {
     title: 'Search',
@@ -53,12 +54,47 @@ const navMain = [
     url: '/e/lists',
     icon: Star,
   },
+  {
+    title: 'Wallet',
+    url: '/e/wallet',
+    icon: Zap,
+  },
 ];
+
+const developerLinks: NavMainItem[] = [
+  {
+    title: 'API',
+    url: '/e/api',
+    icon: Code2,
+  },
+  {
+    title: 'MCP for AI agents',
+    url: '/e/mcp',
+    icon: Bot,
+  },
+];
+
+const apiKeysLink: NavMainItem = {
+  title: 'API keys',
+  url: '/e/settings/api-keys',
+  icon: KeyRound,
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const { state, setOpenMobile, toggleSidebar } = useSidebar();
+  const isDeveloperMode = useDeveloperSettingsStore((s) => s.isDeveloperMode);
+  const [mounted, setMounted] = React.useState(false);
   // const { isOpen: isCalendarOpen, toggle: toggleCalendar } = useRightSidebar();
+
+  // Developer mode is persisted in localStorage; wait for mount so the
+  // server markup matches the first client render.
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const developerItems =
+    mounted && isDeveloperMode ? [...developerLinks, apiKeysLink] : developerLinks;
 
   const handleCreateEvent = () => {
     router.push('/e/create');
@@ -109,6 +145,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} />
+        <NavMain label='Developers' items={developerItems} />
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
@@ -117,6 +154,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <Link href='/e/blog' onClick={() => setOpenMobile(false)}>
                 <BookOpen />
                 <span>Blog</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip='Security' asChild>
+              <Link href='/e/security' onClick={() => setOpenMobile(false)}>
+                <Shield />
+                <span>Security</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -133,6 +178,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          <NavTheme />
           {/* <SidebarMenuItem>
             <SidebarMenuButton
               tooltip={isCalendarOpen ? 'Hide Calendar' : 'Show Calendar'}
@@ -142,7 +188,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <span>{isCalendarOpen ? 'Hide Calendar' : 'Show Calendar'}</span>
             </SidebarMenuButton>
           </SidebarMenuItem> */}
-          <SidebarMenuItem>
+          <SidebarMenuItem className='hidden md:block'>
             <SidebarMenuButton
               tooltip={state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}
               onClick={toggleSidebar}

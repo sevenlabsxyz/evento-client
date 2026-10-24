@@ -25,6 +25,13 @@ import { TransactionDetailsSheet } from '@/components/wallet/transaction-details
 import { TransactionHistory } from '@/components/wallet/transaction-history';
 import { TransactionHistorySheet } from '@/components/wallet/transaction-history-sheet';
 import { WalletBalance } from '@/components/wallet/wallet-balance';
+import {
+  WalletDesktopCard,
+  WalletDesktopPageHeader,
+  WalletPreWalletShell,
+  type WalletPreWalletStep,
+  useWalletDesktopLayout,
+} from '@/components/wallet/wallet-desktop-layout';
 import { WalletEasterEggConfetti } from '@/components/wallet/wallet-easter-egg-confetti';
 import { WalletEducationList } from '@/components/wallet/wallet-education-list';
 import { WalletEducationalSheet } from '@/components/wallet/wallet-educational-sheet';
@@ -45,6 +52,7 @@ import { breezSDK } from '@/lib/services/breez-sdk';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import type { Contact } from '@/lib/types/wallet';
+import { cn } from '@/lib/utils';
 import { migrateRecentAddressesToContacts } from '@/lib/utils/contacts-migration';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
@@ -61,9 +69,10 @@ import {
   MoreHorizontal,
   Plus,
   Settings,
+  Shield,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type WalletStep = 'welcome' | 'setup' | 'restore' | 'backup' | 'main';
 type DrawerContent =
@@ -106,6 +115,7 @@ export default function WalletPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { user } = useAuth();
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
+  const isDesktop = useWalletDesktopLayout();
   const pathname = usePathname();
   const router = useRouter();
   const { walletState, isLoading: isWalletLoading, markAsBackedUp, refreshBalance } = useWallet();
@@ -272,6 +282,7 @@ export default function WalletPage() {
     setTopBarForRoute(pathname, {
       title: 'Wallet',
       hideMobileBreadcrumb: true,
+      desktopHidden: true,
       centerMode: 'title',
       showAvatar: false,
       buttons: walletState.isConnected
@@ -632,6 +643,14 @@ export default function WalletPage() {
   }, [devLnurlWithdrawConfig]);
 
   if (isCheckingAuth || isWalletLoading) {
+    if (isDesktop) {
+      return (
+        <div className='flex min-h-[calc(100dvh-4rem)] items-center justify-center bg-white px-8 dark:bg-neutral-900'>
+          <WalletLoadingScreen className='w-full max-w-sm' />
+        </div>
+      );
+    }
+
     return (
       <div className='mx-auto max-w-sm pb-28 pt-4'>
         <WalletLoadingScreen />
@@ -639,49 +658,51 @@ export default function WalletPage() {
     );
   }
 
+  const renderPreWalletStep = (preWalletStep: WalletPreWalletStep, content: ReactNode) =>
+    isDesktop ? (
+      <WalletPreWalletShell step={preWalletStep}>{content}</WalletPreWalletShell>
+    ) : (
+      <div className='mx-auto max-w-sm pb-28 pt-4'>{content}</div>
+    );
+
   // Welcome Screen
   if (step === 'welcome') {
-    return (
-      <>
-        <WalletWelcome onSetup={() => setStep('setup')} onRestore={() => setStep('restore')} />
-      </>
+    const welcome = (
+      <WalletWelcome onSetup={() => setStep('setup')} onRestore={() => setStep('restore')} />
+    );
+
+    return isDesktop ? (
+      <WalletPreWalletShell step='welcome'>{welcome}</WalletPreWalletShell>
+    ) : (
+      <>{welcome}</>
     );
   }
 
   // Setup Screen
   if (step === 'setup') {
-    return (
-      <>
-        <div className='mx-auto max-w-sm pb-28 pt-4'>
-          <WalletSetup onComplete={handleSetupComplete} onCancel={() => setStep('welcome')} />
-        </div>
-      </>
+    return renderPreWalletStep(
+      'setup',
+      <WalletSetup onComplete={handleSetupComplete} onCancel={() => setStep('welcome')} />
     );
   }
 
   // Restore Screen
   if (step === 'restore') {
-    return (
-      <>
-        <div className='mx-auto max-w-sm pb-28 pt-4'>
-          <WalletRestore onComplete={handleRestoreComplete} onCancel={() => setStep('welcome')} />
-        </div>
-      </>
+    return renderPreWalletStep(
+      'restore',
+      <WalletRestore onComplete={handleRestoreComplete} onCancel={() => setStep('welcome')} />
     );
   }
 
   // Backup Screen
   if (step === 'backup' && mnemonic) {
-    return (
-      <>
-        <div className='mx-auto max-w-sm pb-28 pt-4'>
-          <SeedBackup
-            mnemonic={mnemonic}
-            onComplete={handleBackupComplete}
-            onCancel={handleBackupSkip}
-          />
-        </div>
-      </>
+    return renderPreWalletStep(
+      'backup',
+      <SeedBackup
+        mnemonic={mnemonic}
+        onComplete={handleBackupComplete}
+        onCancel={handleBackupSkip}
+      />
     );
   }
 
@@ -694,74 +715,142 @@ export default function WalletPage() {
   ) {
     return (
       <>
-        <div className='mx-auto max-w-sm pb-28 pt-4'>
-          <WalletUnlock />
-        </div>
+        {renderPreWalletStep('unlock', <WalletUnlock />)}
         <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
       </>
     );
   }
 
+  // Sections shared by the mobile and desktop layouts
+  const walletBalance = walletState.isInitialized && user?.username && (
+    <WalletBalance
+      onSend={() => openDrawer('send')}
+      onReceive={() => openDrawer('receive')}
+      onScan={() => openDrawer('scan')}
+    />
+  );
+
+  const backupCallout = showBackupReminder && (
+    <BackupCallout onBackup={() => setShowBackupChoiceSheet(true)} />
+  );
+
+  const quickTools = (
+    <QuickToolsSection
+      buySellLabel={isCashAppEligible ? 'Buy Bitcoin' : 'Buy / Sell'}
+      onToolClick={(toolId) => {
+        openDrawer(toolId);
+      }}
+    />
+  );
+
+  const incomingFundsAlert = unclaimedDepositsCount > 0 && (
+    <div className='rounded-2xl border border-amber-200 bg-amber-50 px-6 py-4 dark:border-amber-900 dark:bg-amber-950/40'>
+      {/* Header Row */}
+      <div className='mb-1 flex items-center justify-between gap-3'>
+        <div className='flex flex-row items-center gap-1'>
+          <ChevronsRight className='h-7 w-7 text-amber-600 dark:text-amber-400' />
+          <div className='text-lg font-semibold'>Money Incoming</div>
+        </div>
+        <motion.button
+          onClick={() => setShowOnchainEducationalSheet(true)}
+          className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-amber-200 bg-white transition-colors dark:border-amber-900 dark:bg-neutral-900'
+          whileTap={{ scale: 0.95 }}
+          transition={{
+            type: 'spring',
+            stiffness: 400,
+            damping: 17,
+          }}
+        >
+          <HelpCircle className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
+        </motion.button>
+      </div>
+
+      {/* Description */}
+      <p className='mb-6 pr-16 text-sm text-muted-foreground'>
+        {
+          "You've received onchain funds. Tap below to pay a small fee and claim them to your wallet instantly."
+        }
+      </p>
+
+      {/* Action Button */}
+      <Button
+        onClick={() => setShowIncomingFundsModal(true)}
+        variant='outline'
+        size='lg'
+        className='h-12 w-full rounded-full border-amber-200 bg-white hover:bg-amber-100 dark:border-amber-900 dark:bg-neutral-900 dark:hover:bg-amber-950/60'
+      >
+        Speed It Up!
+      </Button>
+    </div>
+  );
+
+  const desktopRowClassName =
+    'flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:hover:bg-neutral-800';
+
   // Main Wallet Screen
   return (
     <div className='min-h-screen bg-white dark:bg-neutral-900'>
       <WalletEasterEggConfetti celebrationKey={walletEasterEggCelebrationKey} />
-      <div className='mx-auto bg-white dark:bg-neutral-900 md:max-w-md'>
-        <div className='px-4 pt-4'>
-          <div>
-            <div className='space-y-4'>
-              {/* Wallet Balance Card */}
-              {walletState.isInitialized && user?.username && (
-                <WalletBalance
-                  onSend={() => openDrawer('send')}
-                  onReceive={() => openDrawer('receive')}
-                  onScan={() => openDrawer('scan')}
-                />
-              )}
+      {isDesktop ? (
+        <div className='mx-auto w-full max-w-2xl px-8 pb-16 pt-8 lg:max-w-6xl'>
+          <WalletDesktopPageHeader
+            title='Wallet'
+            description='Send, receive, and keep track of your bitcoin.'
+            actions={
+              walletState.isConnected && (
+                <>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={handleWakeLockEnable}
+                    className='h-10 rounded-full bg-white px-4 dark:bg-neutral-900'
+                  >
+                    {showWakeLockEnabledIndicator ? <Check /> : <Gamepad2 />}
+                    {showWakeLockEnabledIndicator ? 'Wake lock enabled' : 'Keep screen awake'}
+                  </Button>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => router.push('/e/wallet/settings')}
+                    className='h-10 rounded-full bg-white px-4 dark:bg-neutral-900'
+                  >
+                    <Settings />
+                    Settings
+                  </Button>
+                </>
+              )
+            }
+          />
 
-              {/* Backup Callout - subtle reminder below action buttons */}
-              {showBackupReminder && (
-                <BackupCallout onBackup={() => setShowBackupChoiceSheet(true)} />
-              )}
-
-              {/* Quick Tools Section */}
-              <QuickToolsSection
-                buySellLabel={isCashAppEligible ? 'Buy Bitcoin' : 'Buy / Sell'}
-                onToolClick={(toolId) => {
-                  openDrawer(toolId);
-                }}
-              />
-            </div>
-          </div>
-
-          <div className='pb-28'>
+          <div className='mt-8 grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-start'>
+            {/* Left column: balance, actions, tools, contacts, security */}
             <div className='space-y-6'>
-              {/* Recent Transactions Preview */}
-              <div className='mt-6 space-y-3 md:mt-4'>
-                <h3 className='text-sm font-semibold'>Recent Transactions</h3>
-                <TransactionHistory
-                  payments={payments.slice(0, 5)}
-                  isLoading={isLoadingPayments}
-                  onRefresh={() => {}}
-                  onTransactionClick={handleTransactionClick}
-                  showViewAllButton={!isLoadingPayments && payments.length > 0}
-                  onViewAll={() => openDrawer('history')}
-                  maxTransactions={3}
-                />
-              </div>
+              {walletBalance}
+              {backupCallout}
+              {incomingFundsAlert}
 
-              {/* Contacts Preview */}
-              <div className='mt-6 space-y-3 md:mt-4'>
-                <div className='flex items-center justify-between'>
-                  <h3 className='text-sm font-semibold'>Wallet Contacts</h3>
-                  <div className='flex items-center gap-2'>
-                    <CircledIconButton icon={Plus} onClick={() => setShowAddContactSheet(true)} />
+              <WalletDesktopCard title='Bitcoin tools' bodyClassName='pt-3'>
+                {quickTools}
+              </WalletDesktopCard>
+
+              <WalletDesktopCard
+                title='Contacts'
+                actions={
+                  <>
+                    <CircledIconButton
+                      icon={Plus}
+                      ariaLabel='Add contact'
+                      onClick={() => setShowAddContactSheet(true)}
+                    />
                     <CircledIconButton
                       icon={ContactIcon}
+                      ariaLabel='All contacts'
                       onClick={() => setShowContactsSheet(true)}
                     />
-                  </div>
-                </div>
+                  </>
+                }
+                bodyClassName='space-y-3 pt-3'
+              >
                 <ContactsList
                   maxContacts={3}
                   showAddButton={false}
@@ -770,60 +859,158 @@ export default function WalletPage() {
                 <Button
                   onClick={() => setShowContactsSheet(true)}
                   variant='outline'
-                  className='font-lg h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
+                  className='h-11 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
                 >
                   View All Contacts
                 </Button>
-              </div>
+              </WalletDesktopCard>
 
-              {/* Incoming Onchain Bitcoin Alert */}
-              {unclaimedDepositsCount > 0 && (
-                <div className='rounded-2xl border border-amber-200 bg-amber-50 px-6 py-4 dark:border-amber-900 dark:bg-amber-950/40'>
-                  {/* Header Row */}
-                  <div className='mb-1 flex items-center justify-between gap-3'>
-                    <div className='flex flex-row items-center gap-1'>
-                      <ChevronsRight className='h-7 w-7 text-amber-600 dark:text-amber-400' />
-                      <div className='text-lg font-semibold'>Money Incoming</div>
-                    </div>
-                    <motion.button
-                      onClick={() => setShowOnchainEducationalSheet(true)}
-                      className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-amber-200 bg-white transition-colors dark:border-amber-900 dark:bg-neutral-900'
-                      whileTap={{ scale: 0.95 }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 400,
-                        damping: 17,
-                      }}
-                    >
-                      <HelpCircle className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
-                    </motion.button>
-                  </div>
-
-                  {/* Description */}
-                  <p className='mb-6 pr-16 text-sm text-muted-foreground'>
-                    {
-                      "You've received onchain funds. Tap below to pay a small fee and claim them to your wallet instantly."
-                    }
-                  </p>
-
-                  {/* Action Button */}
-                  <Button
-                    onClick={() => setShowIncomingFundsModal(true)}
-                    variant='outline'
-                    size='lg'
-                    className='h-12 w-full rounded-full border-amber-200 bg-white hover:bg-amber-100 dark:border-amber-900 dark:bg-neutral-900 dark:hover:bg-amber-950/60'
+              <WalletDesktopCard title='Security' bodyClassName='space-y-1 px-2 pb-2 pt-2'>
+                <button
+                  type='button'
+                  onClick={() => setShowBackupChoiceSheet(true)}
+                  className={desktopRowClassName}
+                >
+                  <span
+                    className={cn(
+                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-full',
+                      walletState.hasBackup
+                        ? 'bg-green-100 dark:bg-green-950/60'
+                        : 'bg-amber-100 dark:bg-amber-950/60'
+                    )}
                   >
-                    Speed It Up!
-                  </Button>
-                </div>
-              )}
+                    <Shield
+                      className={cn(
+                        'h-5 w-5',
+                        walletState.hasBackup
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-amber-600 dark:text-amber-400'
+                      )}
+                    />
+                  </span>
+                  <span className='min-w-0 flex-1'>
+                    <span className='block font-medium text-gray-900 dark:text-neutral-100'>
+                      Backup
+                    </span>
+                    <span
+                      className={cn(
+                        'block text-sm',
+                        walletState.hasBackup
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-amber-600 dark:text-amber-400'
+                      )}
+                    >
+                      {walletState.hasBackup ? 'Backed up' : 'Not backed up'}
+                    </span>
+                  </span>
+                  <ChevronRight className='h-4 w-4 shrink-0 text-gray-400 dark:text-neutral-500' />
+                </button>
+                <button
+                  type='button'
+                  onClick={() => router.push('/e/wallet/settings')}
+                  className={desktopRowClassName}
+                >
+                  <span className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
+                    <Settings className='h-5 w-5 text-gray-700 dark:text-neutral-300' />
+                  </span>
+                  <span className='min-w-0 flex-1'>
+                    <span className='block font-medium text-gray-900 dark:text-neutral-100'>
+                      Wallet settings
+                    </span>
+                    <span className='block text-sm text-gray-500 dark:text-neutral-500'>
+                      Lock, privacy, and backup options
+                    </span>
+                  </span>
+                  <ChevronRight className='h-4 w-4 shrink-0 text-gray-400 dark:text-neutral-500' />
+                </button>
+              </WalletDesktopCard>
+            </div>
 
-              {/* Educational Content */}
+            {/* Right column: transaction history, education */}
+            <div className='space-y-6'>
+              <WalletDesktopCard title='Transactions' bodyClassName='px-3 pb-3 pt-3'>
+                <div className='max-h-[36rem] overflow-y-auto overscroll-contain px-2 pb-2'>
+                  <TransactionHistory
+                    payments={payments}
+                    isLoading={isLoadingPayments}
+                    onRefresh={() => {}}
+                    onTransactionClick={handleTransactionClick}
+                  />
+                </div>
+              </WalletDesktopCard>
+
               <WalletEducationList />
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className='mx-auto bg-white dark:bg-neutral-900 md:max-w-md'>
+          <div className='px-4 pt-4'>
+            <div>
+              <div className='space-y-4'>
+                {/* Wallet Balance Card */}
+                {walletBalance}
+
+                {/* Backup Callout - subtle reminder below action buttons */}
+                {backupCallout}
+
+                {/* Quick Tools Section */}
+                {quickTools}
+              </div>
+            </div>
+
+            <div className='pb-28'>
+              <div className='space-y-6'>
+                {/* Recent Transactions Preview */}
+                <div className='mt-6 space-y-3 md:mt-4'>
+                  <h3 className='text-sm font-semibold'>Recent Transactions</h3>
+                  <TransactionHistory
+                    payments={payments.slice(0, 5)}
+                    isLoading={isLoadingPayments}
+                    onRefresh={() => {}}
+                    onTransactionClick={handleTransactionClick}
+                    showViewAllButton={!isLoadingPayments && payments.length > 0}
+                    onViewAll={() => openDrawer('history')}
+                    maxTransactions={3}
+                  />
+                </div>
+
+                {/* Contacts Preview */}
+                <div className='mt-6 space-y-3 md:mt-4'>
+                  <div className='flex items-center justify-between'>
+                    <h3 className='text-sm font-semibold'>Wallet Contacts</h3>
+                    <div className='flex items-center gap-2'>
+                      <CircledIconButton icon={Plus} onClick={() => setShowAddContactSheet(true)} />
+                      <CircledIconButton
+                        icon={ContactIcon}
+                        onClick={() => setShowContactsSheet(true)}
+                      />
+                    </div>
+                  </div>
+                  <ContactsList
+                    maxContacts={3}
+                    showAddButton={false}
+                    onContactClick={handleContactSelect}
+                  />
+                  <Button
+                    onClick={() => setShowContactsSheet(true)}
+                    variant='outline'
+                    className='font-lg h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
+                  >
+                    View All Contacts
+                  </Button>
+                </div>
+
+                {/* Incoming Onchain Bitcoin Alert */}
+                {incomingFundsAlert}
+
+                {/* Educational Content */}
+                <WalletEducationList />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sheets */}
       <ReceiveLightningSheet

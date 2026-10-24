@@ -140,7 +140,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
   // Error state
   if (step === 'error') {
     return (
-      <div className='flex min-h-[60vh] flex-col items-center justify-center space-y-6 px-6'>
+      <div className='flex min-h-[60vh] flex-col items-center justify-center space-y-6 px-6 md:min-h-[20rem]'>
         <div className='text-center'>
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60'>
             <AlertCircle className='h-8 w-8 text-red-600 dark:text-red-400' />
@@ -165,7 +165,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
   // Creating state
   if (step === 'creating') {
     return (
-      <div className='flex min-h-[60vh] flex-col items-center justify-center space-y-6'>
+      <div className='flex min-h-[60vh] flex-col items-center justify-center space-y-6 md:min-h-[20rem]'>
         <div className='text-center'>
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-950/40'>
             <Loader2 className='h-8 w-8 animate-spin text-orange-600 dark:text-orange-400' />

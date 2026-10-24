@@ -1,4 +1,5 @@
 import { MyEventsSection } from '@/components/hub/my-events-section';
+import { EventWithUser } from '@/lib/types/api';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 const mockUseIsMobile = jest.fn();
@@ -132,6 +133,54 @@ describe('MyEventsSection', () => {
 
     expect(screen.getByText('Draft without date')).toBeInTheDocument();
   });
+
+  it('caps the hub list at 3 upcoming events', () => {
+    const upcomingEvents = ['One', 'Two', 'Three', 'Four'].map((title, index) => ({
+      id: `event-${index}`,
+      title: `${title} Event`,
+      computed_start_date: `2026-11-0${index + 1}T10:00:00Z`,
+    }));
+
+    render(
+      <MyEventsSection
+        upcomingEvents={upcomingEvents as unknown as EventWithUser[]}
+        upcomingTotalCount={4}
+      />
+    );
+
+    expect(screen.getByText('Three Event')).toBeInTheDocument();
+    expect(screen.queryByText('Four Event')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /View All Events \(4\)/ })).toBeInTheDocument();
+  });
+
+  it('shows a compact empty row with a Find events CTA on Upcoming', () => {
+    render(<MyEventsSection />);
+
+    expect(screen.getByText('No upcoming events')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Find events' })).toHaveAttribute('href', '/e/search');
+  });
+
+  it('shows a Create event CTA when there are no hosted events', async () => {
+    render(<MyEventsSection />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Hosting' }));
+
+    await waitFor(() => {
+      expect(screen.getByText("No events you're hosting")).toBeInTheDocument();
+    });
+    expect(screen.getByRole('link', { name: 'Create event' })).toHaveAttribute('href', '/e/create');
+  });
+
+  it('shows no CTA on the empty Past tab', async () => {
+    render(<MyEventsSection />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Past' }));
+
+    await waitFor(() => {
+      expect(screen.getByText('No past events')).toBeInTheDocument();
+    });
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
 });
 
 it('requests past events when the Past tab is selected', async () => {
@@ -146,6 +195,7 @@ it('requests past events when the Past tab is selected', async () => {
         timeframe: 'past',
         sortBy: 'date-desc',
         enabled: true,
+        limit: 3,
       })
     );
   });

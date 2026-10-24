@@ -6,12 +6,17 @@ import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Switch } from '@/components/ui/switch';
 import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
 import { BetaSheet } from '@/components/wallet/beta-sheet';
+import {
+  WalletDesktopPageHeader,
+  useWalletDesktopLayout,
+} from '@/components/wallet/wallet-desktop-layout';
 import { resetWalletInitialization, useWallet } from '@/lib/hooks/use-wallet';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, ChevronRight, EyeOff, Lock, Shield, Trash2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, ChevronRight, EyeOff, Lock, Shield, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -24,6 +29,7 @@ export default function WalletSettingsPage() {
   const [showDeleteSheet, setShowDeleteSheet] = useState(false);
   const [showBetaSheet, setShowBetaSheet] = useState(false);
   const [showBackupChoiceSheet, setShowBackupChoiceSheet] = useState(false);
+  const isDesktop = useWalletDesktopLayout();
 
   useEffect(() => {
     applyRouteConfig(pathname);
@@ -32,6 +38,7 @@ export default function WalletSettingsPage() {
       badge: 'Beta',
       onBadgeClick: () => setShowBetaSheet(true),
       leftMode: 'back',
+      desktopHidden: true,
       showAvatar: false,
     });
     return () => {
@@ -67,12 +74,42 @@ export default function WalletSettingsPage() {
   }
 
   return (
-    <div className='mx-auto max-w-sm space-y-6 pb-28 pt-4'>
-      {/* Security Section */}
-      <div className='space-y-4'>
-        <h2 className='text-lg font-semibold'>Security</h2>
+    <div className='mx-auto max-w-sm space-y-6 pb-28 pt-4 md:max-w-3xl md:space-y-10 md:px-8 md:pb-16 md:pt-8'>
+      {/* Desktop header (the top bar is hidden at md+) */}
+      {isDesktop && (
+        <div>
+          <Link
+            href='/e/wallet'
+            className='inline-flex items-center gap-1.5 rounded-full text-sm font-medium text-gray-500 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-neutral-400 dark:hover:text-neutral-100'
+          >
+            <ArrowLeft className='h-4 w-4' />
+            Wallet
+          </Link>
+          <WalletDesktopPageHeader
+            className='mt-4'
+            title='Wallet settings'
+            description='Security, privacy, and device options for your Evento wallet.'
+            actions={
+              <button
+                type='button'
+                onClick={() => setShowBetaSheet(true)}
+                className='rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+              >
+                Beta
+              </button>
+            }
+          />
+        </div>
+      )}
 
-        <div className='space-y-3'>
+      {/* Security Section */}
+      <div className='space-y-4 md:grid md:grid-cols-[12rem_minmax(0,1fr)] md:grid-rows-[auto_1fr] md:gap-x-10 md:gap-y-1 md:space-y-0 md:border-t md:border-gray-200 md:pt-8 md:dark:border-neutral-800'>
+        <h2 className='text-lg font-semibold md:col-start-1 md:row-start-1'>Security</h2>
+        <p className='hidden text-sm text-gray-500 dark:text-neutral-500 md:col-start-1 md:row-start-2 md:block'>
+          Locking, backups, and what stays visible on screen.
+        </p>
+
+        <div className='space-y-3 md:col-start-2 md:row-span-2 md:row-start-1'>
           {/* Lock Wallet */}
           <button
             type='button'
@@ -135,10 +172,15 @@ export default function WalletSettingsPage() {
       </div>
 
       {/* Danger Zone */}
-      <div className='space-y-4'>
-        <h2 className='text-lg font-semibold text-red-600 dark:text-red-400'>Danger Zone</h2>
+      <div className='space-y-4 md:grid md:grid-cols-[12rem_minmax(0,1fr)] md:grid-rows-[auto_1fr] md:gap-x-10 md:gap-y-1 md:space-y-0 md:border-t md:border-gray-200 md:pt-8 md:dark:border-neutral-800'>
+        <h2 className='text-lg font-semibold text-red-600 dark:text-red-400 md:col-start-1 md:row-start-1'>
+          Danger Zone
+        </h2>
+        <p className='hidden text-sm text-gray-500 dark:text-neutral-500 md:col-start-1 md:row-start-2 md:block'>
+          Irreversible actions for this device.
+        </p>
 
-        <div className='rounded-3xl border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/40'>
+        <div className='rounded-3xl border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/40 md:col-start-2 md:row-span-2 md:row-start-1 md:p-5'>
           <div className='mb-4 flex items-start gap-3'>
             <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400' />
             <div className='text-sm text-red-900 dark:text-red-400'>
@@ -150,7 +192,11 @@ export default function WalletSettingsPage() {
             </div>
           </div>
 
-          <Button onClick={() => setShowDeleteSheet(true)} variant='destructive' className='w-full'>
+          <Button
+            onClick={() => setShowDeleteSheet(true)}
+            variant='destructive'
+            className='w-full md:w-auto md:px-6'
+          >
             <Trash2 className='mr-2 h-4 w-4' />
             Delete Wallet
           </Button>

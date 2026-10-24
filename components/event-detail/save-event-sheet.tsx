@@ -1,5 +1,12 @@
 'use client';
 
+import { ListLoadError } from '@/components/lists/list-load-error';
+import {
+  LIST_NAME_MAX_LENGTH,
+  isDefaultList,
+  orderLists,
+  validateListName,
+} from '@/components/lists/list-utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
@@ -10,9 +17,13 @@ import { useEnsureDefaultList } from '@/lib/hooks/use-ensure-default-list';
 import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
 import { useRemoveEventFromList } from '@/lib/hooks/use-remove-event-from-list';
 import { useUserLists } from '@/lib/hooks/use-user-lists';
+import { UserList } from '@/lib/types/api';
+import { cn } from '@/lib/utils';
+import { getErrorMessage } from '@/lib/utils/error-message';
 import { toast } from '@/lib/utils/toast';
-import { Check, Loader2, Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ArrowRight, Check, Loader2, Plus } from 'lucide-react';
+import Link from 'next/link';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 
 interface SaveEventSheetProps {
   isOpen: boolean;
@@ -23,225 +34,305 @@ interface SaveEventSheetProps {
 export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSheetProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newListName, setNewListName] = useState('');
-  const [processingListId, setProcessingListId] = useState<string | null>(null);
+  const [showValidation, setShowValidation] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [pendingListIds, setPendingListIds] = useState<ReadonlySet<string>>(new Set());
 
-  const { data: lists = [], isLoading: listsLoading } = useUserLists();
-  const { data: savedStatus, isLoading: statusLoading } = useEventSavedStatus(eventId, isOpen);
+  // Nothing is fetched (or created) until the sheet is actually opened.
+  const {
+    data: lists,
+    isLoading: listsLoading,
+    error: listsError,
+    refetch: refetchLists,
+  } = useUserLists(isOpen);
+  const {
+    data: savedStatus,
+    isLoading: statusLoading,
+    error: statusError,
+    refetch: refetchStatus,
+  } = useEventSavedStatus(eventId, isOpen);
+  const { isCreatingDefaultList } = useEnsureDefaultList(isOpen);
   const addToListMutation = useAddEventToList();
   const removeFromListMutation = useRemoveEventFromList();
   const createListMutation = useCreateList();
 
-  // Ensure default list exists when sheet opens
-  useEnsureDefaultList();
+  const orderedLists = useMemo(() => orderLists(lists ?? []), [lists]);
+  const savedListIds = useMemo(
+    () => new Set(savedStatus?.saved_in_lists.map((entry) => entry.list_id) ?? []),
+    [savedStatus]
+  );
 
-  // Reset state when sheet closes
   useEffect(() => {
     if (!isOpen) {
       setShowCreateForm(false);
       setNewListName('');
-      setProcessingListId(null);
+      setShowValidation(false);
+      setCreateError(null);
     }
   }, [isOpen]);
 
-  const isListChecked = (listId: string) => {
-    return savedStatus?.saved_in_lists.some((l) => l.list_id === listId) ?? false;
+  const setListPending = (listId: string, pending: boolean) => {
+    setPendingListIds((current) => {
+      const next = new Set(current);
+      if (pending) next.add(listId);
+      else next.delete(listId);
+      return next;
+    });
   };
 
-  const handleToggleList = async (listId: string, isChecked: boolean) => {
-    setProcessingListId(listId);
-
+  const handleToggleList = async (list: UserList) => {
+    const isSaved = savedListIds.has(list.id);
+    setListPending(list.id, true);
     try {
-      if (isChecked) {
-        // Remove from list
-        await removeFromListMutation.mutateAsync({ listId, eventId });
-        const listName = lists.find((l) => l.id === listId)?.name || 'list';
-        toast.success(`Removed from ${listName}`);
+      // Checkbox state flips optimistically inside the mutation hooks.
+      if (isSaved) {
+        await removeFromListMutation.mutateAsync({ listId: list.id, eventId });
+        toast.success(`Removed from ${list.name}.`, 'Removed');
       } else {
-        // Add to list
-        await addToListMutation.mutateAsync({ listId, eventId });
-        const listName = lists.find((l) => l.id === listId)?.name || 'list';
-        toast.success(`Added to ${listName}`);
+        await addToListMutation.mutateAsync({ listId: list.id, eventId });
+        toast.success(`Saved to ${list.name}.`, 'Saved');
       }
-    } catch (error: any) {
-      const errorMsg = error?.message || 'Failed to update list';
-      toast.error(errorMsg);
+    } catch (error) {
+      toast.error(getErrorMessage(error), 'Couldn’t update list');
     } finally {
-      setProcessingListId(null);
+      setListPending(list.id, false);
     }
   };
 
-  const handleCreateList = async () => {
+  const nameError = validateListName(newListName, orderedLists);
+  const visibleNameError = createError ?? (showValidation ? nameError : null);
+  const isCreating = createListMutation.isPending;
+
+  const handleCreateList = async (formEvent: FormEvent) => {
+    formEvent.preventDefault();
+    setShowValidation(true);
+    if (nameError || isCreating) return;
+
     const trimmedName = newListName.trim();
+    setCreateError(null);
 
-    if (!trimmedName) {
-      toast.error('List name is required');
-      return;
-    }
-
-    if (trimmedName.length > 50) {
-      toast.error('List name must be less than 50 characters');
-      return;
-    }
-
+    let createdList: UserList;
     try {
-      const newList = await createListMutation.mutateAsync({
-        name: trimmedName,
-      });
-      toast.success('List created');
+      createdList = await createListMutation.mutateAsync({ name: trimmedName });
+    } catch (error) {
+      setCreateError(getErrorMessage(error));
+      return;
+    }
 
-      // Automatically add event to the new list
-      await addToListMutation.mutateAsync({ listId: newList.id, eventId });
-      toast.success(`Added to ${trimmedName}`);
+    setNewListName('');
+    setShowValidation(false);
+    setShowCreateForm(false);
 
-      // Reset form
-      setNewListName('');
-      setShowCreateForm(false);
-    } catch (error: any) {
-      const errorMsg = error?.message || 'Failed to create list';
-      toast.error(errorMsg);
+    setListPending(createdList.id, true);
+    try {
+      await addToListMutation.mutateAsync({ listId: createdList.id, eventId });
+      toast.success(`Created ${createdList.name} and saved this event to it.`, 'Saved');
+    } catch (error) {
+      toast.error(
+        `${createdList.name} was created, but the event wasn’t added: ${getErrorMessage(error)}`,
+        'Couldn’t save event'
+      );
+    } finally {
+      setListPending(createdList.id, false);
     }
   };
 
-  const isLoading = listsLoading || statusLoading;
+  const isLoading =
+    listsLoading || statusLoading || (orderedLists.length === 0 && isCreatingDefaultList);
+  const loadError = listsError ?? statusError;
+
+  const renderBody = () => {
+    if (isLoading) {
+      return (
+        <div className='space-y-2'>
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className='h-16 w-full rounded-2xl' />
+          ))}
+        </div>
+      );
+    }
+
+    if (loadError) {
+      return (
+        <ListLoadError
+          title='Couldn’t load your lists'
+          message={getErrorMessage(loadError)}
+          onRetry={() => {
+            if (listsError) void refetchLists();
+            if (statusError) void refetchStatus();
+          }}
+        />
+      );
+    }
+
+    return (
+      <div className='space-y-4'>
+        {showCreateForm ? (
+          <form
+            onSubmit={handleCreateList}
+            noValidate
+            className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'
+          >
+            <div className='mb-2 flex items-baseline justify-between'>
+              <label
+                htmlFor='save-sheet-new-list'
+                className='text-sm font-medium text-gray-900 dark:text-neutral-100'
+              >
+                New list
+              </label>
+              <span className='text-xs tabular-nums text-gray-500 dark:text-neutral-500'>
+                {newListName.trim().length}/{LIST_NAME_MAX_LENGTH}
+              </span>
+            </div>
+            <Input
+              id='save-sheet-new-list'
+              type='text'
+              value={newListName}
+              onChange={(changeEvent) => {
+                setNewListName(changeEvent.target.value);
+                setCreateError(null);
+              }}
+              placeholder='e.g. Summer in Lisbon'
+              maxLength={LIST_NAME_MAX_LENGTH}
+              autoComplete='off'
+              autoFocus
+              aria-invalid={Boolean(visibleNameError)}
+              aria-describedby={visibleNameError ? 'save-sheet-new-list-error' : undefined}
+              className={cn(
+                'h-11 rounded-xl bg-white dark:bg-neutral-900',
+                visibleNameError && 'border-red-500 focus-visible:ring-red-500 dark:border-red-500'
+              )}
+            />
+            {visibleNameError && (
+              <p
+                id='save-sheet-new-list-error'
+                role='alert'
+                className='mt-2 text-sm text-red-600 dark:text-red-400'
+              >
+                {visibleNameError}
+              </p>
+            )}
+            <div className='mt-3 flex gap-2'>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={() => {
+                  setShowCreateForm(false);
+                  setNewListName('');
+                  setShowValidation(false);
+                  setCreateError(null);
+                }}
+                disabled={isCreating}
+                className='flex-1 dark:bg-neutral-900 dark:hover:bg-neutral-800'
+              >
+                Cancel
+              </Button>
+              <Button type='submit' disabled={isCreating} className='flex-1'>
+                {isCreating ? (
+                  <>
+                    <Loader2 className='animate-spin' aria-hidden='true' />
+                    Creating…
+                  </>
+                ) : (
+                  'Create & save'
+                )}
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <button
+            type='button'
+            onClick={() => setShowCreateForm(true)}
+            className='flex w-full items-center gap-3 rounded-2xl border border-dashed border-gray-300 p-4 text-left text-sm font-medium text-gray-700 transition-colors hover:border-gray-400 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-600 dark:hover:bg-neutral-800/60'
+          >
+            <span className='flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
+              <Plus className='h-4 w-4' aria-hidden='true' />
+            </span>
+            New list
+          </button>
+        )}
+
+        {orderedLists.length > 0 && (
+          <ul className='space-y-2' aria-label='Your lists'>
+            {orderedLists.map((list) => {
+              const checked = savedListIds.has(list.id);
+              const isPending = pendingListIds.has(list.id);
+              return (
+                <li key={list.id}>
+                  <button
+                    type='button'
+                    role='checkbox'
+                    aria-checked={checked}
+                    onClick={() => void handleToggleList(list)}
+                    disabled={isPending}
+                    className={cn(
+                      'flex w-full items-center gap-3 rounded-2xl border p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:cursor-wait',
+                      checked
+                        ? 'border-red-200 bg-red-50/60 dark:border-red-900/60 dark:bg-red-950/20'
+                        : 'border-gray-200 bg-white hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800/60'
+                    )}
+                  >
+                    <span
+                      aria-hidden='true'
+                      className={cn(
+                        'flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-colors',
+                        checked
+                          ? 'border-red-500 bg-red-500 dark:border-red-500 dark:bg-red-600'
+                          : 'border-gray-300 bg-white dark:border-neutral-600 dark:bg-neutral-900'
+                      )}
+                    >
+                      {isPending ? (
+                        <Loader2
+                          className={cn(
+                            'h-3 w-3 animate-spin',
+                            checked ? 'text-white' : 'text-gray-400 dark:text-neutral-500'
+                          )}
+                        />
+                      ) : (
+                        checked && <Check className='h-3 w-3 text-white' strokeWidth={3} />
+                      )}
+                    </span>
+                    <span className='min-w-0 flex-1 truncate font-medium text-gray-900 dark:text-neutral-100'>
+                      {list.name}
+                    </span>
+                    {isDefaultList(list, orderedLists) && (
+                      <span className='shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'>
+                        Default
+                      </span>
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+    );
+  };
 
   return (
     <MasterScrollableSheet
-      title='Save Event'
+      title='Save event'
       open={isOpen}
       onOpenChange={(open) => !open && onClose()}
       headerSecondary={
-        <div className='px-4 pb-3'>
+        <div className='flex items-center justify-between gap-3 px-4 pb-3'>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
-            Choose lists to save this event to
+            Choose the lists to save this event to.
           </p>
+          <Link
+            href='/e/lists'
+            onClick={onClose}
+            className='inline-flex shrink-0 items-center gap-1 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
+          >
+            Your lists
+            <ArrowRight className='h-3.5 w-3.5' aria-hidden='true' />
+          </Link>
         </div>
       }
       contentClassName='p-4'
     >
-      {isLoading ? (
-        <div className='space-y-3'>
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className='h-14 w-full rounded-lg' />
-          ))}
-        </div>
-      ) : lists.length === 0 && !showCreateForm ? (
-        <div className='flex flex-col items-center justify-center py-12 text-center'>
-          <div className='mb-4 rounded-2xl bg-gray-100 p-4 dark:bg-neutral-800'>
-            <Plus className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
-          </div>
-          <h3 className='mb-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
-            No lists yet
-          </h3>
-          <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>
-            Create your first list to save events
-          </p>
-          <Button onClick={() => setShowCreateForm(true)} variant='default'>
-            <Plus className='mr-2 h-4 w-4' />
-            Create List
-          </Button>
-        </div>
-      ) : (
-        <div className='space-y-4'>
-          {/* Create new list button - now at the top */}
-          {!showCreateForm ? (
-            <Button onClick={() => setShowCreateForm(true)} variant='outline' className='w-full'>
-              <Plus className='mr-2 h-4 w-4' />
-              Create New List
-            </Button>
-          ) : (
-            <div className='rounded-lg border border-gray-200 p-4 dark:border-neutral-800'>
-              <h3 className='mb-3 font-medium text-gray-900 dark:text-neutral-100'>
-                Create New List
-              </h3>
-              <Input
-                type='text'
-                value={newListName}
-                onChange={(e) => setNewListName(e.target.value)}
-                placeholder='List name'
-                maxLength={50}
-                className='mb-3'
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleCreateList();
-                  }
-                }}
-              />
-              <p className='mb-3 text-right text-xs text-gray-500 dark:text-neutral-400'>
-                {newListName.length}/50
-              </p>
-              <div className='flex gap-2'>
-                <Button
-                  onClick={handleCreateList}
-                  disabled={!newListName.trim() || createListMutation.isPending}
-                  className='flex-1'
-                >
-                  {createListMutation.isPending ? (
-                    <>
-                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                      Creating...
-                    </>
-                  ) : (
-                    'Create & Add'
-                  )}
-                </Button>
-                <Button
-                  onClick={() => {
-                    setShowCreateForm(false);
-                    setNewListName('');
-                  }}
-                  variant='outline'
-                  className='flex-1'
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* List items - now below create button */}
-          <div className='space-y-2'>
-            {lists.map((list) => {
-              const checked = isListChecked(list.id);
-              const isProcessing = processingListId === list.id;
-
-              return (
-                <button
-                  key={list.id}
-                  onClick={() => handleToggleList(list.id, checked)}
-                  disabled={isProcessing}
-                  className='flex w-full items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-neutral-800 dark:hover:bg-neutral-950'
-                >
-                  <div className='flex items-center gap-3'>
-                    <div
-                      className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
-                        checked
-                          ? 'border-red-500 bg-red-500 dark:bg-red-600'
-                          : 'border-gray-300 bg-white dark:border-neutral-700 dark:bg-neutral-900'
-                      }`}
-                    >
-                      {isProcessing ? (
-                        <Loader2 className='h-3 w-3 animate-spin text-white' />
-                      ) : checked ? (
-                        <Check className='h-3 w-3 text-white' />
-                      ) : null}
-                    </div>
-                    <div className='text-left'>
-                      <p className='font-medium text-gray-900 dark:text-neutral-100'>{list.name}</p>
-                      {list.is_default && (
-                        <span className='text-xs text-gray-500 dark:text-neutral-400'>Default</span>
-                      )}
-                    </div>
-                  </div>
-                  <span className='text-sm text-gray-500 dark:text-neutral-400'>
-                    {list.event_count} events
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      {renderBody()}
     </MasterScrollableSheet>
   );
 }

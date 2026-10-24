@@ -39,6 +39,7 @@ export function SiteHeader() {
     textButtons,
     buttons,
     hideMobileBreadcrumb,
+    desktopHidden,
   } = useTopBar();
 
   const handleBackPress = () => {
@@ -122,7 +123,12 @@ export function SiteHeader() {
     [...textButtons.map((b) => b.id), ...buttons.map((b) => b.id)].join('-') || 'empty';
 
   return (
-    <header className='group-has-data-[collapsible=icon]/sidebar-wrapper:h-[--header-height] flex h-[--header-height] shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear'>
+    <header
+      className={cn(
+        'group-has-data-[collapsible=icon]/sidebar-wrapper:h-[--header-height] flex h-[--header-height] shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear',
+        desktopHidden && 'md:hidden'
+      )}
+    >
       <div className='relative flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6'>
         {/* Left section */}
         <AnimatePresence mode='wait'>
@@ -177,7 +183,7 @@ export function SiteHeader() {
         {/* Right section */}
         <AnimatePresence mode='wait'>
           <motion.div key={rightKey} className='ml-auto flex items-center gap-2' {...fadeConfig}>
-            <ThemeToggle className='h-8 w-8' />
+            {!isAuthenticated && <ThemeToggle className='h-8 w-8' />}
             {textButtons.length > 0 && (
               <div className='flex gap-2'>
                 {textButtons.map((button) => {

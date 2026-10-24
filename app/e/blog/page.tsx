@@ -1,59 +1,48 @@
+import { BlogPageSkeleton } from '@/components/blog/blog-skeleton';
 import { ghostService } from '@/lib/services/ghost';
 import { GhostPost } from '@/lib/types/ghost';
 import { logger } from '@/lib/utils/logger';
-import { AlertTriangle } from 'lucide-react';
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import PostPageClient from './page-client';
+import BlogPageClient from './page-client';
 
 export const dynamic = 'force-dynamic';
 
-const ErrorAlert = ({ message }: { message: string }) => (
-  <div
-    className='rounded-lg border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400'
-    role='alert'
-  >
-    <div className='mb-1 flex items-center gap-2'>
-      <AlertTriangle className='h-5 w-5' />
-      <p className='font-semibold'>Error</p>
-    </div>
-    <p className='text-sm'>{message}</p>
-  </div>
-);
+export const metadata: Metadata = {
+  title: 'Blog — Evento',
+  description:
+    'Product updates, hosting guides, and stories from the Evento community — the social platform for events.',
+};
 
-const Loading = () => (
-  <div className='flex h-64 items-center justify-center'>
-    <div className='h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-red-500'></div>
-  </div>
-);
+interface BlogPageProps {
+  searchParams: { tag?: string | string[] };
+}
 
-async function getBlogPosts() {
+async function getBlogPosts(): Promise<GhostPost[] | null> {
   try {
-    const data = await ghostService.getPosts({ filter: 'tag:blog' });
+    const data = await ghostService.getPosts({ filter: 'tag:blog', limit: 'all' });
     return data.posts;
   } catch (error) {
     logger.warn('Ghost API configuration missing or unavailable', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return [];
+    return null;
   }
 }
 
-export default async function BlogPosts() {
-  let posts: GhostPost[] = [];
+async function BlogPosts({ initialTag }: { initialTag: string | null }) {
+  const posts = await getBlogPosts();
 
-  try {
-    posts = await getBlogPosts();
-  } catch (error) {
-    return (
-      <div className='px-4 py-6'>
-        <ErrorAlert message='Failed to load blog posts. Please try again later.' />
-      </div>
-    );
-  }
+  return <BlogPageClient posts={posts ?? []} loadFailed={posts === null} initialTag={initialTag} />;
+}
+
+export default function BlogPage({ searchParams }: BlogPageProps) {
+  const tagParam = Array.isArray(searchParams.tag) ? searchParams.tag[0] : searchParams.tag;
+  const initialTag = tagParam?.trim() || null;
 
   return (
-    <Suspense fallback={<Loading />}>
-      <PostPageClient posts={posts} />
+    <Suspense fallback={<BlogPageSkeleton />}>
+      <BlogPosts initialTag={initialTag} />
     </Suspense>
   );
 }
